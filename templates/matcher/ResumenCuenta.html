@@ -1,0 +1,230 @@
+{% extends "matcher/base.html" %}
+{% load humanize %}
+{% block title %}Resumen{% endblock %}
+
+{% block content %}
+<button class="pull-right btn btn-inverse" onclick="goBack()">Atrás</button>
+<h3>Resumen de Cuenta</h3>
+<hr/>
+<div class="table-responsive">
+    <table class="table table-bordered table-striped tabla">
+        <thead>
+            <tr>
+                <th>Código cuenta</th>
+                <th>Banco</th>
+                <th>Última Conciliación</th>
+                <th>Último Historico</th>
+            </tr>
+        </thead>
+        <tbody>
+                <tr>
+                    <td>{{ cuenta.codigo }}</td>
+                    <td>{{ cuenta.banco_corresponsal_idbanco.codigo }}</td>
+                    <td>{{ cuenta.ultimafechaconciliacion|date:"d/m/Y" }}</td>
+                    <td>{{ cuenta.ultimafechahistorico|date:"d/m/Y" }}</td>
+                </tr>
+        </tbody>
+    </table>
+</div>
+
+<div>
+    <form class="form-vertical">
+    <fieldset>
+        <!-- Form Name -->
+        <legend>Información Cuenta</legend>
+
+        <div class="row clearfix">
+            <!-- Text input-->
+            <div class="form-group col-md-4 column">
+              <label class="control-label" for="Cod_cuenta">Código Cuenta:</label>  
+              <div>
+              <input id="Cod_cuenta" name="Cod_cuenta" type="text" placeholder="{{cuenta.codigo}}" class="form-control input-md" readonly>
+                
+              </div>
+            </div>
+
+            <!-- Text input-->
+            <div class="form-group col-md-4 column">
+              <label class="control-label" for="cta_nostro">No. Cta. Nostro</label>  
+              <div>
+              <input id="cta_nostro" name="cta_nostro" type="text" placeholder="{{cuenta.ref_nostro}}" class="form-control input-md" readonly>
+                
+              </div>
+            </div>
+
+            <!-- Text input-->
+            <div class="form-group col-md-4 column">
+              <label class="control-label" for="cod_moneda">Código Moneda:</label>  
+              <div>
+              <input id="cod_moneda" name="cod_moneda" type="text" placeholder="{{cuenta.moneda_idmoneda.nombre}} ({{cuenta.moneda_idmoneda.codigo}})" class="form-control input-md" readonly>
+                
+              </div>
+            </div>
+        </div>
+
+        <div class="row clearfix">
+            <!-- Text input-->
+            <div class="form-group col-md-4 column">
+              <label class="control-label" for="cod_banco">Banco:</label>  
+              <div>
+              <input id="cod_banco" name="cod_banco" type="text" placeholder="{{cuenta.banco_corresponsal_idbanco.codigo}}" class="form-control input-md" readonly>
+              </div>
+            </div>
+
+            <!-- Text input-->
+            <div class="form-group col-md-4 column">
+              <label class="control-label" for="cta_vostro">No. Cta. Vostro:</label>  
+              <div>
+              <input id="cta_vostro" name="cta_vostro" type="text" placeholder="{{cuenta.ref_vostro}}" class="form-control input-md" readonly>
+                
+              </div>
+            </div>
+
+            <!-- Text input-->
+            <div class="form-group col-md-4 column">
+              <label class="control-label" for="estado">Estado:</label>  
+              <div>
+              <input id="estado" name="estado" type="text" placeholder="{{cuenta.estado}}" class="form-control input-md" readonly>
+                
+              </div>
+            </div>
+        </div>
+
+    </fieldset>
+    </form>
+</div>
+
+<h3> Detalles Última Conciliación</h3>
+<h4> Fecha: <small>{{cuenta.ultimafechaconciliacion|date:"d/m/Y"}}</small></h4>
+<hr/>
+<div>
+    <div class="row clearfix">
+        <div class="col-md-3 column">
+            <div class="row clearfix">
+                    <br/><br/><br/>
+                     <form class="form-vertical">
+                        <fieldset>
+                            <!-- Appended Input-->
+                            <div class="form-group col-md-12">
+                              <label class="control-label" for="sald_fin_conta">Saldo Final Contabilidad</label>
+                                <div class="input-group">
+                                  <input id="sald_fin_conta" name="sald_fin_conta" class="form-control" placeholder="{{cons.balancefinalcontabilidad|intcomma|cut:"-"}}" type="text" readonly>
+                                  <span class="input-group-addon">{{cod.0}}</span>
+                                </div>
+                            </div>
+
+                            <!-- Appended Input-->
+                            <div class="form-group col-md-12">
+                              <label class="control-label" for="sald_fin_corr">Saldo Final Corresponsal</label>
+                                <div class="input-group">
+                                  <input id="sald_fin_corr" name="sald_fin_corr" class="form-control" placeholder="{{cons.balancefinalcorresponsal|intcomma|cut:"-"}}" type="text" readonly>
+                                  <span class="input-group-addon">{{cod.1}}</span>
+                                </div>
+                            </div>
+                        </fieldset>
+                    </form>
+            </div>
+        </div>
+
+        <div class="col-md-6 column">
+            <div class="row clearfix" style="text-align:center">
+                <br/>
+                <div class="col-md-6 column">
+                    <strong> Concepto </strong>
+                </div>
+                <div class="col-md-6 column">
+                    <strong> Monto </strong>
+                </div>
+            </div>
+
+            <div class="row clearfix"><hr/></div>
+
+            <div class="row clearfix">
+                <form class="form-horizontal">
+                    <fieldset>
+                        <!-- Appended Input-->
+                        <div class="form-group col-md-12">
+                          <label class="col-md-6 control-label" for="ced_corr_nodeb" style="text-align:center">Créditos Corresp. no Debitados:</label>
+                            <div class="col-md-5 col-md-push-1 input-group">
+                              <input id="ced_corr_nodeb" name="ced_corr_nodeb" class="form-control" placeholder="{{cons.totalcreditoscorresponsal|intcomma|cut:"-"}}" type="text" readonly>
+                              <span class="input-group-addon">C</span>
+                            </div>
+                        </div>
+
+                        <!-- Appended Input-->
+                        <div class="form-group col-md-12">
+                            <label class="col-md-6 control-label" for="deb_corr_noacr" style="text-align:center">Débitos Corresp. no Acreditados:</label>
+                            <div class="col-md-5 col-md-push-1 input-group">
+                              <input id="deb_corr_noacr" name="deb_corr_noacr" class="form-control" placeholder="{{cons.totaldebitoscorresponsal|intcomma|cut:"-"}}" type="text" readonly>
+                              <span class="input-group-addon">D</span>
+                            </div>
+                        </div>
+                    </fieldset>
+                </form>
+            </div>
+
+            <div class="row clearfix">
+                <form class="form-horizontal">
+                    <fieldset>
+                        <!-- Appended Input-->
+                        <div class="form-group col-md-12">
+                          <label class="col-md-6 control-label" for="ced_banco_nodeb" style="text-align:center">Créditos del Banco no Debitados:</label>
+                            <div class="col-md-5 col-md-push-1 input-group">
+                              <input id="ced_banco_nodeb" name="ced_banco_nodeb" class="form-control" placeholder="{{cons.totalcreditoscontabilidad|intcomma|cut:"-"}}" type="text" readonly>
+                              <span class="input-group-addon">C</span>
+                            </div>
+                        </div>
+
+                        <!-- Appended Input-->
+                        <div class="form-group col-md-12">
+                            <label class="col-md-6 control-label" for="deb_corr_noacr" style="text-align:center">Débitos del Banco no Acreditados:</label>
+                            <div class="col-md-5 col-md-push-1 input-group">
+                              <input id="deb_corr_noacr" name="deb_corr_noacr" class="form-control" placeholder="{{cons.totaldebitoscontabilidad|intcomma|cut:"-"}}" type="text" readonly>
+                              <span class="input-group-addon">D</span>
+                            </div>
+                        </div>
+                    </fieldset>
+                </form>
+            </div>
+
+        </div>
+
+
+        <div class="col-md-3 column">
+            <div class="row clearfix">
+                     <br/><br/><br/>
+                     <form class="form-horizontal">
+                        <fieldset>
+                            <!-- Appended Input-->
+                            <div class="form-group col-md-12">
+                              <label class="control-label" for="sald_tot_conta">Total Saldo Contabilidad</label>
+                                <div class="input-group">
+                                  <input id="sald_tot_conta" name="sald_tot_conta" class="form-control" placeholder="{{cons.saldocontabilidad|intcomma|cut:"-"}}" type="text" readonly>
+                                  <span class="input-group-addon">{{cod.2}}</span>
+                                </div>
+                            </div>
+
+                            <!-- Appended Input-->
+                            <div class="form-group col-md-12">
+                                <label class="control-label" for="sald_tot_corr">Total Saldo Corresponsal</label>
+                                <div class="input-group">
+                                  <input id="sald_tot_corr" name="sald_tot_corr" class="form-control" placeholder="{{cons.saldocorresponsal|intcomma|cut:"-"}}" type="text" readonly>
+                                  <span class="input-group-addon">{{cod.3}}</span>
+                                </div>
+                            </div>
+                        </fieldset>
+                    </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block script %}
+<script>
+function goBack() {
+  window.history.back();
+};
+</script>
+{% endblock %}

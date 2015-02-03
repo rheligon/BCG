@@ -1,0 +1,107 @@
+{% extends "matcher/base.html" %}
+
+{% load staticfiles %}
+
+{% block title %}Bancos disponibles{% endblock %}
+
+{% block content %}
+
+<div class="table-responsive col-md-8">
+    <table class="table table-bordered table-striped tabla">
+        <thead>
+            <tr>
+                <th>Código</th>
+                <th>Banco Corresponsal</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for banco in bancos %}
+            <tr>
+                <td><a href="/admin/banco/{{banco.idbanco}}" nombre ="{{ banco.nombre }}" codigo = "{{ banco.codigo }}" type="banco"> {{ banco.codigo }}</a></td>
+                <td>{{ banco.nombre }}</td>
+                
+                <td><a href="/test/" class="banco-s" id="banco-show-{{banco.idbanco}}"><img src="{% static 'img/loader-medium.gif' %}"></a></td>
+            
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+
+<div class="col-md-12 banco-detalle" hidden>
+    <form class="form-vertical">
+    <fieldset>
+        <!-- Form Name -->
+        <legend>Detalles:</legend>
+
+        <div class="row clearfix">
+            <div class="form-group col-md-4 column">
+              <label class="control-label" for="Cod_banco">Código:</label>  
+              <div>
+                <input id="Cod_banco" name="Cod_banco" type="text" class="form-control input-md">
+              </div>
+            </div>
+
+            <div class="form-group col-md-4 column">
+              <label class="control-label" for="Nom_banco">Nombre:</label>  
+              <div>
+                <input id="Nom_banco" name="Nom_banco" type="text" class="form-control input-md">
+              </div>
+            </div>
+        </div>
+    </fieldset>
+    </form>
+</div>
+
+{% endblock %}
+
+{% block script%}
+
+<script type="text/javascript">
+$(document).ready(function () {
+
+    var csrftoken = $.cookie('csrftoken');
+
+    function show_banc(bancoID){
+        $.ajax({
+            type:"POST",
+            url: "/test/",
+            data: {"bancoid": bancoID},
+            success: function(data){
+                $('#banco-show-' + bancoID).hide();
+                $("#Cod_banco").val(data.bancoc);
+                $("#Nom_banco").val(data.bancon);
+                $(".banco-detalle").show();
+            },
+            dataType:'json',
+            headers:{
+                'X-CSRFToken':csrftoken
+            }
+        });
+        return false;
+    }
+
+    $('a.banco-s').click(function(){
+        //pq el id es banco-show-bancoID, se divide en 3, me interesa el id q es el 3ro
+        var bancoID = parseInt(this.id.split("-")[2]);
+        return show_banc(bancoID);
+    })
+});
+</script>
+
+<script type="text/javascript">
+ $(document).ready(function () {
+    $('a').click(function(event) {
+      if ($(this).attr("type") == "banco"){
+        event.preventDefault();
+        var a_nom = $(this).attr("nombre");
+        var a_cod = $(this).attr("codigo");
+        $("#Cod_banco").val(a_cod);
+        $("#Nom_banco").val(a_nom);
+        $(".banco-detalle").show();
+      }
+    }); 
+ });
+</script>
+{% endblock %}

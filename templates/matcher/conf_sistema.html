@@ -1,0 +1,309 @@
+{% extends "matcher/base.html" %}
+
+{% block content %}
+
+<style type="text/css">
+#ConfSegForm, #ConfEmpForm {
+    margin-top: 15px;
+}
+</style>
+
+<legend>Configuracion por Empresa:</legend>
+<ul class="nav nav-tabs" id="emp-tab">
+    <li class="active"><a href="#datos-tab" data-toggle="tab">Datos Generales <i class="fa"></i></a></li>
+    <li><a href="#nomen-tab" data-toggle="tab">Nomenclatura <i class="fa"></i></a></li>
+    <li><a href="#conc-tab" data-toggle="tab">Conciliación <i class="fa"></i></a></li>
+</ul>
+
+<form id="ConfEmpForm" method="post" class="form-horizontal">
+    {% csrf_token %}
+    <div class="tab-content">
+        <div class="tab-pane active" id="datos-tab">
+            <div class="form-group">
+                <label class="col-xs-3 control-label">Nombre</label>
+                <div class="col-xs-5">
+                    <input type="text" class="form-control" value="{{empresa.nombre}}" name="nombre" />
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-xs-3 control-label">Grupo Financiero</label>
+                <div class="col-xs-5">
+                    <input type="text" class="form-control" value="{{empresa.nombregrupo}}" name="g_fin" />
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-xs-3 control-label">Dirección</label>
+                <div class="col-xs-5">
+                    <input type="text" class="form-control" value="{{empresa.direccion}}" name="dir" />
+                </div>
+            </div>
+
+
+            <div class="form-group">
+                <label class="col-xs-3 control-label">Logo:</label>
+                <div class="col-xs-5">
+                    <input type="text" class="form-control" value="{{empresa.dir_logo}}" name="logo" />
+                </div>
+            </div>
+
+
+            <div class="form-group">
+                <label class="col-xs-3 control-label">BIC:</label>
+                <div class="col-xs-5">
+                    <input type="text" class="form-control" value="{{conf.bic}}" name="bic" />
+                </div>
+            </div>
+
+
+            <div class="form-group">
+                <label class="col-xs-3 control-label">País:</label>
+                <div class="col-xs-5">
+                    <input type="text" class="form-control" value="{{empresa.pais}}" name="pais" />
+                </div>
+            </div>
+        </div>
+
+        <div class="tab-pane" id="nomen-tab">
+            <div class="form-group">
+                <label class="col-xs-3 control-label">Créditos Contabilidad:</label>
+                <div class="col-xs-5">
+                    <input type="text" class="form-control" value="{{empresa.creditoscontabilidad}}" name="c_conta" />
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label class="col-xs-3 control-label">Débitos Contabilidad:</label>
+                <div class="col-xs-5">
+                    <input type="text" class="form-control" value="{{empresa.debitoscontabilidad}}" name="d_conta" />
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-xs-3 control-label">Créditos Corresponsal:</label>
+                <div class="col-xs-5">
+                    <input type="text" class="form-control" value="{{empresa.creditoscorresponsal}}" name="c_corr" />
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-xs-3 control-label">Débitos Corresponsal:</label>
+                <div class="col-xs-5">
+                    <input type="text" class="form-control" value="{{empresa.debitoscorresponsal}}" name="d_corr" />
+                </div>
+            </div>
+        </div>
+
+        <div class="tab-pane" id="conc-tab">
+            <div class="form-group">
+                <label class="col-xs-3 control-label">Persona que Autoriza la Conciliación:</label>
+                <div class="col-xs-5">
+                    <input type="text" class="form-control" value="{{empresa.autorizadopor}}" name="p_aut" />
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-xs-3 control-label">Persona que Firma la Conciliación:</label>
+                <div class="col-xs-5">
+                    <input type="text" class="form-control" value="{{empresa.firmadopor}}" name="p_fir" />
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-xs-3 control-label">Cargo:</label>
+                <div class="col-xs-5">
+                    <input type="text" class="form-control" value="{{empresa.cargofirmante}}" name="cargo" />
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="form-group" style="margin-top: 15px;">
+        <div class="col-xs-5 col-xs-offset-3">
+            <button type="submit" class="btn btn-success">Aceptar</button>
+            <p onclick="goBack()" class="btn btn-danger">Cancelar</p>
+        </div>
+    </div>
+</form>
+
+<legend>Configuracion General y de Seguridad:</legend>
+<ul class="nav nav-tabs" id="seg-tab">
+    <li class="active"><a href="#smatcher-tab" data-toggle="tab">Servidor Match <i class="fa"></i></a></li>
+    <li><a href="#alerta-tab" data-toggle="tab">Alertas <i class="fa"></i></a></li>
+    <li><a href="#contr-tab" data-toggle="tab">Contraseñas <i class="fa"></i></a></li>
+    <li><a href="#log-tab" data-toggle="tab">Logs <i class="fa"></i></a></li>
+    <li><a href="#msgSWIFT-tab" data-toggle="tab">Mensajes SWIFT <i class="fa"></i></a></li>
+</ul>
+<form id="ConfSegForm" method="post" class="form-horizontal">
+    {% csrf_token %}
+    <div class="tab-content">
+        <div class="tab-pane active" id="smatcher-tab">
+            <div class="form-group">
+                <label class="col-xs-3 control-label">Host:</label>
+                <div class="col-xs-5">
+                    <input type="text" class="form-control" value="{{conf.matcherhost}}" name="m-host" />
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-xs-3 control-label">Puerto:</label>
+                <div class="col-xs-5">
+                    <input type="text" class="form-control" value="{{conf.matcherpuerto}}" name="m-puerto" />
+                </div>
+            </div>
+        </div>
+
+        <div class="tab-pane" id="alerta-tab">
+
+            <div class="form-group">
+                <label class="col-xs-3 control-label">Servidor de Correos:</label>
+                <div class="col-xs-5">
+                    <input type="text" class="form-control" value="{{conf.alertasservidor}}" name="a-mail" />
+                </div>
+            </div>
+
+
+            <div class="form-group">
+                <label class="col-xs-3 control-label">Puerto:</label>
+                <div class="col-xs-5">
+                    <input type="text" class="form-control" value="{{conf.alertaspuerto}}" name="a-puerto" />
+                </div>
+            </div>
+
+
+            <div class="form-group">
+                <label class="col-xs-3 control-label">Usuario:</label>
+                <div class="col-xs-5">
+                    <input type="text" class="form-control" value="{{conf.alertasusuario}}" name="a-usrn" />
+                </div>
+            </div>
+
+
+            <div class="form-group">
+                <label class="col-xs-3 control-label">Contraseña:</label>
+                <div class="col-xs-5">
+                    <input type="password" class="form-control" value="{{conf.alertaspass}}" name="a-contr" />
+                </div>
+            </div>
+        </div>
+
+        <div class="tab-pane" id="log-tab">
+            <div class="form-group">
+                <label class="col-xs-3 control-label">Tiempo de Retención de Logs:</label>
+                <div class="input-group col-xs-5">
+                    <input type="text" class="form-control" value="{{conf.tiemporetentrazas}}" name="t_ret_log" />
+                    <span class="input-group-addon" id="basic-addon2">Meses</span>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label class="col-xs-3 control-label">Directorio de Archive:</label>
+                <div class="col-xs-5">
+                    <input type="text" class="form-control" value="{{conf.dirarchive}}" name="arch" />
+                </div>
+            </div>
+
+        </div>
+
+        <div class="tab-pane" id="msgSWIFT-tab">
+            <div class="form-group">
+                <label class="col-xs-3 control-label">Directorio de Salida Mtn95:</label>
+                <div class="col-xs-5">
+                    <input type="text" class="form-control" value="{{conf.dirsalida95}}" name="dir_s_mt95" />
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-xs-3 control-label">Directorio de Carga Mtn96:</label>
+                <div class="col-xs-5">
+                    <input type="text" class="form-control" value="{{conf.dircarga96}}" name="dir_c_mt96" />
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-xs-3 control-label">Directorio de Salida Mtn99:</label>
+                <div class="col-xs-5">
+                    <input type="text" class="form-control" value="{{conf.dirsalida99}}" name="dir_s_mt99" />
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-xs-3 control-label">Directorio de Carga Mtn99:</label>
+                <div class="col-xs-5">
+                    <input type="text" class="form-control" value="{{conf.dircarga99}}" name="dir_c_mt99" />
+                </div>
+            </div>
+        </div>
+
+        <div class="tab-pane" id="contr-tab">
+            <div class="form-group">
+                <label class="col-xs-3 control-label">Tiempo de Caducidad:</label>
+                <div class="input-group col-xs-5">
+                    <input type="text" class="form-control" value="{{conf.caducidad}}" name="t_cad" />
+                    <span class="input-group-addon" id="basic-addon2">Días</span>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label class="col-xs-3 control-label">Longitud Mínima:</label>
+                <div class="col-xs-5">
+                    <input type="text" class="form-control" value="{{conf.longitud_minima}}" name="long_min" />
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-xs-3 control-label">Número de Intentos Fallidos:</label>
+                <div class="col-xs-5">
+                    <input type="text" class="form-control" value="{{conf.num_intentos}}" name="num_fall" />
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-xs-3 control-label">Recordar las Últimas:</label>
+                <div class="input-group col-xs-5">
+                    <input type="text" class="form-control" value="{{conf.num_passrecordar}}" name="rec_ult" />
+                    <span class="input-group-addon" id="basic-addon2">Contraseñas</span>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-xs-3 control-label">Caracteres Obligatorios:</label>
+                <div class="input-group col-xs-5">
+                    <div class="checkbox">
+                      <label class="col-xs-3 control-label"><input name="ce" type="checkbox" value="1">Caracteres Especiales</label>
+                    </div>
+                    </br>
+                    <div class="checkbox">
+                      <label class="col-xs-3 control-label"><input name="may" type="checkbox" value="2">Mayúsculas</label>
+                    </div>
+                    <div class="checkbox">
+                      <label class="col-xs-3 control-label"><input name="num" type="checkbox" value="3">Numéricos</label>
+                    </div>
+                    <div class="checkbox">
+                      <label class="col-xs-3 control-label"><input name="alf" type="checkbox" value="4">Alfabéticos</label>
+                    </div>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+
+    <div class="form-group" style="margin-top: 15px;">
+        <div class="col-xs-5 col-xs-offset-3">
+            <button type="submit" class="btn btn-success">Aceptar</button>
+            <p onclick="goBack()" class="btn btn-danger">Cancelar</p>
+        </div>
+    </div>
+</form>
+{% endblock %}
+
+{% block script %}
+<script>
+function goBack() {
+    var msg = "Seguro que desea cancelar?",
+        r = confirm(msg);
+        
+    if (r == true) {
+        window.history.back();
+    }
+};
+</script>
+{% endblock %}

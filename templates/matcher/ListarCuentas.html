@@ -1,0 +1,74 @@
+{% extends "matcher/base.html" %}
+
+{% block title %}Resumen de Cuentas{% endblock %}
+
+{% block content %}
+<div class="table-responsive">
+    <table class="table table-bordered table-striped tabla">
+        <thead>
+            <tr>
+                <th>Código cuenta</th>
+                <th>Banco</th>
+                <th>Última Conciliación</th>
+                <th>Último Historico</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for cuenta in cuentas %}
+            <tr>
+                <td><a href="/resumen/{{cuenta.idcuenta}}">{{ cuenta.codigo }}</a></td>
+                <td>{{ cuenta.banco_corresponsal_idbanco.codigo }}</td>
+                <td>{{ cuenta.ultimafechaconciliacion|date:"d/m/Y"|default:"Ningúna" }}</td>
+                <td>{{ cuenta.ultimafechahistorico|date:"d/m/Y"|default:"Ningúna" }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <hr/><br/>
+</div>
+
+<div class="paginate">
+    <nav>
+      <ul class="pagination">
+
+        {% if cuentas.has_previous %}
+        <li>
+            <a href="?page={{ cuentas.previous_page_number }}" aria-label="Previous">
+                <span aria-hidden="true">&laquo;</span>
+            </a>
+        </li>
+        {% endif %}
+
+        {% for i in range %}
+            {% if cuentas.number == i %}
+            <li class="active"><a href="?page={{i}}">{{forloop.counter}}</a></li>
+            {% else %}
+            <li><a href="?page={{i}}">{{forloop.counter}}</a></li>
+            {% endif %}
+        {% endfor %}
+
+        {% if cuentas.has_next %}
+        <li>
+          <a href="?page={{ cuentas.next_page_number }}" aria-label="Next">
+            <span aria-hidden="true">&raquo;</span>
+          </a>
+        </li>
+        {% endif %}
+      </ul>
+    </nav>
+</div>
+
+<div class="">
+    {% for cuenta in cuentas %}
+       <div class="list-group col-md-4">
+            <a href="/resumen/{{cuenta.idcuenta}}" class="{% cycle 'list-group-item active' 'list-group-item' %}">
+                <h4 class="list-group-item-heading">{{ cuenta.codigo }}</h4>
+                <p class="list-group-item-text"><strong>Banco:</strong> {{ cuenta.banco_corresponsal_idbanco.codigo }}</p>
+                <p class="list-group-item-text"><strong>Última Conciliación:</strong> {{ cuenta.ultimafechaconciliacion|date:"d/m/Y"|default:"Ningúna" }}</p>
+                <p class="list-group-item-text"><strong>Último Historico:</strong> {{ cuenta.ultimafechahistorico|date:"d/m/Y"|default:"Ningúna" }}</p>
+            </a>
+        </div>
+    {% endfor %}
+</div>
+{% endblock %}

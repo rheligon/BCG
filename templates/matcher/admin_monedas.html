@@ -1,0 +1,79 @@
+{% extends "matcher/base.html" %}
+
+{% block title %}Monedas disponibles{% endblock %}
+
+{% block content %}
+
+<div class="table-responsive col-md-8">
+    <table class="table table-bordered table-striped tabla">
+        <thead>
+            <tr>
+                <th>Código</th>
+                <th>Nombre</th>
+                <th>Cambio (USD)</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for moneda in monedas %}
+            <tr>
+                <td><a href="/admin/monedas/{{moneda.idmoneda}}" nombre = "{{ moneda.nombre }}" codigo = "{{ moneda.codigo }}" cambio="{{ moneda.cambio_usd }}" type="moneda"> {{ moneda.codigo }}</td>
+                <td>{{ moneda.nombre }}</td>
+                <td>{{ moneda.cambio_usd }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<div class="col-md-12 moneda-detalle" hidden>
+    <form class="form-vertical">
+    <fieldset>
+        <!-- Form Name -->
+        <legend>Detalles:</legend>
+
+        <div class="row clearfix">
+            <div class="form-group col-md-4 column">
+              <label class="control-label" for="Cod_moneda">Código:</label>  
+              <div>
+                <input id="Cod_moneda" name="Cod_moneda" type="text" class="form-control input-md">
+              </div>
+            </div>
+
+            <div class="form-group col-md-4 column">
+              <label class="control-label" for="Cod_moneda">Nombre:</label>  
+              <div>
+                <input id="Nom_moneda" name="Nom_moneda" type="text" class="form-control input-md">
+              </div>
+            </div>
+
+            <div class="form-group col-md-4 column">
+              <label class="control-label" for="Cam_moneda">Cambio (USD):</label>  
+              <div>
+                <input id="Cam_moneda" name="Cam_moneda" type="text" class="form-control input-md">
+              </div>
+            </div>
+        </div>
+    </fieldset>
+    </form>
+</div>
+
+{% endblock %}
+
+{% block script%}
+<script type="text/javascript">
+ $(document).ready(function () {
+    $('a').click(function(event) {
+      if ($(this).attr("type") == "moneda"){
+        event.preventDefault();
+        var a_nom = $(this).attr("nombre");
+        var a_cod = $(this).attr("codigo");
+        var a_cam = $(this).attr("cambio");
+        $("#Cod_moneda").val(a_cod);
+        $("#Nom_moneda").val(a_nom);
+        $("#Cam_moneda").val(a_cam);
+        $(".moneda-detalle").show();
+      }
+    }); 
+ });
+</script>
+{% endblock %}

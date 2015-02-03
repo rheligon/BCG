@@ -1,0 +1,137 @@
+{% extends "matcher/base.html" %}
+
+{% block content %}
+
+<style type="text/css">
+#ConfForm {
+    margin-top: 15px;
+}
+</style>
+
+
+<ul class="nav nav-tabs" id="emp-tab">
+    <li class="active"><a href="#datos-tab" data-toggle="tab">Datos Generales <i class="fa"></i></a></li>
+    <li><a href="#nomen-tab" data-toggle="tab">Nomenclatura <i class="fa"></i></a></li>
+    <li><a href="#conc-tab" data-toggle="tab">Conciliación <i class="fa"></i></a></li>
+</ul>
+
+<form id="ConfEmpForm" method="post" class="form-horizontal">
+    {% csrf_token %}
+    <div class="tab-content">
+        <div class="tab-pane active" id="datos-tab">
+            <div class="form-group">
+                <label class="col-xs-3 control-label">Nombre</label>
+                <div class="col-xs-5">
+                    <input type="text" class="form-control" name="nombre" />
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-xs-3 control-label">Grupo Financiero</label>
+                <div class="col-xs-5">
+                    <input type="text" class="form-control" name="g_fin" />
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-xs-3 control-label">Dirección</label>
+                <div class="col-xs-5">
+                    <input type="text" class="form-control" name="dir" />
+                </div>
+            </div>
+
+
+            <div class="form-group">
+                <label class="col-xs-3 control-label">Logo:</label>
+                <div class="col-xs-5">
+                    <input type="text" class="form-control" name="logo" />
+                </div>
+            </div>
+
+
+            <div class="form-group">
+                <label class="col-xs-3 control-label">BIC:</label>
+                <div class="col-xs-5">
+                    <input type="text" class="form-control" name="bic" />
+                </div>
+            </div>
+
+
+            <div class="form-group">
+                <label class="col-xs-3 control-label">País:</label>
+                <div class="col-xs-5">
+                    <input type="text" class="form-control" name="pais" />
+                </div>
+            </div>
+        </div>
+
+        <div class="tab-pane" id="nomen-tab">
+            <div class="form-group">
+                <label class="col-xs-3 control-label">Créditos Contabilidad:</label>
+                <div class="col-xs-5">
+                    <input type="text" class="form-control" name="c_conta" />
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label class="col-xs-3 control-label">Débitos Contabilidad:</label>
+                <div class="col-xs-5">
+                    <input type="text" class="form-control" name="d_conta" />
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-xs-3 control-label">Créditos Corresponsal:</label>
+                <div class="col-xs-5">
+                    <input type="text" class="form-control" name="c_corr" />
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-xs-3 control-label">Débitos Corresponsal:</label>
+                <div class="col-xs-5">
+                    <input type="text" class="form-control" name="d_corr" />
+                </div>
+            </div>
+        </div>
+
+        <div class="tab-pane" id="conc-tab">
+            <div class="form-group">
+                <label class="col-xs-3 control-label">Persona que Autoriza la Conciliación:</label>
+                <div class="col-xs-5">
+                    <input type="text" class="form-control" name="p_aut" />
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-xs-3 control-label">Persona que Firma la Conciliación:</label>
+                <div class="col-xs-5">
+                    <input type="text" class="form-control" name="p_fir" />
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-xs-3 control-label">Cargo:</label>
+                <div class="col-xs-5">
+                    <input type="text" class="form-control" name="cargo" />
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="form-group" style="margin-top: 15px;">
+        <div class="col-xs-5 col-xs-offset-3">
+            <button type="submit" class="btn btn-success">Aceptar</button>
+            <p onclick="goBack()" class="btn btn-danger">Cancelar</p>
+        </div>
+    </div>
+</form>
+{% endblock %}
+
+{% block script %}
+<script>
+function goBack() {
+    window.history.back()
+}
+</script>
+{% endblock %}

@@ -1,0 +1,61 @@
+{% extends "matcher/base.html" %}
+
+{% load staticfiles %}
+
+{% block content %}  
+  <link rel="stylesheet" type="text/css" href="{% static "css/login.css" %}">
+  
+    <div class="row">
+        <div class="col-md-12">
+            <div class="wrap">
+
+                <div class="col-md-6 col-md-push-3">
+                {% if message %}
+                  <p class="form-title error" style="color:white">{{message}}</p>
+                {%endif%}
+                </div>
+
+                <div class="col-md-12">
+                <p class="form-title"> Sign In</p>
+                </div>
+                <form class="login" action="" method="post">
+                {% csrf_token %}
+                <input type="text" id="username" name="username" value="" placeholder="Username" />
+                <input type="password" id="password" name="password" value="" placeholder="Password" />
+                <input type="submit" value="login" class="btn btn-success btn-sm" />
+
+                <div class="remember-forgot">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="checkbox">
+                                <label>
+                                    <input type="checkbox" />
+                                    Remember Me
+                                </label>
+                            </div>
+                        </div>
+                        <div class="col-md-6 forgot-pass-content">
+                            <a href="javascription:void(0)" class="forgot-pass">Forgot Password</a>
+                        </div>
+                    </div>
+                </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
+
+{% block script %}
+<script>
+ $(document).ready(function () {
+    $('.forgot-pass').click(function(event) {
+      $(".pr-wrap").toggleClass("show-pass-reset");
+    }); 
+    
+    $('.pass-reset-submit').click(function(event) {
+      $(".pr-wrap").removeClass("show-pass-reset");
+    }); 
+});
+ </script>
+{% endblock %}

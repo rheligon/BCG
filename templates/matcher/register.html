@@ -1,0 +1,46 @@
+{% extends "matcher/base.html" %}
+
+{% block title %}Create an account{% endblock %}
+
+{% block content %}
+  <h1>Create an account</h1>
+
+  <form action="" id="searchForm" method="post">
+      {% csrf_token %}
+      {{ form.as_p }}
+      <input type="submit" value="Create the account">
+  </form>
+
+  <div id="result">
+  </div>
+{% endblock %}
+
+{% block script%}
+<script>
+// Attach a submit handler to the form
+$( "#searchForm" ).submit(function( event ) {
+ 
+  // Stop form from submitting normally
+  event.preventDefault();
+ 
+  // Get some values from elements on the page:
+  var $form = $( this ),
+    usrn = $form.find( "input[name='username']" ).val(),
+    pwd1 = $form.find( "input[name='password1']" ).val(),
+    pwd2 = $form.find( "input[name='password2']" ).val(),
+    url = "/register/";
+    console.log(usrn);
+    console.log(pwd1);
+    console.log(pwd2);
+ 
+  // Send the data using post
+  var posting = $.post( url, {username: usrn, password1: pwd1, password2: pwd2} );
+ 
+  // Put the results in a div
+  posting.done(function( data ) {
+    var content = $( data ).find( "#content" );
+    $( "#result" ).empty().append( content );
+  });
+});
+</script>
+{% endblock %}
