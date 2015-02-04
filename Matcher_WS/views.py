@@ -18,15 +18,13 @@ def test(request):
     banco = get_object_or_404(BancoCorresponsal, idbanco=request.POST.get('bancoid'))
     return JsonResponse({'bancon': banco.nombre, 'bancoc': banco.codigo})
 
-def search_banc(request):
-    if request.method == 'POST':
-        search_text = request.POST['search_text']
-    else:
-        search_text = ''
+def addbank(request):
+    bancocod = request.POST.get('bancocod')
+    banconom = request.POST.get('banconom')
 
-    bancos = BancoCorresponsal.objects.filter(codigo__contains=search_text)
-
-    return render(request, 'matcher/admin_bancos.html', {'bancos':bancos})
+    banco, creado = BancoCorresponsal.objects.get_or_create(codigo=bancocod, nombre=banconom)
+    
+    return JsonResponse({'bancon': banco.nombre, 'bancoc': banco.codigo, 'creado': creado})
 
 @login_required(login_url='/login')
 def index(request):

@@ -5,7 +5,7 @@ from django.contrib.auth.views import login, logout
 
 urlpatterns = patterns('',
     url(r'^test/$', 'Matcher_WS.views.test', name='test'),              
-    url(r'^search/$', 'Matcher_WS.views.search_banc', name='test'),
+    url(r'^addbank/$', 'Matcher_WS.views.addbank', name='addbank'),
 
     # Admin:
     url(r'^admin/', include(admin.site.urls)),
@@ -28,6 +28,8 @@ urlpatterns = patterns('',
 
     # Administración Bancos, (falta moneda, etc.)
     url(r'^admin/bancos/$', 'Matcher_WS.views.admin_bancos', name='admin_bancos'),
+    url(r'^admin/monedas/$', 'Matcher_WS.views.admin_monedas', name='admin_monedas'),
+
     
 
     url(r'^$', 'Matcher_WS.views.index', name='index'),

@@ -4,14 +4,19 @@
 
 {% block title %}Bancos disponibles{% endblock %}
 
+{%block head%}
+<link rel="stylesheet" href="{% static 'css/dataTables.bootstrap.css' %}">
+{%endblock%}
+
 {% block content %}
 
 <div class="table-responsive col-md-8">
-    <table class="table table-bordered table-striped tabla">
+    <table id="table-bancos" class="table table-bordered table-striped tabla">
         <thead>
             <tr>
                 <th>Código</th>
                 <th>Banco Corresponsal</th>
+                <th>img</th>
             </tr>
         </thead>
         <tbody>
@@ -20,14 +25,18 @@
                 <td><a href="/admin/banco/{{banco.idbanco}}" nombre ="{{ banco.nombre }}" codigo = "{{ banco.codigo }}" type="banco"> {{ banco.codigo }}</a></td>
                 <td>{{ banco.nombre }}</td>
                 
-                <td><a href="/test/" class="banco-s" id="banco-show-{{banco.idbanco}}"><img src="{% static 'img/loader-medium.gif' %}"></a></td>
-            
+                <td><a href="/test/" class="banco-s" id="banco-show-{{banco.idbanco}}"><img src="{% static 'images/loader-medium.gif' %}"></a></td>
             </tr>
             {% endfor %}
         </tbody>
     </table>
 </div>
 
+<div class="col-md-1">
+    <button type="button" id="addButton" data-loading-text="Cargando..." class="btn btn-primary" autocomplete="off">
+        Agregar Banco
+    </button>
+</div>
 
 <div class="col-md-12 banco-detalle" hidden>
     <form class="form-vertical">
@@ -58,6 +67,21 @@
 
 {% block script%}
 
+<script src="{% static 'js/jquery.dataTables.min.js' %}" type="text/javascript"></script>
+<script src="{% static 'js/dataTables.bootstrap.js' %}" type="text/javascript"></script>
+
+<script type="text/javascript">
+$(document).ready( function () {
+    $('#table-bancos').DataTable( {
+        //poner if con idioma, el ingles es predeterminado
+        language: {
+            url: '/static/json/Spanish-tables.json'
+        }
+    } );
+} );
+</script>
+
+<!--script ajax detalles banco con imagen -->
 <script type="text/javascript">
 $(document).ready(function () {
 
@@ -83,11 +107,51 @@ $(document).ready(function () {
     }
 
     $('a.banco-s').click(function(){
-        //pq el id es banco-show-bancoID, se divide en 3, me interesa el id q es el 3ro
+        //pq el id es banco-show-bancoID, se divide en 3, me interesa el id que es el 3ro
         var bancoID = parseInt(this.id.split("-")[2]);
         return show_banc(bancoID);
     })
 });
+</script>
+
+<!--script de invento agregar banco -->
+<script>
+    var csrftoken = $.cookie('csrftoken');
+
+    $('#addButton').on('click', function () {
+        var $btn = $(this).button('loading')
+        
+        function add_banc(bancoCod, bancoNom){
+            $.ajax({
+                type:"POST",
+                url: "/addbank/",
+                data: {"bancocod": bancoCod, "banconom": bancoNom},
+                success: function(data){
+                    if (data.creado){
+                        $("#Cod_banco").val(data.bancoc);
+                        $("#Nom_banco").val(data.bancon);
+                        $(".banco-detalle").show();
+                    }else{
+                        
+                        var html = "<tr><td>"+ '<a href="/admin/banco/'+ "{{banco.idbanco}}" + '" nombre ="' + "{{ banco.nombre }}" + '"' + 'codigo = "' + "{{ banco.codigo }}" + '" type="banco">' + "{{ banco.codigo }}" + '</a></td><td>' + "{{ banco.nombre }}" + '</td>' + '<td><a href="/test/" class="banco-s" id="banco-show-' + "{{banco.idbanco}}" + '"><img src="' + "{% static 'images/loader-medium.gif'%}" + '">' + '</a></td></tr>' ;
+
+                        console.log(html);
+
+                        $("#Cod_banco").val("Ya Existe");
+                        $("#Nom_banco").val("Ya Existe");
+                        $(".banco-detalle").show();
+                    }
+                },
+                dataType:'json',
+                headers:{
+                    'X-CSRFToken':csrftoken
+                }
+            });
+            return false;
+        }
+        add_banc("epacod1","epanom1");
+        $btn.button('reset')
+    })
 </script>
 
 <script type="text/javascript">
