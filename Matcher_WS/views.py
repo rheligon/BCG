@@ -15,16 +15,24 @@ from django.views.decorators.csrf import csrf_exempt
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 def test(request):
-    banco = get_object_or_404(BancoCorresponsal, idbanco=request.POST.get('bancoid'))
-    return JsonResponse({'bancon': banco.nombre, 'bancoc': banco.codigo})
+    msg = "Banco eliminado exitosamente."
+    bancoid = request.POST.get('bancoid')
+    try: 
+        banco = get_object_or_404(BancoCorresponsal, idbanco=bancoid)
+    except Http404: 
+        msg = "No se encontro el banco especificado."
+
+    banco.delete()
+
+    return JsonResponse({'msg': msg, 'bancoid': bancoid})
 
 def addbank(request):
-    bancocod = request.POST.get('bancocod')
+    bancocod = request.POST.get('bancocod').upper()
     banconom = request.POST.get('banconom')
 
     banco, creado = BancoCorresponsal.objects.get_or_create(codigo=bancocod, nombre=banconom)
     
-    return JsonResponse({'bancon': banco.nombre, 'bancoc': banco.codigo, 'creado': creado})
+    return JsonResponse({'bancoid': banco.idbanco, 'bancon': banco.nombre, 'bancoc': banco.codigo, 'creado': creado})
 
 @login_required(login_url='/login')
 def index(request):
@@ -187,7 +195,7 @@ def admin_bancos(request):
     # Esto me crea un banco nuevo con el codigo y nombre especificado
     # bancoaux = BancoCorresponsal.objects.create(codigo="Chawau", nombre="Cha-Wa-U")
 
-    context = {'bancos': bancos}
+    context = {'bancos': bancos, 'idioma': "es"}
     template = "matcher/admin_bancos.html"
 
     return render(request, template, context)
