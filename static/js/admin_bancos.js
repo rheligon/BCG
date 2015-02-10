@@ -49,6 +49,7 @@ $('#addb-submit').on('click', function () {
                     var jRow = $("#tr-"+data.bancoid).append(td1,td2);
 
                     tabla.row.add(jRow).draw();
+                    alert("Banco agregado satisfactoriamente.");
 
                 }else{
                     alert("Ya ese Banco existe en la Base de Datos");
@@ -57,6 +58,12 @@ $('#addb-submit').on('click', function () {
                     $("#Id_banco").val(data.bancoid);
                     $(".banco-detalle").show();
                 }
+                
+                $btn.button('reset');
+            },
+            error: function(error){
+                alert("Hubo un error, por favor verificar que los campos esten correctos e intente nuevamente.")
+                $btn.button('reset');
             },
             dataType:'json',
             headers:{
@@ -68,15 +75,14 @@ $('#addb-submit').on('click', function () {
     var codb_aux = $('#add-codigo-banco').val();
     var nomb_aux = $('#add-nombre-banco').val();
     add_banc(codb_aux,nomb_aux);
-    $btn.button('reset')
     $('#add-banco-modal').reset();
 
 })
 
 //Eliminar Banco
 $('#delButton').on('click', function () {
-    var $btn = $(this).button('loading')
-    
+    var $btn;
+   
     function del_banc(bancoId){
         $.ajax({
             type:"POST",
@@ -89,6 +95,8 @@ $('#delButton').on('click', function () {
                     tabla.row($('#tr-'+ data.bancoid)).remove().draw();
                     $(".banco-detalle").hide();
                 }
+
+                $btn.button('reset')
             },
             dataType:'json',
             headers:{
@@ -99,10 +107,9 @@ $('#delButton').on('click', function () {
     }
 
     if (confirm("Seguro que desea eliminar el banco?")){
+        $btn = $(this).button('loading')
         del_banc($("#Id_banco").val());
     }
-    
-    $btn.button('reset')
 })
 
 //Mostrar Detalle al hacer click en código de banco
