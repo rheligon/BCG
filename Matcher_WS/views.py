@@ -26,14 +26,6 @@ def test(request):
 
     return JsonResponse({'msg': msg, 'bancoid': bancoid})
 
-def addbank(request):
-    bancocod = request.POST.get('bancocod').upper()
-    banconom = request.POST.get('banconom')
-
-    banco, creado = BancoCorresponsal.objects.get_or_create(codigo=bancocod, nombre=banconom)
-    
-    return JsonResponse({'bancoid': banco.idbanco, 'bancon': banco.nombre, 'bancoc': banco.codigo, 'creado': creado})
-
 @login_required(login_url='/login')
 def index(request):
     context = {}
@@ -185,21 +177,46 @@ def configuracion(request, tipo):
     
     #ninguna, deberia raise 404
     return render(request, "matcher/login.html", {})
-    
-    
 
 @login_required(login_url='/login')
 def admin_bancos(request):
-    bancos = BancoCorresponsal.objects.all()
 
-    # Esto me crea un banco nuevo con el codigo y nombre especificado
-    # bancoaux = BancoCorresponsal.objects.create(codigo="Chawau", nombre="Cha-Wa-U")
+    if request.method == 'POST':
+        actn = request.POST.get('action')
 
-    context = {'bancos': bancos, 'idioma': "es"}
-    template = "matcher/admin_bancos.html"
+        if actn == 'add':
+            bancocod = request.POST.get('bancocod').upper()
+            banconom = request.POST.get('banconom')
 
-    return render(request, template, context)
-    
+            banco, creado = BancoCorresponsal.objects.get_or_create(codigo=bancocod, nombre=banconom)
+        
+            return JsonResponse({'bancoid': banco.idbanco, 'bancon': banco.nombre, 'bancoc': banco.codigo, 'creado': creado})
+
+        elif actn == 'del':
+
+            msg = "Banco eliminado exitosamente."
+            bancoid = request.POST.get('bancoid')
+
+            try:
+                banco = BancoCorresponsal.objects.get(idbanco=bancoid)
+            except BancoCorresponsal.DoesNotExist:
+                msg = "No se encontro el banco especificado, asegurese de hacer click en el banco a eliminar."
+                return JsonResponse({'msg': msg, 'bancoid': bancoid, 'elim': False})
+
+            banco.delete()
+            return JsonResponse({'msg': msg, 'bancoid': bancoid, 'elim': True})
+
+    if request.method == 'GET':
+        bancos = BancoCorresponsal.objects.all()
+
+        # Esto me crea un banco nuevo con el codigo y nombre especificado
+        # bancoaux = BancoCorresponsal.objects.create(codigo="Chawau", nombre="Cha-Wa-U")
+
+        context = {'bancos': bancos, 'idioma': "es"}
+        template = "matcher/admin_bancos.html"
+
+        return render(request, template, context)
+
 @login_required(login_url='/login')
 def admin_monedas(request):
     template = "matcher/admin_monedas.html"

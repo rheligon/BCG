@@ -5,7 +5,6 @@ from django.contrib.auth.views import login, logout
 
 urlpatterns = patterns('',
     url(r'^test/$', 'Matcher_WS.views.test', name='test'),              
-    url(r'^addbank/$', 'Matcher_WS.views.addbank', name='addbank'),
 
     # Admin:
     url(r'^admin/', include(admin.site.urls)),
