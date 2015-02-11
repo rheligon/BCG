@@ -134,7 +134,7 @@ input {
 }
 
 .validation-form-container ul {
-    list-style: none;
+    /*list-style: none;*/
     margin: 0.2em 0;
     padding: 0;
 }
@@ -145,7 +145,7 @@ input {
 .validation-form-container .ui.loader {
     width: 32px;
     height: 32px;
-    background: url(../../img/loader-medium.gif) no-repeat;
+    background: url(loader-medium.gif) no-repeat;
     background-position: 48% 0px;
     display: none;
     position: absolute;
@@ -381,4 +381,37 @@ select.error {
 .validation-form-container .error .corner.label {
     border-color: #D95C5C;
     color: #FFFFFF;
+}
+
+.ui.form :first-child {
+margin-top: 0em;
+}
+form > .error-list {
+background-color: #fffafa;
+border: dashed 1px #d95c5c;
+padding: 1.5em;
+margin-bottom: 1em;
+}
+form .error-list {
+font-size: 0.875em;
+}
+
+/* Sin uso */
+.ui.red.labels .label, .ui.red.label {
+background-color: #D95C5C !important;
+border-color: #D95C5C !important;
+color: #FFFFFF !important;
+}
+
+form .ui.red.pointing.below.label {
+position: absolute;
+bottom: 35px;
+width: 50%;
+right: -23.25%;
+z-index: 11;
+text-transform: none;
+}
+.ui.pointing.below.label {
+margin-top: 0em;
+margin-bottom: 1em;
 }

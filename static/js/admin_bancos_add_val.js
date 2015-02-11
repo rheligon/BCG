@@ -1,83 +1,5 @@
-//idioma_tr es una variable global definida en la pagina
-var tabla = iniciar_tabla(idioma_tr);
-var csrftoken = $.cookie('csrftoken');
-
-
-function iniciar_tabla(idioma){
-
-    if (idioma==="es"){
-
-        return $('#table-bancos').DataTable({
-            //poner if con idioma, el ingles es predeterminado
-            language: {
-                url: '/static/json/Spanish-tables.json'
-            }
-        })
-
-    }else if (idioma==="en"){
-
-        return $('#table-bancos').DataTable({
-            language: {
-                url: '/static/json/English-tables.json'
-            }
-        })
-    };
-};
-
-//Eliminar Banco
-$('#delButton').on('click', function () {
-    var $btn;
-   
-    function del_banc(bancoId){
-        $.ajax({
-            type:"POST",
-            url: "/admin/bancos/",
-            data: {"bancoid": bancoId, "action": "del"},
-            success: function(data){
-                alert(data.msg);
-
-                if (data.elim){
-                    tabla.row($('#tr-'+ data.bancoid)).remove().draw();
-                    $(".banco-detalle").hide();
-                }
-
-                $btn.button('reset')
-            },
-            dataType:'json',
-            headers:{
-                'X-CSRFToken':csrftoken
-            }
-        });
-        return false;
-    }
-
-    if (confirm("Seguro que desea eliminar el banco?")){
-        $btn = $(this).button('loading')
-        del_banc($("#Id_banco").val());
-    }
-})
-
-//Mostrar Detalle al hacer click en código de banco
-$('#table-bancos').on('click','a[type=banco]', function(event) {
-    event.preventDefault();
-    var a_nom = $(this).attr("nombre");
-    var a_cod = $(this).attr("codigo");
-    var a_id = $(this).attr("id");
-    $("#Cod_banco").val(a_cod);
-    $("#Nom_banco").val(a_nom);
-    $("#Id_banco").val(a_id);
-    $(".banco-detalle").show();
-});
-
-//Resetear campos del formulario cuando se esconde
-$('.modal').on('hidden.bs.modal', function(){
-    $(this).find('form')[0].reset();
-});
-
-//Tooltip de ayuda en que debe ingresar en el campo
 $('#form-add-bank [data-toggle="popover"]').popover({trigger: 'focus', placement: 'top'});
-
-//Validar Campos del Formulario
+    
 $('#form-add-bank').validate({
     submit: {
         settings: {
@@ -95,6 +17,8 @@ $('#form-add-bank').validate({
 
             },
             onSubmit: function (node) {
+
+                console.log('#' + node.attr("id") + ' has a submit override.');
 
                 var $btn = $('#addButton').button('loading')
                 
