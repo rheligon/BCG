@@ -175,7 +175,7 @@ def configuracion(request, tipo):
         context = {}
         return render(request, template, context)
     
-    #ninguna, deberia raise 404
+    # ninguna, deberia raise 404
     return render(request, "matcher/login.html", {})
 
 @login_required(login_url='/login')
