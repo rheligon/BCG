@@ -110,7 +110,7 @@ $('#form-add-bank').validate({
                                 $("#Id_banco").val(data.bancoid);
                                 $(".banco-detalle").show();
 
-                                var td1 = '<td>'+ '<a href="/admin/banco/'+ data.bancoid + '" nombre ="' + data.bancon + '" id="'+ data.bancoid + '" codigo = "' + data.bancoc + '" type="banco">' + data.bancoc + '</a></td>';
+                                var td1 = '<td>'+ '<a href="/admin/bancos/'+ data.bancoid + '" nombre ="' + data.bancon + '" id="'+ data.bancoid + '" codigo = "' + data.bancoc + '" type="banco">' + data.bancoc + '</a></td>';
 
                                 var td2 = '<td>' + data.bancon + '</td>';
 

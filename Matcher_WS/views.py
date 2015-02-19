@@ -277,9 +277,6 @@ def admin_bancos(request):
     if request.method == 'GET':
         bancos = BancoCorresponsal.objects.all()
 
-        # Esto me crea un banco nuevo con el codigo y nombre especificado
-        # bancoaux = BancoCorresponsal.objects.create(codigo="Chawau", nombre="Cha-Wa-U")
-
         context = {'bancos': bancos, 'idioma': "es"}
         template = "matcher/admin_bancos.html"
 
@@ -287,8 +284,36 @@ def admin_bancos(request):
 
 @login_required(login_url='/login')
 def admin_monedas(request):
-    template = "matcher/admin_monedas.html"
-    monedas = Moneda.objects.all()
 
-    context = {'monedas': monedas}
-    return render(request, template, context)
+    if request.method == 'POST':
+        actn = request.POST.get('action')
+
+        if actn == 'add':
+            monedacod = request.POST.get('moncod').upper()
+            monedanom = request.POST.get('monnom')
+            monedacam = float(request.POST.get('moncam'))
+
+            moneda, creado = Moneda.objects.get_or_create(codigo=monedacod, defaults={'nombre':monedanom, 'cambio_usd':monedacam})
+
+            return JsonResponse({'monedaid': moneda.idmoneda, 'monnom': moneda.nombre, 'moncod': moneda.codigo, 'moncam':moneda.cambio_usd, 'creado': creado})
+
+        elif actn == 'del':
+
+            msg = "Moneda eliminada exitosamente."
+            monedaid = request.POST.get('monedaid')
+
+            try:
+                moneda = Moneda.objects.get(idmoneda=monedaid)
+            except Moneda.DoesNotExist:
+                msg = "No se encontro la moneda especificada, asegurese de hacer click en la moneda a eliminar previamente."
+                return JsonResponse({'msg': msg, 'monedaid': monedaid, 'elim': False})
+
+            moneda.delete()
+            return JsonResponse({'msg': msg, 'monedaid': monedaid, 'elim': True})
+
+    if request.method == 'GET':
+        template = "matcher/admin_monedas.html"
+        monedas = Moneda.objects.all()
+
+        context = {'monedas': monedas}
+        return render(request, template, context)
