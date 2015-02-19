@@ -27,6 +27,15 @@ $('#Cuenta-sel').change(function() {
 //Mostrar Detalle al hacer click en código de banco
 $('.table').on('click','a[type=edc]', function(event) {
     event.preventDefault();
+
+    //Estilo de elemento elegido
+    var a_id = $("#elim-data").attr("cod")
+    $('#'+a_id).parent().css("background-color","")
+    $('#'+a_id).css("color","")
+    $(this).parent().css("background-color","red")
+    $(this).css("color","white")
+
+    //asignacion de elemento a eliminar
     var a_modo = $(this).attr("modo");
     var a_cod = $(this).attr("id");
     $("#elim-data").attr("modo", a_modo);
@@ -258,7 +267,7 @@ function est_cuenta(cuentaId){
             }
         },
         error: function(error){
-            alert("Hubo un error buscando las cuentas especificadas")
+            alert("Hubo un error buscando la cuenta especificada")
         },
         dataType:'json',
         headers:{
@@ -279,13 +288,22 @@ $('#delButton').on('click', function () {
             data: {"cuentaid": -1, "edcid": edcId, "cop": cop},
             success: function(data){
                 alert(data.msg);
+                $btn.button('reset');
+                var origen, tabla;
 
-                if (data.elim){
-                    tabla.row($('#tr-'+ data.bancoid)).remove().draw();
-                    $(".banco-detalle").hide();
+                if (data.conocor === "L"){
+                    origen = "con"
+                    tabla = t_conta
+                }else if (data.conocor === "S"){
+                    origen = "cor"
+                    tabla = t_corr
                 }
 
-                $btn.button('reset')
+                if (data.elim){
+                    tabla.row($('#tr-'+ origen+'-'+data.codigo)).remove().draw();
+                }
+
+                
             },
             dataType:'json',
             headers:{
@@ -295,8 +313,8 @@ $('#delButton').on('click', function () {
         return false;
     }
 
-    if (confirm("Seguro que desea eliminar el banco?")){
+    if (confirm("Seguro que desea eliminar el estado de cuenta?")){
         $btn = $(this).button('loading')
-        del_edc($("#Id_banco").val());
+        del_edc($('#elim-data').attr('cod'),$('#elim-data').attr('modo') );
     }
 })

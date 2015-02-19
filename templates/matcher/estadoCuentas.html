@@ -11,7 +11,7 @@
 {%endblock%}
 
 {% block content %}
-<style> form {padding-bottom: 1%;} #table-div-conta, #table-div-corr {padding-top: 1%;} </style>
+<style> form {padding-bottom: 1%;} #table-div-conta, #table-div-corr {padding-top: 1%;}</style>
 
 <form class="form-inline">
 <fieldset>
@@ -205,11 +205,18 @@
 
 <!-- Tabla -->
 <legend>Estados de Cuenta</legend>
+
+<div ="row">
+  <div style="padding-bottom:1%;" class="col-md-3 pull-right">
+      <button type="button" id="delButton" data-loading-text="Cargando..." class="btn btn-danger" autocomplete="off">
+          Eliminar
+      </button>
+  </div>
 <ul class="nav nav-tabs" id="edo-cuenta-tab">
     <li class="active"><a href="#conta-tab" data-toggle="tab">Contabilidad <i class="fa"></i></a></li>
     <li><a href="#corr-tab" data-toggle="tab">Corresponsal <i class="fa"></i></a></li>
 </ul>
-
+</div>
 <div class="tab-content">
     <div class="tab-pane active" id="conta-tab">
         <div id="table-div-conta" class="table-responsive col-md-12">

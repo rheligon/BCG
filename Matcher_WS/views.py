@@ -130,27 +130,43 @@ def estado_cuentas(request):
 
         cuentaid = int(request.POST.get('cuentaid'))
 
+        if (cuentaid<0):
+            msg = 'Estado de cuenta eliminado exitosamente'
+            edcid = request.POST.get('edcid')
+            cop = request.POST.get('cop')
+
+            if (cop == 'carg'):
+                try:
+                    cargados = Cargado.objects.all()
+                    edc = [cargado.estado_cuenta_idedocuenta for cargado in cargados if cargado.estado_cuenta_idedocuenta.codigo == edcid]
+                    conocor = edc[0].origen
+                except Cargado.DoesNotExist:
+                    msg = "No se encontro el estado de cuenta especificado, asegurese de hacer click en el estado de cuenta a eliminar."
+                    return JsonResponse({'msg': msg, 'elim': False, 'conocor': conocor, 'codigo': edcid})
+
+                #edc[0].delete()
+                return JsonResponse({'msg': msg, 'elim': True, 'conocor': conocor, 'codigo': edcid})
+            elif (cop == 'proc'):
+                try:
+                    procesados = Procesado.objects.all()
+                    edc = [procesado.estado_cuenta_idedocuenta for procesado in procesados if procesado.estado_cuenta_idedocuenta.codigo == edcid]
+                    conocor = edc[0].origen
+                except Procesado.DoesNotExist:
+                    msg = "No se encontro el estado de cuenta especificado, asegurese de hacer click en el estado de cuenta a eliminar."
+                    return JsonResponse({'msg': msg, 'elim': False, 'conocor': conocor, 'codigo': edcid})
+
+                #edc[0].delete()
+                return JsonResponse({'msg': msg, 'elim': True, 'conocor': conocor, 'codigo': edcid})
+            
+            msg = "No se encontro el estado de cuenta especificado, asegurese de hacer click en el estado de cuenta a eliminar." 
+            return JsonResponse({'msg': msg, 'elim':False})
+
+
         cargados = Cargado.objects.all()
         procesados = Procesado.objects.all()
 
         cargado_l = [cargado.estado_cuenta_idedocuenta for cargado in cargados if cargado.estado_cuenta_idedocuenta.cuenta_idcuenta.idcuenta == cuentaid]
         procesado_l = [procesado.estado_cuenta_idedocuenta for procesado in procesados if procesado.estado_cuenta_idedocuenta.cuenta_idcuenta.idcuenta == cuentaid]
-
-        # conta_c = [conta for conta in cargado_l if conta.origen == "L"]
-
-        # corr_c = [corr for corr in cargado_l if corr.origen == "S"]
-
-        # conta_p = [conta for conta in procesado_l if conta.origen == "L"]
-
-        # corr_p = [corr for corr in procesado_l if corr.origen == "S"]
-
-        # # Incluir los cargados y procesados de cada origen en una sola lista c/u
-        # conta_c.extend(conta_p)
-        # corr_c.extend(corr_p)
-
-        # conta_json = serializers.serialize('json', conta_c)
-        # corr_json = serializers.serialize('json', corr_c)
-        # return JsonResponse(conta_json, safe=False)
 
         res_json = '[' + serializers.serialize('json', cargado_l) + ',' 
         res_json += serializers.serialize('json', procesado_l)+']'
