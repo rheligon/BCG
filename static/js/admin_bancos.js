@@ -77,7 +77,7 @@ $('.modal').on('hidden.bs.modal', function(){
 //Tooltip de ayuda en que debe ingresar en el campo
 $('#form-add-bank [data-toggle="popover"]').popover({trigger: 'focus', placement: 'top'});
 
-//Validar Campos del Formulario
+//Validar Campos del Formulario y agregar banco
 $('#form-add-bank').validate({
     submit: {
         settings: {

@@ -20,6 +20,7 @@ urlpatterns = patterns('',
 
     # Resumen Cuentas
     url(r'^cuentas/$', 'Matcher_WS.views.listar_cuentas', name='listar_cuentas'),
+    url(r'^cuentas/estado$', 'Matcher_WS.views.estado_cuentas', name='estado_cuenta'),
    	url(r'^resumen/(?P<cuenta_id>\d+)$', 'Matcher_WS.views.resumen_cuenta', name='resumen_cuenta'),
 
     # Configuración

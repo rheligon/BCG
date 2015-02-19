@@ -1,3 +1,4 @@
+from django.core import serializers
 from django.shortcuts import render, get_object_or_404
 from django.contrib import auth
 from django.http import HttpResponseRedirect, HttpResponse, JsonResponse
@@ -118,7 +119,58 @@ def listar_cuentas(request):
         cuentas = paginator.page(paginator.num_pages)
 
     context = {'cuentas': cuentas, 'range': paginator.page_range}
-    template = "matcher/ListarCuentas.html"
+    template = "matcher/listarCuentas.html"
+
+    return render(request, template, context)
+
+@login_required(login_url='/login')
+def estado_cuentas(request):
+
+    if request.method == 'POST':
+
+        cuentaid = int(request.POST.get('cuentaid'))
+
+        cargados = Cargado.objects.all()
+        procesados = Procesado.objects.all()
+
+        cargado_l = [cargado.estado_cuenta_idedocuenta for cargado in cargados if cargado.estado_cuenta_idedocuenta.cuenta_idcuenta.idcuenta == cuentaid]
+        procesado_l = [procesado.estado_cuenta_idedocuenta for procesado in procesados if procesado.estado_cuenta_idedocuenta.cuenta_idcuenta.idcuenta == cuentaid]
+
+        # conta_c = [conta for conta in cargado_l if conta.origen == "L"]
+
+        # corr_c = [corr for corr in cargado_l if corr.origen == "S"]
+
+        # conta_p = [conta for conta in procesado_l if conta.origen == "L"]
+
+        # corr_p = [corr for corr in procesado_l if corr.origen == "S"]
+
+        # # Incluir los cargados y procesados de cada origen en una sola lista c/u
+        # conta_c.extend(conta_p)
+        # corr_c.extend(corr_p)
+
+        # conta_json = serializers.serialize('json', conta_c)
+        # corr_json = serializers.serialize('json', corr_c)
+        # return JsonResponse(conta_json, safe=False)
+
+        res_json = '[' + serializers.serialize('json', cargado_l) + ',' 
+        res_json += serializers.serialize('json', procesado_l)+']'
+
+        return JsonResponse(res_json, safe=False)
+        
+
+    cuentas = Cuenta.objects.all()
+
+    # Filtrar a las cuentas del usuario que esta
+    # uso id=1 pq es el unico que tiene en la base de datos
+    
+    # uc = UsuarioCuenta.objects.filter(usuario_idusuario=1)
+    # l_cuentas = []
+    # for cuenta in uc:
+    #     l_cuentas.append(cuenta.cuenta_idcuenta)
+    # #cuentas_list = l_cuentas
+
+    context = {'cuentas': cuentas}
+    template = "matcher/estadoCuentas.html"
 
     return render(request, template, context)
 
