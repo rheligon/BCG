@@ -88,6 +88,7 @@ function iniciar_tabla(idioma,origen){
     };
 };
 
+//Rellenar pagina de acuerdo a la seleccion
 function est_cuenta(cuentaId){
     $.ajax({
         type:"POST",
@@ -277,7 +278,7 @@ function est_cuenta(cuentaId){
     return false;
 }
 
-//Eliminar Banco
+//Eliminar Estado de Cuenta
 $('#delButton').on('click', function () {
     var $btn;
    
@@ -313,8 +314,9 @@ $('#delButton').on('click', function () {
         return false;
     }
 
-    if (confirm("Seguro que desea eliminar el estado de cuenta?")){
+    var codEdc = $('#elim-data').attr('cod')
+    if (confirm("Seguro que desea eliminar el estado de cuenta "+codEdc+" ?")){
         $btn = $(this).button('loading')
-        del_edc($('#elim-data').attr('cod'),$('#elim-data').attr('modo') );
+        del_edc(codEdc,$('#elim-data').attr('modo') );
     }
 })

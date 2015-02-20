@@ -66,11 +66,66 @@ $('#delButton').on('click', function () {
         return false;
     }
 
-    if (confirm("Seguro que desea eliminar la moneda?")){
+    var codM = $('#Cod_moneda').val();
+    if (confirm("Seguro que desea eliminar la moneda "+codM+" ?")){
         $btn = $(this).button('loading')
         del_mon($("#Id_moneda").val());
     }
 })
+
+//Modificar Moneda
+$('#updButton').on('click', function () {
+    var $btn;
+   
+    function upd_mon(monedaId, monedaNom, monedaCod, monedaCam){
+        $.ajax({
+            type:"POST",
+            url: "/admin/monedas/",
+            data: {"monedaid": monedaId, "monedanom":monedaNom, "monedacod":monedaCod, "monedacam":monedaCam, "action": "upd"},
+            success: function(data){
+                if (data.modif){
+                    tabla.row($('#tr-'+ data.monedaid)).remove().draw();
+
+                    var td1 = '<td>'+ '<a href="/admin/monedas/'+ data.monedaid + '" nombre ="' + data.monnom + '" id="'+ data.monedaid + '" codigo = "' + data.moncod + '" cambio = "' + data.moncam + '" type="moneda">' + data.moncod + '</a></td>';
+
+                    var td2 = '<td>' + data.monnom + '</td>';
+
+                    var td3 = '<td>' + data.moncam + '</td>';
+
+
+                    $('#table-mon> tbody').append('<tr id ="tr-'+data.monedaid+'"></tr>');
+
+                    var jRow = $("#tr-"+data.monedaid).append(td1,td2,td3);
+
+                    tabla.row.add(jRow).draw();
+                }
+                alert(data.msg);
+                $btn.button('reset')
+            },
+            dataType:'json',
+            headers:{
+                'X-CSRFToken':csrftoken
+            }
+        });
+        return false;
+    }
+
+    var codM = $('#Cod_moneda').val();
+    var nomM = $('#Nom_moneda').val();
+    var camM = $('#Cam_moneda').val();
+
+    if (confirm("Seguro que desea modificar la moneda "+ codM +" ?")){
+        $btn = $(this).button('loading')
+        if (codM.length>3 || nomM.length>10){
+            alert("Recuerde el codigo y el nombre deben tener máximo 3 y 10 caracteres respectivamente");
+            $btn.button('reset')
+        }else{
+            upd_mon($("#Id_moneda").val(), nomM, codM, camM);
+        }
+    }
+})
+
+
 
 
 //Resetear campos del formulario cuando se esconde

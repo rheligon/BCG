@@ -51,11 +51,56 @@ $('#delButton').on('click', function () {
         return false;
     }
 
-    if (confirm("Seguro que desea eliminar el banco?")){
+    var codB = $('#Cod_banco').val();
+    if (confirm("Seguro que desea eliminar el banco "+ codB +" ?")){
         $btn = $(this).button('loading')
         del_banc($("#Id_banco").val());
     }
 })
+
+//Modificar Banco
+$('#updButton').on('click', function () {
+    var $btn;
+   
+    function upd_banc(bancoId, bancoNom, bancoCod){
+        $.ajax({
+            type:"POST",
+            url: "/admin/bancos/",
+            data: {"bancoid": bancoId, "banconom":bancoNom, "bancocod":bancoCod, "action": "upd"},
+            success: function(data){
+                if (data.modif){
+                    tabla.row($('#tr-'+ data.bancoid)).remove().draw();
+
+                    var td1 = '<td>'+ '<a href="/admin/bancos/'+ data.bancoid + '" nombre ="' + data.bancon + '" id="'+ data.bancoid + '" codigo = "' + data.bancoc + '" type="banco">' + data.bancoc + '</a></td>';
+
+                    var td2 = '<td>' + data.bancon + '</td>';
+
+                    $('#table-bancos > tbody').append('<tr id ="tr-'+data.bancoid+'"></tr>');
+
+                    var jRow = $("#tr-"+data.bancoid).append(td1,td2);
+
+                    tabla.row.add(jRow).draw();
+                }
+                alert(data.msg);
+                $btn.button('reset')
+            },
+            dataType:'json',
+            headers:{
+                'X-CSRFToken':csrftoken
+            }
+        });
+        return false;
+    }
+
+    var codB = $('#Cod_banco').val();
+    var nomB = $('#Nom_banco').val();
+
+    if (confirm("Seguro que desea modificar el banco "+ codB +" ?")){
+        $btn = $(this).button('loading')
+        upd_banc($("#Id_banco").val(), nomB, codB);
+    }
+})
+
 
 //Mostrar Detalle al hacer click en código de banco
 $('#table-bancos').on('click','a[type=banco]', function(event) {

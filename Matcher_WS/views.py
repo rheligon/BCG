@@ -260,6 +260,23 @@ def admin_bancos(request):
         
             return JsonResponse({'bancoid': banco.idbanco, 'bancon': banco.nombre, 'bancoc': banco.codigo, 'creado': creado})
 
+        elif actn == 'upd':
+            bancoid = request.POST.get('bancoid')
+            bancocod = request.POST.get('bancocod').upper()
+            banconom = request.POST.get('banconom')
+            msg = "Banco modificado exitosamente."
+
+            try:
+                banco = BancoCorresponsal.objects.get(idbanco=bancoid)
+            except BancoCorresponsal.DoesNotExist:
+                msg = "No se encontro el banco especificado, asegurese de hacer click en el banco a modificar."
+                return JsonResponse({'msg': msg, 'bancoid': bancoid, 'modif': False})
+
+            banco.codigo = bancocod
+            banco.nombre = banconom
+            banco.save()
+            return JsonResponse({'msg': msg, 'bancoid': bancoid, 'bancon':banconom , 'bancoc':bancocod,'modif': True})
+
         elif actn == 'del':
 
             msg = "Banco eliminado exitosamente."
@@ -296,6 +313,25 @@ def admin_monedas(request):
             moneda, creado = Moneda.objects.get_or_create(codigo=monedacod, defaults={'nombre':monedanom, 'cambio_usd':monedacam})
 
             return JsonResponse({'monedaid': moneda.idmoneda, 'monnom': moneda.nombre, 'moncod': moneda.codigo, 'moncam':moneda.cambio_usd, 'creado': creado})
+        
+        elif actn == 'upd':
+            monedaid = request.POST.get('monedaid')
+            monedacod = request.POST.get('monedacod').upper()
+            monedanom = request.POST.get('monedanom')
+            monedacam = request.POST.get('monedacam')
+            msg = "Moneda modificado exitosamente."
+
+            try:
+                moneda = Moneda.objects.get(idmoneda=monedaid)
+            except Moneda.DoesNotExist:
+                msg = "No se encontro la moneda especificada, asegurese de hacer click en la moneda a modificar."
+                return JsonResponse({'msg': msg, 'monedaid': monedaid, 'modif': False})
+
+            moneda.codigo = monedacod
+            moneda.nombre = monedanom
+            moneda.cambio_usd = monedacam
+            moneda.save()
+            return JsonResponse({'msg': msg, 'monedaid': monedaid, 'monnom':monedanom , 'moncod':monedacod, 'moncam':monedacam,'modif': True})
 
         elif actn == 'del':
 
