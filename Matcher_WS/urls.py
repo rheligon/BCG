@@ -20,15 +20,21 @@ urlpatterns = patterns('',
 
     # Resumen Cuentas
     url(r'^cuentas/$', 'Matcher_WS.views.listar_cuentas', name='listar_cuentas'),
-    url(r'^cuentas/estado$', 'Matcher_WS.views.estado_cuentas', name='estado_cuenta'),
    	url(r'^resumen/(?P<cuenta_id>\d+)$', 'Matcher_WS.views.resumen_cuenta', name='resumen_cuenta'),
 
-    # Configuración
+    # Estado Cuenta
+    url(r'^cuentas/estado$', 'Matcher_WS.views.estado_cuentas', name='estado_cuenta'),
+    
+    # Mensajes SWIFT (MT96-MT99)
+    url(r'^MT/(?P<tipo>\w+)$', 'Matcher_WS.views.mensajesSWIFT', name='mensajesSWIFT'),
+    
+    # Configuración (Sistema-Archivo)
     url(r'^conf/(?P<tipo>\w+)$', 'Matcher_WS.views.configuracion', name='configuracion'),
 
-    # Administración Bancos, (falta moneda, etc.)
+    # Administración
     url(r'^admin/bancos/$', 'Matcher_WS.views.admin_bancos', name='admin_bancos'),
     url(r'^admin/monedas/$', 'Matcher_WS.views.admin_monedas', name='admin_monedas'),
+    url(r'^admin/criterios_reglas/$', 'Matcher_WS.views.admin_crit_reglas', name='admin_crit_reglas'),
 
     
 

@@ -144,7 +144,11 @@ def estado_cuentas(request):
                     msg = "No se encontro el estado de cuenta especificado, asegurese de hacer click en el estado de cuenta a eliminar."
                     return JsonResponse({'msg': msg, 'elim': False, 'conocor': conocor, 'codigo': edcid})
 
-                #edc[0].delete()
+                cargado = Cargado.objects.get(estado_cuenta_idedocuenta=edc[0].idedocuenta)
+                
+                # Estas dos lineas no han sido probadas
+                cargado.delete()
+                edc[0].delete()
                 return JsonResponse({'msg': msg, 'elim': True, 'conocor': conocor, 'codigo': edcid})
             elif (cop == 'proc'):
                 try:
@@ -154,8 +158,12 @@ def estado_cuentas(request):
                 except Procesado.DoesNotExist:
                     msg = "No se encontro el estado de cuenta especificado, asegurese de hacer click en el estado de cuenta a eliminar."
                     return JsonResponse({'msg': msg, 'elim': False, 'conocor': conocor, 'codigo': edcid})
-
-                #edc[0].delete()
+                
+                procesado = Procesado.objects.get(estado_cuenta_idedocuenta=edc[0].idedocuenta)
+                
+                #Estas dos lineas no han sido probadas
+                procesado.delete()
+                edc[0].delete()
                 return JsonResponse({'msg': msg, 'elim': True, 'conocor': conocor, 'codigo': edcid})
             
             msg = "No se encontro el estado de cuenta especificado, asegurese de hacer click en el estado de cuenta a eliminar." 
@@ -173,22 +181,22 @@ def estado_cuentas(request):
 
         return JsonResponse(res_json, safe=False)
         
+    if request.method == 'GET':
+        cuentas = Cuenta.objects.all()
 
-    cuentas = Cuenta.objects.all()
+        # Filtrar a las cuentas del usuario que esta
+        # uso id=1 pq es el unico que tiene en la base de datos
+        
+        # uc = UsuarioCuenta.objects.filter(usuario_idusuario=1)
+        # l_cuentas = []
+        # for cuenta in uc:
+        #     l_cuentas.append(cuenta.cuenta_idcuenta)
+        # #cuentas_list = l_cuentas
 
-    # Filtrar a las cuentas del usuario que esta
-    # uso id=1 pq es el unico que tiene en la base de datos
-    
-    # uc = UsuarioCuenta.objects.filter(usuario_idusuario=1)
-    # l_cuentas = []
-    # for cuenta in uc:
-    #     l_cuentas.append(cuenta.cuenta_idcuenta)
-    # #cuentas_list = l_cuentas
+        context = {'cuentas': cuentas}
+        template = "matcher/estadoCuentas.html"
 
-    context = {'cuentas': cuentas}
-    template = "matcher/estadoCuentas.html"
-
-    return render(request, template, context)
+        return render(request, template, context)
 
 @login_required(login_url='/login')
 def resumen_cuenta(request, cuenta_id):
@@ -352,4 +360,127 @@ def admin_monedas(request):
         monedas = Moneda.objects.all()
 
         context = {'monedas': monedas}
+        return render(request, template, context)
+
+def mensajesSWIFT(request):
+    template = "matcher/admin_criteriosyreglas.html"
+    context = {}
+    return render(request, template, context)
+
+@login_required(login_url='/login')
+def admin_crit_reglas(request):
+
+    if request.method == 'POST':
+        actn = request.POST.get('action')
+
+        if actn == 'add':
+            
+            criterionom = request.POST.get('criterionom')
+            criteriomon1 = request.POST.get('criteriomon1')
+            criteriomon2 = request.POST.get('criteriomon2')
+            criteriomon3 = request.POST.get('criteriomon3')
+            criterioF1 = request.POST.get('criterioF1')
+            criterioF2 = request.POST.get('criterioF2')
+            criterioF3 = request.POST.get('criterioF3')
+            criterioF4 = request.POST.get('criterioF4')
+            criterioF5 = request.POST.get('criterioF5')
+
+            criterio, creado = CriteriosMatch.objects.get_or_create(nombre=criterionom, defaults={'num_entradas': 0})
+
+            # Es necesario ya que si se hace save() con campos vacios="" da error la funcion
+            if creado:
+                if criteriomon1:
+                    criterio.monto1 = criteriomon1
+                else:
+                    criteriomon1 = "None"
+                if criteriomon2:
+                    criterio.monto2 = criteriomon2
+                else:
+                    criteriomon2 = "None"
+                if criteriomon3:
+                    criterio.monto3 = criteriomon3
+                else:
+                    criteriomon3 = "None"
+                if criterioF1:
+                    criterio.fecha1 = criterioF1
+                else:
+                    criterioF1 = "None"
+                if criterioF2:
+                    criterio.fecha2 = criterioF2
+                else:
+                    criterioF2 = "None"
+                if criterioF3:
+                    criterio.fecha3 = criterioF3
+                else:
+                    criterioF3 = "None"
+                if criterioF4:
+                    criterio.fecha4 = criterioF4
+                else:
+                    criterioF4 = "None"
+                if criterioF5:
+                    criterio.fecha5 = criterioF5
+                else:
+                    criterioF5 = "None"
+
+                criterio.save()
+
+            return JsonResponse({'criterioid':criterio.idcriterio,'criterionom':criterionom, 'criteriomon1':criteriomon1,'criteriomon2':criteriomon2,'criteriomon3':criteriomon3,'criterioF1':criterioF1,'criterioF2':criterioF2,'criterioF3':criterioF3,'criterioF4':criterioF4,'criterioF5':criterioF5, 'creado': creado})
+                
+        if actn == 'del':
+            msg = "Criterio eliminado exitosamente."
+            criterioid = request.POST.get('criterioid')
+
+            try:
+                criterio = CriteriosMatch.objects.get(idcriterio=criterioid)
+            except CriteriosMatch.DoesNotExist:
+                msg = "No se encontro el criterio especificado, asegurese de hacer click en el criterio a eliminar previamente."
+                return JsonResponse({'msg': msg, 'criterioid': criterioid, 'elim': False})
+
+            criterio.delete()
+            return JsonResponse({'msg': msg, 'criterioid': criterioid, 'elim': True})
+
+        if actn == 'upd':
+            criterioid = request.POST.get('criterioid')
+            criterionom = request.POST.get('criterionom')
+            criteriomon1 = request.POST.get('criteriomon1')
+            criteriomon2 = request.POST.get('criteriomon2')
+            criteriomon3 = request.POST.get('criteriomon3')
+            criterioF1 = request.POST.get('criterioF1')
+            criterioF2 = request.POST.get('criterioF2')
+            criterioF3 = request.POST.get('criterioF3')
+            criterioF4 = request.POST.get('criterioF4')
+            criterioF5 = request.POST.get('criterioF5')
+            msg = "Criterio modificado exitosamente."
+
+            try:
+               criterio = CriteriosMatch.objects.get(idcriterio=criterioid)
+            except CriteriosMatch.DoesNotExist:
+                msg = "No se encontro el criterio especificado, asegurese de hacer click en el criterio a modificar."
+                return JsonResponse({'msg': msg, 'criterioid': criterioid, 'modif': False})
+
+            if criteriomon1 == "":
+                criterio.monto1 = None
+            if criteriomon2 == "":
+                criterio.monto2 = None
+            if criteriomon3 == "":
+                criterio.monto3 = None
+            if criterioF1 == "":
+                criterio.fecha1 = None
+            if criterioF2 == "":
+                criterio.fecha2 = None
+            if criterioF3 == "":
+                criterio.fecha3 = None
+            if criterioF4 == "":
+                criterio.fecha4 = None
+            if criterioF5 == "":
+                criterio.fecha5 = None
+
+            criterio.save()
+            return JsonResponse({'criterioid':criterio.idcriterio,'criterionom':criterionom, 'criteriomon1':criterio.monto1,'criteriomon2':criterio.monto2,'criteriomon3':criterio.monto3,'criterioF1':criterio.fecha1,'criterioF2':criterio.fecha2,'criterioF3':criterio.fecha3,'criterioF4':criterio.fecha4,'criterioF5':criterio.fecha5,'msg':msg, 'modif': True})
+             
+
+    if request.method == 'GET':
+        template = "matcher/admin_criterios_reglas.html"
+        criterios = CriteriosMatch.objects.all()
+        context = {'criterios':criterios}
         return render(request, template, context)
