@@ -40,7 +40,7 @@ $('#table-mon').on('click','a[type=moneda]', function(event) {
     $(".moneda-detalle").show();
 
     //Estilo de elemento elegido
-    $('#'+a_idaux).parent().parent().css("background-color","")
+    $('#'+a_idaux).parent().css("background-color","")
     $('#'+a_idaux).css("color","")
     $(this).parent().css("background-color","#337ab7")
     $(this).css("color","white")
