@@ -34,11 +34,19 @@ $('#delButton').on('click', function () {
             url: "/admin/bancos/",
             data: {"bancoid": bancoId, "action": "del"},
             success: function(data){
-                alert(data.msg);
 
                 if (data.elim){
                     tabla.row($('#tr-'+ data.bancoid)).remove().draw();
                     $(".banco-detalle").hide();
+                    swal({   title: "",
+                             text: data.msg,
+                             type: "success",
+                             confirmButtonText: "Ok" });
+                }else{
+                    swal({   title: "",
+                             text: data.msg,
+                             type: "error",
+                             confirmButtonText: "Ok" });
                 }
 
                 $btn.button('reset')
@@ -52,10 +60,17 @@ $('#delButton').on('click', function () {
     }
 
     var codB = $('#Cod_banco').val();
-    if (confirm("Seguro que desea eliminar el banco "+ codB +" ?")){
-        $btn = $(this).button('loading')
-        del_banc($("#Id_banco").val());
-    }
+    swal({   title: "",
+         text: "Seguro que desea eliminar el banco "+ codB +" ?",
+         type: "warning",
+         showCancelButton: true,
+         confirmButtonText: "Ok",
+         closeOnConfirm: false},
+         function(){
+            $btn = $(this).button('loading')
+            del_banc($("#Id_banco").val());
+         }
+         );
 })
 
 //Modificar Banco
@@ -80,8 +95,17 @@ $('#updButton').on('click', function () {
                     var jRow = $("#tr-"+data.bancoid).append(td1,td2);
 
                     tabla.row.add(jRow).draw();
+                    swal({   title: "",
+                             text: data.msg,
+                             type: "success",
+                             confirmButtonText: "Ok" });
+                }else{
+                    swal({   title: "Ups!",
+                             text: data.msg,
+                             type: "error",
+                             confirmButtonText: "Ok" });
                 }
-                alert(data.msg);
+                
                 $btn.button('reset')
             },
             dataType:'json',
@@ -95,16 +119,27 @@ $('#updButton').on('click', function () {
     var codB = $('#Cod_banco').val();
     var nomB = $('#Nom_banco').val();
 
-    if (confirm("Seguro que desea modificar el banco "+ codB +" ?")){
-        $btn = $(this).button('loading')
-        upd_banc($("#Id_banco").val(), nomB, codB);
-    }
+    swal({   title: "",
+             text: "Seguro que desea modificar el banco "+ codB +" ?",
+             type: "warning",
+             showCancelButton: true,
+             confirmButtonText: "Ok",
+             closeOnConfirm: false},
+             function(){
+                $btn = $(this).button('loading')
+                upd_banc($("#Id_banco").val(), nomB, codB);
+             }
+             );
+
+
+
 })
 
 
 //Mostrar Detalle al hacer click en código de banco
 $('#table-bancos').on('click','a[type=banco]', function(event) {
     event.preventDefault();
+    var a_idaux = $("#Id_banco").val();
     var a_nom = $(this).attr("nombre");
     var a_cod = $(this).attr("codigo");
     var a_id = $(this).attr("id");
@@ -112,6 +147,12 @@ $('#table-bancos').on('click','a[type=banco]', function(event) {
     $("#Nom_banco").val(a_nom);
     $("#Id_banco").val(a_id);
     $(".banco-detalle").show();
+
+    //Estilo de elemento elegido
+    $('#'+a_idaux).parent().css("background-color","")
+    $('#'+a_idaux).css("color","")
+    $(this).parent().css("background-color","#337ab7")
+    $(this).css("color","white")
 });
 
 //Resetear campos del formulario cuando se esconde
@@ -164,10 +205,16 @@ $('#form-add-bank').validate({
                                 var jRow = $("#tr-"+data.bancoid).append(td1,td2);
 
                                 tabla.row.add(jRow).draw();
-                                alert("Banco agregado satisfactoriamente.");
+                                swal({   title: "Exito!",
+                                         text: "Banco agregado satisfactoriamente.",
+                                         type: "success",
+                                         confirmButtonText: "Ok" });
 
                             }else{
-                                alert("Ya ese Banco existe en la Base de Datos");
+                                swal({   title: "",
+                                         text: "Ya ese Banco existe en la Base de Datos.",
+                                         type: "warning",
+                                         confirmButtonText: "Ok" });
                                 $("#Cod_banco").val(data.bancoc);
                                 $("#Nom_banco").val(data.bancon);
                                 $("#Id_banco").val(data.bancoid);
@@ -177,7 +224,10 @@ $('#form-add-bank').validate({
                             $btn.button('reset');
                         },
                         error: function(error){
-                            alert("Hubo un error, por favor verificar que los campos esten correctos e intente nuevamente.")
+                            swal({   title: "Ups!",
+                                         text: "Hubo un error, por favor verificar que los campos esten correctos e intente nuevamente.",
+                                         type: "error",
+                                         confirmButtonText: "Ok" });
                             $btn.button('reset');
                         },
                         dataType:'json',

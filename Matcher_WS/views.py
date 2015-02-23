@@ -146,7 +146,6 @@ def estado_cuentas(request):
 
                 cargado = Cargado.objects.get(estado_cuenta_idedocuenta=edc[0].idedocuenta)
                 
-                # Estas dos lineas no han sido probadas
                 cargado.delete()
                 edc[0].delete()
                 return JsonResponse({'msg': msg, 'elim': True, 'conocor': conocor, 'codigo': edcid})
@@ -161,7 +160,6 @@ def estado_cuentas(request):
                 
                 procesado = Procesado.objects.get(estado_cuenta_idedocuenta=edc[0].idedocuenta)
                 
-                #Estas dos lineas no han sido probadas
                 procesado.delete()
                 edc[0].delete()
                 return JsonResponse({'msg': msg, 'elim': True, 'conocor': conocor, 'codigo': edcid})
@@ -458,21 +456,37 @@ def admin_crit_reglas(request):
                 msg = "No se encontro el criterio especificado, asegurese de hacer click en el criterio a modificar."
                 return JsonResponse({'msg': msg, 'criterioid': criterioid, 'modif': False})
 
-            if criteriomon1 == "":
+            if criteriomon1:
+                criterio.monto1 = criteriomon1
+            else:
                 criterio.monto1 = None
-            if criteriomon2 == "":
+            if criteriomon2:
+                criterio.monto2 = criteriomon2
+            else:
                 criterio.monto2 = None
-            if criteriomon3 == "":
+            if criteriomon3:
+                criterio.monto3 = criteriomon3
+            else:
                 criterio.monto3 = None
-            if criterioF1 == "":
+            if criterioF1:
+                criterio.fecha1 = criterioF1
+            else:
                 criterio.fecha1 = None
-            if criterioF2 == "":
+            if criterioF2:
+                criterio.fecha2 = criterioF2
+            else:
                 criterio.fecha2 = None
-            if criterioF3 == "":
+            if criterioF3:
+                criterio.fecha3 = criterioF3
+            else:
                 criterio.fecha3 = None
-            if criterioF4 == "":
+            if criterioF4:
+                criterio.fecha5 = criterioF4
+            else:
                 criterio.fecha4 = None
-            if criterioF5 == "":
+            if criterioF5:
+                criterio.fecha5 = criterioF5
+            else:
                 criterio.fecha5 = None
 
             criterio.save()

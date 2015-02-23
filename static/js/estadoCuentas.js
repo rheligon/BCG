@@ -32,7 +32,7 @@ $('.table').on('click','a[type=edc]', function(event) {
     var a_id = $("#elim-data").attr("cod")
     $('#'+a_id).parent().css("background-color","")
     $('#'+a_id).css("color","")
-    $(this).parent().css("background-color","red")
+    $(this).parent().css("background-color","#337ab7")
     $(this).css("color","white")
 
     //asignacion de elemento a eliminar
@@ -60,14 +60,14 @@ function iniciar_tabla(idioma,origen){
             },
             "columns": [
                 { "width": "16%" },
-                null,
-                null,
-                null,
-                null,
-                null
+                { "width": "11%" },
+                { "width": "13%" },
+                { "width": "10%" },
+                { "width": "25%" },
+                { "width": "25%" }
               ],
             "order": [[ 2, "desc" ]]
-        })
+            })
 
     }else if (idioma==="en"){
 
@@ -76,10 +76,10 @@ function iniciar_tabla(idioma,origen){
                 url: '/static/json/English-tables.json'
             },
             "columns": [
-                { "width": "16%" },
                 null,
                 null,
                 null,
+                { "width": "16px" },
                 null,
                 null
               ],
@@ -108,7 +108,7 @@ function est_cuenta(cuentaId){
             var json_data = jQuery.parseJSON(data)
 
             if (json_data[carg].length<1){
-                alert("cargados esta vacio")
+                swal("Vacio!", "cargados esta vacio.", "info");
             }else{
 
                 var bank = json_data[carg][0].fields.cuenta_idcuenta;
@@ -161,11 +161,11 @@ function est_cuenta(cuentaId){
                 }
                 t_conta.draw();
                 t_corr.draw();
-                alert("cargados agregados satisfactoriamente.");
+                swal("Éxito!", "Cargados agregados satisfactoriamente.", "success");
             }
 
             if (json_data[proc].length<1){
-                alert("procesados esta vacio")
+                swal("Vacio!", "Procesados esta vacio.", "info");
             }else{
 
                 var bank = json_data[proc][0].fields.cuenta_idcuenta;
@@ -218,7 +218,7 @@ function est_cuenta(cuentaId){
                 }
                 t_conta.draw();
                 t_corr.draw();
-                alert("procesados agregados satisfactoriamente.");
+                swal("Éxito!", "Procesados agregados satisfactoriamente.", "success");
             }
 
             if (ult_conc_existe || ult_conp_existe){
@@ -268,7 +268,7 @@ function est_cuenta(cuentaId){
             }
         },
         error: function(error){
-            alert("Hubo un error buscando la cuenta especificada")
+            swal("Ups!", "Hubo un error buscando la cuenta especificada.", "error");
         },
         dataType:'json',
         headers:{
@@ -288,7 +288,10 @@ $('#delButton').on('click', function () {
             url: "/cuentas/estado",
             data: {"cuentaid": -1, "edcid": edcId, "cop": cop},
             success: function(data){
-                alert(data.msg);
+                swal({   title: "Éxito!",
+                         text: data.msg,
+                         type: "success",
+                         confirmButtonText: "Ok" });
                 $btn.button('reset');
                 var origen, tabla;
 
@@ -315,8 +318,14 @@ $('#delButton').on('click', function () {
     }
 
     var codEdc = $('#elim-data').attr('cod')
-    if (confirm("Seguro que desea eliminar el estado de cuenta "+codEdc+" ?")){
+    swal({   title: "",
+     text: "Seguro que desea eliminar el estado de cuenta "+codEdc+" ?",
+     type: "warning",
+     showCancelButton: true,
+     confirmButtonText: "Ok",
+     closeOnConfirm: false},
+     function(){
         $btn = $(this).button('loading')
         del_edc(codEdc,$('#elim-data').attr('modo') );
-    }
+     });
 })

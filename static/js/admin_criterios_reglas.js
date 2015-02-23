@@ -33,11 +33,18 @@ $('#delButton').on('click', function () {
             url: "/admin/criterios_reglas/",
             data: {"criterioid": criterioId, "action": "del"},
             success: function(data){
-                alert(data.msg);
-
                 if (data.elim){
                     tabla.row($('#tr-'+ data.criterioid)).remove().draw();
                     $(".criterio-detalle").hide();
+                    swal({   title: "",
+                             text: data.msg,
+                             type: "success",
+                             confirmButtonText: "Ok" });
+                }else{
+                   swal({   title: "",
+                             text: data.msg,
+                             type: "error",
+                             confirmButtonText: "Ok" }); 
                 }
 
                 $btn.button('reset')
@@ -51,10 +58,17 @@ $('#delButton').on('click', function () {
     }
 
     var nomC = $('#Nom_criterio').val();
-    if (confirm("Seguro que desea eliminar el criterio '"+ nomC +"' que se muestra en la parte de detalles?")){
-        $btn = $(this).button('loading');
-        del_crit($("#Id_criterio").val());
-    }
+    swal({   title: "",
+         text: "Seguro que desea eliminar el criterio '"+ nomC +"' que se muestra en la parte de detalles?",
+         type: "warning",
+         showCancelButton: true,
+         confirmButtonText: "Ok",
+         closeOnConfirm: false},
+         function(){
+            $btn = $(this).button('loading')
+            del_crit($("#Id_criterio").val());
+         }
+         );
 })
 
 //Modificar Criterio
@@ -86,8 +100,16 @@ $('#updButton').on('click', function () {
                     var jRow = $("#tr-"+data.criterioid).append(td1,td2,td3,td4,td5,td6,td7,td8,td9);
 
                     tabla.row.add(jRow).draw();
+                    swal({   title: "",
+                             text: data.msg,
+                             type: "success",
+                             confirmButtonText: "Ok" });
+                }else{
+                    swal({   title: "",
+                             text: data.msg,
+                             type: "error",
+                             confirmButtonText: "Ok" });
                 }
-                alert(data.msg);
                 $btn.button('reset')
             },
             dataType:'json',
@@ -108,15 +130,22 @@ $('#updButton').on('click', function () {
     var F5c = $('#F5_criterio').val();
     var nomC = $('#Nom_criterio').val();
 
-    if (confirm("Seguro que desea modificar el criterio '"+ nomC +"' con los campos de la seccion de detalles?")){
-        $btn = $(this).button('loading')
-        if (nomC.length<1 || nomC.length>20){
-            alert("Recuerde que el nombre es obligatorio y debe tener máximo 20 caracteres");
-            $btn.button('reset')
-        }else{
-            upd_crit($("#Id_criterio").val(),nomC,mon1c,mon2c,mon3c,F1c,F2c,F3c,F4c,F5c);
-        }
-    }
+    swal({   title: "",
+         text: "Seguro que desea modificar el criterio '"+ nomC +"' con los campos de la seccion de detalles?",
+         type: "warning",
+         showCancelButton: true,
+         confirmButtonText: "Ok",
+         closeOnConfirm: false},
+         function(){
+            $btn = $(this).button('loading')
+            if (nomC.length<1 || nomC.length>20){
+                swal("Ups!", "Recuerde que el nombre es obligatorio y debe tener máximo 20 caracteres", "info");
+                $btn.button('reset')
+            }else{
+                upd_crit($("#Id_criterio").val(),nomC,mon1c,mon2c,mon3c,F1c,F2c,F3c,F4c,F5c);
+            }
+         }
+         );
 })
 
 
@@ -126,6 +155,7 @@ $('#updButton').on('click', function () {
 //Mostrar Detalle al hacer click en código de criterio
 $('#table-criterios').on('click','a[type=criterio]', function(event) {
     event.preventDefault();
+    var a_idaux = ("#Id_criterio").val();
     var a_id = $(this).attr("id");
     var a_nom = $(this).attr("nombre");
     var a_mon1 = $(this).attr("monto1");
@@ -149,6 +179,12 @@ $('#table-criterios').on('click','a[type=criterio]', function(event) {
     $("#F5_criterio").val(a_f5);
 
     $(".criterio-detalle").show();
+
+    //Estilo de elemento elegido
+    $('#'+a_idaux).parent().css("background-color","")
+    $('#'+a_idaux).css("color","")
+    $(this).parent().css("background-color","#337ab7")
+    $(this).css("color","white")
 });
 
 //Resetear campos del formulario cuando se esconde
@@ -215,10 +251,16 @@ $('#form-add-criterio').validate({
                                 var jRow = $("#tr-"+data.criterioid).append(td1,td2,td3,td4,td5,td6,td7,td8,td9);
 
                                 tabla.row.add(jRow).draw();
-                                alert("criterio agregado satisfactoriamente.");
+                                swal({   title: "Exito!",
+                                         text: "Criterio agregado satisfactoriamente.",
+                                         type: "success",
+                                         confirmButtonText: "Ok" });
 
                             }else{
-                                alert("Ya ese criterio existe en la Base de Datos");
+                                swal({   title: "",
+                                         text: "Ya ese criterio existe en la Base de Datos",
+                                         type: "warning",
+                                         confirmButtonText: "Ok" });
                                 $("#Id_criterio").val(data.criterioid);
                                 $("#Nom_criterio").val(data.criterionom);
                                 $("#Mon1_criterio").val(data.criteriomon1);
@@ -235,7 +277,10 @@ $('#form-add-criterio').validate({
                             $btn.button('reset');
                         },
                         error: function(error){
-                            alert("Hubo un error, por favor verificar que los campos esten correctos e intente nuevamente.")
+                            swal({   title: "",
+                                     text: "Hubo un error, por favor verificar que los campos esten correctos e intente nuevamente.",
+                                     type: "error",
+                                     confirmButtonText: "Ok" });
                             $btn.button('reset');
                         },
                         dataType:'json',
