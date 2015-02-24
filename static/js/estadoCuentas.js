@@ -333,8 +333,7 @@ $('#delButton').on('click', function () {
      text: "Seguro que desea eliminar el estado de cuenta "+codEdc+" ?",
      type: "warning",
      showCancelButton: true,
-     confirmButtonText: "Ok",
-     closeOnConfirm: false},
+     confirmButtonText: "Ok"},
      function(){
         $btn = $(this).button('loading')
         $('#processing-modal').modal('toggle');

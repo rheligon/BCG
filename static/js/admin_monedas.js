@@ -86,8 +86,7 @@ $('#delButton').on('click', function () {
          text: "Seguro que desea eliminar la moneda "+codM+" ?",
          type: "warning",
          showCancelButton: true,
-         confirmButtonText: "Ok",
-         closeOnConfirm: false},
+         confirmButtonText: "Ok"},
          function(){
             $btn = $(this).button('loading')
             $('#processing-modal').modal('toggle');
@@ -151,8 +150,7 @@ $('#updButton').on('click', function () {
      text: "Seguro que desea modificar la moneda "+ codM +" ?",
      type: "warning",
      showCancelButton: true,
-     confirmButtonText: "Ok",
-     closeOnConfirm: false
+     confirmButtonText: "Ok"
     },
      function(){
         $btn = $(this).button('loading')

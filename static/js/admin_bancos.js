@@ -65,8 +65,7 @@ $('#delButton').on('click', function () {
          text: "Seguro que desea eliminar el banco "+ codB +" ?",
          type: "warning",
          showCancelButton: true,
-         confirmButtonText: "Ok",
-         closeOnConfirm: false},
+         confirmButtonText: "Ok"},
          function(){
             $btn = $(this).button('loading')
             $('#processing-modal').modal('toggle');
@@ -126,8 +125,7 @@ $('#updButton').on('click', function () {
              text: "Seguro que desea modificar el banco "+ codB +" ?",
              type: "warning",
              showCancelButton: true,
-             confirmButtonText: "Ok",
-             closeOnConfirm: false},
+             confirmButtonText: "Ok"},
              function(){
                 $btn = $(this).button('loading');
                 $('#processing-modal').modal('toggle');

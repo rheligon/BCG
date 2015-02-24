@@ -62,8 +62,7 @@ $('#delButton').on('click', function () {
          text: "Seguro que desea eliminar el criterio '"+ nomC +"' que se muestra en la parte de detalles?",
          type: "warning",
          showCancelButton: true,
-         confirmButtonText: "Ok",
-         closeOnConfirm: false},
+         confirmButtonText: "Ok"},
          function(){
             $btn = $(this).button('loading');
             $('#processing-modal').modal('toggle');
@@ -85,7 +84,7 @@ $('#updButton').on('click', function () {
                 if (data.modif){
                     tabla.row($('#tr-'+ data.criterioid)).remove().draw();
 
-                    var td1 = '<td>'+ '<a href="/admin/criterios/'+ data.criterioid + '" nombre ="' + data.criterionom + '" id="'+ data.criterioid + '" monto1 = "' + data.criteriomon1+ '" monto2 = "' + data.criteriomon2+ '" monto3 = "' + data.criteriomon3+ '" fecha1 = "' + data.criterioF1+ '" fecha2 = "' + data.criterioF2+ '" fecha3 = "' + data.criterioF3+ '" fecha4 = "' + data.criterioF4+ '" fecha5 = "' + data.criterioF5 + '" type="criterio">' + data.criterionom + '</a></td>';
+                    var td1 = '<td>'+ '<a href="/admin/crit_reglas/'+ data.criterioid + '" nombre ="' + data.criterionom + '" id="'+ data.criterioid + '" monto1 = "' + data.criteriomon1+ '" monto2 = "' + data.criteriomon2+ '" monto3 = "' + data.criteriomon3+ '" fecha1 = "' + data.criterioF1+ '" fecha2 = "' + data.criterioF2+ '" fecha3 = "' + data.criterioF3+ '" fecha4 = "' + data.criterioF4+ '" fecha5 = "' + data.criterioF5 + '" type="criterio">' + data.criterionom + '</a></td>';
 
                     var td2 = '<td>' + data.criteriomon1 + '</td>';
                     var td3 = '<td>' + data.criteriomon2 + '</td>';
@@ -136,8 +135,7 @@ $('#updButton').on('click', function () {
          text: "Seguro que desea modificar el criterio '"+ nomC +"' con los campos de la seccion de detalles?",
          type: "warning",
          showCancelButton: true,
-         confirmButtonText: "Ok",
-         closeOnConfirm: false},
+         confirmButtonText: "Ok"},
          function(){
             $btn = $(this).button('loading')
             if (nomC.length<1 || nomC.length>20){
@@ -158,7 +156,7 @@ $('#updButton').on('click', function () {
 //Mostrar Detalle al hacer click en código de criterio
 $('#table-criterios').on('click','a[type=criterio]', function(event) {
     event.preventDefault();
-    var a_idaux = ("#Id_criterio").val();
+    var a_idaux = $("#Id_criterio").val();
     var a_id = $(this).attr("id");
     var a_nom = $(this).attr("nombre");
     var a_mon1 = $(this).attr("monto1");
@@ -191,7 +189,7 @@ $('#table-criterios').on('click','a[type=criterio]', function(event) {
 });
 
 //Resetear campos del formulario cuando se esconde
-$('.modal').on('hidden.bs.modal', function(){
+$('.modal:not(.modal-static)').on('hidden.bs.modal', function(){
     $(this).find('form')[0].reset();
 });
 

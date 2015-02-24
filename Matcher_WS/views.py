@@ -7,25 +7,22 @@ from django.utils import timezone
 from django.contrib.auth.forms import UserCreationForm
 from django import forms
 
-# from Matcher.models import Cuenta, BancoCorresponsal, UsuarioCuenta, Moneda
-
 from Matcher.models import *
 
 from django.views.decorators.csrf import csrf_exempt
 
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
+from django.forms import model_to_dict
+
 def test(request):
-    msg = "Banco eliminado exitosamente."
-    bancoid = request.POST.get('bancoid')
-    try: 
-        banco = get_object_or_404(BancoCorresponsal, idbanco=bancoid)
-    except Http404: 
-        msg = "No se encontro el banco especificado."
 
-    banco.delete()
+    fields = Cargado._meta.fields
+    print(fields)
 
-    return JsonResponse({'msg': msg, 'bancoid': bancoid})
+    context = {}
+    template = "matcher/index.html"
+    return render(request, template, context)
 
 @login_required(login_url='/login')
 def index(request):
@@ -374,6 +371,33 @@ def mensajesSWIFT(request):
     return render(request, template, context)
 
 @login_required(login_url='/login')
+def admin_reglas_transf(request):
+    if request.method == 'POST':
+        cuentaid = request.POST('cuentaid')
+
+        if actn == 'add':
+            print (cuentaid)
+        if actn == 'del':
+            print (cuentaid)
+        if actn == 'upd':
+            reglasT = ReglaTransformacion.objects.all()
+            reglas = [regla for regla in reglasT if regla.cuenta_idcuenta.cuentaid == cuentaid]
+
+            res_json = '[' + serializers.serialize('json', reglas) + ']' 
+        
+            print (res_json)
+            return JsonResponse(res_json, safe=False)
+
+    if request.method == 'GET':
+
+        cuentas = Cuenta.objects.all()
+
+
+        template = "matcher/admin_reglasTransf.html"
+        context = {'cuentas':cuentas}
+        return render(request, template, context)
+
+@login_required(login_url='/login')
 def admin_crit_reglas(request):
 
     if request.method == 'POST':
@@ -464,35 +488,35 @@ def admin_crit_reglas(request):
                 msg = "No se encontro el criterio especificado, asegurese de hacer click en el criterio a modificar."
                 return JsonResponse({'msg': msg, 'criterioid': criterioid, 'modif': False})
 
-            if criteriomon1:
+            if criteriomon1 and criteriomon1!="None":
                 criterio.monto1 = criteriomon1
             else:
                 criterio.monto1 = None
-            if criteriomon2:
+            if criteriomon2 and criteriomon2!="None":
                 criterio.monto2 = criteriomon2
             else:
                 criterio.monto2 = None
-            if criteriomon3:
+            if criteriomon3 and criteriomon3!="None":
                 criterio.monto3 = criteriomon3
             else:
                 criterio.monto3 = None
-            if criterioF1:
+            if criterioF1 and criterioF1!="None":
                 criterio.fecha1 = criterioF1
             else:
                 criterio.fecha1 = None
-            if criterioF2:
+            if criterioF2 and criterioF2!="None":
                 criterio.fecha2 = criterioF2
             else:
                 criterio.fecha2 = None
-            if criterioF3:
+            if criterioF3 and criterioF3!="None":
                 criterio.fecha3 = criterioF3
             else:
                 criterio.fecha3 = None
-            if criterioF4:
+            if criterioF4 and criterioF4!="None":
                 criterio.fecha5 = criterioF4
             else:
                 criterio.fecha4 = None
-            if criterioF5:
+            if criterioF5 and criterioF5!="None":
                 criterio.fecha5 = criterioF5
             else:
                 criterio.fecha5 = None

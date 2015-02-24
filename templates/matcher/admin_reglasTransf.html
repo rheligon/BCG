@@ -1,0 +1,263 @@
+{% extends "matcher/base.html" %}
+
+{% load staticfiles %}
+
+{% block title %}Bancos disponibles{% endblock %}
+
+{%block head%}
+<!-- No hace falta cargar dataTables.css original si se incluye el de bootstrap -->
+<link rel="stylesheet" href="{% static 'css/dataTables/dataTables.bootstrap.css' %}">
+<link rel="stylesheet" href="{% static 'css/jquery-form-validation/jquery.validation.css' %}">
+<link rel="stylesheet" href="{% static 'css/sweet-alert.css' %}">
+<link rel="stylesheet" href="{% static 'css/procesando.css' %}">
+{%endblock%}
+
+{% block content %}
+<!-- Select Basic -->
+<div class="form-group col-md-12">
+  <label class="col-md-3" for="Cuenta-sel">Seleccione una cuenta: </label>
+  <div class="col-md-3">
+    <select id="Cuenta-sel" name="Cuenta-sel" class="form-control">
+      <option value="-1">----------</option>
+      {% for cuenta in cuentas %}
+      <option id="opt-{{cuenta.idcuenta}}" value="{{cuenta.idcuenta}}">{{cuenta.codigo}}</option>
+      {% endfor %}
+    </select>
+  </div>
+
+  <div class="col-md-3 col-md-push-2">
+      <button type="button" id="addButton" data-loading-text="Cargando..." class="col-md-6 btn btn-success" autocomplete="off" data-toggle="modal" data-target="#add-banco-modal">
+          Agregar
+      </button>
+  </div>
+
+  <div class="col-md-3 col-md-push-1">
+      <button type="button" id="delButton" data-loading-text="Cargando..." class="col-md-6 btn btn-danger" autocomplete="off">
+          Eliminar
+      </button>
+  </div>
+</div>
+
+<div class="row">
+  <div style="text-align:center; width:35%" class="well well-sm col-md-4 col-md-push-3">
+    <h4>Contabilidad</h4>
+  </div>
+  <div style="text-align:center; width:37%" class="well well-sm col-md-4 col-md-push-3">
+    <h4>Corresponsal</h4>
+  </div>
+</div>
+
+<div class="table-responsive col-md-12">
+    <table id="table-reglas" class="table table-bordered table-striped tabla">
+        <thead>
+            <tr>
+                <th>Nombre</th>
+                <th>Tipo</th>
+                <th>Trans</th>
+                <th>Referencia</th>
+                <th>Máscara</th>
+                <th>Trans</th>
+                <th>Referencia</th>
+                <th>Máscara</th>
+            </tr>
+        </thead>
+        <tbody id="tb-reglas">
+        </tbody>
+    </table>
+</div>
+
+<div class="row">
+  <div class="col-md-12">
+    <form class="form-inline">
+    <fieldset>
+
+    <!-- Form Name -->
+    <legend>Detalles:</legend>
+
+    <!-- Text input-->
+    <div class="form-group col-md-4">
+      <label class="col-md-3 control-label" for="nom-regla">Nombre: </label>  
+      <div class="col-md-3">
+      <input id="nom-regla" name="nom-regla" type="text" placeholder="{{epale}}" class="form-control input-md">
+        
+      </div>
+    </div>
+
+    <!-- Select Basic -->
+    <div class="form-group col-md-4">
+      <label class="col-md-3 control-label" for="sel-tipo-regla">Tipo: </label>
+      <div class="col-md-3">
+        <select id="sel-tipo-regla" name="sel-tipo-regla" class="form-control">
+          <option value="0">--------</option>
+          <option value="1">1. Normal 1-1</option>
+          <option value="2">2. Reverso Conta 2-0</option>
+          <option value="3">3. Reverso Corres 0-2</option>
+          <option value="4">4. n-m</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="col-md-3 col-md-push-1">
+    <button type="button" id="addButton" data-loading-text="Cargando..." class="col-md-6 btn btn-info" autocomplete="off" data-toggle="modal" data-target="#add-banco-modal">
+        Editar
+    </button>
+    </div>
+    </fieldset>
+
+
+
+    </form>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-md-6">
+    </br>
+    <form class="form-horizontal">
+    <fieldset>
+
+    <!-- Form Name -->
+    <legend>Contabilidad</legend>
+
+    <!-- Text input-->
+    <div class="form-group">
+      <label class="col-md-4 control-label" for="trans-conta">Transacción: </label>  
+      <div class="col-md-4">
+      <input id="trans-conta" name="trans-conta" type="text" placeholder="{{epale}}" class="form-control input-md">
+        
+      </div>
+    </div>
+
+    <!-- Select Basic -->
+    <div class="form-group">
+      <label class="col-md-4 control-label" for="sel-ref-conta">Referencia: </label>
+      <div class="col-md-4">
+        <select id="sel-ref-conta" name="sel-ref-conta" class="form-control">
+          <option value="0">--------</option>
+          <option value="Nostro">Nostro</option>
+          <option value="Vostro">Vostro</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Text input-->
+    <div class="form-group">
+      <label class="col-md-4 control-label" for="masc-conta">Máscara: </label>  
+      <div class="col-md-4">
+      <input id="masc-conta" name="masc-conta" type="text" placeholder="{{epa}}" class="form-control input-md">
+        
+      </div>
+    </div>
+
+    </fieldset>
+    </form>
+  </div>
+
+  <div class="col-md-6">
+    </br>
+    <form class="form-horizontal">
+    <fieldset>
+
+    <!-- Form Name -->
+    <legend>Corresponsal</legend>
+
+    <!-- Text input-->
+    <div class="form-group">
+      <label class="col-md-4 control-label" for="trans-corr">Transacción: </label>  
+      <div class="col-md-4">
+      <input id="trans-corr" name="trans-conta" type="text" placeholder="{{epale}}" class="form-control input-md">
+        
+      </div>
+    </div>
+
+    <!-- Select Basic -->
+    <div class="form-group">
+      <label class="col-md-4 control-label" for="sel-ref-corr">Referencia: </label>
+      <div class="col-md-4">
+        <select id="sel-ref-corr" name="sel-ref-corr" class="form-control">
+          <option value="0">--------</option>
+          <option value="Nostro">Nostro</option>
+          <option value="Vostro">Vostro</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Text input-->
+    <div class="form-group">
+      <label class="col-md-4 control-label" for="masc-corr">Máscara: </label>  
+      <div class="col-md-4">
+      <input id="masc-corr" name="masc-corr" type="text" placeholder="{{epa}}" class="form-control input-md">
+        
+      </div>
+    </div>
+
+    </fieldset>
+    </form>
+  </div>
+</div>
+
+<div class="modal fade" id="add-banco-modal" role="dialog">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <form style="margin-left:8%;" id="form-add-bank" name="form-add-bank" method="POST" class="validation-form-container">
+
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          <h4 class="modal-title">Agregar un banco</h4>
+        </div>
+        <div class="modal-body">
+          <div class="field">
+              <label for="add-banco-nombre">Nombre: </label>
+              <div class="ui left labeled input">
+                  <input type="text" name="add-banco[nombre]" id="add-banco-nombre" placeholder="Nombre del banco" data-validation="[L>=4, L<=45]" data-validation-message="$ must be between 4 and 45 characters. No special characters allowed." data-validation-regex="/^((?!admin).)*$/i" data-validation-regex-message="The word &quot;Admin&quot; is not allowed in the $" data-toggle="popover" data-content="You can use letters and numbers, no space or special characters">
+                  <div class="ui corner label">
+                    <i class="asterisk icon">*</i>
+                  </div>
+              </div>
+          </div>
+
+          <div class="field">
+              <label for="add-banco-codigo">Codigo: </label>
+              <div class="ui left labeled input">
+                  <input type="text" name="add-banco[codigo]" id="add-banco-codigo" placeholder="Codigo del banco" data-validation="[L>=2, L<=10]" data-validation-message="$ must be between 2 and 10 characters. No special characters allowed." data-validation-regex="/^((?!admin).)*$/i" data-validation-regex-message="The word &quot;Admin&quot; is not allowed in the $" data-toggle="popover" data-content="You can use letters and numbers, no space or special characters"></input>
+                  <div class="ui corner label">
+                    <i class="asterisk icon">*</i>
+                  </div>
+              </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+          <input id="addb-submit" type="submit" class="btn btn-primary" value="Submit">
+        </div>
+      </form>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+<input id="Id_regla" name="Id_regla" value="0" type="text" hidden>
+
+<!-- Static Modal para procesando -->
+<div class="modal modal-static fade" id="processing-modal" role="dialog" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-body">
+                <div class="text-center">
+                    <img src="{% static 'images/procesando.gif' %}" class="icon" />
+                    <h4>Procesando, por favor espere.</h4>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block script%}
+<script> //define el idioma de la tabla (es/en)
+         idioma_tr = "es" </script>
+<script src="{% static 'js/jquery.dataTables.min.js' %}" type="text/javascript"></script>
+<script src="{% static 'js/dataTables.bootstrap.js' %}" type="text/javascript"></script>
+<script src="{% static 'js/jquery-form-validation/jquery.validation.min.js' %}"></script>
+<script src="{% static 'js/sweet-alert.min.js' %}"></script>
+<script src="{% static 'js/admin_reglasTransf.js' %}" type="text/javascript"></script>
+{% endblock %}

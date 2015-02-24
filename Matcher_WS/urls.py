@@ -35,6 +35,7 @@ urlpatterns = patterns('',
     url(r'^admin/bancos/$', 'Matcher_WS.views.admin_bancos', name='admin_bancos'),
     url(r'^admin/monedas/$', 'Matcher_WS.views.admin_monedas', name='admin_monedas'),
     url(r'^admin/criterios_reglas/$', 'Matcher_WS.views.admin_crit_reglas', name='admin_crit_reglas'),
+    url(r'^admin/reglas_transf/$', 'Matcher_WS.views.admin_reglas_transf', name='admin_reglas_transf'),
 
     
 
