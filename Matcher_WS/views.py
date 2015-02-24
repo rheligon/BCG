@@ -106,19 +106,20 @@ def listar_cuentas(request):
     #     l_cuentas.append(cuenta.cuenta_idcuenta)
     # #cuentas_list = l_cuentas
 
-    paginator = Paginator(cuentas_list, 12) # Show 5 cuentas per page
+    ## ESTO ERA PARA LA PAGINACION
+    # paginator = Paginator(cuentas_list, 12) # Show 5 cuentas per page
 
-    page = request.GET.get('page')
-    try:
-        cuentas = paginator.page(page)
-    except PageNotAnInteger:
-        # If page is not an integer, deliver first page.
-        cuentas = paginator.page(1)
-    except EmptyPage:
-        # If page is out of range (e.g. 9999), deliver last page of results.
-        cuentas = paginator.page(paginator.num_pages)
+    # page = request.GET.get('page')
+    # try:
+    #     cuentas = paginator.page(page)
+    # except PageNotAnInteger:
+    #     # If page is not an integer, deliver first page.
+    #     cuentas = paginator.page(1)
+    # except EmptyPage:
+    #     # If page is out of range (e.g. 9999), deliver last page of results.
+    #     cuentas = paginator.page(paginator.num_pages)
 
-    context = {'cuentas': cuentas, 'range': paginator.page_range}
+    context = {'cuentas': cuentas_list}
     template = "matcher/listarCuentas.html"
 
     return render(request, template, context)
@@ -200,22 +201,29 @@ def estado_cuentas(request):
 def resumen_cuenta(request, cuenta_id):
 
     conciliacion = Conciliacionconsolidado.objects.filter(cuenta_idcuenta = cuenta_id)
-    cons = conciliacion[0]
-    cuenta = cons.cuenta_idcuenta
-    bfcon = cons.balancefinalcontabilidad
-    bfcor = cons.balancefinalcorresponsal
-    scon = cons.saldocontabilidad
-    scor = cons.saldocorresponsal
-    cod = ['C']*4
 
-    if bfcon < 0:
-        cod[0] = "D"
-    if bfcor < 0:
-        cod[1] = "D"
-    if scon < 0:
-        cod[2] = "D"
-    if scor < 0:
-        cod[3] = "D"
+    if conciliacion:
+        cons = conciliacion[0]
+        cuenta = cons.cuenta_idcuenta
+        bfcon = cons.balancefinalcontabilidad
+        bfcor = cons.balancefinalcorresponsal
+        scon = cons.saldocontabilidad
+        scor = cons.saldocorresponsal
+        cod = ['C']*4
+
+        if bfcon < 0:
+            cod[0] = "D"
+        if bfcor < 0:
+            cod[1] = "D"
+        if scon < 0:
+            cod[2] = "D"
+        if scor < 0:
+            cod[3] = "D"
+    else:
+        cuenta = Cuenta.objects.filter(idcuenta=cuenta_id)
+        cuenta = cuenta[0]
+        cons = None
+        cod = ['C']*4
 
 
     context = {'cuenta': cuenta, 'cons':cons, 'cod': cod}

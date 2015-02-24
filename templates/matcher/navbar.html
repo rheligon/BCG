@@ -1,114 +1,246 @@
-<div class="navbar navbar-default navbar-twitch" role="navigation">
-		<div class="container">
-			<div class="navbar-header">
-				<a class="navbar-brand" href="http://www.bcg.com.ve">
-					<span class="small-nav"> <span class="logo"> BCG </span> </span>
-					<span class="full-nav"> BCG Matcher </span>
-				</a>
-			</div>
-			<div class="">
-				<ul class="nav navbar-nav">
-					<li>
-						<a href="{% url 'Matcher_WS.views.index' %}">
-							<span class="small-nav" data-toggle="tooltip" data-placement="right" title="Inicio"> 
-								<span class="glyphicon glyphicon-home"></span> 
-							</span>
-							<span class="full-nav"> Inicio </span>
-						</a>
-					</li>
-					<li>
-						<a href="{% url 'Matcher_WS.views.index' %}">
-							<span class="small-nav" data-toggle="tooltip" data-placement="right" title="Procesamiento diario"> 
-								<span class="fa fa-refresh fa-lg"></span> 
-							</span>
-							<span class="full-nav"> Procesamiento diario </span>
-						</a>
-					</li>
-					<li>
-						<a href="{% url 'Matcher_WS.views.index' %}">
-							<span class="small-nav" data-toggle="tooltip" data-placement="right" title="Reportes"> 
-								<span class="fa fa-file-text fa-lg"></span> 
-							</span>
-							<span class="full-nav"> Reportes </span>
-						</a>
-					</li>
-					<li>
-						<a href="{% url 'Matcher_WS.views.index' %}">
-							<span class="small-nav" data-toggle="tooltip" data-placement="right" title="Mensajes SWIFT"> 
-								<span class="fa fa-envelope"></span> 
-							</span>
-							<span class="full-nav"> Mensajes SWIFT </span>
-						</a>
-					</li>
+<style>
+    @import url(//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css);
+    body{margin-top:7%;}
+    #accordion .glyphicon, .fa{ margin-right:10px; }
+    .panel-body { padding:0px; }
+    .panel-body table tr td { padding-left: 15px; }
+    .panel-body .table {margin-bottom: 0px; }
+    #nav-id { padding-left:2%;}
+</style>
 
-					<li>
-						<a href="{% url 'Matcher_WS.views.configuracion' 'sis' %}">
-							<span class="small-nav" data-toggle="tooltip" data-placement="right" title="Configuración"> 
-								<span class="fa fa-cog"></span> 
-							</span>
-							<span class="full-nav"> Configuración:
+<div class="col-sm-2 col-md-2" id="nav-id">
+    <div class="panel-group" id="accordion">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h4 class="panel-title">
+                    <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne"><span class="glyphicon glyphicon-folder-close">
+                    </span>Inicio</a>
+                </h4>
+            </div>
+            <div id="collapseOne" class="panel-collapse collapse">
+                <div class="panel-body">
+                    <table class="table">
+                        <tr>
+                            <td>
+                                <span class="fa fa-clipboard text-primary"></span><a style="color:gray" href="{% url 'Matcher_WS.views.listar_cuentas'%}">Resumen Cuentas</a>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h4 class="panel-title">
+                    <a data-toggle="collapse" data-parent="#accordion" href="#collapseTwo"><span class="fa fa-refresh fa-lg">
+                    </span>Proc. Diario</a>
+                </h4>
+            </div>
+            <div id="collapseTwo" class="panel-collapse collapse">
+                <div class="panel-body">
+                    <table class="table">
+                        <tr>
+                            <td>
+                                <span class="fa fa-credit-card fa-lg text-warning"></span><a style="color:gray" href="{% url 'Matcher_WS.views.estado_cuentas'%}">Edo. Cuenta</a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <span class="fa fa-stack-overflow fa-lg"></span><a style="color:gray" href="{% url 'Matcher_WS.views.listar_cuentas'%}">Carga Automática</a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <span class="fa fa-pencil-square-o fa-lg"></span><a style="color:gray" href="{% url 'Matcher_WS.views.listar_cuentas'%}">Carga Manual</a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <span class="fa fa-cog fa-spin fa-lg"></span><a style="color:gray" href="{% url 'Matcher_WS.views.listar_cuentas'%}">Match</a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <span class="fa fa-link fa-lg text-warning"></span><a style="color:gray" href="{% url 'Matcher_WS.views.listar_cuentas'%}">Matches Propuestos</a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <span class="fa fa-chain-broken fa-lg text-danger"></span><a style="color:gray" href="{% url 'Matcher_WS.views.listar_cuentas'%}">Partidas Abiertas</a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <span class="fa fa-check-circle-o fa-lg text-success"></span><a style="color:gray" href="{% url 'Matcher_WS.views.listar_cuentas'%}">Matches Confirmados</a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <span class="fa fa-file-text-o fa-lg"></span><a style="color:gray" href="{% url 'Matcher_WS.views.listar_cuentas'%}">Reporte Conciliación</a>
+                            </td>
+                        </tr>
 
-								<ul id="conf-ul" class="hidden">
-									<li>
-										<a style="color:gray" href="{% url 'Matcher_WS.views.configuracion' 'sis' %}">Conf. Sistema</a>
-									</li>
-									<li>
-										<a style="color:gray" href="{% url 'Matcher_WS.views.configuracion' 'arc'  %}">Formato Archivo</a>
-									</li>
-								</ul>
-
-							 </span>
-						</a>
-					</li>
-					<li>
-						<a href="{% url 'Matcher_WS.views.index' %}">
-							<span class="small-nav" data-toggle="tooltip" data-placement="right" title="Seguridad"> 
-								<span class="fa fa-lock fa-lg"></span> 
-							</span>
-							<span class="full-nav"> Seguridad </span>
-						</a>
-					</li>
-					<li>
-						<a href="{% url 'Matcher_WS.views.index' %}">
-							<span class="small-nav" data-toggle="tooltip" data-placement="right" title="Administración"> 
-								<span class="fa fa-user"></span> 
-							</span>
-							<span class="full-nav"> Administración </span>
-						</a>
-					</li>
-					<li>
-						<a href="{% url 'Matcher_WS.views.index' %}">
-							<span class="small-nav" data-toggle="tooltip" data-placement="right" title="Ayuda"> 
-								<span class="fa fa-question-circle"></span> 
-							</span>
-							<span class="full-nav"> Ayuda </span>
-						</a>
-					</li>
-
-					{% if user.is_authenticated %}
-					<li>
-						<a href="{% url 'Matcher_WS.views.usr_logout' %}">
-							<span class="small-nav" data-toggle="tooltip" data-placement="right" title="Sign out"> 
-								<span class="fa fa-sign-out"></span> 
-							</span>
-							<span class="full-nav"> Sign out </span>
-						</a>
-					</li>
-					{% else %}
-					<li>
-						<a href="{% url 'Matcher_WS.views.usr_login' %}">
-							<span class="small-nav" data-toggle="tooltip" data-placement="right" title="Sign in"> 
-								<span class="fa fa-sign-in"></span> 
-							</span>
-							<span class="full-nav"> Sign in </span>
-						</a>
-					</li>
-					{% endif %}
-				</ul>
-			</div><!--/.nav-collapse -->
-		</div>
-	</div>
-<button type="button" class="btn btn-default btn-xs navbar-twitch-toggle">
-	<span class="glyphicon glyphicon-chevron-right nav-open"></span>		
-	<span class="glyphicon glyphicon-chevron-left nav-close"></span>
-</button>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h4 class="panel-title">
+                    <a data-parent="#accordion" href="#"><span class="fa fa-bar-chart-o">
+                    </span>Reportes</a>
+                </h4>
+            </div>
+        </div>
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h4 class="panel-title">
+                    <a data-toggle="collapse" data-parent="#accordion" href="#collapseFour"><span class="fa fa-envelope">
+                    </span>MT SWIFT</a>
+                </h4>
+            </div>
+            <div id="collapseFour" class="panel-collapse collapse">
+                <div class="panel-body">
+                    <table class="table">
+                        <tr>
+                            <td>
+                                <span class="fa fa-envelope-o text-primary"></span><a style="color:gray" href="#96">MT96</a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <span class="fa fa-envelope-o text-primary"></span><a style="color:gray" href="#99">MT99</a>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h4 class="panel-title">
+                    <a data-toggle="collapse" data-parent="#accordion" href="#collapseFive"><span class="fa fa-cogs">
+                    </span>Configuración</a>
+                </h4>
+            </div>
+            <div id="collapseFive" class="panel-collapse collapse">
+                <div class="panel-body">
+                    <table class="table">
+                        <tr>
+                            <td>
+                                <span class="fa fa-wrench text-primary"></span><a style="color:gray" href="{% url 'Matcher_WS.views.configuracion' 'sis' %}">Conf. Sistema</a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <span class="fa fa-folder-open text-warning"></span><a style="color:gray" href="{% url 'Matcher_WS.views.configuracion' 'arc'  %}">Formato Archivo</a>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h4 class="panel-title">
+                    <a data-toggle="collapse" data-parent="#accordion" href="#collapseSix"><span class="fa fa-lock fa-lg">
+                    </span>Seguridad</a>
+                </h4>
+            </div>
+            <div id="collapseSix" class="panel-collapse collapse">
+                <div class="panel-body">
+                    <table class="table">
+                        <tr>
+                            <td>
+                                <span class="fa fa-users fa-lg text-primary"></span><a style="color:gray" href="#">Usuarios</a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <span class="fa fa-th-list fa-lg text-primary"></span><a style="color:gray" href="#">Perfiles</a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <span class="fa fa-book fa-lg text-warning"></span><a style="color:gray" href="#">Logs</a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <span class="fa fa-exclamation-triangle fa-lg text-danger"></span><a style="color:gray" href="#">Backup/Restore</a>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h4 class="panel-title">
+                    <a data-toggle="collapse" data-parent="#accordion" href="#collapseSeven"><span class="fa fa-user">
+                    </span>Administración</a>
+                </h4>
+            </div>
+            <div id="collapseSeven" class="panel-collapse collapse">
+                <div class="panel-body">
+                    <table class="table">
+                        <tr>
+                            <td>
+                                <span class="fa fa-building-o fa-lg text-info"></span><a style="color:gray" href="{% url 'Matcher_WS.views.admin_bancos'%}">Bancos</a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <span class="fa fa-money fa-lg text-success"></span><a style="color:gray" href="{% url 'Matcher_WS.views.admin_monedas'%}">Monedas</a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <span class="fa fa-suitcase fa-lg text-warning"></span><a style="color:gray" href="{% url 'Matcher_WS.views.admin_bancos'%}">Cuentas</a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <span class="fa fa-retweet fa-lg text-info"></span><a style="color:gray" href="{% url 'Matcher_WS.views.admin_bancos'%}">Reglas de Transformación</a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <span class="fa fa-key fa-lg text-warning"></span><a style="color:gray" href="{% url 'Matcher_WS.views.admin_crit_reglas'%}">Criterios y reglas del Sistema</a>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h4 class="panel-title">
+                    <a data-toggle="collapse" data-parent="#accordion" href="#collapseEight"><span class="fa fa-question-circle">
+                    </span>Ayuda</a>
+                </h4>
+            </div>
+            <div id="collapseEight" class="panel-collapse collapse">
+                <div class="panel-body">
+                    <table class="table">
+                        <tr>
+                            <td>
+                                <span class="fa fa-desktop fa-lg text-primary"></span><a style="color:gray" href="{% url 'Matcher_WS.views.admin_bancos'%}">Manual Sistema</a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <span class="fa fa-file-text fa-lg text-primary"></span><a style="color:gray" href="{% url 'Matcher_WS.views.admin_bancos'%}">Manual de Usuario</a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <span class="fa fa-adn fa-lg text-primary"></span><a style="color:gray" href="{% url 'Matcher_WS.views.admin_bancos'%}">Acerca de Matcher</a>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
