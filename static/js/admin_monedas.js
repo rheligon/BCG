@@ -69,7 +69,7 @@ $('#delButton').on('click', function () {
                              type: "error",
                              confirmButtonText: "Ok" });
                 }
-
+                $('#processing-modal').modal('toggle');
                 $btn.button('reset')
             },
             dataType:'json',
@@ -90,6 +90,7 @@ $('#delButton').on('click', function () {
          closeOnConfirm: false},
          function(){
             $btn = $(this).button('loading')
+            $('#processing-modal').modal('toggle');
             del_mon($("#Id_moneda").val());
          }
          );
@@ -130,6 +131,7 @@ $('#updButton').on('click', function () {
                              type: "error",
                              confirmButtonText: "Ok" });
                 }
+                $('#processing-modal').modal('toggle');
                 $btn.button('reset')
             },
             dataType:'json',
@@ -158,6 +160,7 @@ $('#updButton').on('click', function () {
             swal("Ups!", "Recuerde el codigo y el nombre deben tener máximo 3 y 10 caracteres respectivamente", "info");
             $btn.button('reset')
         }else{
+            $('#processing-modal').modal('toggle');
             upd_mon($("#Id_moneda").val(), nomM, codM, camM);
         }
      });
@@ -187,6 +190,7 @@ $('#form-add-moneda').validate({
             onBeforeSubmit: function (node) {
 
                 $("#add-moneda-modal").modal("toggle");
+                $('#processing-modal').modal('toggle');
                 $(node).find('input:not([type="submit"]), select, textarea').attr('readonly', 'true');
 
             },
@@ -234,7 +238,7 @@ $('#form-add-moneda').validate({
                                 $("#Id_moneda").val(data.monedaid);
                                 $(".moneda-detalle").show();
                             }
-                            
+                            $('#processing-modal').modal('toggle');
                             $btn.button('reset');
                         },
                         error: function(error){
@@ -242,6 +246,7 @@ $('#form-add-moneda').validate({
                                      text: "Hubo un error, por favor verificar que los campos esten correctos e intente nuevamente.",
                                      type: "error",
                                      confirmButtonText: "Ok" });
+                            $('#processing-modal').modal('toggle');
                             $btn.button('reset');
                         },
                         dataType:'json',

@@ -46,7 +46,7 @@ $('#delButton').on('click', function () {
                              type: "error",
                              confirmButtonText: "Ok" }); 
                 }
-
+                $('#processing-modal').modal('toggle');
                 $btn.button('reset')
             },
             dataType:'json',
@@ -65,7 +65,8 @@ $('#delButton').on('click', function () {
          confirmButtonText: "Ok",
          closeOnConfirm: false},
          function(){
-            $btn = $(this).button('loading')
+            $btn = $(this).button('loading');
+            $('#processing-modal').modal('toggle');
             del_crit($("#Id_criterio").val());
          }
          );
@@ -110,6 +111,7 @@ $('#updButton').on('click', function () {
                              type: "error",
                              confirmButtonText: "Ok" });
                 }
+                $('#processing-modal').modal('toggle');
                 $btn.button('reset')
             },
             dataType:'json',
@@ -142,6 +144,7 @@ $('#updButton').on('click', function () {
                 swal("Ups!", "Recuerde que el nombre es obligatorio y debe tener máximo 20 caracteres", "info");
                 $btn.button('reset')
             }else{
+                $('#processing-modal').modal('toggle');
                 upd_crit($("#Id_criterio").val(),nomC,mon1c,mon2c,mon3c,F1c,F2c,F3c,F4c,F5c);
             }
          }
@@ -207,8 +210,8 @@ $('#form-add-criterio').validate({
         callback: {
             onBeforeSubmit: function (node) {
 
-
                 $("#add-criterio-modal").modal("toggle");
+                $('#processing-modal').modal('toggle');
                 $(node).find('input:not([type="submit"]), select, textarea').attr('readonly', 'true');
 
             },
@@ -273,7 +276,7 @@ $('#form-add-criterio').validate({
                                 $("#F5_criterio").val(data.criterioF5);
                                 $(".criterio-detalle").show();
                             }
-                            
+                            $('#processing-modal').modal('toggle');
                             $btn.button('reset');
                         },
                         error: function(error){
@@ -281,6 +284,7 @@ $('#form-add-criterio').validate({
                                      text: "Hubo un error, por favor verificar que los campos esten correctos e intente nuevamente.",
                                      type: "error",
                                      confirmButtonText: "Ok" });
+                            $('#processing-modal').modal('toggle');
                             $btn.button('reset');
                         },
                         dataType:'json',

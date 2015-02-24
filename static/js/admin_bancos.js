@@ -48,7 +48,8 @@ $('#delButton').on('click', function () {
                              type: "error",
                              confirmButtonText: "Ok" });
                 }
-
+                
+                $('#processing-modal').modal('toggle');
                 $btn.button('reset')
             },
             dataType:'json',
@@ -68,9 +69,11 @@ $('#delButton').on('click', function () {
          closeOnConfirm: false},
          function(){
             $btn = $(this).button('loading')
+            $('#processing-modal').modal('toggle');
             del_banc($("#Id_banco").val());
          }
          );
+
 })
 
 //Modificar Banco
@@ -105,7 +108,7 @@ $('#updButton').on('click', function () {
                              type: "error",
                              confirmButtonText: "Ok" });
                 }
-                
+                $('#processing-modal').modal('toggle');
                 $btn.button('reset')
             },
             dataType:'json',
@@ -126,7 +129,8 @@ $('#updButton').on('click', function () {
              confirmButtonText: "Ok",
              closeOnConfirm: false},
              function(){
-                $btn = $(this).button('loading')
+                $btn = $(this).button('loading');
+                $('#processing-modal').modal('toggle');
                 upd_banc($("#Id_banco").val(), nomB, codB);
              }
              );
@@ -177,6 +181,7 @@ $('#form-add-bank').validate({
 
 
                 $("#add-banco-modal").modal("toggle");
+                $('#processing-modal').modal('toggle');
                 $(node).find('input:not([type="submit"]), select, textarea').attr('readonly', 'true');
 
             },
@@ -220,7 +225,7 @@ $('#form-add-bank').validate({
                                 $("#Id_banco").val(data.bancoid);
                                 $(".banco-detalle").show();
                             }
-                            
+                            $('#processing-modal').modal('toggle');
                             $btn.button('reset');
                         },
                         error: function(error){
@@ -228,6 +233,7 @@ $('#form-add-bank').validate({
                                          text: "Hubo un error, por favor verificar que los campos esten correctos e intente nuevamente.",
                                          type: "error",
                                          confirmButtonText: "Ok" });
+                            $('#processing-modal').modal('toggle');
                             $btn.button('reset');
                         },
                         dataType:'json',

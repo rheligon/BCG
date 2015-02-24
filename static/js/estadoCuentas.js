@@ -3,6 +3,11 @@ var t_conta = iniciar_tabla(idioma_tr,'conta');
 var t_corr = iniciar_tabla(idioma_tr, 'corr');
 var csrftoken = $.cookie('csrftoken');
 
+function commas (num) {
+    var N = parseFloat(num).toFixed(2);
+    return N.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,")
+}
+
 $('#Cuenta-sel').change(function() {
   var cuentaId = $('#Cuenta-sel').val();
 
@@ -20,6 +25,7 @@ $('#Cuenta-sel').change(function() {
 
     t_conta.clear().draw();
     t_corr.clear().draw();
+    $('#processing-modal').modal('toggle');
     est_cuenta(cuentaId);
   }
 });
@@ -58,6 +64,7 @@ function iniciar_tabla(idioma,origen){
             language: {
                 url: '/static/json/Spanish-tables.json'
             },
+            "autoWidth": false,
             "columns": [
                 { "width": "16%" },
                 { "width": "11%" },
@@ -106,6 +113,8 @@ function est_cuenta(cuentaId){
             var ult_conp_existe = false;
             var ult_corp_existe = false;
             var json_data = jQuery.parseJSON(data)
+
+            $('#processing-modal').modal('toggle');
 
             if (json_data[carg].length<1){
                 swal("Vacio!", "cargados esta vacio.", "info");
@@ -181,8 +190,8 @@ function est_cuenta(cuentaId){
                     var td2 = '<td> procesado </td>';
                     var td3 = '<td>' + json_data[proc][i].fields.codigo + '</td>';
                     var td4 = '<td>' + json_data[proc][i].fields.pagina + '</td>';
-                    var td5 = '<td>' + json_data[proc][i].fields.m_finicial + ' '+ json_data[proc][i].fields.c_dinicial + ' '+ date_ini.toLocaleDateString() + ' ' + json_data[proc][i].fields.balance_inicial +'</td>';
-                    var td6 = '<td>' + json_data[proc][i].fields.m_ffinal + ' '+ json_data[proc][i].fields.c_dfinal + ' '+ date_fin.toLocaleDateString() + ' ' + json_data[proc][i].fields.balance_final +'</td>';
+                    var td5 = '<td>' + json_data[proc][i].fields.m_finicial + ' '+ json_data[proc][i].fields.c_dinicial + ' '+ date_ini.toLocaleDateString() + ' ' + commas(json_data[proc][i].fields.balance_inicial) +'</td>';
+                    var td6 = '<td>' + json_data[proc][i].fields.m_ffinal + ' '+ json_data[proc][i].fields.c_dfinal + ' '+ date_fin.toLocaleDateString() + ' ' + commas(json_data[proc][i].fields.balance_final) +'</td>';
 
 
 
@@ -228,18 +237,18 @@ function est_cuenta(cuentaId){
                 $('#edc-ccon').val(json_data[proc][ult_edc_conc].fields.codigo);
                 $('#f-ccon').val(fecha_conc.toLocaleDateString());
                 $('#sf-ccon-cd').html(json_data[proc][ult_edc_conc].fields.c_dfinal);
-                $('#sf-ccon').val(json_data[proc][ult_edc_conc].fields.balance_final);
+                $('#sf-ccon').val(commas(json_data[proc][ult_edc_conc].fields.balance_final));
 
                 $('#edc-pcon').val(json_data[proc][ult_edc_conp].fields.codigo);
                 $('#f-pcon').val(fecha_conp.toLocaleDateString());
                 $('#sf-pcon-cd').html(json_data[proc][ult_edc_conp].fields.c_dfinal);
-                $('#sf-pcon').val(json_data[proc][ult_edc_conp].fields.balance_final);
+                $('#sf-pcon').val(commas(json_data[proc][ult_edc_conp].fields.balance_final));
                 
                 if (!ult_conc_existe){
                     $('#edc-ccon').val(json_data[proc][ult_edc_conp].fields.codigo);
                     $('#f-ccon').val(fecha_conp.toLocaleDateString());
                     $('#sf-ccon-cd').html(json_data[proc][ult_edc_conp].fields.c_dfinal);
-                    $('#sf-ccon').val(json_data[proc][ult_edc_conp].fields.balance_final); 
+                    $('#sf-ccon').val(commas(json_data[proc][ult_edc_conp].fields.balance_final)); 
                 }
 
             }
@@ -250,24 +259,25 @@ function est_cuenta(cuentaId){
                 $('#edc-ccor').val(json_data[proc][ult_edc_corc].fields.codigo);
                 $('#f-ccor').val(fecha_corc.toLocaleDateString());
                 $('#sf-ccor-cd').html(json_data[proc][ult_edc_corc].fields.c_dfinal);
-                $('#sf-ccor').val(json_data[proc][ult_edc_corc].fields.balance_final);
+                $('#sf-ccor').val(commas(json_data[proc][ult_edc_corc].fields.balance_final));
 
                 $('#edc-pcor').val(json_data[proc][ult_edc_corp].fields.codigo);
                 $('#f-pcor').val(fecha_corp.toLocaleDateString());
                 $('#sf-pcor-cd').html(json_data[proc][ult_edc_corp].fields.c_dfinal);
-                $('#sf-pcor').val(json_data[proc][ult_edc_corp].fields.balance_final);
+                $('#sf-pcor').val(commas(json_data[proc][ult_edc_corp].fields.balance_final));
 
                 if (!ult_corc_existe){
                     $('#edc-ccor').val(json_data[proc][ult_edc_corp].fields.codigo);
                     $('#f-ccor').val(fecha_corp.toLocaleDateString());
                     $('#sf-ccor-cd').html(json_data[proc][ult_edc_corp].fields.c_dfinal);
-                    $('#sf-ccor').val(json_data[proc][ult_edc_corp].fields.balance_final);
+                    $('#sf-ccor').val(commas(json_data[proc][ult_edc_corp].fields.balance_final));
 
                 }
 
             }
         },
         error: function(error){
+            $('#processing-modal').modal('toggle');
             swal("Ups!", "Hubo un error buscando la cuenta especificada.", "error");
         },
         dataType:'json',
@@ -292,6 +302,7 @@ $('#delButton').on('click', function () {
                          text: data.msg,
                          type: "success",
                          confirmButtonText: "Ok" });
+                $('#processing-modal').modal('toggle');
                 $btn.button('reset');
                 var origen, tabla;
 
@@ -326,6 +337,7 @@ $('#delButton').on('click', function () {
      closeOnConfirm: false},
      function(){
         $btn = $(this).button('loading')
+        $('#processing-modal').modal('toggle');
         del_edc(codEdc,$('#elim-data').attr('modo') );
      });
 })

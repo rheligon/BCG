@@ -8,6 +8,7 @@
 <link rel="stylesheet" href="{% static 'css/dataTables/dataTables.bootstrap.css' %}">
 <link rel="stylesheet" href="{% static 'css/jquery-form-validation/jquery.validation.css' %}">
 <link rel="stylesheet" href="{% static 'css/sweet-alert.css' %}">
+<link rel="stylesheet" href="{% static 'css/procesando.css' %}">
 {%endblock%}
 
 {% block content %}
@@ -132,6 +133,19 @@
   </div><!-- /.modal-dialog -->
 </div><!-- /.modal -->
 
+<!-- Static Modal para procesando -->
+<div class="modal modal-static fade" id="processing-modal" role="dialog" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-body">
+                <div class="text-center">
+                    <img src="{% static 'images/procesando.gif' %}" class="icon" />
+                    <h4>Procesando, por favor espere.</h4>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}
 
 {% block script%}
