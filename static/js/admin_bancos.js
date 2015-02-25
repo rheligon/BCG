@@ -158,7 +158,7 @@ $('#table-bancos').on('click','a[type=banco]', function(event) {
 });
 
 //Resetear campos del formulario cuando se esconde
-$('.modal').on('hidden.bs.modal', function(){
+$('.modal:not(.modal-static)').on('hidden.bs.modal', function(){
     $(this).find('form')[0].reset();
 });
 
@@ -208,7 +208,7 @@ $('#form-add-bank').validate({
                                 var jRow = $("#tr-"+data.bancoid).append(td1,td2);
 
                                 tabla.row.add(jRow).draw();
-                                swal({   title: "Exito!",
+                                swal({   title: "",
                                          text: "Banco agregado satisfactoriamente.",
                                          type: "success",
                                          confirmButtonText: "Ok" });

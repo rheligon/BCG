@@ -2,7 +2,7 @@
 
 {% load staticfiles %}
 
-{% block title %}Bancos disponibles{% endblock %}
+{% block title %}Reglas de Transformacion{% endblock %}
 
 {%block head%}
 <!-- No hace falta cargar dataTables.css original si se incluye el de bootstrap -->
@@ -26,7 +26,7 @@
   </div>
 
   <div class="col-md-3 col-md-push-2">
-      <button type="button" id="addButton" data-loading-text="Cargando..." class="col-md-6 btn btn-success" autocomplete="off" data-toggle="modal" data-target="#add-banco-modal">
+      <button type="button" id="addButton" data-loading-text="Cargando..." class="col-md-6 btn btn-success" autocomplete="off" data-toggle="modal" data-target="#add-regla-modal">
           Agregar
       </button>
   </div>
@@ -98,8 +98,8 @@
     </div>
 
     <div class="col-md-3 col-md-push-1">
-    <button type="button" id="addButton" data-loading-text="Cargando..." class="col-md-6 btn btn-info" autocomplete="off" data-toggle="modal" data-target="#add-banco-modal">
-        Editar
+    <button type="button" id="updButton" data-loading-text="Cargando..." class="col-md-6 btn btn-primary" autocomplete="off">
+        Modificar
     </button>
     </div>
     </fieldset>
@@ -143,7 +143,7 @@
     <!-- Text input-->
     <div class="form-group">
       <label class="col-md-4 control-label" for="masc-conta">Máscara: </label>  
-      <div class="col-md-4">
+      <div class="col-md-5">
       <input id="masc-conta" name="masc-conta" type="text" placeholder="{{epa}}" class="form-control input-md">
         
       </div>
@@ -185,7 +185,7 @@
     <!-- Text input-->
     <div class="form-group">
       <label class="col-md-4 control-label" for="masc-corr">Máscara: </label>  
-      <div class="col-md-4">
+      <div class="col-md-5">
       <input id="masc-corr" name="masc-corr" type="text" placeholder="{{epa}}" class="form-control input-md">
         
       </div>
@@ -196,20 +196,20 @@
   </div>
 </div>
 
-<div class="modal fade" id="add-banco-modal" role="dialog">
+<div class="modal fade" id="add-regla-modal" role="dialog">
   <div class="modal-dialog">
     <div class="modal-content">
-      <form style="margin-left:8%;" id="form-add-bank" name="form-add-bank" method="POST" class="validation-form-container">
+      <form style="margin-left:8%;" id="form-add-regla" name="form-add-regla" method="POST" class="validation-form-container">
 
         <div class="modal-header">
           <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-          <h4 class="modal-title">Agregar un banco</h4>
+          <h4 class="modal-title">Agregar una regla</h4>
         </div>
         <div class="modal-body">
           <div class="field">
-              <label for="add-banco-nombre">Nombre: </label>
+              <label for="add-regla-nombre">Nombre: </label>
               <div class="ui left labeled input">
-                  <input type="text" name="add-banco[nombre]" id="add-banco-nombre" placeholder="Nombre del banco" data-validation="[L>=4, L<=45]" data-validation-message="$ must be between 4 and 45 characters. No special characters allowed." data-validation-regex="/^((?!admin).)*$/i" data-validation-regex-message="The word &quot;Admin&quot; is not allowed in the $" data-toggle="popover" data-content="You can use letters and numbers, no space or special characters">
+                  <input type="text" name="add-regla[nombre]" id="add-regla-nombre" placeholder="Nombre de la regla" data-validation="[L>=1, L<=20]" data-validation-message="$ must be between 1 and 20 characters. No special characters allowed." data-validation-regex="/^((?!admin).)*$/i" data-validation-regex-message="The word &quot;Admin&quot; is not allowed in the $" data-toggle="popover" data-content="You can use letters and numbers, no space or special characters">
                   <div class="ui corner label">
                     <i class="asterisk icon">*</i>
                   </div>
@@ -217,25 +217,85 @@
           </div>
 
           <div class="field">
-              <label for="add-banco-codigo">Codigo: </label>
+              <label for="add-regla-tipo">Tipo: </label>
               <div class="ui left labeled input">
-                  <input type="text" name="add-banco[codigo]" id="add-banco-codigo" placeholder="Codigo del banco" data-validation="[L>=2, L<=10]" data-validation-message="$ must be between 2 and 10 characters. No special characters allowed." data-validation-regex="/^((?!admin).)*$/i" data-validation-regex-message="The word &quot;Admin&quot; is not allowed in the $" data-toggle="popover" data-content="You can use letters and numbers, no space or special characters"></input>
+                  <input type="text" name="add-regla[tipo]" id="add-regla-tipo" placeholder="Tipo de la regla" data-validation="[L=1]" data-validation-message="$ must be 1 character between 1 and 4. No special characters allowed." data-validation-regex="/^((?!admin).)*$/i" data-validation-regex-message="The word &quot;Admin&quot; is not allowed in the $" data-toggle="popover" data-content="Recordar es un numero del 1 al 4"></input>
                   <div class="ui corner label">
                     <i class="asterisk icon">*</i>
                   </div>
               </div>
           </div>
+
+          <div class="field">
+              <label for="add-regla-trancont">Transacción Contabilidad: </label>
+              <div class="ui left labeled input">
+                  <input type="text" name="add-regla[trancont]" id="add-regla-trancont" placeholder="Transacción contabilidad de la regla" data-validation="[L>=1, L<=20]" data-validation-message="$ must be between 1 and 20 characters. No special characters allowed." data-validation-regex="/^((?!admin).)*$/i" data-validation-regex-message="The word &quot;Admin&quot; is not allowed in the $" data-toggle="popover" data-content="You can use letters and numbers, no space or special characters"></input>
+                  <div class="ui corner label">
+                    <i class="asterisk icon">*</i>
+                  </div>
+              </div>
+          </div>
+
+          <div class="field">
+              <label for="add-regla-refcont">Referencia Contabilidad: </label>
+              <div class="ui left labeled input">
+                  <input type="text" name="add-regla[refcont]" id="add-regla-refcont" placeholder="Referencia de la regla en la contabilidad" data-validation="[L>=1, L<=20]" data-validation-message="$ must be between 1 and 20 characters. No special characters allowed." data-validation-regex="/^((?!admin).)*$/i" data-validation-regex-message="The word &quot;Admin&quot; is not allowed in the $" data-toggle="popover" data-content="You can use letters and numbers, no space or special characters"></input>
+                  <div class="ui corner label">
+                    <i class="asterisk icon">*</i>
+                  </div>
+              </div>
+          </div>
+
+                    <div class="field">
+              <label for="add-regla-masccont">Máscara Contabilidad: </label>
+              <div class="ui left labeled input">
+                  <input type="text" name="add-regla[masccont]" id="add-regla-masccont" placeholder="Máscara de la regla sobre contabilidad" data-validation="[L>=1, L<=20]" data-validation-message="$ must be between 1 and 20 characters. No special characters allowed." data-validation-regex="/^((?!admin).)*$/i" data-validation-regex-message="The word &quot;Admin&quot; is not allowed in the $" data-toggle="popover" data-content="You can use letters and numbers, no space or special characters"></input>
+                  <div class="ui corner label">
+                    <i class="asterisk icon">*</i>
+                  </div>
+              </div>
+          </div>
+
+          <div class="field">
+              <label for="add-regla-trancorr">Transacción Corresponsal: </label>
+              <div class="ui left labeled input">
+                  <input type="text" name="add-regla[trancorr]" id="add-regla-trancorr" placeholder="Transacción corresponsal de regla" data-validation="[L>=1, L<=20]" data-validation-message="$ must be between 1 and 20 characters. No special characters allowed." data-validation-regex="/^((?!admin).)*$/i" data-validation-regex-message="The word &quot;Admin&quot; is not allowed in the $" data-toggle="popover" data-content="You can use letters and numbers, no space or special characters"></input>
+                  <div class="ui corner label">
+                    <i class="asterisk icon">*</i>
+                  </div>
+              </div>
+          </div>
+          <div class="field">
+              <label for="add-regla-refcorr">Referencia Corresponsal: </label>
+              <div class="ui left labeled input">
+                  <input type="text" name="add-regla[refcorr]" id="add-regla-refcorr" placeholder="Referencia de la regla sobre el corresponsal" data-validation="[L>=1, L<=20]" data-validation-message="$ must be between 1 and 20 characters. No special characters allowed." data-validation-regex="/^((?!admin).)*$/i" data-validation-regex-message="The word &quot;Admin&quot; is not allowed in the $" data-toggle="popover" data-content="You can use letters and numbers, no space or special characters"></input>
+                  <div class="ui corner label">
+                    <i class="asterisk icon">*</i>
+                  </div>
+              </div>
+          </div>
+
+                    <div class="field">
+              <label for="add-regla-masccorr">Máscara Contabilidad: </label>
+              <div class="ui left labeled input">
+                  <input type="text" name="add-regla[masccorr]" id="add-regla-masccorr" placeholder="Máscara de la regla sobre el corresponsal" data-validation="[L>=1, L<=20]" data-validation-message="$ must be between 1 and 20 characters. No special characters allowed." data-validation-regex="/^((?!admin).)*$/i" data-validation-regex-message="The word &quot;Admin&quot; is not allowed in the $" data-toggle="popover" data-content="You can use letters and numbers, no space or special characters"></input>
+                  <div class="ui corner label">
+                    <i class="asterisk icon">*</i>
+                  </div>
+              </div>
+          </div>
+
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-          <input id="addb-submit" type="submit" class="btn btn-primary" value="Submit">
+          <input id="addr-submit" type="submit" class="btn btn-primary" value="Submit">
         </div>
       </form>
     </div><!-- /.modal-content -->
   </div><!-- /.modal-dialog -->
 </div><!-- /.modal -->
 
-<input id="Id_regla" name="Id_regla" value="0" type="text" hidden>
+<input id="Id-regla" name="Id-regla" value="0" type="text" hidden>
 
 <!-- Static Modal para procesando -->
 <div class="modal modal-static fade" id="processing-modal" role="dialog" aria-hidden="true">

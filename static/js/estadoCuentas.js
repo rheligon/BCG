@@ -27,6 +27,39 @@ $('#Cuenta-sel').change(function() {
     t_corr.clear().draw();
     $('#processing-modal').modal('toggle');
     est_cuenta(cuentaId);
+  }else{
+
+    t_conta.clear().draw();
+    t_corr.clear().draw();
+
+    $('#elim-data').attr('cod', "");
+
+    $('#cta_nostro').val("");
+    $('#cta_vostro').val("");
+    
+    $('#sf-ccon-mon').html("");
+    $('#sf-ccor-mon').html("");
+    $('#sf-pcon-mon').html("");
+    $('#sf-pcor-mon').html("");
+
+    $('#edc-ccon').val("");
+    $('#f-ccon').val("");
+    $('#sf-ccon-cd').html("");
+    $('#sf-ccon').val("");
+
+    $('#edc-pcon').val("");
+    $('#f-pcon').val("");
+    $('#sf-pcon-cd').html("");
+    $('#sf-pcon').val("");
+    $('#edc-ccor').val("");
+    $('#f-ccor').val("");
+    $('#sf-ccor-cd').html("");
+    $('#sf-ccor').val("");
+
+    $('#edc-pcor').val("");
+    $('#f-pcor').val("");
+    $('#sf-pcor-cd').html("");
+    $('#sf-pcor').val("");
   }
 });
 
@@ -83,12 +116,12 @@ function iniciar_tabla(idioma,origen){
                 url: '/static/json/English-tables.json'
             },
             "columns": [
-                null,
-                null,
-                null,
-                { "width": "16px" },
-                null,
-                null
+                { "width": "16%" },
+                { "width": "11%" },
+                { "width": "13%" },
+                { "width": "10%" },
+                { "width": "25%" },
+                { "width": "25%" }
               ],
             "order": [[ 2, "desc" ]]
         })
@@ -116,9 +149,7 @@ function est_cuenta(cuentaId){
 
             $('#processing-modal').modal('toggle');
 
-            if (json_data[carg].length<1){
-                swal("Vacio!", "cargados esta vacio.", "info");
-            }else{
+            if (json_data[carg].length>=1){
 
                 var bank = json_data[carg][0].fields.cuenta_idcuenta;
                 var bankcod = $('#opt-'+bank).html();
@@ -170,12 +201,9 @@ function est_cuenta(cuentaId){
                 }
                 t_conta.draw();
                 t_corr.draw();
-                swal("Éxito!", "Cargados agregados satisfactoriamente.", "success");
             }
 
-            if (json_data[proc].length<1){
-                swal("Vacio!", "Procesados esta vacio.", "info");
-            }else{
+            if (json_data[proc].length>=1){
 
                 var bank = json_data[proc][0].fields.cuenta_idcuenta;
                 var bankcod = $('#opt-'+bank).html();
@@ -227,7 +255,6 @@ function est_cuenta(cuentaId){
                 }
                 t_conta.draw();
                 t_corr.draw();
-                swal("Éxito!", "Procesados agregados satisfactoriamente.", "success");
             }
 
             if (ult_conc_existe || ult_conp_existe){
@@ -251,6 +278,16 @@ function est_cuenta(cuentaId){
                     $('#sf-ccon').val(commas(json_data[proc][ult_edc_conp].fields.balance_final)); 
                 }
 
+            }else{
+                $('#edc-ccon').val("");
+                $('#f-ccon').val("");
+                $('#sf-ccon-cd').html("");
+                $('#sf-ccon').val("");
+
+                $('#edc-pcon').val("");
+                $('#f-pcon').val("");
+                $('#sf-pcon-cd').html("");
+                $('#sf-pcon').val("");
             }
             if (ult_corc_existe || ult_corp_existe){
                 var fecha_corc = new Date(json_data[proc][ult_edc_corc].fields.fecha_final)
@@ -273,7 +310,16 @@ function est_cuenta(cuentaId){
                     $('#sf-ccor').val(commas(json_data[proc][ult_edc_corp].fields.balance_final));
 
                 }
+            }else{
+                $('#edc-ccor').val("");
+                $('#f-ccor').val("");
+                $('#sf-ccor-cd').html("");
+                $('#sf-ccor').val("");
 
+                $('#edc-pcor').val("");
+                $('#f-pcor').val("");
+                $('#sf-pcor-cd').html("");
+                $('#sf-pcor').val("");
             }
         },
         error: function(error){
@@ -298,7 +344,7 @@ $('#delButton').on('click', function () {
             url: "/cuentas/estado",
             data: {"cuentaid": -1, "edcid": edcId, "cop": cop},
             success: function(data){
-                swal({   title: "Éxito!",
+                swal({   title: "",
                          text: data.msg,
                          type: "success",
                          confirmButtonText: "Ok" });

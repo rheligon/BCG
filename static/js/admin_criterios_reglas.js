@@ -252,7 +252,7 @@ $('#form-add-criterio').validate({
                                 var jRow = $("#tr-"+data.criterioid).append(td1,td2,td3,td4,td5,td6,td7,td8,td9);
 
                                 tabla.row.add(jRow).draw();
-                                swal({   title: "Exito!",
+                                swal({   title: "",
                                          text: "Criterio agregado satisfactoriamente.",
                                          type: "success",
                                          confirmButtonText: "Ok" });

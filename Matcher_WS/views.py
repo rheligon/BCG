@@ -101,7 +101,7 @@ def listar_cuentas(request):
     # l_cuentas = []
     # for cuenta in uc:
     #     l_cuentas.append(cuenta.cuenta_idcuenta)
-    # #cuentas_list = l_cuentas
+    # cuentas_list = l_cuentas
 
     ## ESTO ERA PARA LA PAGINACION
     # paginator = Paginator(cuentas_list, 12) # Show 5 cuentas per page
@@ -373,20 +373,85 @@ def mensajesSWIFT(request):
 @login_required(login_url='/login')
 def admin_reglas_transf(request):
     if request.method == 'POST':
-        cuentaid = request.POST('cuentaid')
+        
+        actn = request.POST.get('action')
+
+        if actn == 'sel':
+            cuentaid = int(request.POST.get('cuentaid'))
+            reglasT = ReglaTransformacion.objects.all()
+            reglas = [regla for regla in reglasT if regla.cuenta_idcuenta.idcuenta == cuentaid]
+
+            res_json = serializers.serialize('json', reglas)
+        
+            return JsonResponse(res_json, safe=False)
 
         if actn == 'add':
-            print (cuentaid)
-        if actn == 'del':
-            print (cuentaid)
-        if actn == 'upd':
-            reglasT = ReglaTransformacion.objects.all()
-            reglas = [regla for regla in reglasT if regla.cuenta_idcuenta.cuentaid == cuentaid]
+            cuentaid = int(request.POST.get('cuentaid'))
+            nombre = request.POST.get("nombre")
+            tipo = request.POST.get("tipo")
+            transconta = request.POST.get("transconta")
+            transcorr = request.POST.get("transcorr")
+            selrefconta = request.POST.get("selrefconta")
+            selrefcorr = request.POST.get("selrefcorr")
+            mascconta = request.POST.get("mascconta")
+            masccorr = request.POST.get("masccorr")
+            msg = "Regla creada exitosamente"
 
-            res_json = '[' + serializers.serialize('json', reglas) + ']' 
+            try:
+                cuenta = Cuenta.objects.get(pk=cuentaid)
+            except Cuenta.DoesNotExist:
+                msg = "No se encontro la cuenta especificada, asegurese de hacer click en la regla a modificar previamente."
+                return JsonResponse({'msg': msg, 'reglaid': reglaid, 'add': False})
+
+            regla =  ReglaTransformacion.objects.create(nombre = nombre, cuenta_idcuenta = cuenta, transaccion_corresponsal = transcorr, ref_corresponsal = selrefcorr, mascara_corresponsal = masccorr, transaccion_contabilidad = transconta, ref_contabilidad = selrefconta, mascara_contabilidad = mascconta, tipo = tipo)
+            
+            return JsonResponse({'reglaid':regla.pk, 'nombre':nombre, 'mascconta':mascconta, 'masccorr':masccorr, 'selrefconta':selrefconta, 'selrefcorr':selrefcorr, 'transconta':transconta, 'transcorr':transcorr, 'tipo':tipo, 'msg':msg, 'add': True})
+
+        if actn == 'del':
+            reglaid = request.POST.get("reglaid")
+            msg = "Regla eliminada exitosamente"
+
+            try:
+                regla = ReglaTransformacion.objects.get(pk=reglaid)
+            except ReglaTransformacion.DoesNotExist:
+                msg = "Regla no encontrada, por favor seleccione primero una regla"
+                return JsonResponse ({'msg':msg, 'elim':False})
+
+            regla.delete()
+
+            return JsonResponse ({'msg':msg, 'reglaid':reglaid ,'elim':True})
+
+        if actn == 'upd':
+
+            msg = 'Regla modificada exitosamente'
+            reglaid = request.POST.get("reglaid")
+            nombre = request.POST.get("nombre")
+            tipo = request.POST.get("tipo")
+            transconta = request.POST.get("transconta")
+            transcorr = request.POST.get("transcorr")
+            selrefconta = request.POST.get("selrefconta")
+            selrefcorr = request.POST.get("selrefcorr")
+            mascconta = request.POST.get("mascconta")
+            masccorr = request.POST.get("masccorr")
+
+            try:
+                regla = ReglaTransformacion.objects.get(pk=reglaid)
+            except ReglaTransformacion.DoesNotExist:
+                msg = "No se encontro la regla especificada, asegurese de hacer click en la regla a modificar previamente."
+                return JsonResponse({'msg': msg, 'reglaid': reglaid, 'modif': False})
         
-            print (res_json)
-            return JsonResponse(res_json, safe=False)
+            regla.nombre = nombre
+            regla.transaccion_corresponsal = transcorr
+            regla.ref_corresponsal = selrefcorr
+            regla.mascara_corresponsal = masccorr
+            regla.transaccion_contabilidad = transconta
+            regla.ref_contabilidad = selrefconta
+            regla.mascara_contabilidad = mascconta
+            regla.tipo = tipo
+
+            print(regla.nombre)
+            regla.save()
+            return JsonResponse({'reglaid':reglaid, 'nombre':nombre, 'mascconta':mascconta, 'masccorr':masccorr, 'selrefconta':selrefconta, 'selrefcorr':selrefcorr, 'transconta':transconta, 'transcorr':transcorr, 'tipo':tipo, 'msg':msg, 'modif':True})
 
     if request.method == 'GET':
 
