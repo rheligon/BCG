@@ -246,12 +246,13 @@ def configuracion(request, tipo):
 
     if tipo == "arc":
         template = "matcher/conf_archivo.html"
+        archivos = Formatoarchivo.objects.all()
         # ARREGLAR
         if request.method == 'POST':
             form = request.POST
             print (form)
 
-        context = {}
+        context = {'archivos':archivos}
         return render(request, template, context)
     
     # ninguna, deberia raise 404

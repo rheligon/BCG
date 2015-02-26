@@ -13,7 +13,7 @@
             margin-top: 8px;
         }
 
-        .list-left li, .list-right li, .list-arch li  {
+        .list-left li, .list-right li {
             cursor: pointer;
         }
 
@@ -34,43 +34,28 @@
 <div class="container">
     <br />
     <div class="row">
-        <div class="dual-list list-arch col-md-4">
+
+        <div class="dual-list list-left col-md-4">
             <div class="well text-right">
                 <div class="row">
-                    <div class="col-md-12">
+                    <div class="col-md-10">
                         <div class="input-group">
                             <span class="input-group-addon glyphicon glyphicon-search"></span>
                             <input type="text" name="SearchDualList" class="form-control" placeholder="search" />
                         </div>
                     </div>
-                </div>
-                <ul class="list-group" type="archivo">
-                    {% for archivo in archivos %}
-                    <li class="list-group-item">{{archivo.nombre}}</li>
-                    {% endfor %}
-                </ul>
-            </div>
-        </div>
-    </div>
-
-    <div class="row">
-
-        <div class="dual-list list-left col-md-4">
-            <div class="well text-right">
-                <div class="row">
-                    <div class="col-md-12" style="text-align:center;">
-                            <h4>Campos Disponibles</h4>
-                    </div>
-                    <div class="col-md-3 pull-right">
+                    <div class="col-md-2">
                         <div class="btn-group">
                             <a class="btn btn-default selector" title="select all"><i class="glyphicon glyphicon-unchecked"></i></a>
                         </div>
                     </div>
                 </div>
-                <ul class="list-group" type="campos">
-                    {% for archivo in archivos %}
-                    <li class="list-group-item">{{archivo.nombre}}</li>
-                    {% endfor %}
+                <ul class="list-group">
+                    <li class="list-group-item">bootstrap-duallist <a href="https://github.com/bbilginn/bootstrap-duallist" target="_blank">github</a></li>
+                    <li class="list-group-item">Dapibus ac facilisis in</li>
+                    <li class="list-group-item">Morbi leo risus</li>
+                    <li class="list-group-item">Porta ac consectetur ac</li>
+                    <li class="list-group-item">Vestibulum at eros</li>
                 </ul>
             </div>
         </div>
@@ -94,31 +79,31 @@
             </button>
 
             <button class="btn btn-default btn-sm clean">
-                <span class="glyphicon glyphicon-remove"></span>
-            </button>
-
-            <button class="btn btn-default btn-sm submit">
                 <span class="glyphicon glyphicon-asterisk"></span>
             </button>
         </div>
 
         <div class="dual-list list-right col-md-4">
-            <div class="well text-right">
+            <div class="well">
                 <div class="row">
-                    <div class="col-md-12" style="text-align:center;">
-                         <h4>Campos Seleccionados</h4>
-                    </div>
-
-                    <div class="col-md-3 pull-right">
+                    <div class="col-md-2">
                         <div class="btn-group">
                             <a class="btn btn-default selector" title="select all"><i class="glyphicon glyphicon-unchecked"></i></a>
                         </div>
                     </div>
+                    <div class="col-md-10">
+                        <div class="input-group">
+                            <input type="text" name="SearchDualList" class="form-control" placeholder="search" />
+                            <span class="input-group-addon glyphicon glyphicon-search"></span>
+                        </div>
+                    </div>
                 </div>
-                <ul class="list-group" type="campos">
-                    {% for archivo in archivos %}
-                        <li class="list-group-item">{{archivo.formato}}</li>
-                    {% endfor %}
+                <ul class="list-group">
+                    <li class="list-group-item">Cras justo odio</li>
+                    <li class="list-group-item">Dapibus ac facilisis in</li>
+                    <li class="list-group-item">Morbi leo risus</li>
+                    <li class="list-group-item">Porta ac consectetur ac</li>
+                    <li class="list-group-item">Vestibulum at eros</li>
                 </ul>
             </div>
         </div>
@@ -133,20 +118,7 @@
 <script>
 	$(function () {
 
-            //Elegir el archivo
-            $('body').on('click', '.list-group[type=archivo] .list-group-item', function () {
-                $('.list-group[type=archivo] > .list-group-item ').each(function(){
-                    if ($(this).hasClass('active')){
-                        $(this).toggleClass('active');
-                    }
-                });
-                $(this).toggleClass('active');
-            });            
-
-
-
-            //Elegir los campos
-            $('body').on('click', '.list-group[type=campos] .list-group-item', function () {
+            $('body').on('click', '.list-group .list-group-item', function () {
                 $checkBox = $('.dual-list .selector');
 
                 if ($(this).hasClass('active')){
@@ -218,13 +190,6 @@
 
             $(".clean").click(function(){
               $('.list-right ul').html("");
-              return false;
-            });
-
-            $(".submit").click(function(){
-              $('.list-right ul li').each(function(){
-                console.log($(this)[0].innerHTML);
-              });
               return false;
             });
 
