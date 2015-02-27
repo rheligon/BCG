@@ -246,6 +246,7 @@ def configuracion(request, tipo):
 
     if tipo == "arc":
         template = "matcher/conf_archivo.html"
+        campos_disp = ['Nro. Cuenta *','Nro. Estado de Cuenta','Moneda', 'Fecha *','Credito/Débito Partida', 'Monto *', 'Tipo Transacción *', 'Ref. Nostro', 'Ref. Vostro', 'Detalle', 'Saldo *', 'Credito/Débito Saldo']
         archivos = Formatoarchivo.objects.all()
         cuentas = Cuenta.objects.all()
         # ARREGLAR
@@ -253,7 +254,7 @@ def configuracion(request, tipo):
             form = request.POST
             print (form)
 
-        context = {'archivos':archivos, 'cuentas':cuentas}
+        context = {'archivos':archivos, 'cuentas':cuentas, 'campos_disp':campos_disp}
         return render(request, template, context)
     
     # ninguna, deberia raise 404
