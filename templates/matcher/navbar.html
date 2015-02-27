@@ -1,5 +1,7 @@
+  {% load staticfiles %}
+  
 <style>
-    @import url(//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css);
+    @import url({% static 'css/font-awesome.min.css' %});
     body{margin-top:7%;}
     #accordion .glyphicon, .fa{ margin-right:10px; }
     .panel-body { padding:0px; }
@@ -7,6 +9,8 @@
     .panel-body .table {margin-bottom: 0px; }
     #nav-id { padding-left:2%;}
 </style>
+
+    
 
 <div class="col-sm-2 col-md-2" id="nav-id">
     <div class="panel-group" id="accordion">

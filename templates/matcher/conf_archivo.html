@@ -13,15 +13,15 @@
             margin-top: 8px;
         }
 
-        .list-left li, .list-right li, .list-arch li  {
+        .list-left li, .list-right li, .list-arch li , .list-right-modal li, .list-left-modal li {
             cursor: pointer;
         }
 
-        .list-arrows {
+        .list-arrows, .list-arrows-modal {
             padding-top: 100px;
         }
 
-        .list-arrows button {
+        .list-arrows button, .list-arrows-modal button {
             margin-bottom: 20px;
         }
 
@@ -51,9 +51,89 @@
                 </ul>
             </div>
         </div>
-    </div>
+
+        <div class="well col-md-4">
+            <form class="form-horizontal">
+                <fieldset>
+
+                <!-- Form Name -->
+                <legend>Detalles Formato</legend>
+
+                <!-- Text input-->
+                <div class="form-group">
+                  <label class="col-md-4 control-label" for="cuentaform">Cuenta:</label>  
+                  <div class="col-md-5">
+                  <input id="cuentaform" name="cuentaform" type="text" placeholder="" class="form-control input-md">
+                    
+                  </div>
+                </div>
+
+                <!-- Text input-->
+                <div class="form-group">
+                  <label class="col-md-4 control-label" for="nomform">Nombre Formato:</label>  
+                  <div class="col-md-8">
+                  <input id="nomform" name="nomform" type="text" placeholder="" class="form-control input-md">
+                  <span class="help-block">Ej.: Carga Banco1</span>  
+                  </div>
+                </div>
+
+                <!-- Select Basic -->
+                <div class="form-group">
+                  <label class="col-md-5 control-label" for="carsep">Caracter separador:</label>
+                  <div class="col-md-3">
+                    <select id="carsep" name="carsep" class="form-control">
+                      <option value=";">;</option>
+                      <option value="$">$</option>
+                      <option value="&amp;">&amp;</option>
+                      <option value="*">*</option>
+                      <option value="#">#</option>
+                    </select>
+                  </div>
+                </div>
+
+                <!-- Multiple Radios -->
+                <div class="form-group">
+                  <label class="col-md-4 control-label" for="tipo">Tipo:</label>
+                  <div class="col-md-4">
+                  <div class="radio">
+                    <label for="tipo-0">
+                      <input type="radio" name="tipo" id="tipo-0" value="L" checked="checked">
+                      Contabilidad
+                    </label>
+                    </div>
+                  <div class="radio">
+                    <label for="tipo-1">
+                      <input type="radio" name="tipo" id="tipo-1" value="S">
+                      Corresponsal
+                    </label>
+                    </div>
+                  </div>
+                </div>
+
+                </fieldset>
+                </form>
+        </div>
+        <div class="col-md-4">
+            <button type="button" id="addButton" data-loading-text="Cargando..." class="col-md-3 btn btn-success" autocomplete="off" data-toggle="modal" data-target="#add-regla-modal">
+                Agregar
+            </button>
+        </div>
+        <div style="padding-top:1%;" class="col-md-4">
+            <button type="button" id="delButton" data-loading-text="Cargando..." class="col-md-3 btn btn-danger" autocomplete="off">
+                Eliminar
+            </button>
+        </div>
+    </div>    
 
     <div class="row">
+        <div class="col-md-4 pull-right">
+            <button type="button" id="updButton" data-loading-text="Cargando..." class="col-md-3 btn btn-primary" autocomplete="off">
+                Modificar
+            </button>
+        </div>
+    </div>
+
+    <div class="row" style="padding-top:2%;">
 
         <div class="dual-list list-left col-md-4">
             <div class="well text-right">
@@ -126,10 +206,202 @@
     </div>
 </div>
 
+<div class="modal fade" id="add-regla-modal" role="dialog">
+  <div class="modal-dialog">
+    <div class="modal-content" style="width: 200%; left: -300px;">
+      <form style="margin-left:8%;" id="form-add-regla" name="form-add-regla" method="POST" class="validation-form-container">
+
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          <h2 class="modal-title">Agregar una regla</h2>
+        </div>
+        <div class="modal-body">
+            <div class="row">
+
+                
+                <div class="col-md-9 well">
+                    <!-- Form Name -->
+                    <legend>Detalles Formato</legend>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <!-- Select Basic -->
+                            <div class="form-group col-md-12">
+                              <label class="col-md-4 control-label" for="cuentasformmodal">Cuenta:</label>
+                              <div class="col-md-6">
+                                <select id="cuentasformmodal" name="cuentasformmodal" class="form-control">
+                                  <option id="opt-00" value="-1">--------------</option>
+                                  {% for cuenta in cuentas %}
+                                    <option id="opt-{{cuenta.idcuenta}}" value="{{cuenta.idcuenta}}">{{cuenta.codigo}}</option>
+                                  {% endfor %}
+                                </select>
+                              </div>
+                            </div>
+
+                            <!-- Text input-->
+                            <div class="form-group col-md-12">
+                              <label class="col-md-4 control-label" for="nomformmodal">Nombre Formato:</label>  
+                              <div class="col-md-8">
+                              <input id="nomformmodal" name="nomformmodal" type="text" placeholder="" class="form-control input-md">
+                              <span class="help-block">Ej.: Carga Banco1</span>  
+                              </div>
+                            </div>
+                        </div>
+
+                        <!-- Select Basic -->
+                        <div class="form-group col-md-6">
+                          <label class="col-md-4 control-label" for="carsepmodal">Caracter separador:</label>
+                          <div class="col-md-3">
+                            <select id="carsepmodal" name="carsepmodal" class="form-control">
+                              <option value=";">;</option>
+                              <option value="$">$</option>
+                              <option value="&amp;">&amp;</option>
+                              <option value="*">*</option>
+                              <option value="#">#</option>
+                            </select>
+                          </div>
+                        </div>
+
+                        <!-- Multiple Radios -->
+                        <div class="form-group col-md-6">
+                          <label class="col-md-4 control-label" for="tipo">Tipo:</label>
+                          <div class="col-md-3">
+                              <div class="radio">
+                                <label for="tipo-0">
+                                  <input type="radio" class="radio-modal" name="tipo" id="tipo-0" value="L" checked="checked">
+                                  Contabilidad
+                                </label>
+                              </div>
+                              <div class="radio">
+                                <label for="tipo-1">
+                                  <input type="radio" class="radio-modal" name="tipo" id="tipo-1" value="S">
+                                  Corresponsal
+                                </label>
+                              </div>
+                          </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="dual-list list-left-modal col-md-4">
+                    <div class="well text-right">
+                        <div class="row">
+                            <div class="col-md-12" style="text-align:center;">
+                                    <h4>Campos Disponibles</h4>
+                            </div>
+                            <div class="col-md-3 pull-right">
+                                <div class="btn-group">
+                                    <a class="btn btn-default selector" title="select all"><i class="glyphicon glyphicon-unchecked"></i></a>
+                                </div>
+                            </div>
+                        </div>
+                        <ul class="list-group" type="campos">
+                            {% for archivo in archivos %}
+                            <li class="list-group-item">{{archivo.nombre}}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="list-arrows-modal col-md-1 text-center">
+
+                    <button type="button" class="btn btn-default btn-sm move-right-modal">
+                        <span class="glyphicon glyphicon-chevron-right"></span>
+                    </button>
+
+                    <button type="button" class="btn btn-default btn-sm move-left-modal">
+                        <span class="glyphicon glyphicon-chevron-left"></span>
+                    </button>
+
+                    <button type="button" class="btn btn-default btn-sm reorder-up-modal">
+                        <span class="glyphicon glyphicon-chevron-up"></span>
+                    </button>
+
+                    <button type="button" class="btn btn-default btn-sm reorder-down-modal">
+                        <span class="glyphicon glyphicon-chevron-down"></span>
+                    </button>
+                </div>
+
+                <div class="dual-list list-right-modal col-md-4">
+                    <div class="well text-right">
+                        <div class="row">
+                            <div class="col-md-12" style="text-align:center;">
+                                 <h4>Campos Seleccionados</h4>
+                            </div>
+
+                            <div class="col-md-3 pull-right">
+                                <div class="btn-group">
+                                    <a class="btn btn-default selector" title="select all"><i class="glyphicon glyphicon-unchecked"></i></a>
+                                </div>
+                            </div>
+                        </div>
+                        <ul class="list-group" type="campos">
+                            {% for archivo in archivos %}
+                                <li class="list-group-item">{{archivo.formato}}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+          <input id="addfa-submit" type="submit" class="btn btn-primary" value="Submit">
+        </div>
+      </form>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
 
 {%endblock%}
 
 {%block script%}
+<script type="text/javascript">
+
+$('#addfa-submit').on('click', function() {
+    event.preventDefault();
+
+
+    $cuenta = $('#cuentasformmodal').val();
+    $nomform = $('#nomformmodal').val();
+    $carsep = $('#carsepmodal').val();
+    $tipo = $('.radio-modal[checked=checked]').val();
+
+    console.log($cuenta);
+    console.log($nomform);
+    console.log($carsep);
+    console.log($tipo);
+    
+    $('.list-right-modal ul li').each(function(){
+      console.log($(this)[0].innerHTML);
+    });
+
+    /*
+      CAMPOS DISPONIBLES
+    Nro. Cuenta *
+    Nro. Estado de Cuenta
+    Moneda
+    Fecha *
+    Credito/Débito Partida
+    Monto *
+    Tipo Transacción *
+    Ref. Nostro
+    Ref. Vostro
+    Detalle
+    Saldo *
+    Credito/Débito Saldo
+    */
+
+    return false;
+});
+
+//Resetear campos del formulario cuando se esconde
+$('.modal:not(.modal-static)').on('hidden.bs.modal', function(){
+    $(this).find('form')[0].reset();
+});
+
+</script>
+
 <script>
 	$(function () {
 
@@ -159,16 +431,68 @@
                 $(this).toggleClass('active');
             });
 
+            //Flechas Pagina normal
             $('.list-arrows button').click(function () {
                 var $button = $(this), actives = '';
+                //Izquierda
                 if ($button.hasClass('move-left')) {
                     actives = $('.list-right ul li.active');
                     actives.clone().appendTo('.list-left ul');
                     actives.remove();
+                //Derecha
                 } else if ($button.hasClass('move-right')) {
                     actives = $('.list-left ul li.active');
                     actives.clone().appendTo('.list-right ul');
                     actives.remove();
+                //Arriba
+                } else if($button.hasClass('reorder-up')){
+                    $('.list-right ul li.active').each(function(){
+                      var $previous = $(this).prev('li:not(.active)');
+                        if($previous.length !== 0 ){
+                            $(this).insertBefore($previous);
+                        }
+                    });
+                //Abajo
+                } else if ($button.hasClass('reorder-down')){
+                    $('.list-right ul li.active').each(function(){
+                      var $next = $(this).next('li:not(.active)');
+                      if($next.length !== 0){
+                        $(this).insertAfter($next);
+                      }
+                    });
+                }
+            });
+
+            //Flechas MODAL
+            $('.list-arrows-modal button').click(function () {
+                var $button = $(this), actives = '';
+
+                //Izquierda
+                if ($button.hasClass('move-left-modal')) {
+                    actives = $('.list-right-modal ul li.active');
+                    actives.clone().appendTo('.list-left-modal ul');
+                    actives.remove();
+                //Derecha
+                } else if ($button.hasClass('move-right-modal')) {
+                    actives = $('.list-left-modal ul li.active');
+                    actives.clone().appendTo('.list-right-modal ul');
+                    actives.remove();
+                //Arriba
+                } else if ($button.hasClass('reorder-up-modal')){
+                    $('.list-right-modal ul li.active').each(function(){
+                        var $previous = $(this).prev('li:not(.active)');
+                        if($previous.length !== 0 ){
+                            $(this).insertBefore($previous);
+                        }
+                    });
+                //Abajo
+                } else if ($button.hasClass('reorder-down-modal')){
+                    $('.list-right-modal ul li.active').each(function(){
+                      var $next = $(this).next('li:not(.active)');
+                      if($next.length !== 0){
+                        $(this).insertAfter($next);
+                      }
+                    });
                 }
             });
 
@@ -195,27 +519,6 @@
                 }).hide();
             });
 
-            $(".reorder-up").click(function(){
-              
-              $('.list-right ul li.active').each(function(){
-                var $previous = $(this).prev('li:not(.active)');
-                if($previous.length !== 0 ){
-                    $(this).insertBefore($previous);
-                }
-              });
-              return false;
-            });
-
-            $(".reorder-down").click(function(){
-              $('.list-right ul li.active').each(function(){
-                  var $next = $(this).next('li:not(.active)');
-                  if($next.length !== 0){
-                    $(this).insertAfter($next);
-                  }
-              });
-              return false;
-            });
-
             $(".clean").click(function(){
               $('.list-right ul').html("");
               return false;
@@ -228,6 +531,6 @@
               return false;
             });
 
-        });
+    });
 </script>
 {%endblock%}
