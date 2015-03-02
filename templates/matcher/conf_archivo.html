@@ -5,6 +5,8 @@
 {% block title %}Prueba{% endblock %}
 
 {%block head%}
+<link rel="stylesheet" href="{% static 'css/sweet-alert.css' %}">
+<link rel="stylesheet" href="{% static 'css/procesando.css' %}">
 {%endblock%}
 
 {% block content %}
@@ -55,7 +57,7 @@
         <div class="col-md-4">
             <div class="col-md-12">
                 <div>
-                    <button type="button" id="addButton" data-loading-text="Cargando..." class="col-md-3 btn btn-success" autocomplete="off" data-toggle="modal" data-target="#add-regla-modal">
+                    <button type="button" id="addButton" data-loading-text="Cargando..." class="col-md-3 btn btn-success" autocomplete="off" data-toggle="modal" data-target="#add-formato-modal">
                         Agregar
                     </button>
                 </div>
@@ -70,7 +72,7 @@
         </div>
 
         <div class="well col-md-4 col-md-pull-2">
-            <form class="form-horizontal">
+            <form id="form-detalle-formato" class="form-horizontal">
                 <fieldset>
 
                 <!-- Form Name -->
@@ -133,8 +135,9 @@
 
     </div>    
 
+
     <div class="row">
-        <div class="col-md-4">
+        <div class="col-md-4 pull-right">
             <button type="button" id="updButton" data-loading-text="Cargando..." class="col-md-3 btn btn-primary" autocomplete="off">
                 Modificar
             </button>
@@ -157,7 +160,7 @@
                 </div>
                 <ul class="list-group" type="campos">
                     {% for campo in campos_disp %}
-                    <li class="list-group-item">{{campo}}</li>
+                    <li class="list-group-item" pos="{{forloop.counter0}}">{{campo}}</li>
                     {% endfor %}
                 </ul>
             </div>
@@ -179,10 +182,6 @@
 
             <button class="btn btn-default btn-sm reorder-down">
                 <span class="glyphicon glyphicon-chevron-down"></span>
-            </button>
-
-            <button class="btn btn-default btn-sm submit">
-                <span class="glyphicon glyphicon-asterisk"></span>
             </button>
         </div>
 
@@ -210,14 +209,14 @@
     </div>
 </div>
 
-<div class="modal fade" id="add-regla-modal" role="dialog">
+<div class="modal fade" id="add-formato-modal" role="dialog">
   <div class="modal-dialog">
     <div class="modal-content" style="width: 200%; left: -300px;">
-      <form style="margin-left:8%;" id="form-add-regla" name="form-add-regla" method="POST" class="validation-form-container">
+      <form style="margin-left:8%;" id="form-add-formato" name="form-add-formato" method="POST" class="validation-form-container">
 
         <div class="modal-header">
           <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-          <h2 class="modal-title">Agregar una regla</h2>
+          <h2 class="modal-title">Agregar un formato</h2>
         </div>
         <div class="modal-body">
             <div class="row">
@@ -300,7 +299,7 @@
                         </div>
                         <ul class="list-group" type="campos">
                             {% for campo in campos_disp %}
-                                <li class="list-group-item">{{campo}}</li>
+                                <li class="list-group-item" pos="{{forloop.counter0}}">{{campo}}</li>
                             {% endfor %}
                         </ul>
                     </div>
@@ -353,242 +352,27 @@
   </div><!-- /.modal-dialog -->
 </div><!-- /.modal -->
 
+<!-- Static Modal para procesando -->
+<div class="modal modal-static fade" id="processing-modal" role="dialog" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-body">
+                <div class="text-center">
+                    <img src="{% static 'images/procesando.gif' %}" class="icon" />
+                    <h4>Procesando, por favor espere.</h4>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
 {%endblock%}
 
 {%block script%}
 <script type="text/javascript">
     campos_disp = {{campos_disp|safe}};
-
-
-$('#addfa-submit').on('click', function() {
-    event.preventDefault();
-
-
-    $cuenta = $('#cuentasformmodal').val();
-    $nomform = $('#nomformmodal').val();
-    $carsep = $('#carsepmodal').val();
-    $tipo = $('.radio-modal[checked=checked]').val();
-
-    console.log($cuenta);
-    console.log($nomform);
-    console.log($carsep);
-    console.log($tipo);
-    
-    $('.list-right-modal ul li').each(function(){
-      console.log($(this)[0].innerHTML);
-    });
-
-    /*
-      CAMPOS DISPONIBLES
-    Nro. Cuenta *
-    Nro. Estado de Cuenta
-    Moneda
-    Fecha *
-    Credito/Débito Partida
-    Monto *
-    Tipo Transacción *
-    Ref. Nostro
-    Ref. Vostro
-    Detalle
-    Saldo *
-    Credito/Débito Saldo
-    */
-
-    return false;
-});
-
-//Resetear campos del formulario cuando se esconde
-$('.modal:not(.modal-static)').on('hidden.bs.modal', function(){
-    
-    $('.list-right-modal ul li, .list-left-modal ul li').remove();
-    $(this).find('form')[0].reset();
-    for (var i = 0; i<campos_disp.length; i++){
-        $('.list-left-modal ul').append('<li class="list-group-item">'+ campos_disp[i] +'</li>');
-    }
-    $checkBox = $('.smodal');
-    if ($checkBox.hasClass('selected')) {
-        $checkBox.removeClass('selected');
-        $checkBox.children('i').removeClass('glyphicon-check').addClass('glyphicon-unchecked');
-    }
-});
-
 </script>
+<script src="{% static 'js/sweet-alert.min.js' %}"></script>
+<script src="{% static 'js/conf_archivo.js' %}" type="text/javascript"></script>
 
-<script>
-	$(function () {
-
-            //Elegir el archivo
-            $('body').on('click', '.list-group[type=archivo] .list-group-item', function () {
-                //Que solo uno este seleccionado
-                $('.list-group[type=archivo] > .list-group-item ').each(function(){
-                    if ($(this).hasClass('active')){
-                        $(this).toggleClass('active');
-                    }
-                });
-                $(this).toggleClass('active');
-
-                //Buscando los campos elegidos para el formato
-                var campos_elegidos = [];
-                var campos_el_index = [];
-                var formato = $(this).attr('formato');
-
-                for(var x = 0, c=''; c = formato.charAt(x); x++){ 
-                    if (c<10){
-                        campos_elegidos.push(campos_disp[c]);
-                        campos_el_index.push(parseInt(c));
-                    }else if (c==="A"){
-                        campos_elegidos.push(campos_disp[10]);
-                        campos_el_index.push(10);
-                    }else if (c==="B"){
-                        campos_elegidos.push(campos_disp[11]);
-                        campos_el_index.push(11);
-                    }
-                }
-
-
-                //Llenando los detalles
-                var tipo = $(this).attr('tipo');
-
-                $('#cuentaform').val($(this).attr('cuentanom'));
-                $('#nomform').val($(this).attr('nombre'));
-                $('#carsep').val($(this).attr('separador'));
-                $('#'+tipo).prop('checked','checked');
-
-                //Llenando las listas segun el formato guardado
-                $left =  $('.list-left ul');
-                $right =  $('.list-right ul');
-                $left.html('');
-                $right.html('');
-
-                for (var i=0; i<campos_disp.length;i++){
-                    var sel = $.inArray(i,campos_el_index);
-                    if (sel<0){
-                        $left.append('<li class="list-group-item" id="camp-'+i+ '">'+ campos_disp[i] +'</li>');
-                    };
-                };
-
-                for (var i=0; i<campos_el_index.length;i++){
-                    $right.append('<li class="list-group-item" id="camp-'+campos_el_index[i]+ '">'+ campos_disp[campos_el_index[i]] +'</li>');
-                };
-            });            
-
-
-
-            //Elegir los campos
-            $('body').on('click', '.list-group[type=campos] .list-group-item', function () {
-                $checkBox = $('.dual-list .selector');
-
-                if ($(this).hasClass('active')){
-                    if ($checkBox.hasClass('selected')) {
-                        $checkBox.removeClass('selected');
-                        $checkBox.children('i').removeClass('glyphicon-check').addClass('glyphicon-unchecked');
-                    }
-                }
-
-                $(this).toggleClass('active');
-            });
-
-            //Flechas Pagina normal
-            $('.list-arrows button').click(function () {
-                var $button = $(this), actives = '';
-                //Izquierda
-                if ($button.hasClass('move-left')) {
-                    actives = $('.list-right ul li.active');
-                    actives.clone().appendTo('.list-left ul');
-                    actives.remove();
-                //Derecha
-                } else if ($button.hasClass('move-right')) {
-                    actives = $('.list-left ul li.active');
-                    actives.clone().appendTo('.list-right ul');
-                    actives.remove();
-                //Arriba
-                } else if($button.hasClass('reorder-up')){
-                    $('.list-right ul li.active').each(function(){
-                      var $previous = $(this).prev('li:not(.active)');
-                        if($previous.length !== 0 ){
-                            $(this).insertBefore($previous);
-                        }
-                    });
-                //Abajo
-                } else if ($button.hasClass('reorder-down')){
-                    $('.list-right ul li.active').each(function(){
-                      var $next = $(this).next('li:not(.active)');
-                      if($next.length !== 0){
-                        $(this).insertAfter($next);
-                      }
-                    });
-                }
-            });
-
-            //Flechas MODAL
-            $('.list-arrows-modal button').click(function () {
-                var $button = $(this), actives = '';
-
-                //Izquierda
-                if ($button.hasClass('move-left-modal')) {
-                    actives = $('.list-right-modal ul li.active');
-                    actives.clone().appendTo('.list-left-modal ul');
-                    actives.remove();
-                //Derecha
-                } else if ($button.hasClass('move-right-modal')) {
-                    actives = $('.list-left-modal ul li.active');
-                    actives.clone().appendTo('.list-right-modal ul');
-                    actives.remove();
-                //Arriba
-                } else if ($button.hasClass('reorder-up-modal')){
-                    $('.list-right-modal ul li.active').each(function(){
-                        var $previous = $(this).prev('li:not(.active)');
-                        if($previous.length !== 0 ){
-                            $(this).insertBefore($previous);
-                        }
-                    });
-                //Abajo
-                } else if ($button.hasClass('reorder-down-modal')){
-                    $('.list-right-modal ul li.active').each(function(){
-                      var $next = $(this).next('li:not(.active)');
-                      if($next.length !== 0){
-                        $(this).insertAfter($next);
-                      }
-                    });
-                }
-            });
-
-            $('.dual-list .selector').click(function () {
-                var $checkBox = $(this);
-                if (!$checkBox.hasClass('selected')) {
-                    $checkBox.addClass('selected').closest('.well').find('ul li:not(.active)').addClass('active');
-                    $checkBox.children('i').removeClass('glyphicon-unchecked').addClass('glyphicon-check');
-                } else {
-                    $checkBox.removeClass('selected').closest('.well').find('ul li.active').removeClass('active');
-                    $checkBox.children('i').removeClass('glyphicon-check').addClass('glyphicon-unchecked');
-                }
-            });
-
-            $('[name="SearchDualList"]').keyup(function (e) {
-                var code = e.keyCode || e.which;
-                if (code == '9') return;
-                if (code == '27') $(this).val(null);
-                var $rows = $(this).closest('.dual-list').find('.list-group li');
-                var val = $.trim($(this).val()).replace(/ +/g, ' ').toLowerCase();
-                $rows.show().filter(function () {
-                    var text = $(this).text().replace(/\s+/g, ' ').toLowerCase();
-                    return !~text.indexOf(val);
-                }).hide();
-            });
-
-            $(".clean").click(function(){
-              $('.list-right ul').html("");
-              return false;
-            });
-
-            $(".submit").click(function(){
-              $('.list-right ul li').each(function(){
-                console.log($(this)[0].innerHTML);
-              });
-              return false;
-            });
-
-    });
-</script>
 {%endblock%}

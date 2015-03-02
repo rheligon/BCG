@@ -20,16 +20,16 @@ urlpatterns = patterns('',
 
     # Resumen Cuentas
     url(r'^cuentas/$', 'Matcher_WS.views.listar_cuentas', name='listar_cuentas'),
-   	url(r'^resumen/(?P<cuenta_id>\d+)$', 'Matcher_WS.views.resumen_cuenta', name='resumen_cuenta'),
+   	url(r'^resumen/(?P<cuenta_id>\d+)/$', 'Matcher_WS.views.resumen_cuenta', name='resumen_cuenta'),
 
     # Estado Cuenta
     url(r'^cuentas/estado$', 'Matcher_WS.views.estado_cuentas', name='estado_cuenta'),
     
     # Mensajes SWIFT (MT96-MT99)
-    url(r'^MT/(?P<tipo>\w+)$', 'Matcher_WS.views.mensajesSWIFT', name='mensajesSWIFT'),
+    url(r'^MT/(?P<tipo>\w+)/$', 'Matcher_WS.views.mensajesSWIFT', name='mensajesSWIFT'),
     
     # Configuración (Sistema-Archivo)
-    url(r'^conf/(?P<tipo>\w+)$', 'Matcher_WS.views.configuracion', name='configuracion'),
+    url(r'^conf/(?P<tipo>\w+)/$', 'Matcher_WS.views.configuracion', name='configuracion'),
 
     # Administración
     url(r'^admin/bancos/$', 'Matcher_WS.views.admin_bancos', name='admin_bancos'),

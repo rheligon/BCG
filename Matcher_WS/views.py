@@ -230,35 +230,100 @@ def resumen_cuenta(request, cuenta_id):
 
 @login_required(login_url='/login')
 def configuracion(request, tipo):
+    if request.method == 'POST':
+        print (request.POST)
 
-    if tipo == "sis":
-        template = "matcher/conf_sistema.html"
-        empresa = Empresa.objects.all()
-        conf = Configuracion.objects.all()
+        if tipo == "sis":
+            print("sis")
 
-        # ARREGLAR
-        if request.method == 'POST':
-            form = request.POST
-            print (form)
+        if tipo == "arc":
+            actn = request.POST.get('action')
 
-        context = {'empresa': empresa[0], 'conf': conf[0]}
-        return render(request, template, context)
+            if actn == "add":
+                formcuenta = int(request.POST.get('formcuenta'))
+                formnom = request.POST.get('formnom')
+                formcarsep = request.POST.get('formcarsep')
+                formtipo = request.POST.get('formtipo')
+                formcampsel = request.POST.get('formcampsel')
+                msg = "Formato creado exitosamente."
 
-    if tipo == "arc":
-        template = "matcher/conf_archivo.html"
-        campos_disp = ['Nro. Cuenta *','Nro. Estado de Cuenta','Moneda', 'Fecha *','Credito/Débito Partida', 'Monto *', 'Tipo Transacción *', 'Ref. Nostro', 'Ref. Vostro', 'Detalle', 'Saldo *', 'Credito/Débito Saldo']
-        archivos = Formatoarchivo.objects.all()
-        cuentas = Cuenta.objects.all()
-        # ARREGLAR
-        if request.method == 'POST':
-            form = request.POST
-            print (form)
+                try:
+                    cuenta = Cuenta.objects.get(pk=formcuenta)
+                except Cuenta.DoesNotExist:
+                    msg = "No se encontro la cuenta especificada, asegurese de elegir una cuenta primero."
+                    return JsonResponse({'msg': msg, 'add': False})
 
-        context = {'archivos':archivos, 'cuentas':cuentas, 'campos_disp':campos_disp}
-        return render(request, template, context)
-    
-    # ninguna, deberia raise 404
-    return render(request, "matcher/login.html", {})
+                formato =  Formatoarchivo.objects.create(cuenta_idcuenta = cuenta, nombre = formnom, separador = formcarsep, tipo = formtipo, formato=formcampsel)
+            
+                return JsonResponse({'formid':formato.pk, 'formnom':formnom, "formcuentaid":cuenta.pk, "formcuentanom": cuenta.codigo , "formcarsep":formcarsep, "formtipo": formtipo, "formcampsel": formcampsel, 'msg':msg, 'add': True})
+
+            elif actn == "del":
+                formid = request.POST.get('formid')
+                msg = "Formato eliminado exitosamente."
+
+                try:
+                    formato = Formatoarchivo.objects.get(idformato=formid)
+                except Formatoarchivo.DoesNotExist:
+                    msg = "No se encontro el formato especificado, asegurese de hacer click en el formato de archivo a eliminar." 
+                    return JsonResponse({'msg': msg, 'formid': formid, 'elim': False})
+
+                formato.delete()
+                return JsonResponse({'msg': msg, 'formid': formid, 'elim': True})
+
+            elif actn == "upd":
+
+                formid = request.POST.get('formid')
+                formnom = request.POST.get('formnom')
+                formcarsep = request.POST.get('formcarsep')
+                formtipo = request.POST.get('formtipo')
+                formcampsel = request.POST.get('formcampsel')
+
+                msg = "Formato modificado exitosamente."
+                
+                try:
+                    formato = Formatoarchivo.objects.get(idformato=formid)
+                except Formatoarchivo.DoesNotExist:
+                    msg = "No se encontro el formato especificado, asegurese de hacer click en el formato de archivo a modificar." 
+                    return JsonResponse({'msg': msg, 'formid': formid, 'modif': False})
+ 
+                formato.nombre = formnom
+                formato.separador = formcarsep
+                formato.tipo = formtipo
+                formato.formato = formcampsel
+                formato.save()
+                return JsonResponse({'msg': msg, 'formid': formid, "formnom":formnom, "formcarsep":formcarsep, "formtipo": formtipo, "formcampsel": formcampsel,'modif': True})
+
+
+    if request.method == 'GET':
+
+        if tipo == "sis":
+            template = "matcher/conf_sistema.html"
+            empresa = Empresa.objects.all()
+            conf = Configuracion.objects.all()
+
+            # ARREGLAR
+            if request.method == 'POST':
+                form = request.POST
+                print (form)
+
+            context = {'empresa': empresa[0], 'conf': conf[0]}
+            return render(request, template, context)
+
+        if tipo == "arc":
+            template = "matcher/conf_archivo.html"
+            campos_disp = ['Nro. Cuenta *','Nro. Estado de Cuenta','Moneda', 'Fecha *','Credito/Débito Partida', 'Monto *', 'Tipo Transacción *', 'Ref. Nostro', 'Ref. Vostro', 'Detalle', 'Saldo *', 'Credito/Débito Saldo']
+            archivos = Formatoarchivo.objects.all()
+            cuentas = Cuenta.objects.all()
+            # ARREGLAR
+            if request.method == 'POST':
+                form = request.POST
+                print (form)
+
+            context = {'archivos':archivos, 'cuentas':cuentas, 'campos_disp':campos_disp}
+            return render(request, template, context)
+        
+        # ninguna, deberia raise 404
+        return render(request, "matcher/login.html", {})
 
 @login_required(login_url='/login')
 def admin_bancos(request):
