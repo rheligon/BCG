@@ -25,8 +25,8 @@
             <tr id= "tr-{{cuenta.idcuenta}}">
                 <td id= "td-{{cuenta.idcuenta}}"><a href="/resumen/{{cuenta.idcuenta}}" id="{{cuenta.idcuenta}}">{{ cuenta.codigo }}</a></td>
                 <td>{{ cuenta.banco_corresponsal_idbanco.codigo }}</td>
-                <td>{{ cuenta.ultimafechaconciliacion|date:"d/m/Y"|default:"Ningúna" }}</td>
-                <td>{{ cuenta.ultimafechahistorico|date:"d/m/Y"|default:"Ningúna" }}</td>
+                <td>{{ cuenta.ultimafechaconciliacion|date:"d/m/Y"|default:"" }}</td>
+                <td>{{ cuenta.ultimafechahistorico|date:"d/m/Y"|default:"" }}</td>
             </tr>
             {% endfor %}
         </tbody>
