@@ -231,6 +231,7 @@ def resumen_cuenta(request, cuenta_id):
 @login_required(login_url='/login')
 def configuracion(request, tipo):
     if request.method == 'POST':
+        print (request.POST)
 
         if tipo == "sis":
             print("sis")

@@ -180,7 +180,6 @@ $(function () {
 
 //Agregar Formato
 $('#addfa-submit').on('click', function () {
-    event.preventDefault();
     var $btn;
    
     function add_formarc(formCuenta, formNom, formCarsep, formTipo, formCampSel){
