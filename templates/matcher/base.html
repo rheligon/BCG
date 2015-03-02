@@ -24,7 +24,9 @@
 
   <body>
   		<div class="row">
-			{% include "matcher/navbar.html" %}
+  			{% if user.is_authenticated %}
+				{% include "matcher/navbar.html" %}
+			{% endif %}
 			<div class="container col-sm-10 col-md-10">
 				{%block content%}
 				{%endblock%}

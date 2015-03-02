@@ -50,8 +50,11 @@ def usr_login(request):
 
     # if the request method is POST the process the POST values otherwise just render the page
     if request.method == 'POST':
+        print(request.POST)
         username = request.POST.get('username', '')
         password = request.POST.get('password', '')
+        print(username)
+        print(password)
         user = auth.authenticate(username=username, password=password)
         if user is not None and user.is_active:
             # Correct password, and the user is marked "active"
@@ -231,9 +234,9 @@ def resumen_cuenta(request, cuenta_id):
 @login_required(login_url='/login')
 def configuracion(request, tipo):
     if request.method == 'POST':
-        print (request.POST)
 
         if tipo == "sis":
+            print(request.POST)
             print("sis")
 
         if tipo == "arc":
@@ -324,6 +327,21 @@ def configuracion(request, tipo):
         
         # ninguna, deberia raise 404
         return render(request, "matcher/login.html", {})
+
+@login_required(login_url='/login')
+def seg_backupRestore(request):
+    if request.method == "POST":
+        print(request.POST)
+
+    if request.method == "GET":
+        cuentas_list = Cuenta.objects.all()
+
+        context = {'cuentas': cuentas_list}
+        template = "matcher/seg_backupRestore.html"
+
+        return render(request, template, context)
+
+
 
 @login_required(login_url='/login')
 def admin_bancos(request):
@@ -659,7 +677,7 @@ def admin_crit_reglas(request):
              
 
     if request.method == 'GET':
-        template = "matcher/admin_criterios_reglas.html"
+        template = "matcher/admin_criteriosReglas.html"
         criterios = CriteriosMatch.objects.all()
         context = {'criterios':criterios}
         return render(request, template, context)

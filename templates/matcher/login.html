@@ -2,60 +2,39 @@
 
 {% load staticfiles %}
 
-{% block content %}  
+{%block head%}
+<link rel="stylesheet" type="text/css" href="{% static 'css/login.css' %}">
+{%endblock%}
 
-  
-    <div class="row">
+{% block content %}  
+    <div class="row bodylogin">
         <div class="col-md-12">
             <div class="wrap">
-
-                <div class="col-md-6 col-md-push-3">
+              <div class="col-md-6 col-md-push-3">
                 {% if message %}
-                  <p class="form-title error" style="color:white">{{message}}</p>
+                  <p class="form-title error" style="color:red;margin-left:8%;">{{message}}</p>
                 {%endif%}
-                </div>
-
-                <div class="col-md-12">
-                <p class="form-title"> Sign In</p>
-                </div>
-                <form class="login" action="" method="post">
-                {% csrf_token %}
-                <input type="text" id="username" name="username" value="" placeholder="Username" />
-                <input type="password" id="password" name="password" value="" placeholder="Password" />
-                <input type="submit" value="login" class="btn btn-success btn-sm" />
-
-                <div class="remember-forgot">
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="checkbox">
-                                <label>
-                                    <input type="checkbox" />
-                                    Remember Me
-                                </label>
-                            </div>
-                        </div>
-                        <div class="col-md-6 forgot-pass-content">
-                            <a href="javascription:void(0)" class="forgot-pass">Forgot Password</a>
-                        </div>
+              </div>
+              </br>
+              <form class="form-signin login" action="" method="POST">
+                    {% csrf_token %}
+                    <h2 class="form-signin-heading text-center">Inicie Sesión</h2>
+                    <label for="inputEmail" class="sr-only">Username</label>
+                    <input type="text" id="username" name="username" value="" class="form-control" placeholder="Username" required autofocus/>
+                    <label for="inputPassword" class="sr-only">Password</label>
+                    <input type="password" id="password" name="password" value="" class="form-control" placeholder="Password" required/>
+                    <div class="checkbox">
+                      <label>
+                        <input type="checkbox" value="remember-me"> Remember me
+                      </label>
                     </div>
-                </div>
-                </form>
+                    <button class="btn btn-lg btn-primary btn-block" value="login" type="submit">Sign in</button>
+              </form>
             </div>
         </div>
-    </div>
+    </div> <!-- /container -->
 
 {% endblock %}
 
 {% block script %}
-<script>
- $(document).ready(function () {
-    $('.forgot-pass').click(function(event) {
-      $(".pr-wrap").toggleClass("show-pass-reset");
-    }); 
-    
-    $('.pass-reset-submit').click(function(event) {
-      $(".pr-wrap").removeClass("show-pass-reset");
-    }); 
-});
- </script>
 {% endblock %}
