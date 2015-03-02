@@ -23,6 +23,17 @@ function iniciar_tabla(idioma){
     };
 };
 
+function vacio(str){
+    if (str===""){
+        return str
+    }else if (str==="None"){
+        return ""
+    }else if (str===null){
+        return ""
+    }
+    return str
+}
+
 //Eliminar criterio
 $('#delButton').on('click', function () {
     var $btn;
@@ -58,17 +69,23 @@ $('#delButton').on('click', function () {
     }
 
     var nomC = $('#Nom_criterio').val();
-    swal({   title: "",
-         text: "Seguro que desea eliminar el criterio '"+ nomC +"' que se muestra en la parte de detalles?",
-         type: "warning",
-         showCancelButton: true,
-         confirmButtonText: "Ok"},
-         function(){
-            $btn = $(this).button('loading');
-            $('#processing-modal').modal('toggle');
-            del_crit($("#Id_criterio").val());
-         }
-         );
+    var idC = $("#Id_criterio").val();
+
+    if (idC>=0){
+        swal({   title: "",
+             text: "Seguro que desea eliminar el criterio '"+ nomC +"' que se muestra en la parte de detalles?",
+             type: "warning",
+             showCancelButton: true,
+             confirmButtonText: "Ok"},
+             function(){
+                $btn = $(this).button('loading');
+                $('#processing-modal').modal('toggle');
+                del_crit(idC);
+             }
+             );
+    }else{
+        swal("Ups!", "Por favor seleccionar el criterio a eliminar previamente.","error");
+    }
 })
 
 //Modificar Criterio
@@ -86,14 +103,14 @@ $('#updButton').on('click', function () {
 
                     var td1 = '<td>'+ '<a href="/admin/crit_reglas/'+ data.criterioid + '" nombre ="' + data.criterionom + '" id="'+ data.criterioid + '" monto1 = "' + data.criteriomon1+ '" monto2 = "' + data.criteriomon2+ '" monto3 = "' + data.criteriomon3+ '" fecha1 = "' + data.criterioF1+ '" fecha2 = "' + data.criterioF2+ '" fecha3 = "' + data.criterioF3+ '" fecha4 = "' + data.criterioF4+ '" fecha5 = "' + data.criterioF5 + '" type="criterio">' + data.criterionom + '</a></td>';
 
-                    var td2 = '<td>' + data.criteriomon1 + '</td>';
-                    var td3 = '<td>' + data.criteriomon2 + '</td>';
-                    var td4 = '<td>' + data.criteriomon3 + '</td>';
-                    var td5 = '<td>' + data.criterioF1 + '</td>';
-                    var td6 = '<td>' + data.criterioF2 + '</td>';
-                    var td7 = '<td>' + data.criterioF3 + '</td>';
-                    var td8 = '<td>' + data.criterioF4 + '</td>';
-                    var td9 = '<td>' + data.criterioF5 + '</td>';
+                    var td2 = '<td>' + vacio(data.criteriomon1) + '</td>';
+                    var td3 = '<td>' + vacio(data.criteriomon2) + '</td>';
+                    var td4 = '<td>' + vacio(data.criteriomon3) + '</td>';
+                    var td5 = '<td>' + vacio(data.criterioF1) + '</td>';
+                    var td6 = '<td>' + vacio(data.criterioF2) + '</td>';
+                    var td7 = '<td>' + vacio(data.criterioF3) + '</td>';
+                    var td8 = '<td>' + vacio(data.criterioF4) + '</td>';
+                    var td9 = '<td>' + vacio(data.criterioF5) + '</td>';
 
                     $('#table-criterios > tbody').append('<tr id ="tr-'+data.criterioid+'"></tr>');
 
@@ -131,22 +148,28 @@ $('#updButton').on('click', function () {
     var F5c = $('#F5_criterio').val();
     var nomC = $('#Nom_criterio').val();
 
-    swal({   title: "",
-         text: "Seguro que desea modificar el criterio '"+ nomC +"' con los campos de la seccion de detalles?",
-         type: "warning",
-         showCancelButton: true,
-         confirmButtonText: "Ok"},
-         function(){
-            $btn = $(this).button('loading')
-            if (nomC.length<1 || nomC.length>20){
-                swal("Ups!", "Recuerde que el nombre es obligatorio y debe tener máximo 20 caracteres", "info");
-                $btn.button('reset')
-            }else{
-                $('#processing-modal').modal('toggle');
-                upd_crit($("#Id_criterio").val(),nomC,mon1c,mon2c,mon3c,F1c,F2c,F3c,F4c,F5c);
-            }
-         }
-         );
+    var idC = $("#Id_criterio").val();
+
+    if (idC>=0){
+
+        if (nomC.length===0 || nomC.length>20){
+                    swal("Ups!", "Recuerde que el nombre es obligatorio y debe tener máximo 20 caracteres", "info");
+        }else{
+            swal({   title: "",
+                 text: "Seguro que desea modificar el criterio '"+ nomC +"' con los campos de la seccion de detalles?",
+                 type: "warning",
+                 showCancelButton: true,
+                 confirmButtonText: "Ok"},
+                 function(){
+                    $btn = $(this).button('loading')
+                    $('#processing-modal').modal('toggle');
+                    upd_crit($("#Id_criterio").val(),nomC,mon1c,mon2c,mon3c,F1c,F2c,F3c,F4c,F5c);
+                 }
+                 );
+        }
+    }else{
+        swal("Ups!", "Por favor seleccionar el criterio a modificar previamente.", "error");
+    }
 })
 
 
@@ -238,14 +261,14 @@ $('#form-add-criterio').validate({
 
                                 var td1 = '<td>'+ '<a href="/admin/criterios/'+ data.criterioid + '" nombre ="' + data.criterionom + '" id="'+ data.criterioid + '" monto1 = "' + data.criteriomon1+ '" monto2 = "' + data.criteriomon2+ '" monto3 = "' + data.criteriomon3+ '" fecha1 = "' + data.criterioF1+ '" fecha2 = "' + data.criterioF2+ '" fecha3 = "' + data.criterioF3+ '" fecha4 = "' + data.criterioF4+ '" fecha5 = "' + data.criterioF5 + '" type="criterio">' + data.criterionom + '</a></td>';
 
-                                var td2 = '<td>' + data.criteriomon1 + '</td>';
-                                var td3 = '<td>' + data.criteriomon2 + '</td>';
-                                var td4 = '<td>' + data.criteriomon3 + '</td>';
-                                var td5 = '<td>' + data.criterioF1 + '</td>';
-                                var td6 = '<td>' + data.criterioF2 + '</td>';
-                                var td7 = '<td>' + data.criterioF3 + '</td>';
-                                var td8 = '<td>' + data.criterioF4 + '</td>';
-                                var td9 = '<td>' + data.criterioF5 + '</td>';
+                                var td2 = '<td>' + vacio(data.criteriomon1) + '</td>';
+                                var td3 = '<td>' + vacio(data.criteriomon2) + '</td>';
+                                var td4 = '<td>' + vacio(data.criteriomon3) + '</td>';
+                                var td5 = '<td>' + vacio(data.criterioF1) + '</td>';
+                                var td6 = '<td>' + vacio(data.criterioF2) + '</td>';
+                                var td7 = '<td>' + vacio(data.criterioF3) + '</td>';
+                                var td8 = '<td>' + vacio(data.criterioF4) + '</td>';
+                                var td9 = '<td>' + vacio(data.criterioF5) + '</td>';
 
                                 $('#table-criterios > tbody').append('<tr id ="tr-'+data.criterioid+'"></tr>');
 

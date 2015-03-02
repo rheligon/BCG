@@ -33,14 +33,14 @@
             {% for criterio in criterios %}
             <tr id= "tr-{{criterio.idcriterio}}">
                 <td id= "td-{{criterio.idcriterio}}"><a href="/admin/crit_reglas/{{criterio.idcriterio}}" nombre ="{{ criterio.nombre }}" monto1="{{ criterio.monto1 }}" monto2="{{ criterio.monto2 }}" monto3="{{ criterio.monto3 }}" fecha1="{{ criterio.fecha1 }}" fecha2="{{ criterio.fecha2 }}" fecha3="{{ criterio.fecha3 }}" fecha4="{{ criterio.fecha4 }}" fecha5="{{ criterio.fecha5 }}" type="criterio" id ="{{criterio.idcriterio}}"> {{ criterio.nombre }}</a></td>
-                <td>{{ criterio.monto1 }}</td>
-                <td>{{ criterio.monto2 }}</td>
-                <td>{{ criterio.monto3 }}</td>
-                <td>{{ criterio.fecha1 }}</td>
-                <td>{{ criterio.fecha2 }}</td>
-                <td>{{ criterio.fecha3 }}</td>
-                <td>{{ criterio.fecha4 }}</td>
-                <td>{{ criterio.fecha5 }}</td>
+                <td>{{ criterio.monto1|default_if_none:"" }}</td>
+                <td>{{ criterio.monto2|default_if_none:"" }}</td>
+                <td>{{ criterio.monto3|default_if_none:"" }}</td>
+                <td>{{ criterio.fecha1|default_if_none:"" }}</td>
+                <td>{{ criterio.fecha2|default_if_none:"" }}</td>
+                <td>{{ criterio.fecha3|default_if_none:"" }}</td>
+                <td>{{ criterio.fecha4|default_if_none:"" }}</td>
+                <td>{{ criterio.fecha5|default_if_none:"" }}</td>
             </tr>
             {% endfor %}
         </tbody>
@@ -63,7 +63,8 @@
     </button>
 </div>
 
-<input id="Id_criterio" name="Id_criterio" value="0" type="text" hidden>
+<input id="Id_criterio" name="Id_criterio" value="-1" type="text" hidden>
+
 <div style="padding-top:2%;" class="col-md-7 criterio-detalle" hidden>
     <form class="form-horizontal">
     <fieldset>

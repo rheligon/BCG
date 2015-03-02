@@ -35,6 +35,7 @@ $('#Cuenta-sel').change(function() {
     tabla.clear().draw();
     $('#processing-modal').modal('toggle');
     reglas(cuentaId);
+
   }else{
     $("#Id-regla").val(0);
     $('#nom-regla').val("");
@@ -154,21 +155,21 @@ $('#updButton').on('click', function () {
     var a_ref_corr = $('#sel-ref-corr').val();
     var a_masc_corr = $('#masc-corr').val();
 
-    swal({   title: "",
-             text: "Seguro que desea modificar la regla "+ a_nom +" ?",
-             type: "warning",
-             showCancelButton: true,
-             confirmButtonText: "Ok"},
-             function(){
-                $btn = $(this).button('loading');
-                $('#processing-modal').modal('toggle');
-                if (cuenta_id<0){
-                    swal("Ups!", "Acuerdese de seleccionar una cuenta primero", "error");
-                }else{
-                upd_regla($("#Id-regla").val(), a_nom, a_sel_tipo, a_trans_conta, a_trans_corr, a_ref_conta, a_ref_corr, a_masc_conta, a_masc_corr);
-                }
-             }
-             );
+    if (cuenta_id>=0){
+        swal({   title: "",
+                 text: "Seguro que desea modificar la regla "+ a_nom +" ?",
+                 type: "warning",
+                 showCancelButton: true,
+                 confirmButtonText: "Ok"},
+                 function(){
+                        $btn = $(this).button('loading');
+                        $('#processing-modal').modal('toggle');
+                        upd_regla($("#Id-regla").val(), a_nom, a_sel_tipo, a_trans_conta, a_trans_corr, a_ref_conta, a_ref_corr, a_masc_conta, a_masc_corr);
+                 }
+                 );
+    }else{
+        swal("Ups!", "Acuerdese de seleccionar una cuenta primero", "error");
+    }
 })
 
 //Eliminar Regla
@@ -225,22 +226,22 @@ $('#delButton').on('click', function () {
 
     var cuenta_id = $('#Cuenta-sel').val();
     var a_nom = $('#nom-regla').val();
-
-    swal({   title: "",
-             text: "Seguro que desea eliminar la regla "+ a_nom +" ?",
-             type: "warning",
-             showCancelButton: true,
-             confirmButtonText: "Ok"},
-             function(){
-                $btn = $(this).button('loading');
-                $('#processing-modal').modal('toggle');
-                if (cuenta_id<0){
-                    swal("Ups!", "Acuerdese de seleccionar una cuenta primero", "error");
-                }else{
-                del_regla($("#Id-regla").val());
-                }
-             }
-             );
+                
+    if (cuenta_id>=0){
+        swal({   title: "",
+                 text: "Seguro que desea eliminar la regla "+ a_nom +" ?",
+                 type: "warning",
+                 showCancelButton: true,
+                 confirmButtonText: "Ok"},
+                 function(){
+                    $btn = $(this).button('loading');
+                    $('#processing-modal').modal('toggle');
+                    del_regla($("#Id-regla").val());
+                 }
+                 );
+    }else{
+        swal("Ups!", "Acuerdese de seleccionar una cuenta primero", "error");
+    }
 })
 
 //Resetear campos del formulario cuando se esconde
@@ -406,6 +407,11 @@ function reglas(cuentaId){
 
                 if (i===0){
                     //Que se haga en la primera iteración solamente
+
+                    var $first = $('#'+a_id);
+                    $first.parent().css("background-color","#337ab7");
+                    $first.css("color","white");
+
                     $('#Id-regla').val(a_id);
                     $('#nom-regla').val(a_nom);
                     $('#sel-tipo-regla').val(a_tipo);

@@ -81,18 +81,23 @@ $('#delButton').on('click', function () {
     }
 
     var codM = $('#Cod_moneda').val();
+    var idM = $("#Id_moneda").val();
 
-    swal({   title: "",
-         text: "Seguro que desea eliminar la moneda "+codM+" ?",
-         type: "warning",
-         showCancelButton: true,
-         confirmButtonText: "Ok"},
-         function(){
-            $btn = $(this).button('loading')
-            $('#processing-modal').modal('toggle');
-            del_mon($("#Id_moneda").val());
-         }
-         );
+    if (idM>=0){
+        swal({   title: "",
+             text: "Seguro que desea eliminar la moneda "+codM+" ?",
+             type: "warning",
+             showCancelButton: true,
+             confirmButtonText: "Ok"},
+             function(){
+                $btn = $(this).button('loading')
+                $('#processing-modal').modal('toggle');
+                del_mon(idM);
+             }
+             );
+    }else{
+        swal("Ups!","Por favor seleccionar una moneda a eliminar previamente.", "error");
+    }
 })
 
 //Modificar Moneda
@@ -144,24 +149,30 @@ $('#updButton').on('click', function () {
     var codM = $('#Cod_moneda').val();
     var nomM = $('#Nom_moneda').val();
     var camM = $('#Cam_moneda').val();
+    var idM = $("#Id_moneda").val();
 
-    swal({   
-     title: "",
-     text: "Seguro que desea modificar la moneda "+ codM +" ?",
-     type: "warning",
-     showCancelButton: true,
-     confirmButtonText: "Ok"
-    },
-     function(){
-        $btn = $(this).button('loading')
-        if (codM.length>3 || nomM.length>10){
-            swal("Ups!", "Recuerde el codigo y el nombre deben tener máximo 3 y 10 caracteres respectivamente", "info");
-            $btn.button('reset')
+    if(idM>=0){
+        if (codM.length===0){
+            swal("Ups!", "Recuerde el codigo es obligatorio por lo que no debe estar vacío.", "info");
+        }else if (codM.length>3 || nomM.length>10){
+                swal("Ups!", "Recuerde el codigo y el nombre deben tener máximo 3 y 10 caracteres respectivamente", "info");
         }else{
-            $('#processing-modal').modal('toggle');
-            upd_mon($("#Id_moneda").val(), nomM, codM, camM);
+            swal({   
+             title: "",
+             text: "Seguro que desea modificar la moneda "+ codM +" ?",
+             type: "warning",
+             showCancelButton: true,
+             confirmButtonText: "Ok"
+            },
+             function(){
+                $btn = $(this).button('loading')
+                $('#processing-modal').modal('toggle');
+                upd_mon(idM, nomM, codM, camM);
+             });
         }
-     });
+    }else{
+        swal("Ups!","Por favor seleccionar la moneda a modificar previamente.","error");
+    }
 })
 
 

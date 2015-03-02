@@ -61,17 +61,22 @@ $('#delButton').on('click', function () {
     }
 
     var codB = $('#Cod_banco').val();
-    swal({   title: "",
-         text: "Seguro que desea eliminar el banco "+ codB +" ?",
-         type: "warning",
-         showCancelButton: true,
-         confirmButtonText: "Ok"},
-         function(){
-            $btn = $(this).button('loading')
-            $('#processing-modal').modal('toggle');
-            del_banc($("#Id_banco").val());
-         }
-         );
+    var idB = $("#Id_banco").val();
+    if (idB>=0){
+        swal({   title: "",
+             text: "Seguro que desea eliminar el banco "+ codB +" ?",
+             type: "warning",
+             showCancelButton: true,
+             confirmButtonText: "Ok"},
+             function(){
+                $btn = $(this).button('loading')
+                $('#processing-modal').modal('toggle');
+                del_banc(idB);
+             }
+             );
+    }else{
+        swal("Ups!","Por favor seleccionar el banco a eliminar previamente.","error");
+    }
 
 })
 
@@ -120,21 +125,23 @@ $('#updButton').on('click', function () {
 
     var codB = $('#Cod_banco').val();
     var nomB = $('#Nom_banco').val();
+    var idB = $("#Id_banco").val();
 
-    swal({   title: "",
-             text: "Seguro que desea modificar el banco "+ codB +" ?",
-             type: "warning",
-             showCancelButton: true,
-             confirmButtonText: "Ok"},
-             function(){
-                $btn = $(this).button('loading');
-                $('#processing-modal').modal('toggle');
-                upd_banc($("#Id_banco").val(), nomB, codB);
-             }
-             );
-
-
-
+    if (idB>=0){
+        swal({   title: "",
+                 text: "Seguro que desea modificar el banco "+ codB +" ?",
+                 type: "warning",
+                 showCancelButton: true,
+                 confirmButtonText: "Ok"},
+                 function(){
+                    $btn = $(this).button('loading');
+                    $('#processing-modal').modal('toggle');
+                    upd_banc(idB, nomB, codB);
+                 }
+                 );
+    }else{
+        swal("Ups!","Por favor seleccionar el banco a modificar previamente.","error");
+    }
 })
 
 

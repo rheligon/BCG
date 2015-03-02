@@ -362,6 +362,7 @@ $('#delButton').on('click', function () {
 
                 if (data.elim){
                     tabla.row($('#tr-'+ origen+'-'+data.codigo)).remove().draw();
+                    $('#elim-data').attr("cod","-1");
                 }
 
                 
@@ -375,14 +376,19 @@ $('#delButton').on('click', function () {
     }
 
     var codEdc = $('#elim-data').attr('cod')
-    swal({   title: "",
-     text: "Seguro que desea eliminar el estado de cuenta "+codEdc+" ?",
-     type: "warning",
-     showCancelButton: true,
-     confirmButtonText: "Ok"},
-     function(){
-        $btn = $(this).button('loading')
-        $('#processing-modal').modal('toggle');
-        del_edc(codEdc,$('#elim-data').attr('modo') );
-     });
+
+    if (codEdc!="-1"){
+        swal({   title: "",
+         text: "Seguro que desea eliminar el estado de cuenta "+codEdc+" ?",
+         type: "warning",
+         showCancelButton: true,
+         confirmButtonText: "Ok"},
+         function(){
+            $btn = $(this).button('loading')
+            $('#processing-modal').modal('toggle');
+            del_edc(codEdc,$('#elim-data').attr('modo'));
+         });
+    }else{
+        swal("Ups!","Por favor seleccionar un estado de cuenta a eliminar previamente.","error");
+    }
 })
