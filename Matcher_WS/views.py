@@ -338,20 +338,22 @@ def seg_backupRestore(request):
         print(request.POST)
         actn = request.POST.get("action")
 
+        # https://djangosnippets.org/snippets/118/
+        # http://django-mssql.readthedocs.org/en/latest/usage.html
+
         if actn == "res":
             # Recibe el numero de cuenta
             cuenta = int(request.POST.get("cuentaid"))
             msg = "Cuenta restaurada exitosamente."
 
-            # cursor = connection.cursor()
-            # try:
-            #     cursor.callproc('[dbo].[restoreMatcher]', [5, 'blah'])
+            cursor = connection.cursor()
+            try:
+                cursor.execute('EXEC [dbo].[restoreMatcher]', [cuenta])
+                result_set = cursor.fetchall()
+            finally:
+                cursor.close()
 
-            #     if cursor.return_value == 1:
-            #         result_set = cursor.fetchall()
-            # finally:
-            #     cursor.close()
-
+            print (result_set)
             return JsonResponse({'msg': msg,'restored': True})
 
         if actn == "bkUp":
@@ -479,11 +481,13 @@ def admin_monedas(request):
 
 @login_required(login_url='/login')
 def admin_cuentas(request):
-    template = "matcher/admin_cuentas.html"
-    cuentas = Cuenta.objects.all()
+    cuentas = Cuenta.objects.all().order_by('codigo')
     bancos = BancoCorresponsal.objects.all().order_by('codigo')
     monedas = Moneda.objects.all().order_by('codigo')
-    context = {'cuentas':cuentas, 'bancos':bancos, 'monedas':monedas}
+    criterios = CriteriosMatch.objects.all().order_by('nombre')
+    
+    template = "matcher/admin_cuentas.html"
+    context = {'cuentas':cuentas, 'bancos':bancos, 'monedas':monedas, 'criterios':criterios}
     return render(request, template, context)
 
 @login_required(login_url='/login')

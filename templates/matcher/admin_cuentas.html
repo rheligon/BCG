@@ -15,28 +15,37 @@
     margin-top: 15px;
 }
 
-.checkboxes > * {
+.checkboxes>*, #dg-tabcont>div  {
   padding-top: 1%;
 }
 </style>
 
-<div class="table-responsive col-md-10">
+<div class="table-responsive col-md-12">
     <table id="table-cuentas" class="table table-bordered table-striped tabla">
         <thead>
             <tr>
                 <th>Código cuenta</th>
+                <th>Descripción</th>
                 <th>Banco</th>
-                <th>Última Conciliación</th>
-                <th>Último Historico</th>
+                <th>No. Cta. Nostro</th>
+                <th>No. Cta. Vostro</th>
+                <th>Código Moneda</th>
+                <th>Estado</th>
+                <th>Criterios de Match</th>
+
             </tr>
         </thead>
         <tbody>
             {% for cuenta in cuentas %}
             <tr id= "tr-{{cuenta.idcuenta}}">
-                <td id= "td-{{cuenta.idcuenta}}"><a href="/resumen/{{cuenta.idcuenta}}" id="{{cuenta.idcuenta}}">{{ cuenta.codigo }}</a></td>
-                <td>{{ cuenta.banco_corresponsal_idbanco.codigo }}</td>
-                <td>{{ cuenta.ultimafechaconciliacion|date:"d/m/Y"|default:"" }}</td>
-                <td>{{ cuenta.ultimafechahistorico|date:"d/m/Y"|default:"" }}</td>
+                <td id= "td-{{cuenta.idcuenta}}"><a cod="{{cuenta.codigo }}" id="{{cuenta.idcuenta}}" criterio="{{cuenta.criterios_match_idcriterio.idcriterio}}" desc="{{cuenta.descripcion}}" banco="{{cuenta.banco_corresponsal_idbanco.idbanco}}" moneda="{{cuenta.moneda_idmoneda.idmoneda}}" nostro="{{cuenta.ref_nostro}}" vostro="{{cuenta.ref_vostro}}" estado="{{cuenta.estado}}" nsaltos="{{cuenta.num_saltos}}" tgiro="{{cuenta.transaccion_giro}}" retencion="{{cuenta.tiempo_retension}}" correoa="{{cuenta.correo_alertas}}" intrad="{{cuenta.intraday}}" tipocta="{{cuenta.tipo_cta}}">{{cuenta.codigo }}</a></td>
+                <td>{{ cuenta.descripcion|default:"" }}</td>
+                <td>{{ cuenta.banco_corresponsal_idbanco.codigo|default:"" }}</td>
+                <td>{{ cuenta.ref_nostro|default:"" }}</td>
+                <td>{{ cuenta.ref_vostro|default:"" }}</td>
+                <td>{{ cuenta.moneda_idmoneda.codigo|default:"" }}</td>
+                <td>{{ cuenta.estado|default:"" }}</td>
+                <td>{{ cuenta.criterios_match_idcriterio.nombre|default:"" }}</td>
             </tr>
             {% endfor %}
         </tbody>
@@ -55,7 +64,7 @@
     {% csrf_token %}
     <div class="tab-content">
         <div class="tab-pane active" id="datosg-tab">
-            <div class="col-md-5">
+            <div class="well col-md-5">
                 <div class="form-group">
                     <label class="col-xs-4 control-label">Código Cuenta:</label>
                     <div class="col-xs-5">
@@ -108,13 +117,87 @@
                     </div>
                 </div>
             </div>
-            <div class="col-md-6">
-                <div class="form-group">
-                    <label class="col-xs-3 control-label">Puerto:</label>
-                    <div class="col-xs-5">
-                        <input type="text" class="form-control" value="{{conf.matcherpuerto}}" name="m-puerto" />
-                    </div>
-                </div>
+            <div class="well col-md-7">
+              <ul class="nav nav-tabs" id="dg-tab">
+                  <li class="active"><a href="#dg-param-tab" data-toggle="tab">Parámetros<i class="fa"></i></a></li>
+                  <li><a href="#dg-critmatch-tab" data-toggle="tab">Criterios Match <i class="fa"></i></a></li>
+                  <li><a href="#dg-reglastrans-tab" data-toggle="tab">Reglas Transformación<i class="fa"></i></a></li>
+                  <li><a href="#dg-encaje-tab" data-toggle="tab">Encaje<i class="fa"></i></a></li>
+              </ul>
+
+              <form id="dgCuentaForm" method="post" class="form-horizontal">
+                  <div class="tab-content" id="dg-tabcont">
+
+                      <div class="tab-pane active" id="dg-param-tab">
+                        
+                        <div class="form-group">
+                          <label class="col-md-5 control-label">
+                              Retención E/C -Histórico:
+                          </label>
+                          <div class="col-md-4">
+                              <input type="text" class="form-control" id="dg-spin0" value="0"/>
+                          </div>
+                        </div>
+
+                        <div class="form-group">
+                          <label class="col-md-5 control-label">
+                              Nro. Saltos:
+                          </label>
+                          <div class="col-md-4">
+                              <input type="text" class="form-control" id="dg-spin1" value="0"/>
+                          </div>
+                        </div>
+
+                        <div class="form-group">
+                          <label class="col-md-5 control-label">
+                              Tipo Transacción Giro:
+                          </label>
+                          <div class="col-md-3">
+                              <input type="text" class="form-control" id="tipoTransGiro" value=""/>
+                          </div>
+                        </div>
+
+                        <div class="form-group">
+                          <label class="col-md-5 control-label">
+                              Estado:
+                          </label>
+                          <div class="col-md-3">
+                              <select id="param-sel" name="param-sel" class="form-control">
+                                <option value="activa">Activa</option>
+                                <option value="inactiva">Inactiva</option>
+                              </select>
+                          </div>
+                        </div>
+
+                      </div>
+
+                      <div class="tab-pane" id="dg-critmatch-tab">
+                        <div class="form-group">
+                          <label class="col-md-5 control-label">
+                              Criterio:
+                          </label>
+                          <div class="col-md-4">
+                              <select id="param-sel" name="param-sel" class="form-control">
+                                <option value="-1">---------</option>
+                                {% for criterio in criterios %}
+                                  <option id="opt-{{criterio.idcriterio}}" value="{{criterio.idcriterio}}">{{criterio.nombre}}</option>
+                                {% endfor %}
+                              </select>
+                          </div>
+                        </div>
+
+                      </div>
+
+                      <div class="tab-pane" id="dg-reglastrans-tab">
+
+                      </div>
+
+                      <div class="tab-pane" id="dg-encaje-tab">
+
+                      </div>
+
+                  </div>
+              </form>
             </div>
         </div>
 
@@ -199,9 +282,11 @@
             <div class="col-md-4">
             <select id="TipoCuenta-sel" name="TipoCuenta-sel" class="form-control">
               <option value="-1">----------</option>
-              {% for cuenta in cuentas %}
-              <option id="opt-{{cuenta.idcuenta}}" value="{{cuenta.idcuenta}}">{{cuenta.codigo}}</option>
-              {% endfor %}
+              <option value="0">Nacional</option>
+              <option value="1">Exterior</option>
+              <option value="2">Cuenta Propia</option>
+              <option value="3">Banco Central</option>
+              <option value="4">Auxiliar</option>
             </select>
             </div>
           </div>
@@ -211,24 +296,23 @@
 
             <div class="form-group">
               <label class="col-md-4 control-label" for="FormConta-sel">Contabilidad: </label>
-              <div class="col-md-7">
+              <div class="col-md-8">
               <select id="FormConta-sel" name="FormConta-sel" class="form-control">
                 <option value="-1">----------</option>
-                {% for cuenta in cuentas %}
-                <option id="opt-{{cuenta.idcuenta}}" value="{{cuenta.idcuenta}}">{{cuenta.codigo}}</option>
-                {% endfor %}
+                <option value="0">Metalenguaje MT950</option>
+                <option value="1">Metalenguaje MT950 Solo Saldos</option>
+                <option value="2">Formato ;</option>
               </select>
               </div>
             </div>
 
             <div class="form-group">
               <label class="col-md-4 control-label" for="FormCorr-sel">Corresponsal: </label>
-              <div class="col-md-7">
+              <div class="col-md-8">
               <select id="FormCorr-sel" name="FormCorr-sel" class="form-control">
                 <option value="-1">----------</option>
-                {% for cuenta in cuentas %}
-                <option id="opt-{{cuenta.idcuenta}}" value="{{cuenta.idcuenta}}">{{cuenta.codigo}}</option>
-                {% endfor %}
+                <option value="0">Swift MT950</option>
+                <option value="1">Formato ;</option>
               </select>
               </div>
             </div>
@@ -240,14 +324,14 @@
               <div class="col-md-6">
                   <div class="checkbox">
                     <label for="Proc-1">
-                      <input type="checkbox" name="Proc1" id="Proc-1" value="1">
+                      <input type="checkbox" name="Proc" id="Proc-1" value="1">
                       1. Normal 1-1
                     </label>
                   </div>
                   </br>
                   <div class="checkbox">
                     <label for="Proc-2">
-                      <input type="checkbox" name="Proc2" id="Proc-2" value="2">
+                      <input type="checkbox" name="Proc" id="Proc-2" value="2">
                       2. Reversos Cont 2-0
                     </label>
                   </div>
@@ -256,14 +340,14 @@
               <div class="col-md-6">
                   <div class="checkbox">
                     <label for="Proc-3">
-                      <input type="checkbox" name="Proc-3" id="Proc-3" value="3">
+                      <input type="checkbox" name="Proc" id="Proc-3" value="3">
                       3. Reversos Corr 0-2
                     </label>
                   </div>
                   </br>
                   <div class="checkbox">
                     <label for="Proc-4">
-                      <input type="checkbox" name="Proc-4" id="Proc-4" value="4">
+                      <input type="checkbox" name="Proc" id="Proc-4" value="4">
                       4. n-m
                     </label>
                   </div>
@@ -275,7 +359,7 @@
 
     <div class="form-group" style="margin-top: 15px;">
         <div class="col-xs-5 col-xs-offset-3">
-            <button type="submit" class="btn btn-success">Aceptar</button>
+            <button type="submit" id="acptButton" class="btn btn-success">Aceptar</button>
             <p onclick="goBack()" class="btn btn-danger">Cancelar</p>
         </div>
     </div>
@@ -318,7 +402,7 @@ function iniciar_tabla(idioma){
     };
 };
 
-//Inicializar los 3 Spinner
+//Inicializar los Spinner
   $("#spin1").TouchSpin({
       verticalbuttons: true,
       min: 0,
@@ -339,6 +423,27 @@ function iniciar_tabla(idioma){
       postfix: 'Días'
   });
 
+  $("#dg-spin0").TouchSpin({
+      verticalbuttons: true,
+      min: 0,
+      max: 100,
+      step: 1,
+      boostat: 5,
+      maxboostedstep: 10,
+      postfix: 'Meses'
+  });
+
+  $("#dg-spin1").TouchSpin({
+      verticalbuttons: true,
+      min: 0,
+      max: 100,
+      step: 1,
+      boostat: 5,
+      maxboostedstep: 10
+  });
+
+
+
 //Habilitar los Spinner si se elige el checkbox
   $('#Alertas-0').change(function () {
       $("#spin0").prop("disabled", !this.checked);
@@ -353,6 +458,58 @@ function iniciar_tabla(idioma){
       $("#spin3").prop("disabled", !this.checked);
   });
 
+$('#acptButton').on('click', function () {
+  event.preventDefault();
+
+  //Campos datos generales
+  var cuentac = $('#cuenta-codigo').val();
+  var banco = $('#Banco-sel').val();
+  var descripcion = $('#cuenta-desc').val();
+  var ctanostro = $('#cuenta-nostro').val();
+  var ctavostro = $('#cuenta-vostro').val();
+  var moneda = $('#Moneda-sel').val();
+
+  //Campos alertas
+
+  //checkboxes
+  var chkb0 = $('#Alertas-0').checked;
+  var chkb1 = $('#Alertas-1').checked;
+  var chkb2 = $('#Alertas-2').checked;
+  var chkb3 = $('#Alertas-3').checked;
+  var chkb4 = $('#Alertas-4').checked;
+  var chkb5 = $('#Alertas-5').checked;
+  var chkb6 = $('#Alertas-6').checked;
+  //spinners
+  var spin0 = $("#spin0").val();
+  var spin1 = $("#spin1").val();
+  var spin2 = $("#spin2").val();
+  var spin3 = $("#spin3").val();
+
+  //correo de alertas
+  var alertmail = $("#a-mail").val();
+
+  //Campos formatos y procesos
+  var tipocta = $('#TipoCuenta-sel').val();
+  var formconta = $('#FormConta-sel').val();
+  var formcorr = $('#FormCorr-sel').val();
+
+  var chkbproc1 = $('#Proc-1').checked;
+  var chkbproc2 = $('#Proc-2').checked;
+  var chkbproc3 = $('#Proc-3').checked;
+  var chkbproc4 = $('#Proc-4').checked;
+
+  var checkedalertas = $('input[name="Alertas"]:checked');
+  var checkedprocs = $('input[name="Proc"]:checked');
+
+  if (checkedalertas.length>0){
+    for (var i=0;i<checkedalertas.length;i++){
+        var aux = $(checkedalertas[i]).val();
+        var spinval = $('#spin'+aux).val();
+        console.log(spinval);
+    }
+  }
+
+});
 
 
 </script>
