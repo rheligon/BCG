@@ -9,11 +9,11 @@ from django import forms
 
 from Matcher.models import *
 
+from django.db import connection
+
 from django.views.decorators.csrf import csrf_exempt
 
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
-
-from django.forms import model_to_dict
 
 def test(request):
 
@@ -50,11 +50,8 @@ def usr_login(request):
 
     # if the request method is POST the process the POST values otherwise just render the page
     if request.method == 'POST':
-        print(request.POST)
         username = request.POST.get('username', '')
         password = request.POST.get('password', '')
-        print(username)
-        print(password)
         user = auth.authenticate(username=username, password=password)
         if user is not None and user.is_active:
             # Correct password, and the user is marked "active"
@@ -121,6 +118,41 @@ def listar_cuentas(request):
 
     context = {'cuentas': cuentas_list}
     template = "matcher/listarCuentas.html"
+
+    return render(request, template, context)
+
+
+@login_required(login_url='/login')
+def resumen_cuenta(request, cuenta_id):
+
+    conciliacion = Conciliacionconsolidado.objects.filter(cuenta_idcuenta = cuenta_id)
+
+    if conciliacion:
+        cons = conciliacion[0]
+        cuenta = cons.cuenta_idcuenta
+        bfcon = cons.balancefinalcontabilidad
+        bfcor = cons.balancefinalcorresponsal
+        scon = cons.saldocontabilidad
+        scor = cons.saldocorresponsal
+        cod = ['C']*4
+
+        if bfcon < 0:
+            cod[0] = "D"
+        if bfcor < 0:
+            cod[1] = "D"
+        if scon < 0:
+            cod[2] = "D"
+        if scor < 0:
+            cod[3] = "D"
+    else:
+        cuenta = Cuenta.objects.filter(idcuenta=cuenta_id)
+        cuenta = cuenta[0]
+        cons = None
+        cod = ['C']*4
+
+
+    context = {'cuenta': cuenta, 'cons':cons, 'cod': cod}
+    template = "matcher/ResumenCuenta.html"
 
     return render(request, template, context)
 
@@ -198,37 +230,9 @@ def estado_cuentas(request):
         return render(request, template, context)
 
 @login_required(login_url='/login')
-def resumen_cuenta(request, cuenta_id):
-
-    conciliacion = Conciliacionconsolidado.objects.filter(cuenta_idcuenta = cuenta_id)
-
-    if conciliacion:
-        cons = conciliacion[0]
-        cuenta = cons.cuenta_idcuenta
-        bfcon = cons.balancefinalcontabilidad
-        bfcor = cons.balancefinalcorresponsal
-        scon = cons.saldocontabilidad
-        scor = cons.saldocorresponsal
-        cod = ['C']*4
-
-        if bfcon < 0:
-            cod[0] = "D"
-        if bfcor < 0:
-            cod[1] = "D"
-        if scon < 0:
-            cod[2] = "D"
-        if scor < 0:
-            cod[3] = "D"
-    else:
-        cuenta = Cuenta.objects.filter(idcuenta=cuenta_id)
-        cuenta = cuenta[0]
-        cons = None
-        cod = ['C']*4
-
-
-    context = {'cuenta': cuenta, 'cons':cons, 'cod': cod}
-    template = "matcher/ResumenCuenta.html"
-
+def mensajesSWIFT(request):
+    template = "matcher/admin_criteriosyreglas.html"
+    context = {}
     return render(request, template, context)
 
 @login_required(login_url='/login')
@@ -332,10 +336,32 @@ def configuracion(request, tipo):
 def seg_backupRestore(request):
     if request.method == "POST":
         print(request.POST)
+        actn = request.POST.get("action")
+
+        if actn == "res":
+            # Recibe el numero de cuenta
+            cuenta = int(request.POST.get("cuentaid"))
+            msg = "Cuenta restaurada exitosamente."
+
+            # cursor = connection.cursor()
+            # try:
+            #     cursor.callproc('[dbo].[restoreMatcher]', [5, 'blah'])
+
+            #     if cursor.return_value == 1:
+            #         result_set = cursor.fetchall()
+            # finally:
+            #     cursor.close()
+
+            return JsonResponse({'msg': msg,'restored': True})
+
+        if actn == "bkUp":
+            # No recibe nada
+            msg = "Backup realizado exitosamente."
+            return JsonResponse({'msg': msg,'bkUp': True})
 
     if request.method == "GET":
         cuentas_list = Cuenta.objects.all()
-
+        # filtrar por usuario
         context = {'cuentas': cuentas_list}
         template = "matcher/seg_backupRestore.html"
 
@@ -451,9 +477,13 @@ def admin_monedas(request):
         context = {'monedas': monedas}
         return render(request, template, context)
 
-def mensajesSWIFT(request):
-    template = "matcher/admin_criteriosyreglas.html"
-    context = {}
+@login_required(login_url='/login')
+def admin_cuentas(request):
+    template = "matcher/admin_cuentas.html"
+    cuentas = Cuenta.objects.all()
+    bancos = BancoCorresponsal.objects.all().order_by('codigo')
+    monedas = Moneda.objects.all().order_by('codigo')
+    context = {'cuentas':cuentas, 'bancos':bancos, 'monedas':monedas}
     return render(request, template, context)
 
 @login_required(login_url='/login')

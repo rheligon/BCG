@@ -1,0 +1,371 @@
+{% extends "matcher/base.html" %}
+{% load staticfiles %}
+
+
+{% block head %}
+<link rel="stylesheet" href="{% static 'css/dataTables/dataTables.bootstrap.css' %}">
+<link rel="stylesheet" href="{% static 'css/sweet-alert.css' %}">
+<link rel="stylesheet" href="{% static 'css/jquery.bootstrap-touchspin.min.css' %}">
+{% endblock%}
+
+{% block content %}
+
+<style type="text/css">
+#detalleCuentaForm {
+    margin-top: 15px;
+}
+
+.checkboxes > * {
+  padding-top: 1%;
+}
+</style>
+
+<div class="table-responsive col-md-10">
+    <table id="table-cuentas" class="table table-bordered table-striped tabla">
+        <thead>
+            <tr>
+                <th>Código cuenta</th>
+                <th>Banco</th>
+                <th>Última Conciliación</th>
+                <th>Último Historico</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for cuenta in cuentas %}
+            <tr id= "tr-{{cuenta.idcuenta}}">
+                <td id= "td-{{cuenta.idcuenta}}"><a href="/resumen/{{cuenta.idcuenta}}" id="{{cuenta.idcuenta}}">{{ cuenta.codigo }}</a></td>
+                <td>{{ cuenta.banco_corresponsal_idbanco.codigo }}</td>
+                <td>{{ cuenta.ultimafechaconciliacion|date:"d/m/Y"|default:"" }}</td>
+                <td>{{ cuenta.ultimafechahistorico|date:"d/m/Y"|default:"" }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <hr/><br/>
+</div>
+
+<legend>Detalles:</legend>
+<ul class="nav nav-tabs" id="seg-tab">
+    <li class="active"><a href="#datosg-tab" data-toggle="tab">Datos Generales <i class="fa"></i></a></li>
+    <li><a href="#alerta-tab" data-toggle="tab">Alertas <i class="fa"></i></a></li>
+    <li><a href="#fyp-tab" data-toggle="tab">Formatos y Procesos<i class="fa"></i></a></li>
+</ul>
+<form id="detalleCuentaForm" method="post" class="form-horizontal">
+    {% csrf_token %}
+    <div class="tab-content">
+        <div class="tab-pane active" id="datosg-tab">
+            <div class="col-md-5">
+                <div class="form-group">
+                    <label class="col-xs-4 control-label">Código Cuenta:</label>
+                    <div class="col-xs-5">
+                        <input type="text" class="form-control" id="cuenta-codigo" value="" name="ccuenta" />
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="col-md-4 control-label" for="Banco-sel">Banco: </label>
+                    <div class="col-md-5">
+                    <select id="Banco-sel" name="Cuenta-sel" class="form-control">
+                      <option value="-1">----------</option>
+                      {% for banco in bancos %}
+                      <option id="opt-{{banco.idbanco}}" value="{{banco.idbanco}}">{{banco.codigo}}</option>
+                      {% endfor %}
+                    </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="col-xs-4 control-label">Descripción:</label>
+                    <div class="col-xs-7">
+                        <input type="text" class="form-control" value="" id="cuenta-desc" name="descr" />
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="col-xs-4 control-label">No. Cta. Nostro:</label>
+                    <div class="col-xs-7">
+                        <input type="text" class="form-control" value="" id="cuenta-nostro" name="nostro" />
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="col-xs-4 control-label">No. Cta. Vostro:</label>
+                    <div class="col-xs-7">
+                        <input type="text" class="form-control" value="" id="cuenta-vostro" name="vostro" />
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="col-md-4 control-label" for="Moneda-sel">Código Moneda: </label>
+                    <div class="col-md-3">
+                    <select id="Moneda-sel" name="Cuenta-sel" class="form-control">
+                      <option value="-1">----------</option>
+                      {% for moneda in monedas %}
+                      <option id="opt-{{moneda.idmoneda}}" value="{{moneda.idmoneda}}">{{moneda.codigo}}</option>
+                      {% endfor %}
+                    </select>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label class="col-xs-3 control-label">Puerto:</label>
+                    <div class="col-xs-5">
+                        <input type="text" class="form-control" value="{{conf.matcherpuerto}}" name="m-puerto" />
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="tab-pane" id="alerta-tab">
+
+            <div class="form-group">
+              <div class="col-md-8 checkboxes">
+                  <div class="checkbox col-md-7">
+                    <label for="Alertas-0">
+                      <input type="checkbox" name="Alertas" id="Alertas-0" value="0">
+                      Días sin conciliar antes de enviar alerta
+                    </label>
+                  </div>
+                  <div class="col-md-3">
+                    <input type="text" id="spin0" value="0" disabled/>
+                  </div>
+                  <div class="checkbox col-md-7">
+                    <label for="Alertas-1">
+                      <input type="checkbox" name="Alertas" id="Alertas-1" value="1">
+                      Cambios del saldo mayores al
+                    </label>
+                  </div>
+                  <div class="col-md-3">
+                    <input type="text" id="spin1" value="0" disabled/>
+                  </div>
+                  <div class="checkbox col-md-7">
+                    <label for="Alertas-2">
+                      <input type="checkbox" name="Alertas" id="Alertas-2" value="2">
+                      Partidas pendientes por más de
+                    </label>
+                  </div>
+                  <div class="col-md-3">
+                    <input type="text" id="spin2" value="0" disabled/>
+                  </div>
+                  <div class="checkbox col-md-7">
+                    <label for="Alertas-3">
+                      <input type="checkbox" name="Alertas" id="Alertas-3" value="3">
+                      No se han cargado estado de cuenta en los últimos
+                    </label>
+                  </div>
+                  <div class="col-md-3">
+                    <input type="text" id="spin3" value="0" disabled/>
+                  </div>
+              </div>
+
+              <div class="col-md-4  col-md-pull-1 checkboxes">
+
+                  <div class="checkbox">
+                    <label for="Alertas-4">
+                      <input type="checkbox" name="Alertas" id="Alertas-4" value="4">
+                      Partidas Pendientes sin Observación
+                    </label>
+                  </div>
+
+                  <div class="checkbox">
+                    <label for="Alertas-5">
+                      <input type="checkbox" name="Alertas" id="Alertas-5" value="5">
+                      Diferencias de saldo luego de conciliar
+                    </label>
+                  </div>
+
+                  <div class="checkbox">
+                    <label for="Alertas-6">
+                      <input type="checkbox" name="Alertas" id="Alertas-6" value="6">
+                      Cuenta sobregirada
+                    </label>
+                  </div>
+              </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-md-3 control-label">Enviar alertas al correo:</label>
+                <div class="col-md-4">
+                    <input type="text" class="form-control" value="" id="a-mail" name="a-mail" />
+                </div>
+            </div>
+        </div>
+
+        <div class="tab-pane" id="fyp-tab">
+          <div class="form-group col-md-8 col-md-pull-1">
+            <label class="col-md-4 control-label" for="TipoCuenta-sel">Tipo de Cuenta: </label>
+            <div class="col-md-4">
+            <select id="TipoCuenta-sel" name="TipoCuenta-sel" class="form-control">
+              <option value="-1">----------</option>
+              {% for cuenta in cuentas %}
+              <option id="opt-{{cuenta.idcuenta}}" value="{{cuenta.idcuenta}}">{{cuenta.codigo}}</option>
+              {% endfor %}
+            </select>
+            </div>
+          </div>
+
+          <div class="well col-md-5">
+            <legend>Formato Archivos de Carga</legend>
+
+            <div class="form-group">
+              <label class="col-md-4 control-label" for="FormConta-sel">Contabilidad: </label>
+              <div class="col-md-7">
+              <select id="FormConta-sel" name="FormConta-sel" class="form-control">
+                <option value="-1">----------</option>
+                {% for cuenta in cuentas %}
+                <option id="opt-{{cuenta.idcuenta}}" value="{{cuenta.idcuenta}}">{{cuenta.codigo}}</option>
+                {% endfor %}
+              </select>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="col-md-4 control-label" for="FormCorr-sel">Corresponsal: </label>
+              <div class="col-md-7">
+              <select id="FormCorr-sel" name="FormCorr-sel" class="form-control">
+                <option value="-1">----------</option>
+                {% for cuenta in cuentas %}
+                <option id="opt-{{cuenta.idcuenta}}" value="{{cuenta.idcuenta}}">{{cuenta.codigo}}</option>
+                {% endfor %}
+              </select>
+              </div>
+            </div>
+
+          </div>
+          <div class="well col-md-6">
+            <legend>Procesos Automáticos de Match</legend>
+            <div class="form-group">
+              <div class="col-md-6">
+                  <div class="checkbox">
+                    <label for="Proc-1">
+                      <input type="checkbox" name="Proc1" id="Proc-1" value="1">
+                      1. Normal 1-1
+                    </label>
+                  </div>
+                  </br>
+                  <div class="checkbox">
+                    <label for="Proc-2">
+                      <input type="checkbox" name="Proc2" id="Proc-2" value="2">
+                      2. Reversos Cont 2-0
+                    </label>
+                  </div>
+              </div>
+
+              <div class="col-md-6">
+                  <div class="checkbox">
+                    <label for="Proc-3">
+                      <input type="checkbox" name="Proc-3" id="Proc-3" value="3">
+                      3. Reversos Corr 0-2
+                    </label>
+                  </div>
+                  </br>
+                  <div class="checkbox">
+                    <label for="Proc-4">
+                      <input type="checkbox" name="Proc-4" id="Proc-4" value="4">
+                      4. n-m
+                    </label>
+                  </div>
+              </div>
+            </div>
+          </div>
+        </div> <!--End of tab pane fyp-->
+    </div>
+
+    <div class="form-group" style="margin-top: 15px;">
+        <div class="col-xs-5 col-xs-offset-3">
+            <button type="submit" class="btn btn-success">Aceptar</button>
+            <p onclick="goBack()" class="btn btn-danger">Cancelar</p>
+        </div>
+    </div>
+</form>
+{% endblock %}
+
+{% block script %}
+
+<script> //define el idioma de la tabla (es/en)
+         idioma_tr = "es" </script>
+<script src="{% static 'js/validator.js' %}" type="text/javascript"></script>
+<script src="{% static 'js/jquery.dataTables.min.js' %}" type="text/javascript"></script>
+<script src="{% static 'js/dataTables.bootstrap.js' %}" type="text/javascript"></script>
+<script type="text/javascript" src="{% static 'js/sweet-alert.min.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/jquery.bootstrap-touchspin.min.js' %}"></script>
+
+<script type="text/javascript">
+//idioma_tr es una variable global definida en la pagina
+var tabla = iniciar_tabla(idioma_tr);
+var csrftoken = $.cookie('csrftoken');
+
+
+function iniciar_tabla(idioma){
+    if (idioma==="es"){
+
+        return $('#table-cuentas').DataTable({
+            //poner if con idioma, el ingles es predeterminado
+            language: {
+                url: '/static/json/Spanish-tables.json'
+            }
+        })
+
+    }else if (idioma==="en"){
+
+        return $('#table-cuentas').DataTable({
+            language: {
+                url: '/static/json/English-tables.json'
+            }
+        })
+    };
+};
+
+//Inicializar los 3 Spinner
+  $("#spin1").TouchSpin({
+      verticalbuttons: true,
+      min: 0,
+      max: 100,
+      step: 1,
+      boostat: 5,
+      maxboostedstep: 10,
+      postfix: '%'
+  });
+
+  $("#spin0, #spin2, #spin3").TouchSpin({
+      verticalbuttons: true,
+      min: 0,
+      max: 100,
+      step: 1,
+      boostat: 5,
+      maxboostedstep: 10,
+      postfix: 'Días'
+  });
+
+//Habilitar los Spinner si se elige el checkbox
+  $('#Alertas-0').change(function () {
+      $("#spin0").prop("disabled", !this.checked);
+  });
+  $('#Alertas-1').change(function () {
+      $("#spin1").prop("disabled", !this.checked);
+  });
+  $('#Alertas-2').change(function () {
+      $("#spin2").prop("disabled", !this.checked);
+  });
+  $('#Alertas-3').change(function () {
+      $("#spin3").prop("disabled", !this.checked);
+  });
+
+
+
+</script>
+
+
+<script>
+function goBack() {
+    var msg = "Seguro que desea cancelar?",
+        r = confirm(msg);
+        
+    if (r == true) {
+        window.history.back();
+    }
+};
+</script>
+{% endblock %}
