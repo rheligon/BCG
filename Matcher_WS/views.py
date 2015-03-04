@@ -213,7 +213,7 @@ def estado_cuentas(request):
         return JsonResponse(res_json, safe=False)
         
     if request.method == 'GET':
-        cuentas = Cuenta.objects.all()
+        cuentas = Cuenta.objects.all().order_by('codigo')
 
         # Filtrar a las cuentas del usuario que esta
         # uso id=1 pq es el unico que tiene en la base de datos
@@ -483,14 +483,25 @@ def admin_monedas(request):
 
 @login_required(login_url='/login')
 def admin_cuentas(request):
-    cuentas = Cuenta.objects.all().order_by('codigo')
-    bancos = BancoCorresponsal.objects.all().order_by('codigo')
-    monedas = Moneda.objects.all().order_by('codigo')
-    criterios = CriteriosMatch.objects.all().order_by('nombre')
-    
-    template = "matcher/admin_cuentas.html"
-    context = {'cuentas':cuentas, 'bancos':bancos, 'monedas':monedas, 'criterios':criterios}
-    return render(request, template, context)
+    if request.method == 'POST':
+        actn = request.POST.get('action')
+
+        if actn == 'add':
+            print (actn)
+        if actn == 'del':
+            print (actn)
+        if actn == 'upd':
+            print (actn)
+
+    if request.method == 'GET':
+        cuentas = Cuenta.objects.all().order_by('codigo')
+        bancos = BancoCorresponsal.objects.all().order_by('codigo')
+        monedas = Moneda.objects.all().order_by('codigo')
+        criterios = CriteriosMatch.objects.all().order_by('nombre')
+        
+        template = "matcher/admin_cuentas.html"
+        context = {'cuentas':cuentas, 'bancos':bancos, 'monedas':monedas, 'criterios':criterios}
+        return render(request, template, context)
 
 @login_required(login_url='/login')
 def admin_reglas_transf(request):
@@ -522,7 +533,7 @@ def admin_reglas_transf(request):
             try:
                 cuenta = Cuenta.objects.get(pk=cuentaid)
             except Cuenta.DoesNotExist:
-                msg = "No se encontro la cuenta especificada, asegurese de hacer click en la regla a modificar previamente."
+                msg = "No se encontro la cuenta especificada."
                 return JsonResponse({'msg': msg, 'reglaid': reglaid, 'add': False})
 
             regla =  ReglaTransformacion.objects.create(nombre = nombre, cuenta_idcuenta = cuenta, transaccion_corresponsal = transcorr, ref_corresponsal = selrefcorr, mascara_corresponsal = masccorr, transaccion_contabilidad = transconta, ref_contabilidad = selrefconta, mascara_contabilidad = mascconta, tipo = tipo)
@@ -602,46 +613,21 @@ def admin_crit_reglas(request):
             criterioF4 = request.POST.get('criterioF4')
             criterioF5 = request.POST.get('criterioF5')
 
-            criterio, creado = CriteriosMatch.objects.get_or_create(nombre=criterionom, defaults={'num_entradas': 0})
+            criterio = CriteriosMatch.objects.create(nombre=criterionom, num_entradas = 0)
 
             # Es necesario ya que si se hace save() con campos vacios="" da error la funcion
-            if creado:
-                if criteriomon1:
-                    criterio.monto1 = criteriomon1
-                else:
-                    criteriomon1 = "None"
-                if criteriomon2:
-                    criterio.monto2 = criteriomon2
-                else:
-                    criteriomon2 = "None"
-                if criteriomon3:
-                    criterio.monto3 = criteriomon3
-                else:
-                    criteriomon3 = "None"
-                if criterioF1:
-                    criterio.fecha1 = criterioF1
-                else:
-                    criterioF1 = "None"
-                if criterioF2:
-                    criterio.fecha2 = criterioF2
-                else:
-                    criterioF2 = "None"
-                if criterioF3:
-                    criterio.fecha3 = criterioF3
-                else:
-                    criterioF3 = "None"
-                if criterioF4:
-                    criterio.fecha4 = criterioF4
-                else:
-                    criterioF4 = "None"
-                if criterioF5:
-                    criterio.fecha5 = criterioF5
-                else:
-                    criterioF5 = "None"
+            criterio.monto1 = EmptyOrNone(criteriomon1)
+            criterio.monto2 = EmptyOrNone(criteriomon2)
+            criterio.monto3 = EmptyOrNone(criteriomon3)
+            criterio.fecha1 = EmptyOrNone(criterioF1)
+            criterio.fecha2 = EmptyOrNone(criterioF2)
+            criterio.fecha3 = EmptyOrNone(criterioF3)
+            criterio.fecha4 = EmptyOrNone(criterioF4)
+            criterio.fecha5 = EmptyOrNone(criterioF5)
+        
+            criterio.save()
 
-                criterio.save()
-
-            return JsonResponse({'criterioid':criterio.idcriterio,'criterionom':criterionom, 'criteriomon1':criteriomon1,'criteriomon2':criteriomon2,'criteriomon3':criteriomon3,'criterioF1':criterioF1,'criterioF2':criterioF2,'criterioF3':criterioF3,'criterioF4':criterioF4,'criterioF5':criterioF5, 'creado': creado})
+            return JsonResponse({'criterioid':criterio.idcriterio,'criterionom':criterionom, 'criteriomon1':criteriomon1,'criteriomon2':criteriomon2,'criteriomon3':criteriomon3,'criterioF1':criterioF1,'criterioF2':criterioF2,'criterioF3':criterioF3,'criterioF4':criterioF4,'criterioF5':criterioF5, 'creado': True})
                 
         if actn == 'del':
             msg = "Criterio eliminado exitosamente."
@@ -675,38 +661,14 @@ def admin_crit_reglas(request):
                 msg = "No se encontro el criterio especificado, asegurese de hacer click en el criterio a modificar."
                 return JsonResponse({'msg': msg, 'criterioid': criterioid, 'modif': False})
 
-            if criteriomon1 and criteriomon1!="None":
-                criterio.monto1 = criteriomon1
-            else:
-                criterio.monto1 = None
-            if criteriomon2 and criteriomon2!="None":
-                criterio.monto2 = criteriomon2
-            else:
-                criterio.monto2 = None
-            if criteriomon3 and criteriomon3!="None":
-                criterio.monto3 = criteriomon3
-            else:
-                criterio.monto3 = None
-            if criterioF1 and criterioF1!="None":
-                criterio.fecha1 = criterioF1
-            else:
-                criterio.fecha1 = None
-            if criterioF2 and criterioF2!="None":
-                criterio.fecha2 = criterioF2
-            else:
-                criterio.fecha2 = None
-            if criterioF3 and criterioF3!="None":
-                criterio.fecha3 = criterioF3
-            else:
-                criterio.fecha3 = None
-            if criterioF4 and criterioF4!="None":
-                criterio.fecha5 = criterioF4
-            else:
-                criterio.fecha4 = None
-            if criterioF5 and criterioF5!="None":
-                criterio.fecha5 = criterioF5
-            else:
-                criterio.fecha5 = None
+            criterio.monto1 = EmptyOrNone(criteriomon1)
+            criterio.monto2 = EmptyOrNone(criteriomon2)
+            criterio.monto3 = EmptyOrNone(criteriomon3)
+            criterio.fecha1 = EmptyOrNone(criterioF1)
+            criterio.fecha2 = EmptyOrNone(criterioF2)
+            criterio.fecha3 = EmptyOrNone(criterioF3)
+            criterio.fecha4 = EmptyOrNone(criterioF4)
+            criterio.fecha5 = EmptyOrNone(criterioF5)
 
             criterio.save()
             return JsonResponse({'criterioid':criterio.idcriterio,'criterionom':criterionom, 'criteriomon1':criterio.monto1,'criteriomon2':criterio.monto2,'criteriomon3':criterio.monto3,'criterioF1':criterio.fecha1,'criterioF2':criterio.fecha2,'criterioF3':criterio.fecha3,'criterioF4':criterio.fecha4,'criterioF5':criterio.fecha5,'msg':msg, 'modif': True})
@@ -717,3 +679,9 @@ def admin_crit_reglas(request):
         criterios = CriteriosMatch.objects.all()
         context = {'criterios':criterios}
         return render(request, template, context)
+
+def EmptyOrNone(s):
+    if s and s!="None":
+        return s
+    else:
+        return None

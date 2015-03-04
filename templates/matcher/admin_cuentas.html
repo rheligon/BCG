@@ -38,7 +38,7 @@
         <tbody>
             {% for cuenta in cuentas %}
             <tr id= "tr-{{cuenta.idcuenta}}">
-                <td id= "td-{{cuenta.idcuenta}}"><a cod="{{cuenta.codigo }}" id="{{cuenta.idcuenta}}" criterio="{{cuenta.criterios_match_idcriterio.idcriterio}}" desc="{{cuenta.descripcion}}" banco="{{cuenta.banco_corresponsal_idbanco.idbanco}}" moneda="{{cuenta.moneda_idmoneda.idmoneda}}" nostro="{{cuenta.ref_nostro}}" vostro="{{cuenta.ref_vostro}}" estado="{{cuenta.estado}}" nsaltos="{{cuenta.num_saltos}}" tgiro="{{cuenta.transaccion_giro}}" retencion="{{cuenta.tiempo_retension}}" correoa="{{cuenta.correo_alertas}}" intrad="{{cuenta.intraday}}" tipocta="{{cuenta.tipo_cta}}">{{cuenta.codigo }}</a></td>
+                <td id= "td-{{cuenta.idcuenta}}"><a cod="{{cuenta.codigo }}" id="{{cuenta.idcuenta}}" criterio="{{cuenta.criterios_match_idcriterio.idcriterio}}" desc="{{cuenta.descripcion}}" banco="{{cuenta.banco_corresponsal_idbanco.idbanco}}" moneda="{{cuenta.moneda_idmoneda.idmoneda}}" nostro="{{cuenta.ref_nostro}}" vostro="{{cuenta.ref_vostro}}" estado="{{cuenta.estado}}" nsaltos="{{cuenta.num_saltos}}" tgiro="{{cuenta.transaccion_giro}}" retencion="{{cuenta.tiempo_retension}}" correoa="{{cuenta.correo_alertas}}" intraday="{{cuenta.intraday}}" tipocta="{{cuenta.tipo_cta}}" tipoccont="{{cuenta.tipo_cargacont}}" tipoccorr="{{cuenta.tipo_carga_corr}}" proc="{{cuenta.tipo_proceso}}" type="cuenta">{{cuenta.codigo }}</a></td>
                 <td>{{ cuenta.descripcion|default:"" }}</td>
                 <td>{{ cuenta.banco_corresponsal_idbanco.codigo|default:"" }}</td>
                 <td>{{ cuenta.ref_nostro|default:"" }}</td>
@@ -53,8 +53,27 @@
 
     <hr/><br/>
 </div>
-
-<legend>Detalles:</legend>
+<input id="Id_cuenta" name="Id_cuenta" value="-1" type="text" hidden>
+<div class="row">
+  <div class="col-md-6">
+    <legend>Detalles:</legend>
+  </div>
+  <div class="col-md-2 col-md-push-2">
+      <button type="button" id="addButton" data-loading-text="Cargando..." class="col-md-7 btn btn-success" autocomplete="off">
+          Agregar
+      </button>
+  </div>
+  <div class="col-md-2 col-md-push-1">
+      <button type="button" id="delButton" data-loading-text="Cargando..." class="col-md-7 btn btn-danger" autocomplete="off">
+          Eliminar
+      </button>
+  </div>
+  <div class="col-md-2">
+      <button type="button" id="updButton" data-loading-text="Cargando..." class="col-md-7 btn btn-primary" autocomplete="off">
+          Modificar
+      </button>
+  </div>
+</div>
 <ul class="nav nav-tabs" id="seg-tab">
     <li class="active"><a href="#datosg-tab" data-toggle="tab">Datos Generales <i class="fa"></i></a></li>
     <li><a href="#alerta-tab" data-toggle="tab">Alertas <i class="fa"></i></a></li>
@@ -78,7 +97,7 @@
                     <select id="Banco-sel" name="Cuenta-sel" class="form-control">
                       <option value="-1">----------</option>
                       {% for banco in bancos %}
-                      <option id="opt-{{banco.idbanco}}" value="{{banco.idbanco}}">{{banco.codigo}}</option>
+                      <option id="optb-{{banco.idbanco}}" value="{{banco.idbanco}}">{{banco.codigo}}</option>
                       {% endfor %}
                     </select>
                     </div>
@@ -107,11 +126,11 @@
 
                 <div class="form-group">
                     <label class="col-md-4 control-label" for="Moneda-sel">Código Moneda: </label>
-                    <div class="col-md-3">
+                    <div class="col-md-4">
                     <select id="Moneda-sel" name="Cuenta-sel" class="form-control">
                       <option value="-1">----------</option>
                       {% for moneda in monedas %}
-                      <option id="opt-{{moneda.idmoneda}}" value="{{moneda.idmoneda}}">{{moneda.codigo}}</option>
+                      <option id="optm-{{moneda.idmoneda}}" value="{{moneda.idmoneda}}">{{moneda.codigo}}</option>
                       {% endfor %}
                     </select>
                     </div>
@@ -163,8 +182,8 @@
                           </label>
                           <div class="col-md-3">
                               <select id="param-sel" name="param-sel" class="form-control">
-                                <option value="activa">Activa</option>
-                                <option value="inactiva">Inactiva</option>
+                                <option value="Activa">Activa</option>
+                                <option value="Inactiva">Inactiva</option>
                               </select>
                           </div>
                         </div>
@@ -178,10 +197,10 @@
                               Criterio:
                           </label>
                           <div class="col-md-4">
-                              <select id="param-sel" name="param-sel" class="form-control">
-                                <option value="-1">---------</option>
+                              <select id="crit-sel" name="crit-sel" class="form-control">
+                                <option value="-1">----------</option>
                                 {% for criterio in criterios %}
-                                  <option id="opt-{{criterio.idcriterio}}" value="{{criterio.idcriterio}}" nombre ="{{ criterio.nombre }}" monto1="{{ criterio.monto1 }}" monto2="{{ criterio.monto2 }}" monto3="{{ criterio.monto3 }}" fecha1="{{ criterio.fecha1 }}" fecha2="{{ criterio.fecha2 }}" fecha3="{{ criterio.fecha3 }}" fecha4="{{ criterio.fecha4 }}" fecha5="{{ criterio.fecha5 }}" type="criterio">{{criterio.nombre}}</option>
+                                  <option id="optc-{{criterio.idcriterio}}" value="{{criterio.idcriterio}}" nombre ="{{ criterio.nombre }}" monto1="{{ criterio.monto1 }}" monto2="{{ criterio.monto2 }}" monto3="{{ criterio.monto3 }}" fecha1="{{ criterio.fecha1 }}" fecha2="{{ criterio.fecha2 }}" fecha3="{{ criterio.fecha3 }}" fecha4="{{ criterio.fecha4 }}" fecha5="{{ criterio.fecha5 }}" type="criterio">{{criterio.nombre}}</option>
                                 {% endfor %}
                               </select>
                           </div>
@@ -231,17 +250,17 @@
                           </br>
                           <div class="row">
 
-                            <label class="col-md-1" for="sel-regla">Regla: </label>
+                            <label class="col-md-1" for="sel-reglas">Regla: </label>
                             <div class="col-md-4">
-                                <select id="sel-regla" name="sel-regla" class="col-md-6 form-control">
+                                <select id="sel-reglas" name="sel-reglas" class="col-md-6 form-control">
                                   <option value="-1">--------</option>
                                 </select>
                             </div>
 
                             <div class="col-md-7">
-                              <label class="col-md-3" for="Nom_criterio">Nombre:</label>  
+                              <label class="col-md-3" for="Nom_regla">Nombre:</label>  
                               <div class="col-md-9">
-                                <input id="Nom_criterio" name="Nom_criterio" type="text" class="form-control input-md">
+                                <input id="Nom_regla" name="Nom_regla" type="text" class="form-control input-md">
                               </div>
                             </div>
 
@@ -469,14 +488,21 @@
           </div>
         </div> <!--End of tab pane fyp-->
     </div>
+</form>
 
-    <div class="form-group" style="margin-top: 15px;">
-        <div class="col-xs-5 col-xs-offset-3">
-            <button type="submit" id="acptButton" class="btn btn-success">Aceptar</button>
-            <p onclick="goBack()" class="btn btn-danger">Cancelar</p>
+<!-- Static Modal para procesando -->
+<div class="modal modal-static fade" id="processing-modal" role="dialog" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-body">
+                <div class="text-center">
+                    <img src="{% static 'images/procesando.gif' %}" class="icon" />
+                    <h4>Procesando, por favor espere.</h4>
+                </div>
+            </div>
         </div>
     </div>
-</form>
+</div>
 {% endblock %}
 
 {% block script %}
@@ -488,90 +514,11 @@
 <script src="{% static 'js/dataTables.bootstrap.js' %}" type="text/javascript"></script>
 <script type="text/javascript" src="{% static 'js/sweet-alert.min.js' %}"></script>
 <script type="text/javascript" src="{% static 'js/jquery.bootstrap-touchspin.min.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/admin_cuentas.js' %}"></script>
 
 <script type="text/javascript">
-//idioma_tr es una variable global definida en la pagina
-var tabla = iniciar_tabla(idioma_tr);
-var csrftoken = $.cookie('csrftoken');
 
-
-function iniciar_tabla(idioma){
-    if (idioma==="es"){
-
-        return $('#table-cuentas').DataTable({
-            //poner if con idioma, el ingles es predeterminado
-            language: {
-                url: '/static/json/Spanish-tables.json'
-            }
-        })
-
-    }else if (idioma==="en"){
-
-        return $('#table-cuentas').DataTable({
-            language: {
-                url: '/static/json/English-tables.json'
-            }
-        })
-    };
-};
-
-//Inicializar los Spinner
-  $("#spin1").TouchSpin({
-      verticalbuttons: true,
-      min: 0,
-      max: 100,
-      step: 1,
-      boostat: 5,
-      maxboostedstep: 10,
-      postfix: '%'
-  });
-
-  $("#spin0, #spin2, #spin3").TouchSpin({
-      verticalbuttons: true,
-      min: 0,
-      max: 100,
-      step: 1,
-      boostat: 5,
-      maxboostedstep: 10,
-      postfix: 'Días'
-  });
-
-  $("#dg-spin0").TouchSpin({
-      verticalbuttons: true,
-      min: 0,
-      max: 100,
-      step: 1,
-      boostat: 5,
-      maxboostedstep: 10,
-      postfix: 'Meses'
-  });
-
-  $("#dg-spin1").TouchSpin({
-      verticalbuttons: true,
-      min: 0,
-      max: 100,
-      step: 1,
-      boostat: 5,
-      maxboostedstep: 10
-  });
-
-
-
-//Habilitar los Spinner si se elige el checkbox
-  $('#Alertas-0').change(function () {
-      $("#spin0").prop("disabled", !this.checked);
-  });
-  $('#Alertas-1').change(function () {
-      $("#spin1").prop("disabled", !this.checked);
-  });
-  $('#Alertas-2').change(function () {
-      $("#spin2").prop("disabled", !this.checked);
-  });
-  $('#Alertas-3').change(function () {
-      $("#spin3").prop("disabled", !this.checked);
-  });
-
-$('#acptButton').on('click', function () {
+$('#addButton').on('click', function () {
   event.preventDefault();
 
   //Campos datos generales
@@ -585,13 +532,13 @@ $('#acptButton').on('click', function () {
   //Campos alertas
 
   //checkboxes
-  var chkb0 = $('#Alertas-0').checked;
-  var chkb1 = $('#Alertas-1').checked;
-  var chkb2 = $('#Alertas-2').checked;
-  var chkb3 = $('#Alertas-3').checked;
-  var chkb4 = $('#Alertas-4').checked;
-  var chkb5 = $('#Alertas-5').checked;
-  var chkb6 = $('#Alertas-6').checked;
+  var chkb0 = $('#Alertas-0');
+  var chkb1 = $('#Alertas-1');
+  var chkb2 = $('#Alertas-2');
+  var chkb3 = $('#Alertas-3');
+  var chkb4 = $('#Alertas-4');
+  var chkb5 = $('#Alertas-5');
+  var chkb6 = $('#Alertas-6');
   //spinners
   var spin0 = $("#spin0").val();
   var spin1 = $("#spin1").val();
@@ -606,10 +553,10 @@ $('#acptButton').on('click', function () {
   var formconta = $('#FormConta-sel').val();
   var formcorr = $('#FormCorr-sel').val();
 
-  var chkbproc1 = $('#Proc-1').checked;
-  var chkbproc2 = $('#Proc-2').checked;
-  var chkbproc3 = $('#Proc-3').checked;
-  var chkbproc4 = $('#Proc-4').checked;
+  var chkbproc1 = $('#Proc-1');
+  var chkbproc2 = $('#Proc-2');
+  var chkbproc3 = $('#Proc-3');
+  var chkbproc4 = $('#Proc-4');
 
   var checkedalertas = $('input[name="Alertas"]:checked');
   var checkedprocs = $('input[name="Proc"]:checked');
@@ -623,8 +570,6 @@ $('#acptButton').on('click', function () {
   }
 
 });
-
-
 </script>
 
 

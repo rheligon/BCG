@@ -281,15 +281,15 @@ $('#form-add-regla').validate({
                         data: {"cuentaid": cuentaid, "nombre": nombre, "tipo": tipo, "transconta": transconta, "transcorr": transcorr, "selrefconta": selrefconta, "selrefcorr": selrefcorr, "mascconta": mascconta, "masccorr": masccorr, "action": 'add'},
                         success: function(data){
                             if (data.add){
-                                var a_id = data.reglaid
-                                var a_nom = data.nombre
-                                var a_masc_conta = data.masccont
-                                var a_masc_corr = data.masccorr
-                                var a_ref_conta = data.selrefconta
-                                var a_ref_corr = data.selrefcorr
-                                var a_trans_conta = data.transconta
-                                var a_trans_corr = data.transcorr
-                                var a_tipo = data.tipo
+                                var a_id = data.reglaid;
+                                var a_nom = data.nombre;
+                                var a_masc_conta = data.mascconta;
+                                var a_masc_corr = data.masccorr;
+                                var a_ref_conta = data.selrefconta;
+                                var a_ref_corr = data.selrefcorr;
+                                var a_trans_conta = data.transconta;
+                                var a_trans_corr = data.transcorr;
+                                var a_tipo = data.tipo;
 
                                 var td1 = '<td>'+ '<a id="'+ a_id +'" type="regla" masc_conta="'+ a_masc_conta + '" masc_corr="' + a_masc_corr + '" nombre="' + a_nom + '" ref_conta="' + a_ref_conta + '" ref_corr="'+ a_ref_corr + '" tipo="'+ a_tipo + '" trans_conta="'+ a_trans_conta + '" trans_corr="'+ a_trans_corr +'">' + a_nom + '</a></td>';
                                 var td2 = '<td>'+ a_tipo + '</td>';
@@ -363,6 +363,8 @@ $('#form-add-regla').validate({
 
                 if (cuenta_id<0){
                     swal("Ups!", "Acuerdese de seleccionar una cuenta primero", "error");
+                    $('#processing-modal').modal('toggle');
+                    $btn.button('reset');
                 }else{
                 add_regla(cuenta_id, a_nom, a_sel_tipo, a_trans_conta, a_trans_corr, a_ref_conta, a_ref_corr, a_masc_conta, a_masc_corr);
                 }
