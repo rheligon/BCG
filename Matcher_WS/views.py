@@ -335,41 +335,43 @@ def configuracion(request, tipo):
 @login_required(login_url='/login')
 def seg_backupRestore(request):
     if request.method == "POST":
-        print(request.POST)
         actn = request.POST.get("action")
 
         # https://djangosnippets.org/snippets/118/
         # http://django-mssql.readthedocs.org/en/latest/usage.html
 
         if actn == "res":
-            # Recibe el numero de cuenta
-            cuenta = int(request.POST.get("cuentaid"))
+            # Recibe el codigo de la cuenta
+            cuenta = request.POST.get("cuentacod")
             msg = "Cuenta restaurada exitosamente."
 
             cursor = connection.cursor()
             try:
-                cursor.execute('EXEC [dbo].[restoreMatcher]', [cuenta])
-                result_set = cursor.fetchall()
+                cursor.execute('EXEC [dbo].[restoreMatcher] %s', (cuenta,))
             finally:
                 cursor.close()
 
-            print (result_set)
             return JsonResponse({'msg': msg,'restored': True})
 
         if actn == "bkUp":
             # No recibe nada
             msg = "Backup realizado exitosamente."
+
+            cursor = connection.cursor()
+            try:
+                cursor.execute('EXEC [dbo].[backupMatcher]')
+            finally:
+                cursor.close()
+
             return JsonResponse({'msg': msg,'bkUp': True})
 
     if request.method == "GET":
-        cuentas_list = Cuenta.objects.all()
+        cuentas_list = Cuenta.objects.all().order_by('codigo')
         # filtrar por usuario
         context = {'cuentas': cuentas_list}
         template = "matcher/seg_backupRestore.html"
 
         return render(request, template, context)
-
-
 
 @login_required(login_url='/login')
 def admin_bancos(request):

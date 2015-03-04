@@ -129,7 +129,7 @@
                   <div class="tab-content" id="dg-tabcont">
 
                       <div class="tab-pane active" id="dg-param-tab">
-                        
+                        </br>
                         <div class="form-group">
                           <label class="col-md-5 control-label">
                               Retención E/C -Histórico:
@@ -172,6 +172,7 @@
                       </div>
 
                       <div class="tab-pane" id="dg-critmatch-tab">
+                        </br>
                         <div class="form-group">
                           <label class="col-md-5 control-label">
                               Criterio:
@@ -180,19 +181,131 @@
                               <select id="param-sel" name="param-sel" class="form-control">
                                 <option value="-1">---------</option>
                                 {% for criterio in criterios %}
-                                  <option id="opt-{{criterio.idcriterio}}" value="{{criterio.idcriterio}}">{{criterio.nombre}}</option>
+                                  <option id="opt-{{criterio.idcriterio}}" value="{{criterio.idcriterio}}" nombre ="{{ criterio.nombre }}" monto1="{{ criterio.monto1 }}" monto2="{{ criterio.monto2 }}" monto3="{{ criterio.monto3 }}" fecha1="{{ criterio.fecha1 }}" fecha2="{{ criterio.fecha2 }}" fecha3="{{ criterio.fecha3 }}" fecha4="{{ criterio.fecha4 }}" fecha5="{{ criterio.fecha5 }}" type="criterio">{{criterio.nombre}}</option>
                                 {% endfor %}
                               </select>
                           </div>
                         </div>
 
+                        <div class="form-group col-md-12">
+                          <label class="col-md-12" for="Nom_criterio">Nombre:</label>  
+                          <div class="col-md-4">
+                            <input id="Nom_criterio" name="Nom_criterio" type="text" class="form-control input-md">
+                          </div>
+                        </div>
+                        
+                        <div class="form-group col-md-12">
+                          <label class="col-md-12">Diferencia de montos:</label>  
+                          <div class="col-md-2">
+                            <input id="Mon1_criterio" name="Mon1_criterio" type="text" class="form-control input-md">
+                          </div>
+                          <div class="col-md-2">
+                            <input id="Mon2_criterio" name="Mon2_criterio" type="text" class="form-control input-md">
+                          </div>
+                          <div class="col-md-2">
+                            <input id="Mon3_criterio" name="Mon3_criterio" type="text" class="form-control input-md">
+                          </div>
+                        </div>
+
+                        <div class="form-group col-md-12">
+                          <label class="col-md-12">Diferencia de Fechas:</label>  
+                          <div class="col-md-2">
+                            <input id="F1_criterio" name="F1_criterio" type="text" class="form-control input-md">
+                          </div>
+                          <div class="col-md-2">
+                            <input id="F2_criterio" name="F2_criterio" type="text" class="form-control input-md">
+                          </div>
+                          <div class="col-md-2">
+                            <input id="F3_criterio" name="F3_criterio" type="text" class="form-control input-md">
+                          </div>
+                          <div class="col-md-2">
+                            <input id="F4_criterio" name="F4_criterio" type="text" class="form-control input-md">
+                          </div>
+                          <div class="col-md-2">
+                            <input id="F5_criterio" name="F5_criterio" type="text" class="form-control input-md">
+                          </div>
+                        </div>
                       </div>
 
                       <div class="tab-pane" id="dg-reglastrans-tab">
+                          </br>
+                          <div class="row">
 
+                            <label class="col-md-1" for="sel-regla">Regla: </label>
+                            <div class="col-md-4">
+                                <select id="sel-regla" name="sel-regla" class="col-md-6 form-control">
+                                  <option value="-1">--------</option>
+                                </select>
+                            </div>
+
+                            <div class="col-md-7">
+                              <label class="col-md-3" for="Nom_criterio">Nombre:</label>  
+                              <div class="col-md-9">
+                                <input id="Nom_criterio" name="Nom_criterio" type="text" class="form-control input-md">
+                              </div>
+                            </div>
+
+                          </div>
+
+                          </br></br>
+
+                          <label class="col-md-4 text-center">Transacción</label>
+                          <label class="col-md-3 text-center">Referencia</label>
+                          <label class="col-md-5 text-center">Máscara</label>
+
+                          <div class="row">
+                            <div class="col-md-1">
+                              <span id="label-conta" type="text">Cont</span>
+                            </div>
+
+                            <!-- Text input-->
+                            <div class="col-md-3">
+                              <input id="trans-conta" name="trans-conta" type="text"  class="form-control input-md">
+                            </div>
+
+                            <!-- Select Basic -->
+                            <div class="col-md-3">
+                                <select id="sel-ref-conta" name="sel-ref-conta" class="form-control">
+                                  <option value="-1">--------</option>
+                                  <option value="Nostro">Nostro</option>
+                                  <option value="Vostro">Vostro</option>
+                                </select>
+                            </div>
+
+                            <!-- Text input-->
+                            <div class="col-md-5">
+                              <input id="masc-conta" name="masc-conta" type="text"  class="form-control input-md">
+                            </div>
+                          </div>
+                          </br>
+                          <div class="row">
+                            <div class="col-md-1">
+                              <span id="label-corr" type="text">Corr</span>
+                            </div>
+
+                            <!-- Text input-->
+                            <div class="col-md-3">
+                              <input id="trans-corr" name="trans-corr" type="text"  class="form-control input-md">
+                            </div>
+
+                            <!-- Select Basic -->
+                            <div class="col-md-3">
+                                <select id="sel-ref-corr" name="sel-ref-corr" class="form-control">
+                                  <option value="-1">--------</option>
+                                  <option value="Nostro">Nostro</option>
+                                  <option value="Vostro">Vostro</option>
+                                </select>
+                            </div>
+
+                            <!-- Text input-->
+                            <div class="col-md-5">
+                              <input id="masc-corr" name="masc-corr" type="text"  class="form-control input-md">
+                            </div>
+                          </div>
                       </div>
 
                       <div class="tab-pane" id="dg-encaje-tab">
+                        </br>
 
                       </div>
 
@@ -318,7 +431,7 @@
             </div>
 
           </div>
-          <div class="well col-md-6">
+          <div class="well col-md-5 col-md-push-1">
             <legend>Procesos Automáticos de Match</legend>
             <div class="form-group">
               <div class="col-md-6">

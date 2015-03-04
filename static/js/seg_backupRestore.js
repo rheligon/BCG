@@ -4,11 +4,11 @@ var csrftoken = $.cookie('csrftoken');
 $('#resButton').on('click', function () {
     var $btn;
    
-    function restore_cuenta(cuentaId){
+    function restore_cuenta(cuentaCod){
         $.ajax({
             type:"POST",
             url: "/seguridad/backup_restore/",
-            data: {"cuentaid": cuentaId, "action": "res"},
+            data: {"cuentacod": cuentaCod, "action": "res"},
             success: function(data){
                 if (data.restored){
                     swal({   title: "",
@@ -24,6 +24,11 @@ $('#resButton').on('click', function () {
                 
                 $('#processing-modal').modal('toggle');
                 $btn.button('reset')
+            },
+            error: function(jqXHR, error){
+                alert(jqXHR.responseText)
+                $('#processing-modal').modal('toggle');
+                $btn.button('reset');
             },
             dataType:'json',
             headers:{
@@ -46,7 +51,7 @@ $('#resButton').on('click', function () {
              function(){
                 $btn = $(this).button('loading')
                 $('#processing-modal').modal('toggle');
-                restore_cuenta(idC);
+                restore_cuenta(codC);
              }
              );
     }else{
@@ -78,6 +83,11 @@ $('#bkUpButton').on('click', function () {
                 
                 $('#processing-modal').modal('toggle');
                 $btn.button('reset')
+            },
+            error: function(jqXHR, error){
+                alert(jqXHR.responseText)
+                $('#processing-modal').modal('toggle');
+                $btn.button('reset');
             },
             dataType:'json',
             headers:{
