@@ -486,12 +486,151 @@ def admin_cuentas(request):
     if request.method == 'POST':
         actn = request.POST.get('action')
 
+        if actn == 'encaje_S':
+            cuentaid = int(request.POST.get('cuentaid'))
+            encajes = Encajelegal.objects.all()
+            encajeC = [encaje for encaje in encajes if encaje.cuenta_idcuenta.idcuenta == cuentaid]
+
+            res_json = serializers.serialize('json', encajeC)
+        
+            return JsonResponse(res_json, safe=False)
+
+        if actn == 'encaje_add':
+            cuentaid = int(request.POST.get('cuentaid'))
+            monto = request.POST.get('monto')
+            fecha = request.POST.get('fecha')
+
+            cuenta = Cuenta.objects.filter(pk=cuentaid)
+            encaje = Encajelegal.objects.create(monto=monto,fecha=fecha)
+
+            cuenta[0].montoencajeactual = monto
+            cuenta[0].fechaencajeactual = fecha
+            cuenta[0].save
+            return JsonResponse({'monto':monto, 'fecha':fecha, 'add':True})
+
+
         if actn == 'add':
-            print (actn)
+            criterioid = request.POST.get('criterioid')
+            codigo = request.POST.get('ctacod')
+            bancoid = request.POST.get('bancoid')
+            monedaid = request.POST.get('monedaid')
+            ref_nostro = request.POST.get('ref_nostro')
+            ref_vostro = request.POST.get('ref_vostro')
+            desc = request.POST.get('desc')
+            estado = request.POST.get('estado')
+            tretencion = request.POST.get('tretencion')
+            nsaltos = request.POST.get('nsaltos')
+            tgiro = request.POST.get('tgiro')
+            intraday = request.POST.get('intraday')
+            mailalertas = request.POST.get('amail')
+            tipo_cta = request.POST.get('tipocta')
+            tcargcont = request.POST.get('tcargcont')
+            tcargcorr = request.POST.get('tcargcorr')
+            tproc = request.POST.get('tproc')
+
+            try:
+                criterio = CriteriosMatch.objects.get(pk=criterioid)
+            except CriteriosMatch.DoesNotExist:
+                msg = "No se encontro el criterio especificado."
+                return JsonResponse({'msg': msg, 'add': False})
+
+            try:
+                banco = BancoCorresponsal.objects.get(pk=bancoid)
+            except CriteriosMatch.DoesNotExist:
+                msg = "No se encontro el banco especificado."
+                return JsonResponse({'msg': msg, 'add': False})
+
+            try:
+                moneda = Moneda.objects.get(pk=monedaid)
+            except Moneda.DoesNotExist:
+                msg = "No se encontro la moneda especificada."
+                return JsonResponse({'msg': msg, 'add': False})
+
+            cuenta =  Cuenta.objects.create(criterios_match_idcriterio = criterio, banco_corresponsal_idbanco = banco, codigo=codigo, moneda_idmoneda=moneda, ref_nostro=ref_nostro, ref_vostro=ref_vostro, descripcion=desc, estado=estado, tiempo_retension=tretencion, num_saltos=nsaltos, transaccion_giro=tgiro, intraday=intraday, correo_alertas=mailalertas, tipo_cta=tipo_cta, tipo_cargacont=tcargcont, tipo_carga_corr=tcargcorr, tipo_proceso=tproc)
+            msg = "Cuenta creada satisfactoriamente."
+            return JsonResponse({'msg':msg, 'cuentaid':cuenta.pk ,'criterioid':criterioid, 'criterionom':criterio.nombre,'codigo':codigo, 'bancoid':bancoid, 'bancocod':banco.codigo ,'monedaid':monedaid, 'monedacod':moneda.codigo ,'ref_nostro':ref_nostro, 'ref_vostro':ref_vostro, 'desc':desc, 'estado':estado, 'tretencion':tretencion, 'nsaltos':nsaltos,'tgiro':tgiro,'intraday':intraday,'mailalertas':mailalertas,'tipo_cta':tipo_cta,'tcargcont':tcargcont,'tcargcorr':tcargcorr,'tproc':tproc, 'add': True})
+
         if actn == 'del':
-            print (actn)
+            cuentaid = int(request.POST.get('cuentaid'))
+            msg = "Cuenta eliminada exitosamente."
+
+            cuenta = Cuenta.objects.get(pk=cuentaid)
+            cuenta.delete()
+            return JsonResponse({'msg': msg, 'cuentaid': cuentaid, 'elim': True})
+
         if actn == 'upd':
-            print (actn)
+            cuentaid = request.POST.get('cuentaid')
+            criterioid = request.POST.get('criterioid')
+            codigo = request.POST.get('ctacod')
+            bancoid = request.POST.get('bancoid')
+            monedaid = request.POST.get('monedaid')
+            ref_nostro = request.POST.get('ref_nostro')
+            ref_vostro = request.POST.get('ref_vostro')
+            desc = request.POST.get('desc')
+            estado = request.POST.get('estado')
+            tretencion = request.POST.get('tretencion')
+            nsaltos = request.POST.get('nsaltos')
+            tgiro = request.POST.get('tgiro')
+            intraday = request.POST.get('intraday')
+            mailalertas = request.POST.get('amail')
+            tipo_cta = request.POST.get('tipocta')
+            tcargcont = request.POST.get('tcargcont')
+            tcargcorr = request.POST.get('tcargcorr')
+            tproc = request.POST.get('tproc')
+
+            try:
+                cuentaobj = Cuenta.objects.filter(pk=cuentaid)
+                cuenta = cuentaobj[0]
+            except Cuenta.DoesNotExist:
+                msg = "No se encontro la cuenta especificada."
+                return JsonResponse({'msg': msg, 'modif': False})
+
+            if (cuenta.criterios_match_idcriterio.idcriterio != criterioid):
+                try:
+                    criterio = CriteriosMatch.objects.get(pk=criterioid)
+                except CriteriosMatch.DoesNotExist:
+                    msg = "No se encontro el criterio especificado."
+                    return JsonResponse({'msg': msg, 'modif': False})
+
+                cuenta.criterios_match_idcriterio = criterio
+            
+            if (cuenta.banco_corresponsal_idbanco.idbanco!=bancoid):
+                try:
+                    banco = BancoCorresponsal.objects.get(pk=bancoid)
+                except CriteriosMatch.DoesNotExist:
+                    msg = "No se encontro el banco especificado."
+                    return JsonResponse({'msg': msg, 'modif': False})
+
+                cuenta.banco_corresponsal_idbanco = banco
+
+            if (cuenta.moneda_idmoneda.idmoneda!=monedaid):
+                try:
+                    moneda = Moneda.objects.get(pk=monedaid)
+                except Moneda.DoesNotExist:
+                    msg = "No se encontro la moneda especificada."
+                    return JsonResponse({'msg': msg, 'modif': False})
+
+                cuenta.moneda_idmoneda = moneda
+
+            cuenta.codigo = codigo
+            cuenta.ref_nostro = ref_nostro
+            cuenta.ref_vostro = ref_vostro
+            cuenta.descripcion = desc
+            cuenta.estado = estado
+            cuenta.tiempo_retension = tretencion
+            cuenta.num_saltos = nsaltos
+            cuenta.transaccion_giro = tgiro
+            cuenta.intraday = intraday
+            cuenta.correo_alertas = mailalertas
+            cuenta.tipo_cta = tipo_cta
+            cuenta.tipo_cargacont = tcargcont
+            cuenta.tipo_carga_corr = tcargcorr
+            cuenta.tipo_proceso = tproc
+
+            cuenta.save()
+            msg = "Cuenta modificada satisfactoriamente."
+            return JsonResponse({'msg':msg, 'cuentaid':cuenta.pk ,'criterioid':criterioid, 'criterionom':criterio.nombre,'codigo':codigo, 'bancoid':bancoid, 'bancocod':banco.codigo ,'monedaid':monedaid, 'monedacod':moneda.codigo ,'ref_nostro':ref_nostro, 'ref_vostro':ref_vostro, 'desc':desc, 'estado':estado, 'tretencion':tretencion, 'nsaltos':nsaltos,'tgiro':tgiro,'intraday':intraday,'mailalertas':mailalertas,'tipo_cta':tipo_cta,'tcargcont':tcargcont,'tcargcorr':tcargcorr,'tproc':tproc, 'modif': True})
+
 
     if request.method == 'GET':
         cuentas = Cuenta.objects.all().order_by('codigo')
@@ -616,14 +755,14 @@ def admin_crit_reglas(request):
             criterio = CriteriosMatch.objects.create(nombre=criterionom, num_entradas = 0)
 
             # Es necesario ya que si se hace save() con campos vacios="" da error la funcion
-            criterio.monto1 = EmptyOrNone(criteriomon1)
-            criterio.monto2 = EmptyOrNone(criteriomon2)
-            criterio.monto3 = EmptyOrNone(criteriomon3)
-            criterio.fecha1 = EmptyOrNone(criterioF1)
-            criterio.fecha2 = EmptyOrNone(criterioF2)
-            criterio.fecha3 = EmptyOrNone(criterioF3)
-            criterio.fecha4 = EmptyOrNone(criterioF4)
-            criterio.fecha5 = EmptyOrNone(criterioF5)
+            criterio.monto1 = NoneNotEmpty(criteriomon1)
+            criterio.monto2 = NoneNotEmpty(criteriomon2)
+            criterio.monto3 = NoneNotEmpty(criteriomon3)
+            criterio.fecha1 = NoneNotEmpty(criterioF1)
+            criterio.fecha2 = NoneNotEmpty(criterioF2)
+            criterio.fecha3 = NoneNotEmpty(criterioF3)
+            criterio.fecha4 = NoneNotEmpty(criterioF4)
+            criterio.fecha5 = NoneNotEmpty(criterioF5)
         
             criterio.save()
 
@@ -661,14 +800,14 @@ def admin_crit_reglas(request):
                 msg = "No se encontro el criterio especificado, asegurese de hacer click en el criterio a modificar."
                 return JsonResponse({'msg': msg, 'criterioid': criterioid, 'modif': False})
 
-            criterio.monto1 = EmptyOrNone(criteriomon1)
-            criterio.monto2 = EmptyOrNone(criteriomon2)
-            criterio.monto3 = EmptyOrNone(criteriomon3)
-            criterio.fecha1 = EmptyOrNone(criterioF1)
-            criterio.fecha2 = EmptyOrNone(criterioF2)
-            criterio.fecha3 = EmptyOrNone(criterioF3)
-            criterio.fecha4 = EmptyOrNone(criterioF4)
-            criterio.fecha5 = EmptyOrNone(criterioF5)
+            criterio.monto1 = NoneNotEmpty(criteriomon1)
+            criterio.monto2 = NoneNotEmpty(criteriomon2)
+            criterio.monto3 = NoneNotEmpty(criteriomon3)
+            criterio.fecha1 = NoneNotEmpty(criterioF1)
+            criterio.fecha2 = NoneNotEmpty(criterioF2)
+            criterio.fecha3 = NoneNotEmpty(criterioF3)
+            criterio.fecha4 = NoneNotEmpty(criterioF4)
+            criterio.fecha5 = NoneNotEmpty(criterioF5)
 
             criterio.save()
             return JsonResponse({'criterioid':criterio.idcriterio,'criterionom':criterionom, 'criteriomon1':criterio.monto1,'criteriomon2':criterio.monto2,'criteriomon3':criterio.monto3,'criterioF1':criterio.fecha1,'criterioF2':criterio.fecha2,'criterioF3':criterio.fecha3,'criterioF4':criterio.fecha4,'criterioF5':criterio.fecha5,'msg':msg, 'modif': True})
@@ -680,7 +819,7 @@ def admin_crit_reglas(request):
         context = {'criterios':criterios}
         return render(request, template, context)
 
-def EmptyOrNone(s):
+def NoneNotEmpty(s):
     if s and s!="None":
         return s
     else:

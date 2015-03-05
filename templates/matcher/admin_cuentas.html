@@ -59,13 +59,23 @@
     <legend>Detalles:</legend>
   </div>
   <div class="col-md-2 col-md-push-2">
-      <button type="button" id="addButton" data-loading-text="Cargando..." class="col-md-7 btn btn-success" autocomplete="off">
+      <button type="button" name="Agregar" id="addButton" data-loading-text="Cargando..." class="col-md-7 btn btn-success" autocomplete="off">
           Agregar
       </button>
   </div>
   <div class="col-md-2 col-md-push-1">
-      <button type="button" id="delButton" data-loading-text="Cargando..." class="col-md-7 btn btn-danger" autocomplete="off">
+      <button type="button" name="Eliminar" id="delButton" data-loading-text="Cargando..." class="col-md-7 btn btn-danger" autocomplete="off">
           Eliminar
+      </button>
+  </div>
+    <div class="col-md-2 col-md-push-2" hidden>
+      <button type="button" name="Aceptar" id="acptButton" data-loading-text="Cargando..." class="col-md-7 btn btn-info" autocomplete="off">
+          Aceptar
+      </button>
+  </div>
+  <div class="col-md-2 col-md-push-1" hidden>
+      <button type="button" name="Cancelar" id="cancelButton" data-loading-text="Cargando..." class="col-md-7 btn btn-default" autocomplete="off">
+          Cancelar
       </button>
   </div>
   <div class="col-md-2">
@@ -325,9 +335,37 @@
 
                       <div class="tab-pane" id="dg-encaje-tab">
                         </br>
+                        <div class="table-responsive col-md-12">
+                          <table id="table-encaje" class="table table-bordered table-striped tabla">
+                            <thead>
+                                <tr>
+                                  <th>Fecha</th>
+                                  <th>Monto</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            </tbody>
+                          </table>
+                        </div>
+                        <legend>Actual:</legend>
+                        <!-- Text input-->
+                        <div class="col-md-4">
+                          <label>Fecha: </label>
+                          <input id="encaje-fecha" name="trans-corr" type="text"  class="form-control input-md">
+                        </div>
+                        <!-- Text input-->
+                        <div class="col-md-5">
+                          <label>Monto: </label>
+                          <input id="encaje-monto" name="trans-corr" type="text"  class="form-control input-md">
+                          </br>
+                        </div>
+                        <div class="col-md-12">
+                          <button type="button" id="addEncajeButton" data-loading-text="Cargando..." class="col-md-2 btn btn-success" autocomplete="off">
+                              Agregar
+                          </button>
+                        </div>
 
                       </div>
-
                   </div>
               </form>
             </div>
@@ -517,49 +555,10 @@
 <script type="text/javascript" src="{% static 'js/admin_cuentas.js' %}"></script>
 
 <script type="text/javascript">
-
 $('#addButton').on('click', function () {
   event.preventDefault();
 
-  //Campos datos generales
-  var cuentac = $('#cuenta-codigo').val();
-  var banco = $('#Banco-sel').val();
-  var descripcion = $('#cuenta-desc').val();
-  var ctanostro = $('#cuenta-nostro').val();
-  var ctavostro = $('#cuenta-vostro').val();
-  var moneda = $('#Moneda-sel').val();
-
-  //Campos alertas
-
-  //checkboxes
-  var chkb0 = $('#Alertas-0');
-  var chkb1 = $('#Alertas-1');
-  var chkb2 = $('#Alertas-2');
-  var chkb3 = $('#Alertas-3');
-  var chkb4 = $('#Alertas-4');
-  var chkb5 = $('#Alertas-5');
-  var chkb6 = $('#Alertas-6');
-  //spinners
-  var spin0 = $("#spin0").val();
-  var spin1 = $("#spin1").val();
-  var spin2 = $("#spin2").val();
-  var spin3 = $("#spin3").val();
-
-  //correo de alertas
-  var alertmail = $("#a-mail").val();
-
-  //Campos formatos y procesos
-  var tipocta = $('#TipoCuenta-sel').val();
-  var formconta = $('#FormConta-sel').val();
-  var formcorr = $('#FormCorr-sel').val();
-
-  var chkbproc1 = $('#Proc-1');
-  var chkbproc2 = $('#Proc-2');
-  var chkbproc3 = $('#Proc-3');
-  var chkbproc4 = $('#Proc-4');
-
   var checkedalertas = $('input[name="Alertas"]:checked');
-  var checkedprocs = $('input[name="Proc"]:checked');
 
   if (checkedalertas.length>0){
     for (var i=0;i<checkedalertas.length;i++){
@@ -571,8 +570,6 @@ $('#addButton').on('click', function () {
 
 });
 </script>
-
-
 <script>
 function goBack() {
     var msg = "Seguro que desea cancelar?",
