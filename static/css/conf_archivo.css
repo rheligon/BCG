@@ -1,0 +1,19 @@
+.dual-list .list-group {
+    margin-top: 8px;
+}
+
+.list-left li, .list-right li, .list-arch li , .list-right-modal li, .list-left-modal li {
+    cursor: pointer;
+}
+
+.list-arrows, .list-arrows-modal {
+    padding-top: 100px;
+}
+
+.list-arrows button, .list-arrows-modal button {
+    margin-bottom: 20px;
+}
+
+.list-group-item {
+    text-align: center;
+}

@@ -32,7 +32,8 @@ urlpatterns = patterns('',
     url(r'^conf/(?P<tipo>\w+)/$', 'Matcher_WS.views.configuracion', name='configuracion'),
 
     #Seguridad
-    url(r'^seguridad/backup_restore/$', 'Matcher_WS.views.seg_backupRestore', name='configuracion'),
+    url(r'^seguridad/usuarios/$', 'Matcher_WS.views.seg_Usuarios', name='seg_usuarios'),
+    url(r'^seguridad/backup_restore/$', 'Matcher_WS.views.seg_backupRestore', name='seg_backupRestore'),
 
     # Administración
     url(r'^admin/bancos/$', 'Matcher_WS.views.admin_bancos', name='admin_bancos'),

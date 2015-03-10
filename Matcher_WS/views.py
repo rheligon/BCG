@@ -15,14 +15,18 @@ from django.views.decorators.csrf import csrf_exempt
 
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
-def test(request):
+from django.contrib.auth.hashers import *
+from datetime import datetime
 
-    fields = Cargado._meta.fields
-    print(fields)
+def test(request):
+    print(request.META.get('COMPUTERNAME'))
 
     context = {}
     template = "matcher/index.html"
     return render(request, template, context)
+
+def timenow():
+    return datetime.now().replace(microsecond=0)
 
 @login_required(login_url='/login')
 def index(request):
@@ -331,6 +335,186 @@ def configuracion(request, tipo):
         
         # ninguna, deberia raise 404
         return render(request, "matcher/login.html", {})
+
+
+
+
+@login_required(login_url='/login')
+def seg_Usuarios(request):
+    if request.method == "POST":
+        actn = request.POST.get('action')
+
+        if actn == 'desb':
+            sessid = request.POST.get('sessid')
+            msg = "Usuario desbloqueado exitosamente."
+            try:
+                sesion = Sesion.objects.filter(idsesion=sessid)[0]
+                sesion.estado = "Activo"
+                sesion.save()
+            except:
+                msg = "No se encontro la sesion especificada, asegurese de hacer click en el usuario desbloquear."
+                return JsonResponse({'msg': msg, 'desb': False})
+
+            return JsonResponse({'msg': msg, 'sessid':sessid, 'desb': True})
+
+        if actn == 'sel':
+            usrid = int(request.POST.get('usrid'))
+            cuentasT = UsuarioCuenta.objects.all()
+            cuentas = [cuenta for cuenta in cuentasT if cuenta.usuario_idusuario.idusuario == usrid]
+
+            res_json = serializers.serialize('json', cuentas)
+        
+            return JsonResponse(res_json, safe=False)
+
+        if actn == "pwd":
+            msg = "Contraseña modificada exitosamente."
+            pwd = request.POST.get('newpass')
+            sessid = request.POST.get('sessid')
+            newp = make_password(pwd, hasher='pbkdf2_sha1')
+            x, x, salt, hashp = newp.split("$")
+            try:
+                sesion = Sesion.objects.filter(pk=sessid)[0]
+                sesion.salt = salt
+                sesion.pass_field = hashp
+                sesion.save()
+            except:
+                msg = "No se pudo encontrar el usuario especificado."
+                return JsonResponse({'msg': msg, 'pwd': False})
+
+            return JsonResponse({'msg': msg, 'pwd': True})
+
+        if actn == "del":
+            msg = "Usuario eliminado exitosamente."
+            sessid = request.POST.get('sessid')
+
+            try:
+                sesion = Sesion.objects.filter(idsesion=sessid)
+            except Sesion.DoesNotExist:
+                msg = "No se encontro la sesion especificada, asegurese de hacer click en el usuario a eliminar."
+                return JsonResponse({'msg': msg, 'usrid': usrid, 'elim': False})
+
+            user = sesion[0].usuario_idusuario
+            user.delete()
+            return JsonResponse({'msg': msg, 'sessid': sessid, 'elim': True})
+
+        if actn == "add":
+            usrnom = request.POST.get('usrnom')
+            usrapell = request.POST.get('usrapell')
+            usrci = request.POST.get('usrci')
+            usrtlf = request.POST.get('usrtlf')
+            usrmail = request.POST.get('usrmail')
+            usrdir = request.POST.get('usrdir')
+            usrperf = request.POST.get('usrperf')
+            usrobs = request.POST.get('usrobs')
+            usrctas = request.POST.getlist('usrctas[]')
+            usrlogin = request.POST.get('usrlogin')
+            usrpwd = request.POST.get('usrpwd')
+            usrldap = request.POST.get('usrldap')
+            msg = "Usuario creado exitosamente."
+
+            # Obtener cuentas asignadas
+            cuentas_asig =[cta.split('-')[1] for cta in usrctas]
+
+            # Buscar empresa y perfil asignados
+            empresa = Empresa.objects.all()[0]
+            perfil = Perfil.objects.filter(pk=usrperf)[0]
+
+            # Hash password
+            newp = make_password(usrpwd, hasher='pbkdf2_sha1')
+            x, x, salt, hashp = newp.split("$")
+
+            # Crear usuario
+            try:
+                usuario = Usuario.objects.create(empresa_id_empresa=empresa, perfil_idperfil=perfil, nombres=usrnom, apellidos=usrapell, ci=usrci)
+                usuario.direccion = usrdir
+                usuario.telefono = usrtlf
+                usuario.mail = usrmail
+                usuario.observaciones = usrobs
+                usuario.save()
+            except:
+                msg = "No se pudo crear el usuario especificado."
+                return JsonResponse({'msg': msg, 'usrid': usuario.idusuario, 'add': False})
+
+            # Crear sesion
+            sesion = Sesion.objects.create(usuario_idusuario=usuario, estado="Pendiente", login=usrlogin, fecha_registro=timenow(), conexion=0, ldap=usrldap, salt=salt, pass_field=hashp)
+            
+            # Crear relacion usuario cuentas
+            for cuenta in cuentas_asig:
+                try:
+                    cuenta = Cuenta.objects.filter(pk=cuenta)[0]
+                    UsuarioCuenta.objects.create(usuario_idusuario=usuario, cuenta_idcuenta=cuenta)
+                except:
+                    msg = "No se pudo crear el usuario con las cuentas especificadas."
+                    return JsonResponse({'msg': msg, 'add': False})
+
+            return JsonResponse({'msg': msg, 'sessid':sesion.pk , 'usrid': usuario.idusuario, 'usrnom':usrnom, 'usrapell':usrapell, 'usrci':usrci, 'usrtlf':usrtlf, 'usrmail':usrmail, 'usrdir':usrdir, 'usrperf':usrperf, 'usrobs':usrobs, 'usrlogin':usrlogin, 'usrldap':usrldap, 'add': True})
+
+        if actn == "upd":
+            sessid = request.POST.get('sessid')
+            usrnom = request.POST.get('usrnom')
+            usrapell = request.POST.get('usrapell')
+            usrci = request.POST.get('usrci')
+            usrtlf = request.POST.get('usrtlf')
+            usrmail = request.POST.get('usrmail')
+            usrdir = request.POST.get('usrdir')
+            usrperf = request.POST.get('usrperf')
+            usrobs = request.POST.get('usrobs')
+            usrctas = request.POST.getlist('usrctas[]')
+            usrldap = request.POST.get('usrldap')
+            msg = "Usuario modificado exitosamente."
+
+            # Obtener cuentas asignadas
+            cuentas_asig =[cta.split('-')[1] for cta in usrctas]
+
+            # Buscar sesion
+            sesion = Sesion.objects.filter(pk=sessid)[0]
+            sesion.ldap = usrldap
+            sesion.save()
+
+            # Buscar perfil asignados
+            perfil = Perfil.objects.filter(pk=usrperf)[0]
+
+            # Buscar y modificar usuario
+            try:
+                usuario = Usuario.objects.filter(pk=sesion.usuario_idusuario.idusuario)[0]
+                usuario.ci = usrci
+                usuario.perfil_idperfil = perfil
+                usuario.nombres = usrnom
+                usuario.apellidos = usrapell
+                usuario.direccion = usrdir
+                usuario.telefono = usrtlf
+                usuario.mail = usrmail
+                usuario.observaciones = usrobs
+                usuario.save()
+            except:
+                msg = "No se pudo modificar el usuario especificado."
+                return JsonResponse({'msg': msg, 'modif': False})
+
+            # Buscar cuentas asignadas al usuario
+            cuentas_old = UsuarioCuenta.objects.filter(usuario_idusuario=usuario)
+            for cuenta in cuentas_old:
+                cuenta.delete()
+
+            # Crear relacion usuario cuentas
+            for cuenta in cuentas_asig:
+                try:
+                    cuenta = Cuenta.objects.filter(pk=cuenta)[0]
+                    UsuarioCuenta.objects.create(usuario_idusuario=usuario, cuenta_idcuenta=cuenta)
+                except:
+                    msg = "No se pudo crear el usuario con las cuentas especificadas."
+                    return JsonResponse({'msg': msg, 'modif': False})
+
+            return JsonResponse({'msg': msg, 'sessid':sesion.pk , 'usrid': usuario.idusuario, 'usrnom':usrnom, 'usrapell':usrapell, 'usrci':usrci, 'usrtlf':usrtlf, 'usrmail':usrmail, 'usrdir':usrdir, 'usrperf':usrperf, 'usrobs':usrobs, 'usrlogin':sesion.login, 'usrldap':usrldap, 'usrestado':sesion.estado, 'modif': True})
+
+    if request.method == "GET":
+        sesion_list = Sesion.objects.all()
+        perfiles = Perfil.objects.all().order_by('nombre')
+        cuentas = Cuenta.objects.all().order_by('codigo')
+        # filtrar por usuario
+        context = {'sesiones': sesion_list, 'perfiles':perfiles, 'cuentas':cuentas }
+        template = "matcher/seg_Usuarios.html"
+
+        return render(request, template, context)
 
 @login_required(login_url='/login')
 def seg_backupRestore(request):

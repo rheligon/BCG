@@ -301,7 +301,7 @@ $('#crit-sel').change(function() {
   $('#F5_criterio').val(EmptyNotNone(criterio.attr('fecha5'))); 
 });
 
-//Rellenar pagina de acuerdo a la seleccion
+//Rellenar reglas de acuerdo a la seleccion de cuenta
 function reglasT(cuentaId){
     $.ajax({
         type:"POST",
@@ -340,7 +340,7 @@ function reglasT(cuentaId){
     return false;
 };
 
-//Rellenar pagina de acuerdo a la seleccion
+//Rellenar encajes de acuerdo a la seleccion de cuenta
 function encaje_s(cuentaId){
     $.ajax({
         type:"POST",
@@ -379,7 +379,7 @@ function encaje_s(cuentaId){
     return false;
 };
 
-//Rellenar pagina de acuerdo a la seleccion
+//Añadir encaje
 function encaje_add(cuentaId,monto,fecha){
     $.ajax({
         type:"POST",
