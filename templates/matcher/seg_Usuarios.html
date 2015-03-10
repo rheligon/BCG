@@ -5,7 +5,7 @@
 {% block head %}
 <link rel="stylesheet" href="{% static 'css/dataTables/dataTables.bootstrap.css' %}">
 <link rel="stylesheet" href="{% static 'css/sweet-alert.css' %}">
-<link rel="stylesheet" href="{% static 'css/conf_archivo.css' %}">
+<link rel="stylesheet" href="{% static 'css/dual_list.css' %}">
 {% endblock%}
 
 {% block content %}
@@ -196,6 +196,12 @@
                           <div class="row">
                               <div class="col-md-12" style="text-align:center;">
                                       <h4>Disponibles</h4>
+                              </div>
+                              <div class="col-md-12">
+                                  <div class="input-group">
+                                      <span class="input-group-addon glyphicon glyphicon-search"></span>
+                                      <input type="text" name="SearchDualList" class="form-control" placeholder="search" />
+                                  </div>
                               </div>
                           </div>
                           <ul class="list-group" type="cuenta">

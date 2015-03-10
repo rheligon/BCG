@@ -246,6 +246,7 @@ def configuracion(request, tipo):
         if tipo == "sis":
             print(request.POST)
             print("sis")
+            return JsonResponse()
 
         if tipo == "arc":
             actn = request.POST.get('action')
@@ -513,6 +514,15 @@ def seg_Usuarios(request):
         # filtrar por usuario
         context = {'sesiones': sesion_list, 'perfiles':perfiles, 'cuentas':cuentas }
         template = "matcher/seg_Usuarios.html"
+
+        return render(request, template, context)
+
+@login_required(login_url='/login')
+def seg_Perfiles(request):
+    if request.method == "GET":
+        perfiles = Perfil.objects.all().order_by('nombre')
+        context = {'perfiles': perfiles}
+        template = "matcher/seg_Perfiles.html"
 
         return render(request, template, context)
 

@@ -33,6 +33,7 @@ urlpatterns = patterns('',
 
     #Seguridad
     url(r'^seguridad/usuarios/$', 'Matcher_WS.views.seg_Usuarios', name='seg_usuarios'),
+    url(r'^seguridad/perfiles/$', 'Matcher_WS.views.seg_Perfiles', name='seg_perfiles'),
     url(r'^seguridad/backup_restore/$', 'Matcher_WS.views.seg_backupRestore', name='seg_backupRestore'),
 
     # Administración
