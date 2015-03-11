@@ -11,6 +11,17 @@ function EmptyNotNone(s){
     }
 }
 
+function commas (num) {
+    var N = parseFloat(num).toFixed(2);
+    return N.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,")
+}
+
+function dateFormat(fecha){
+    var date = new Date(Date.parse(fecha));
+    return date.toLocaleDateString();
+    //return (date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear())
+}
+
 function iniciar_tabla(idioma){
     if (idioma==="es"){
 
@@ -141,6 +152,7 @@ function clean_cta_form(){
     $("#dg-spin1").val(0);
     $("#tipoTransGiro").val("");
     $("#param-sel").val('Activa');
+    $("#intraday").prop("checked",false);
 
     //Dg criterios
     $("#crit-sel").val(-1);
@@ -231,6 +243,7 @@ $('#table-cuentas').on('click','a[type=cuenta]', function(event) {
     $("#dg-spin1").val(a_nsaltos);
     $("#tipoTransGiro").val(a_tgiro);
     $("#param-sel").val(a_estado);
+    $("#intraday").prop("checked", parseInt(a_intraday));
 
     //Dg criterios
     $("#crit-sel").val(a_crit);
@@ -355,7 +368,7 @@ function encaje_s(cuentaId){
                 var a_monto = json_data[i].fields.monto;
                 var a_fecha = json_data[i].fields.fecha;
                 $('#table-encaje > tbody').append('<tr id="tre-'+a_id+'"><tr>');
-                var jRow = $("#tre-"+a_id).append('<td>'+a_fecha+'</td>'+'<td>'+a_monto+'</td>');
+                var jRow = $("#tre-"+a_id).append('<td>'+dateFormat(a_fecha)+'</td>'+'<td>'+ $.formatNumber(a_monto,{locale:"es"}) +'</td>');
                 tencaje.row.add(jRow).draw();
             };
 
@@ -363,8 +376,9 @@ function encaje_s(cuentaId){
               var i = json_data.length-1;
               var fecha = json_data[i].fields.fecha;
               var monto = json_data[i].fields.monto;
-              $('#encaje-fecha').val(fecha);
+              $('#encaje-fecha').val(dateFormat(fecha));
               $('#encaje-monto').val(monto);
+              $('#encaje-monto').formatNumber({locale:"es"});
             };
         },
         error: function(error){
@@ -549,6 +563,7 @@ $('#acptButton').on('click', function () {
                     $("#dg-spin1").val(nsaltos);
                     $("#tipoTransGiro").val(tgiro);
                     $("#param-sel").val(estado);
+                    $("#intraday").prop("checked", parseInt(intraday));
 
                     //Dg criterios
                     $("#crit-sel").val(criterioid);
@@ -619,7 +634,7 @@ $('#acptButton').on('click', function () {
     var tretencion = $('#dg-spin0').val();
     var nsaltos = $('#dg-spin1').val();
     var tgiro = $('#tipoTransGiro').val();
-    var intraday = 0;
+    var intraday = $("#intraday").prop('checked') ? 1 : 0;
     var amail = $('#a-mail').val();
     var tipocta = $('#TipoCuenta-sel').val();
     var tcargcont = $('#FormConta-sel').val();
@@ -737,6 +752,7 @@ $('#updButton').on('click', function () {
                     $("#dg-spin1").val(nsaltos);
                     $("#tipoTransGiro").val(tgiro);
                     $("#param-sel").val(estado);
+                    $("#intraday").prop("checked", parseInt(intraday));
 
                     //Dg criterios
                     $("#crit-sel").val(criterioid);
@@ -804,7 +820,7 @@ $('#updButton').on('click', function () {
     var tretencion = $('#dg-spin0').val();
     var nsaltos = $('#dg-spin1').val();
     var tgiro = $('#tipoTransGiro').val();
-    var intraday = 0;
+    var intraday = $("#intraday").prop('checked') ? 1 : 0;
     var amail = $('#a-mail').val();
     var tipocta = $('#TipoCuenta-sel').val();
     var tcargcont = $('#FormConta-sel').val();

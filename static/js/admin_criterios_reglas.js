@@ -47,6 +47,9 @@ $('#delButton').on('click', function () {
                 if (data.elim){
                     tabla.row($('#tr-'+ data.criterioid)).remove().draw();
                     $(".criterio-detalle").hide();
+                    $("#Id_criterio").val(-1);
+                    $("#Nom_criterio").val("");
+                    
                     swal({   title: "",
                              text: data.msg,
                              type: "success",
@@ -73,7 +76,7 @@ $('#delButton').on('click', function () {
 
     if (idC>=0){
         swal({   title: "",
-             text: "Seguro que desea eliminar el criterio '"+ nomC +"' que se muestra en la parte de detalles?",
+             text: "Seguro que desea eliminar el criterio '"+ nomC +"' ?",
              type: "warning",
              showCancelButton: true,
              confirmButtonText: "Ok"},
@@ -246,6 +249,8 @@ $('#form-add-criterio').validate({
                         url: "/admin/criterios_reglas/",
                         data: {"criterionom": criterioNom, "criteriomon1": criterioMon1, "criteriomon2": criterioMon2, "criteriomon3": criterioMon3, "criterioF1": criterioF1, "criterioF2": criterioF2, "criterioF3": criterioF3, "criterioF4": criterioF4, "criterioF5": criterioF5, "action": "add"},
                         success: function(data){
+                            var a_idaux = $("#Id_criterio").val();
+
                             if (data.creado){
                                 $("#Id_criterio").val(data.criterioid);
                                 $("#Nom_criterio").val(data.criterionom);
@@ -276,27 +281,23 @@ $('#form-add-criterio').validate({
 
                                 tabla.row.add(jRow).draw();
                                 swal({   title: "",
-                                         text: "Criterio agregado satisfactoriamente.",
+                                         text: data.msg,
                                          type: "success",
                                          confirmButtonText: "Ok" });
-
                             }else{
                                 swal({   title: "",
-                                         text: "Ya ese criterio existe en la Base de Datos",
-                                         type: "warning",
-                                         confirmButtonText: "Ok" });
-                                $("#Id_criterio").val(data.criterioid);
-                                $("#Nom_criterio").val(data.criterionom);
-                                $("#Mon1_criterio").val(data.criteriomon1);
-                                $("#Mon2_criterio").val(data.criteriomon2);
-                                $("#Mon3_criterio").val(data.criteriomon3);
-                                $("#F1_criterio").val(data.criterioF1);
-                                $("#F2_criterio").val(data.criterioF2);
-                                $("#F3_criterio").val(data.criterioF3);
-                                $("#F4_criterio").val(data.criterioF4);
-                                $("#F5_criterio").val(data.criterioF5);
-                                $(".criterio-detalle").show();
+                                     text: data.msg,
+                                     type: "error",
+                                     confirmButtonText: "Ok" });
                             }
+
+                            var a_id = $("#Id_criterio").val();
+                            //Estilo de elemento elegido
+                            $('#'+a_idaux).parent().css("background-color","")
+                            $('#'+a_idaux).css("color","")
+                            $('#'+a_id).parent().css("background-color","#337ab7")
+                            $('#'+a_id).css("color","white")
+
                             $('#processing-modal').modal('toggle');
                             $btn.button('reset');
                         },

@@ -38,6 +38,7 @@ $('#delButton').on('click', function () {
                 if (data.elim){
                     tabla.row($('#tr-'+ data.bancoid)).remove().draw();
                     $(".banco-detalle").hide();
+                    $('#Id_banco').val(-1);
                     swal({   title: "",
                              text: data.msg,
                              type: "success",
@@ -48,7 +49,6 @@ $('#delButton').on('click', function () {
                              type: "error",
                              confirmButtonText: "Ok" });
                 }
-                
                 $('#processing-modal').modal('toggle');
                 $btn.button('reset')
             },
@@ -90,6 +90,8 @@ $('#updButton').on('click', function () {
             url: "/admin/bancos/",
             data: {"bancoid": bancoId, "banconom":bancoNom, "bancocod":bancoCod, "action": "upd"},
             success: function(data){
+                var a_idaux = $('#Id_banco').val();
+
                 if (data.modif){
                     tabla.row($('#tr-'+ data.bancoid)).remove().draw();
 
@@ -111,6 +113,17 @@ $('#updButton').on('click', function () {
                              text: data.msg,
                              type: "error",
                              confirmButtonText: "Ok" });
+                    $("#Cod_banco").val(data.bancoc);
+                    $("#Nom_banco").val(data.bancon);
+                    $("#Id_banco").val(data.bancoid);
+                    $(".banco-detalle").show();
+
+                    var a_id = $('#Id_banco').val();
+                    //Estilo de elemento elegido
+                    $('#'+a_idaux).parent().css("background-color","")
+                    $('#'+a_idaux).css("color","")
+                    $('#'+a_id).parent().css("background-color","#337ab7")
+                    $('#'+a_id).css("color","white")
                 }
                 $('#processing-modal').modal('toggle');
                 $btn.button('reset')
@@ -200,6 +213,8 @@ $('#form-add-bank').validate({
                         url: "/admin/bancos/",
                         data: {"bancocod": bancoCod, "banconom": bancoNom, "action": "add"},
                         success: function(data){
+                            var a_idaux = $("#Id_banco").val();
+
                             if (data.creado){
                                 $("#Cod_banco").val(data.bancoc);
                                 $("#Nom_banco").val(data.bancon);
@@ -216,13 +231,13 @@ $('#form-add-bank').validate({
 
                                 tabla.row.add(jRow).draw();
                                 swal({   title: "",
-                                         text: "Banco agregado satisfactoriamente.",
+                                         text: data.msg,
                                          type: "success",
                                          confirmButtonText: "Ok" });
 
                             }else{
                                 swal({   title: "",
-                                         text: "Ya ese Banco existe en la Base de Datos.",
+                                         text: data.msg,
                                          type: "warning",
                                          confirmButtonText: "Ok" });
                                 $("#Cod_banco").val(data.bancoc);
@@ -230,6 +245,15 @@ $('#form-add-bank').validate({
                                 $("#Id_banco").val(data.bancoid);
                                 $(".banco-detalle").show();
                             }
+
+                            var a_id = $("#Id_banco").val();
+
+                            //Estilo de elemento elegido
+                            $('#'+a_idaux).parent().css("background-color","");
+                            $('#'+a_idaux).css("color","");
+                            $('#'+a_id).parent().css("background-color","#337ab7");
+                            $('#'+a_id).css("color","white");
+
                             $('#processing-modal').modal('toggle');
                             $btn.button('reset');
                         },

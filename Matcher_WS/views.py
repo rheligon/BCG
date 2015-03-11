@@ -18,8 +18,20 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.contrib.auth.hashers import *
 from datetime import datetime
 
+import os
+from Matcher_WS.settings import ARCHIVOS_FOLDER
+
 def test(request):
     print(request.META.get('COMPUTERNAME'))
+    path = ARCHIVOS_FOLDER+'\CONTA\CARGADO\\'
+    filenames = next(os.walk(path))[2]
+    print (filenames)
+
+    #for archivo in filenames:
+    archivo = path+filenames[0]
+    with open(archivo,'r') as f:
+        for line in f:
+            print (line.replace('\n',''))
 
     context = {}
     template = "matcher/index.html"
@@ -576,10 +588,11 @@ def admin_bancos(request):
         if actn == 'add':
             bancocod = request.POST.get('bancocod').upper()
             banconom = request.POST.get('banconom')
+            msg = "Banco agregado exitosamente."
 
-            banco, creado = BancoCorresponsal.objects.get_or_create(codigo=bancocod, nombre=banconom)
+            banco, creado = BancoCorresponsal.objects.get_or_create(codigo=bancocod, defaults={'nombre':banconom})
         
-            return JsonResponse({'bancoid': banco.idbanco, 'bancon': banco.nombre, 'bancoc': banco.codigo, 'creado': creado})
+            return JsonResponse({'msg': msg, 'bancoid': banco.idbanco, 'bancon': banco.nombre, 'bancoc': banco.codigo, 'creado': creado})
 
         elif actn == 'upd':
             bancoid = request.POST.get('bancoid')
@@ -593,6 +606,11 @@ def admin_bancos(request):
                 msg = "No se encontro el banco especificado, asegurese de hacer click en el banco a modificar."
                 return JsonResponse({'msg': msg, 'bancoid': bancoid, 'modif': False})
 
+            bancoaux = BancoCorresponsal.objects.filter(codigo=bancocod)
+            if (len(bancoaux)>0):
+                msg = "Ya existe un banco con ese codigo en la base de datos."
+                return JsonResponse({'msg': msg, 'bancoid': bancoaux[0].idbanco, 'bancon':bancoaux[0].nombre , 'bancoc':bancoaux[0].codigo, 'modif': False})
+            
             banco.codigo = bancocod
             banco.nombre = banconom
             banco.save()
@@ -630,7 +648,6 @@ def admin_monedas(request):
             monedacod = request.POST.get('moncod').upper()
             monedanom = request.POST.get('monnom')
             monedacam = float(request.POST.get('moncam'))
-
             moneda, creado = Moneda.objects.get_or_create(codigo=monedacod, defaults={'nombre':monedanom, 'cambio_usd':monedacam})
 
             return JsonResponse({'monedaid': moneda.idmoneda, 'monnom': moneda.nombre, 'moncod': moneda.codigo, 'moncam':moneda.cambio_usd, 'creado': creado})
@@ -639,8 +656,8 @@ def admin_monedas(request):
             monedaid = request.POST.get('monedaid')
             monedacod = request.POST.get('monedacod').upper()
             monedanom = request.POST.get('monedanom')
-            monedacam = request.POST.get('monedacam')
-            msg = "Moneda modificado exitosamente."
+            monedacam = float(request.POST.get('monedacam'))
+            msg = "Moneda modificada exitosamente."
 
             try:
                 moneda = Moneda.objects.get(idmoneda=monedaid)
@@ -648,6 +665,11 @@ def admin_monedas(request):
                 msg = "No se encontro la moneda especificada, asegurese de hacer click en la moneda a modificar."
                 return JsonResponse({'msg': msg, 'monedaid': monedaid, 'modif': False})
 
+            monedaaux = Moneda.objects.filter(codigo=monedacod)
+            if (len(monedaaux)>0):
+                msg = "Ya existe una moneda con ese codigo en la base de datos."
+                return JsonResponse({'msg': msg, 'monedaid': monedaaux[0].idmoneda, 'monnom':monedaaux[0].nombre , 'moncod':monedaaux[0].codigo, 'moncam':monedaaux[0].cambio_usd,'modif': False})
+            
             moneda.codigo = monedacod
             moneda.nombre = monedanom
             moneda.cambio_usd = monedacam
@@ -705,7 +727,7 @@ def admin_cuentas(request):
 
         if actn == 'add':
             criterioid = request.POST.get('criterioid')
-            codigo = request.POST.get('ctacod')
+            codigo = request.POST.get('ctacod').upper()
             bancoid = request.POST.get('bancoid')
             monedaid = request.POST.get('monedaid')
             ref_nostro = request.POST.get('ref_nostro')
@@ -730,7 +752,7 @@ def admin_cuentas(request):
 
             try:
                 banco = BancoCorresponsal.objects.get(pk=bancoid)
-            except CriteriosMatch.DoesNotExist:
+            except BancoCorresponsal.DoesNotExist:
                 msg = "No se encontro el banco especificado."
                 return JsonResponse({'msg': msg, 'add': False})
 
@@ -935,7 +957,7 @@ def admin_crit_reglas(request):
         actn = request.POST.get('action')
 
         if actn == 'add':
-            
+            msg = "Criterio creado exitosamente."
             criterionom = request.POST.get('criterionom')
             criteriomon1 = request.POST.get('criteriomon1')
             criteriomon2 = request.POST.get('criteriomon2')
@@ -946,21 +968,25 @@ def admin_crit_reglas(request):
             criterioF4 = request.POST.get('criterioF4')
             criterioF5 = request.POST.get('criterioF5')
 
-            criterio = CriteriosMatch.objects.create(nombre=criterionom, num_entradas = 0)
+            try:
+                criterio = CriteriosMatch.objects.create(nombre=criterionom, num_entradas = 0)
 
-            # Es necesario ya que si se hace save() con campos vacios="" da error la funcion
-            criterio.monto1 = NoneNotEmpty(criteriomon1)
-            criterio.monto2 = NoneNotEmpty(criteriomon2)
-            criterio.monto3 = NoneNotEmpty(criteriomon3)
-            criterio.fecha1 = NoneNotEmpty(criterioF1)
-            criterio.fecha2 = NoneNotEmpty(criterioF2)
-            criterio.fecha3 = NoneNotEmpty(criterioF3)
-            criterio.fecha4 = NoneNotEmpty(criterioF4)
-            criterio.fecha5 = NoneNotEmpty(criterioF5)
-        
-            criterio.save()
+                # Es necesario ya que si se hace save() con campos vacios="" da error la funcion
+                criterio.monto1 = NoneNotEmpty(criteriomon1)
+                criterio.monto2 = NoneNotEmpty(criteriomon2)
+                criterio.monto3 = NoneNotEmpty(criteriomon3)
+                criterio.fecha1 = NoneNotEmpty(criterioF1)
+                criterio.fecha2 = NoneNotEmpty(criterioF2)
+                criterio.fecha3 = NoneNotEmpty(criterioF3)
+                criterio.fecha4 = NoneNotEmpty(criterioF4)
+                criterio.fecha5 = NoneNotEmpty(criterioF5)
+            
+                criterio.save()
+            except:
+                msg = "Hubo un error, por favor verificar que los campos esten correctos e intente nuevamente."
+                return JsonResponse({'msg':msg, 'creado':False})
 
-            return JsonResponse({'criterioid':criterio.idcriterio,'criterionom':criterionom, 'criteriomon1':criteriomon1,'criteriomon2':criteriomon2,'criteriomon3':criteriomon3,'criterioF1':criterioF1,'criterioF2':criterioF2,'criterioF3':criterioF3,'criterioF4':criterioF4,'criterioF5':criterioF5, 'creado': True})
+            return JsonResponse({'msg':msg, 'criterioid':criterio.idcriterio,'criterionom':criterionom, 'criteriomon1':criteriomon1,'criteriomon2':criteriomon2,'criteriomon3':criteriomon3,'criterioF1':criterioF1,'criterioF2':criterioF2,'criterioF3':criterioF3,'criterioF4':criterioF4,'criterioF5':criterioF5, 'creado': True})
                 
         if actn == 'del':
             msg = "Criterio eliminado exitosamente."

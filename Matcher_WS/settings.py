@@ -115,5 +115,7 @@ STATICFILES_DIRS = (
     os.path.join(BASE_DIR, 'static'),
 )
 
+ARCHIVOS_FOLDER = os.path.join(BASE_DIR, 'archivos')
+
 
 #AUTH_USER_MODEL = 'userprofile.User'

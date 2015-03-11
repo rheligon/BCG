@@ -59,6 +59,7 @@ $('#delButton').on('click', function () {
                 if (data.elim){
                     tabla.row($('#tr-'+ data.monedaid)).remove().draw();
                     $(".moneda-detalle").hide();
+                    $('#Id_moneda').val(-1);
                     swal({   title: "",
                              text: data.msg,
                              type: "success",
@@ -179,7 +180,7 @@ $('#updButton').on('click', function () {
 
 
 //Resetear campos del formulario cuando se esconde
-$('.modal').on('hidden.bs.modal', function(){
+$('.modal:not(.modal-static)').on('hidden.bs.modal', function(){
     $(this).find('form')[0].reset();
 });
 
@@ -213,6 +214,8 @@ $('#form-add-moneda').validate({
                         url: "/admin/monedas/",
                         data: {"moncod": monedaCod, "monnom": monedaNom, "moncam": monedaCam, "action": "add"},
                         success: function(data){
+                            var a_idaux = $("#Id_moneda").val();
+
                             if (data.creado){
                                     $("#Cod_moneda").val(data.moncod);
                                     $("#Nom_moneda").val(data.monnom);
@@ -247,10 +250,19 @@ $('#form-add-moneda').validate({
                                 $("#Id_moneda").val(data.monedaid);
                                 $(".moneda-detalle").show();
                             }
+
+                            var a_id = $("#Id_moneda").val();
+                            //Estilo de elemento elegido
+                            $('#'+a_idaux).parent().css("background-color","")
+                            $('#'+a_idaux).css("color","")
+                            $('#'+a_id).parent().css("background-color","#337ab7")
+                            $('#'+a_id).css("color","white")
+
                             $('#processing-modal').modal('toggle');
                             $btn.button('reset');
                         },
-                        error: function(error){
+                        error: function(jqXHR,error){
+                            alert(jqXHR.responseText)
                             swal({   title: "",
                                      text: "Hubo un error, por favor verificar que los campos esten correctos e intente nuevamente.",
                                      type: "error",

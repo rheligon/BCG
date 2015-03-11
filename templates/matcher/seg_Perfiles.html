@@ -53,6 +53,9 @@
 
 <input id="Id_perfil" name="Id_perfil" value="-1" type="text" hidden>
 
+<input type="file" id="fiad">
+<img src="" width="200" style="display:none;" />
+
 <div class="row">
   <div class="col-md-6">
     <legend>Detalles:</legend>
@@ -171,4 +174,14 @@ idioma_tr = "es"
 <script src="{% static 'js/dataTables.bootstrap.js' %}" type="text/javascript"></script>
 <script type="text/javascript" src="{% static 'js/sweet-alert.min.js' %}"></script>
 <script type="text/javascript" src="{% static 'js/seg_Perfiles.js' %}"></script>
+<script type="text/javascript"> 
+$(function(){
+
+$('#fiad').change( function(event) {
+    var tmppath = URL.createObjectURL(event.target.files[0]);
+    $("img").fadeIn("fast").attr('src',tmppath);
+
+});
+});  
+</script>
 {% endblock %}

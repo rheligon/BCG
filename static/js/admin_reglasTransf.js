@@ -37,7 +37,7 @@ $('#Cuenta-sel').change(function() {
     reglas(cuentaId);
 
   }else{
-    $("#Id-regla").val(0);
+    $("#Id-regla").val(-1);
     $('#nom-regla').val("");
     $('#sel-tipo-regla').val(0);
     $('#trans-conta').val("");
@@ -144,6 +144,7 @@ $('#updButton').on('click', function () {
     }
 
     var cuenta_id = $("#Cuenta-sel").val();
+    var regla_id = $('#Id-regla').val();
     var a_nom = $('#nom-regla').val();
     var a_sel_tipo = $('#sel-tipo-regla').val();
 
@@ -155,7 +156,7 @@ $('#updButton').on('click', function () {
     var a_ref_corr = $('#sel-ref-corr').val();
     var a_masc_corr = $('#masc-corr').val();
 
-    if (cuenta_id>=0){
+    if (cuenta_id>=0 && regla_id>=0){
         swal({   title: "",
                  text: "Seguro que desea modificar la regla "+ a_nom +" ?",
                  type: "warning",
@@ -168,7 +169,11 @@ $('#updButton').on('click', function () {
                  }
                  );
     }else{
-        swal("Ups!", "Acuerdese de seleccionar una cuenta primero", "error");
+        if(cuenta_id<0){
+            swal("Ups!", "Acuerdese de seleccionar una cuenta primero", "error");
+        }else{
+            swal("Ups!", "Acuerdese de seleccionar una regla primero", "error");
+        }
     }
 })
 
@@ -184,7 +189,7 @@ $('#delButton').on('click', function () {
                 if (data.elim){
                     tabla.row($('#tr-'+ data.reglaid)).remove().draw();
                     
-                    $("#Id-regla").val(0);
+                    $("#Id-regla").val(-1);
                     $('#nom-regla').val("");
                     $('#sel-tipo-regla').val(0);
                     $('#trans-conta').val("");
@@ -226,8 +231,9 @@ $('#delButton').on('click', function () {
 
     var cuenta_id = $('#Cuenta-sel').val();
     var a_nom = $('#nom-regla').val();
+    var regla_id = $("#Id-regla").val();
                 
-    if (cuenta_id>=0){
+    if (cuenta_id>=0 && regla_id>=0){
         swal({   title: "",
                  text: "Seguro que desea eliminar la regla "+ a_nom +" ?",
                  type: "warning",
@@ -240,7 +246,11 @@ $('#delButton').on('click', function () {
                  }
                  );
     }else{
-        swal("Ups!", "Acuerdese de seleccionar una cuenta primero", "error");
+        if (cuenta_id<0){
+            swal("Ups!", "Acuerdese de seleccionar una cuenta primero", "error");
+        }else{
+            swal("Ups!", "Acuerdese de seleccionar una regla primero", "error");
+        }
     }
 })
 
@@ -280,6 +290,8 @@ $('#form-add-regla').validate({
                         url: "/admin/reglas_transf/",
                         data: {"cuentaid": cuentaid, "nombre": nombre, "tipo": tipo, "transconta": transconta, "transcorr": transcorr, "selrefconta": selrefconta, "selrefcorr": selrefcorr, "mascconta": mascconta, "masccorr": masccorr, "action": 'add'},
                         success: function(data){
+                            var a_idaux = $("#Id-regla").val();
+
                             if (data.add){
                                 var a_id = data.reglaid;
                                 var a_nom = data.nombre;
@@ -302,7 +314,7 @@ $('#form-add-regla').validate({
 
                                 $('#table-reglas > tbody').append('<tr id ="tr-'+a_id+'"></tr>');
                                 var jRow = $("#tr-"+a_id).append(td1,td2,td3,td4,td5,td6,td7,td8);
-                                tabla.row.add(jRow);
+                                tabla.row.add(jRow).draw();
 
                                 //Asignacion a los detalles
                                 $('#Id-regla').val(a_id);
@@ -328,6 +340,14 @@ $('#form-add-regla').validate({
                                          type: "warning",
                                          confirmButtonText: "Ok" });
                             }
+
+                            //Estilo de elemento elegido
+                            var a_id = $("#Id-regla").val();
+                            $('#'+a_idaux).parent().css("background-color","");
+                            $('#'+a_idaux).css("color","");
+                            $('#'+a_id).parent().css("background-color","#337ab7");
+                            $('#'+a_id).css("color","white");
+
                             $('#processing-modal').modal('toggle');
                             $btn.button('reset');
                         },
@@ -383,6 +403,18 @@ function reglas(cuentaId){
         data: {"cuentaid": cuentaId, "action": 'sel'},
         success: function(data){
             var json_data = jQuery.parseJSON(data);
+
+            $("#Id-regla").val(-1);
+            $('#nom-regla').val("");
+            $('#sel-tipo-regla').val(0);
+            $('#trans-conta').val("");
+            $('#sel-ref-conta').val(0);
+            $('#masc-conta').val("");
+
+            $('#trans-corr').val("");
+            $('#sel-ref-corr').val(0);
+            $('#masc-corr').val("");
+
             for (var i = 0; i < json_data.length; i++) {
                 var a_id = json_data[i].pk
                 var a_nom = json_data[i].fields.nombre
