@@ -65,6 +65,23 @@ function iniciar_tabla_encaje(idioma){
     };
 };
 
+//Resetear campos del formulario cuando se esconde
+$('.modal:not(.modal-static)').on('hidden.bs.modal', function(){
+    $(this).find('form')[0].reset();
+});
+
+//Inicializar el DatePicker
+$('#add-fecha-encaje').pickadate({
+  format: 'd/m/yyyy',
+  container: '#dp-encaje',
+  onOpen: function() {
+    $('#dp-encaje').prop('hidden',false)
+  },
+  onClose: function() {
+    $('#dp-encaje').prop('hidden',true)
+  },
+})
+
 //Inicializar los Spinner
 $("#spin1").TouchSpin({
     verticalbuttons: true,
@@ -118,6 +135,7 @@ $('#Alertas-2').change(function () {
 $('#Alertas-3').change(function () {
     $("#spin3").prop("disabled", !this.checked);
 });
+
 
 function clean_cta_form(){
     //Datos Generales
@@ -361,14 +379,18 @@ function encaje_s(cuentaId){
         data: {"cuentaid": cuentaId, "action": 'encaje_S'},
         success: function(data){
             var json_data = jQuery.parseJSON(data);
-            $('#table-encaje > tbody > tr').remove();
-            
+            //Limpiar campos
+            tencaje.clear().draw();
+            $('#encaje-fecha').val("");
+            $('#encaje-monto').val("");
+
+            //Agregar en la tabla los encajes
             for (var i = 0; i < json_data.length; i++) {
                 var a_id = json_data[i].pk;
                 var a_monto = json_data[i].fields.monto;
                 var a_fecha = json_data[i].fields.fecha;
                 $('#table-encaje > tbody').append('<tr id="tre-'+a_id+'"><tr>');
-                var jRow = $("#tre-"+a_id).append('<td>'+dateFormat(a_fecha)+'</td>'+'<td>'+ $.formatNumber(a_monto,{locale:"es"}) +'</td>');
+                var jRow = $("#tre-"+a_id).append('<td>'+dateFormat(a_fecha)+'</td>'+'<td>'+ $.formatNumber(a_monto,{locale:idioma_tr}) +'</td>');
                 tencaje.row.add(jRow).draw();
             };
 
@@ -378,7 +400,7 @@ function encaje_s(cuentaId){
               var monto = json_data[i].fields.monto;
               $('#encaje-fecha').val(dateFormat(fecha));
               $('#encaje-monto').val(monto);
-              $('#encaje-monto').formatNumber({locale:"es"});
+              $('#encaje-monto').formatNumber({locale:idioma_tr});
             };
         },
         error: function(error){
@@ -400,22 +422,27 @@ function encaje_add(cuentaId,monto,fecha){
         url: "/admin/cuentas/",
         data: {"cuentaid": cuentaId,"monto":monto,"fecha":fecha, "action": 'encaje_add'},
         success: function(data){
-            var json_data = jQuery.parseJSON(data);
-            var jsonl = json_data.length;
-            $('#table-encaje > tbody > tr').remove();
 
-            for (var i = 0; i < jsonl; i++) {
-                var a_id = json_data[i].pk;
-                var a_monto = json_data[i].fields.monto;
-                var a_fecha = json_data[i].fields.fecha;
-                $('#table-encaje > tbody').append('<tr id="tre-'+a_id+'"><tr>');
-                var jRow = $("#tre-"+a_id).append('<td>'+a_fecha+'</td>'+'<td>'+a_monto+'</td>');
-                tencaje.row.add(jRow).draw();
-            };
+            var a_id = data.encajeid;
+            var a_monto = data.monto;
+            var a_fecha = data.fecha;
+            $('#table-encaje > tbody').append('<tr id="tre-'+a_id+'"><tr>');
+            var jRow = $("#tre-"+a_id).append('<td>'+a_fecha+'</td>'+'<td>'+$.formatNumber(a_monto,{locale:idioma_tr})+'</td>');
+            tencaje.row.add(jRow).draw();
+
+            $('#encaje-fecha').val(a_fecha);
+            $('#encaje-monto').val($.formatNumber(a_monto,{locale:idioma_tr}));
+
+
+            swal({   title: "",
+                     text: data.msg,
+                     type: "success",
+                     confirmButtonText: "Ok" });
+            $('#processing-modal').modal('toggle');
         },
         error: function(error){
             $('#processing-modal').modal('toggle');
-            swal("Ups!", "Hubo un error buscando el encaje de la cuenta especificada.", "error");
+            swal("Ups!", "Hubo un error agregando el encaje en la cuenta especificada.", "error");
         },
         dataType:'json',
         headers:{
@@ -424,6 +451,28 @@ function encaje_add(cuentaId,monto,fecha){
     });
     return false;
 };
+
+//Agregar Encaje button
+$('#acptencajeButton').on('click', function () {
+    event.preventDefault();
+    $('#add-encaje-modal').modal('toggle');
+    var cuentaid = $('#Id_cuenta').val();
+    var monto = $('#add-monto-encaje').val();
+    var fecha = $('#add-fecha-encaje').val();
+
+    if (cuentaid>=0 && monto.length>0 && fecha.length>0){
+        $('#processing-modal').modal('toggle');
+        encaje_add(cuentaid,monto,fecha);
+    }else{
+        if (cuentaid<0){
+            swal("Ups!","Por favor seleccione una cuenta primero.","error");
+        }else if (monto.length===0){
+            swal("Ups!","Por favor introduzca un monto.","error");
+        }else if (fecha.length===0){
+            swal("Ups!","Por favor introduzca una fecha primero.","error");
+        }
+    }
+});
 
 //Eliminar Cuenta
 $('#delButton').on('click', function () {

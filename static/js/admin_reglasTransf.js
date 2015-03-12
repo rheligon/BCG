@@ -262,7 +262,7 @@ $('.modal:not(.modal-static)').on('hidden.bs.modal', function(){
 //Tooltip de ayuda en que debe ingresar en el campo
 $('#form-add-regla [data-toggle="popover"]').popover({trigger: 'focus', placement: 'top'});
 
-//Validar Campos del Formulario y agregar banco
+//Validar Campos del Formulario y agregar regla
 $('#form-add-regla').validate({
     submit: {
         settings: {

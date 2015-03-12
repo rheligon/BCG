@@ -6,6 +6,8 @@
 <link rel="stylesheet" href="{% static 'css/dataTables/dataTables.bootstrap.css' %}">
 <link rel="stylesheet" href="{% static 'css/sweet-alert.css' %}">
 <link rel="stylesheet" href="{% static 'css/jquery.bootstrap-touchspin.min.css' %}">
+<link rel="stylesheet" href="{% static 'css/picker.css' %}">
+<link rel="stylesheet" href="{% static 'css/picker.date.css' %}">
 {% endblock%}
 
 {% block content %}
@@ -369,8 +371,8 @@
                           </br>
                         </div>
                         <div class="col-md-12">
-                          <button type="button" id="addEncajeButton" data-loading-text="Cargando..." class="col-md-2 btn btn-success" autocomplete="off">
-                              Agregar
+                          <button type="button" id="addEncajeButton" data-loading-text="Cargando..." class="col-md-2 btn btn-success" autocomplete="off" data-toggle="modal" data-target="#add-encaje-modal">
+                              Nuevo
                           </button>
                         </div>
 
@@ -537,6 +539,38 @@
     </div>
 </form>
 
+<div class="modal fade" id="add-encaje-modal" role="dialog">
+  <div class="modal-dialog">
+    <div class="modal-content" style="height:500px;">
+      <form style="margin-left:8%;padding-top:80px;" id="form-add-encaje" name="form-add-encaje" method="POST" class="validation-form-container">
+        <div id="dp-encaje" hidden></div>
+        <div class="modal-header">
+          <h4 class="modal-title">Nuevo Encaje</h4>
+        </div>
+        <div class="modal-body">
+          <div style="padding-top:5%;" class="row">
+              <label class="col-md-2" for="add-encaje-monto">Monto: </label>
+              <div class="col-md-7">
+                  <input type="text" class="form-control" name="add-monto-encaje" id="add-monto-encaje" placeholder="Monto del encaje"/>
+              </div>
+          </div>
+
+          <div style="padding-top:5%;" class="row">
+              <label class="col-md-2" for="add-fecha-encaje">Fecha: </label>
+              <div class="col-md-7">
+                  <input type="text" class="form-control" id="add-fecha-encaje" name="add-fecha-encaje"/>
+              </div>
+          </div>
+        </div>
+        <div style="padding-top:5%;" class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+          <input id="acptencajeButton" type="submit" class="btn btn-primary" value="Aceptar">
+        </div>
+      </form>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
 <!-- Static Modal para procesando -->
 <div class="modal modal-static fade" id="processing-modal" role="dialog" aria-hidden="true">
     <div class="modal-dialog">
@@ -563,6 +597,9 @@
 <script type="text/javascript" src="{% static 'js/jquery.bootstrap-touchspin.min.js' %}"></script>
 <script type="text/javascript" src="{% static 'js/jshashtable.js' %}"></script>
 <script type="text/javascript" src="{% static 'js/numberformatter.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/picker.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/picker.date.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/pickerlegacy.js' %}"></script>
 <script type="text/javascript" src="{% static 'js/admin_cuentas.js' %}"></script>
 
 <script type="text/javascript">
@@ -578,17 +615,6 @@ $('#addButton').on('click', function () {
         console.log(spinval);
     }
   }
-
 });
-</script>
-<script>
-function goBack() {
-    var msg = "Seguro que desea cancelar?",
-        r = confirm(msg);
-        
-    if (r == true) {
-        window.history.back();
-    }
-};
 </script>
 {% endblock %}

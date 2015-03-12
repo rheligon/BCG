@@ -712,17 +712,18 @@ def admin_cuentas(request):
             return JsonResponse(res_json, safe=False)
 
         if actn == 'encaje_add':
+            msg="Encaje agregado exitosamente."
             cuentaid = int(request.POST.get('cuentaid'))
             monto = request.POST.get('monto')
-            fecha = request.POST.get('fecha')
+            fechapost = request.POST.get('fecha')
+            fecha = datetime.strptime(fechapost, '%d/%m/%Y')
+            cuenta = Cuenta.objects.get(pk=cuentaid)
+            encaje = Encajelegal.objects.create(cuenta_idcuenta=cuenta, monto=monto, fecha=fecha)
 
-            cuenta = Cuenta.objects.filter(pk=cuentaid)
-            encaje = Encajelegal.objects.create(monto=monto,fecha=fecha)
-
-            cuenta[0].montoencajeactual = monto
-            cuenta[0].fechaencajeactual = fecha
-            cuenta[0].save
-            return JsonResponse({'monto':monto, 'fecha':fecha, 'add':True})
+            cuenta.montoencajeactual = monto
+            cuenta.fechaencajeactual = fecha
+            cuenta.save()
+            return JsonResponse({'msg':msg, 'encajeid':encaje.pk, 'monto':monto, 'fecha':fechapost, 'add':True})
 
 
         if actn == 'add':
