@@ -655,6 +655,13 @@ class ObservacioncorresponsalBk(models.Model):
         db_table = 'ObservacionCorresponsal_BK'
 
 
+class Perfil(models.Model):
+    idperfil = sqlserver_ado.fields.BigAutoField(db_column='idPerfil', primary_key=True)  
+    nombre = models.CharField(db_column='Nombre', max_length=20)
+
+    class Meta:
+        db_table = 'Perfil'
+
 class Opcion(models.Model):
     idopcion = sqlserver_ado.fields.BigAutoField(db_column='idOpcion', primary_key=True)  
     nombre = models.CharField(db_column='Nombre', max_length=50)  
@@ -663,12 +670,9 @@ class Opcion(models.Model):
     class Meta:
         db_table = 'Opcion'
 
-
-
-
 class PerfilOpcion(models.Model):
-    opcion_idopcion = models.ForeignKey(Opcion, db_column='Opcion_idOpcion')  
-    #perfil_idperfil = models.ForeignKey(Perfil, db_column='Perfil_idPerfil')  
+    opcion_idopcion = models.ForeignKey(Opcion, db_column='Opcion_idOpcion', primary_key=True)  
+    perfil_idperfil = models.ForeignKey(Perfil, db_column='Perfil_idPerfil')  
 
     class Meta:
         db_table = 'Perfil_Opcion'
@@ -983,14 +987,6 @@ class Empresa(models.Model):
 
     class Meta:
         db_table = 'Empresa'
-
-
-class Perfil(models.Model):
-    idperfil = sqlserver_ado.fields.BigAutoField(db_column='idPerfil', primary_key=True)  
-    nombre = models.CharField(db_column='Nombre', max_length=20)
-
-    class Meta:
-        db_table = 'Perfil'
 
 
 class Usuario(models.Model):

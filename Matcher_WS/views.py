@@ -531,9 +531,39 @@ def seg_Usuarios(request):
 
 @login_required(login_url='/login')
 def seg_Perfiles(request):
+    if request.method == "POST":
+        actn = request.POST.get('action')
+        
+        if actn == 'sel':
+            perfid = int(request.POST.get('perfid'))
+            perfil_funcs = PerfilOpcion.objects.all()
+            funciones = [opcion for opcion in perfil_funcs if opcion.perfil_idperfil.idperfil == perfid]
+            res_json = serializers.serialize('json', funciones)
+        
+            return JsonResponse(res_json, safe=False)
+
+        if actn == "del":
+            msg = "Perfil eliminado exitosamente."
+            perfid = request.POST.get('perfid')
+
+            try:
+                perfil = Perfil.objects.get(idperfil=perfid)
+            except Perfil.DoesNotExist:
+                msg = "No se encontro el perfil especificado, asegurese de hacer click en el perfil a eliminar."
+                return JsonResponse({'msg': msg, 'perfid': perfid, 'elim': False})
+
+            perfil.delete()
+            return JsonResponse({'msg': msg, 'perfid': perfid, 'elim': True})
+
     if request.method == "GET":
+        sub_index = [2,3,4,5,10]
         perfiles = Perfil.objects.all().order_by('nombre')
-        context = {'perfiles': perfiles}
+
+        opciones = Opcion.objects.exclude(funprincipal__in=sub_index).order_by('nombre')
+        nosub = [opcion.nombre for opcion in opciones]
+        nosubid = [str(opcion.idopcion) for opcion in opciones]
+
+        context = {'perfiles': perfiles, 'opciones':opciones, 'nosub':nosub, 'nosubid':nosubid}
         template = "matcher/seg_Perfiles.html"
 
         return render(request, template, context)

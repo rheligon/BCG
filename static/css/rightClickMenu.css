@@ -1,0 +1,29 @@
+﻿/* Sample CSS for RightClickMenu plugin */
+div.rightClickMenu
+{
+    background-color: #d1d0d0;
+    -moz-box-shadow: 3px 3px 5px #585757;
+    -webkit-box-shadow: 3px 3px 5px #585757;
+    box-shadow: 3px 3px 5px #585757;
+}
+
+div.rightClickMenu ul
+{
+    padding: 0px;
+    margin: 0px;
+    cursor: default;
+}
+
+div.rightClickMenu li
+{
+    list-style-type: none;
+    padding: 0px 5px;
+    user-select: none;
+    -moz-user-select: none;
+    -webkit-user-select: none;
+}
+
+div.rightClickMenu li:hover
+{
+    background-color: #efebeb;
+}
