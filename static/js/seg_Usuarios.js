@@ -288,7 +288,7 @@ $('#contrRstButton').on('click', function () {
                 alert(jqXHR.responseText) //debug
                 $('#processing-modal').modal('toggle');
                 $btn.button('reset');
-                swal("Ups!", "Hubo un error clave", "error");
+                swal("Ups!", "Hubo un error en la clave", "error");
             },
             dataType:'json',
             headers:{
@@ -408,7 +408,7 @@ $('#acptButton').on('click', function () {
         $.ajax({
             type:"POST",
             url: "/seguridad/usuarios/",
-            data: {"usrnom":usrnom, "usrapell":usrapell, "usrci":usrci, "usrtlf":usrtlf, "usrmail":usrmail, "usrdir":usrdir, "usrperf":usrperf, "usrobs":usrobs, usrctas:usrctas, "usrlogin":usrlogin, "usrpwd":usrpwd, "usrldap":usrldap,"action": "add"},
+            data: {"usrnom":usrnom, "usrapell":usrapell, "usrci":usrci, "usrtlf":usrtlf, "usrmail":usrmail, "usrdir":usrdir, "usrperf":usrperf, "usrobs":usrobs, "usrctas":usrctas, "usrlogin":usrlogin, "usrpwd":usrpwd, "usrldap":usrldap,"action": "add"},
             success: function(data){
 
                 if (data.add){
@@ -577,7 +577,7 @@ $('#updButton').on('click', function () {
         $.ajax({
             type:"POST",
             url: "/seguridad/usuarios/",
-            data: {"usrnom":usrnom, "usrapell":usrapell, "usrci":usrci, "usrtlf":usrtlf, "usrmail":usrmail, "usrdir":usrdir, "usrperf":usrperf, "usrobs":usrobs, usrctas:usrctas, "usrldap":usrldap, "sessid":sessid , "action": "upd"},
+            data: {"usrnom":usrnom, "usrapell":usrapell, "usrci":usrci, "usrtlf":usrtlf, "usrmail":usrmail, "usrdir":usrdir, "usrperf":usrperf, "usrobs":usrobs, "usrctas":usrctas, "usrldap":usrldap, "sessid":sessid , "action": "upd"},
             success: function(data){
 
                 if (data.modif){

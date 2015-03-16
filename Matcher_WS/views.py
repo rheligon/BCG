@@ -555,6 +555,50 @@ def seg_Perfiles(request):
             perfil.delete()
             return JsonResponse({'msg': msg, 'perfid': perfid, 'elim': True})
 
+        if actn == "add":
+            msg = "Perfil agregado exitosamente."
+            perfnom = request.POST.get('perfNom')
+            funcs = request.POST.getlist('perfFuncs[]')
+
+            try:
+                perfil = Perfil.objects.create(nombre=perfnom)
+                for functid in funcs:
+                    opcion = Opcion.objects.get(idopcion=functid)
+                    PerfilOpcion.objects.create(opcion_idopcion=opcion, perfil_idperfil=perfil)
+            except:
+                msg = "No se pudo crear el perfil especificado."
+                return JsonResponse({'msg': msg, 'add': False})
+
+            return JsonResponse({'msg': msg, 'perfid': perfil.pk, 'perfnom':perfnom, 'add': True})
+
+        if actn == "upd":
+            msg = "Perfil modificado exitosamente."
+            perfid = request.POST.get('perfid')
+            perfnom = request.POST.get('perfNom')
+            funcs = request.POST.getlist('perfFuncs[]')
+
+            try:
+                perfil = Perfil.objects.get(idperfil=perfid)
+
+                #Borrar opciones anteriores
+                opciones = PerfilOpcion.objects.filter(perfil_idperfil=perfil)
+                for opt in opciones:
+                    opt.delete()
+
+                #Crear las nuevas
+                for functid in funcs:
+                    opcion = Opcion.objects.get(idopcion=functid)
+                    PerfilOpcion.objects.create(opcion_idopcion=opcion, perfil_idperfil=perfil)
+
+                #Cambiar el nombre
+                perfil.nombre = perfnom
+                perfil.save()
+            except:
+                msg = "No se pudo modificar el perfil especificado."
+                return JsonResponse({'msg': msg, 'modif': False})
+
+            return JsonResponse({'msg': msg, 'perfid': perfil.pk, 'perfnom':perfnom, 'modif': True})
+
     if request.method == "GET":
         sub_index = [2,3,4,5,10]
         perfiles = Perfil.objects.all().order_by('nombre')

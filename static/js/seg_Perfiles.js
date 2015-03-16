@@ -47,6 +47,10 @@ function iniciar_tabla(idioma){
 };
 
 function clean_all(){
+    var a_idaux = $('#Id_perfil').val();
+    $('#perf-'+a_idaux).parent().css("background-color","");
+    $('#perf-'+a_idaux).css("color","");
+
     var $left =  $('.list-left ul');
     var $right =  $('.list-right ul');
     var $leftacc = $('.list-left-acc ul');
@@ -125,23 +129,38 @@ function get_func(perfId){
             if (funcs2.length>0){
                 $('#acc-rep').val(funcs2.join("-"));
                 $right.append('<li class="list-group-item subindex" sub="1" name="rep">Reportes</li>');
+            }else if (funcs2.length===0){
+                $left.append('<li class="list-group-item subindex" sub="1" name="rep">Reportes</li>');
             }
+
             if (funcs3.length>0){
                 $('#acc-MT').val(funcs3.join("-"));
                 $right.append('<li class="list-group-item subindex" sub="1" name="MT">Mensajes SWIFT</li>');
+            }else if (funcs3.length===0){
+                $left.append('<li class="list-group-item subindex" sub="1" name="MT">Mensajes SWIFT</li>');
             }
+
             if (funcs4.length>0){
                 $('#acc-conf').val(funcs4.join("-"));
                 $right.append('<li class="list-group-item subindex" sub="1" name="conf">Configuración</li>');
+            }else if (funcs4.length===0){
+                $left.append('<li class="list-group-item subindex" sub="1" name="conf">Configuración</li>');
             }
+
             if (funcs5.length>0){
                 $('#acc-musr').val(funcs5.join("-"));
                 $right.append('<li class="list-group-item subindex" sub="1" name="musr">Manejo de Usuarios</li>');
+            }else if (funcs5.length===0){
+                $left.append('<li class="list-group-item subindex" sub="1" name="musr">Manejo de Usuarios</li>');
             }
+
             if (funcs10.length>0){
                 $('#acc-mcta').val(funcs10.join("-"));
                 $right.append('<li class="list-group-item subindex" sub="1" name="mcta">Manejo de Cuentas</li>');
+            }else if (funcs10.length===0){
+                $left.append('<li class="list-group-item subindex" sub="1" name="mcta">Manejo de Cuentas</li>');
             }
+
             
             //Asignar a la izquierda los que esten disponibles
             var to_left = nosubid.diff(funcs);
@@ -174,6 +193,7 @@ function get_func(perfId){
 
 //Mostrar botones aceptar y cancelar
 $('#addButton').on('click', function () {
+    clean_all();
     $('#acptButton').parent().toggle('hidden');
     $('#cancelButton').parent().toggle('hidden');
 });
@@ -367,8 +387,8 @@ $('#table-perfiles').on('click','a[type=perfil]', function () {
     event.preventDefault();
     var a_idaux = $("#Id_perfil").val();
     //Estilo de elemento elegido
-    $('#'+a_idaux).parent().css("background-color","")
-    $('#'+a_idaux).css("color","")
+    $('#perf-'+a_idaux).parent().css("background-color","")
+    $('#perf-'+a_idaux).css("color","")
     $(this).parent().css("background-color","#337ab7")
     $(this).css("color","white")
 
@@ -433,19 +453,177 @@ $('#delButton').on('click', function () {
         swal("Ups!","Por favor seleccionar el perfil a eliminar previamente.","error");
     }
 
-})
+});
 
+//Agregar perfil
+$('#acptButton').on('click', function () {
+    var $btn;
+   
+    function add_perf(perfNom,perfFuncs){
+        $.ajax({
+            type:"POST",
+            url: "/seguridad/perfiles/",
+            data: {"perfNom": perfNom, "perfFuncs":perfFuncs, "action": "add"},
+            success: function(data){
 
+                if (data.add){
+                    var a_id = data.perfid;
+                    var a_nom = data.perfnom;
+                    $('#Id_perfil').val(a_id);
 
+                    var td1 = '<td><a name="'+a_nom+'" id="perf-'+a_id+'" type="perfil">'+a_nom+'</a></td>';
+                    
+                    $('#table-perfiles > tbody').append('<tr id ="tr-'+a_id+'"></tr>');
 
-var menu2 = [
-    { name: m2[0], func: function (element) { $(element).css("color", "red"); } },
-    { name: m2[1], func: function (element) { $(element).css("color", "black"); } },
-    { name: m2[2], func: function (element) { $(element).css("color", "black"); } },
-    { name: m2[3], func: function (element) { $(element).css("color", "black"); } },
-    { name: m2[4], func: function (element) { $(element).css("color", "black"); } },
-    { name: m2[5], func: function (element) { $(element).css("color", "black"); } },
-    { name: m2[6], func: function (element) { $(element).css("color", "black"); } }
-];
+                    var jRow = $("#tr-"+a_id).append(td1);
 
-//$(".subindex").rightClickMenu(menu2);
+                    tabla.row.add(jRow).draw();
+
+                    //Estilo de elemento elegido
+                    $('#perf-'+a_id).parent().css("background-color","#337ab7")
+                    $('#perf-'+a_id).css("color","white")
+                    swal({   title: "",
+                             text: data.msg,
+                             type: "success",
+                             confirmButtonText: "Ok" });
+                }else{
+                    swal({   title: "",
+                             text: data.msg,
+                             type: "error",
+                             confirmButtonText: "Ok" });
+                }
+                
+                $('#acptButton').parent().toggle('hidden');
+                $('#cancelButton').parent().toggle('hidden');
+                $('#processing-modal').modal('toggle');
+                $btn.button('reset')
+            },
+            dataType:'json',
+            headers:{
+                'X-CSRFToken':csrftoken
+            }
+        });
+        return false;
+    }
+
+    var nom = $('#perf-nom').val();
+    var funcs = [];
+
+    $('.list-right ul li').each(function(){
+        if ($(this).attr("sub")==="1"){
+            var nom = $(this).attr("name");
+            var acc = $('#acc-'+nom).val().split("-");
+            for (var i=0;i<acc.length;i++){
+                if (acc[i]!=""){
+                    funcs.push(acc[i]);
+                }
+            }
+        }else{
+            funcs.push($(this).attr("id").split("-")[1]);
+        }  
+    });
+
+    if (nom.length>0 && nom.length<50){
+        swal({   title: "",
+             text: "Seguro que desea agregar el perfil "+ nom +" ?",
+             type: "warning",
+             showCancelButton: true,
+             confirmButtonText: "Ok"},
+             function(){
+                $btn = $(this).button('loading')
+                $('#processing-modal').modal('toggle');
+                add_perf(nom,funcs);
+             }
+             );
+    }else{
+        if (nom.length===0){
+            swal("Ups!","Por favor indicar un nombre para el perfil.","error");
+        }else{
+            swal("Ups!","El nombre del perfil tiene un máximo de 50 caracteres.","error");
+        }
+    }
+});
+
+//Modificar perfil
+$('#updButton').on('click', function () {
+    var $btn;
+   
+    function upd_perf(perfId,perfNom,perfFuncs){
+        $.ajax({
+            type:"POST",
+            url: "/seguridad/perfiles/",
+            data: {"perfid":perfId, "perfNom": perfNom, "perfFuncs":perfFuncs, "action": "upd"},
+            success: function(data){
+
+                if (data.modif){
+                    var a_id = data.perfid;
+                    var a_nom = data.perfnom;
+                    $('#Id_perfil').val(a_id);
+                    $('#perf-'+a_id).html(a_nom);
+                    $('#perf-'+a_id).attr("name",a_nom);
+
+                    tabla.draw();
+
+                    swal({   title: "",
+                             text: data.msg,
+                             type: "success",
+                             confirmButtonText: "Ok" });
+                }else{
+                    swal({   title: "",
+                             text: data.msg,
+                             type: "error",
+                             confirmButtonText: "Ok" });
+                }
+                $('#processing-modal').modal('toggle');
+                $btn.button('reset')
+            },
+            dataType:'json',
+            headers:{
+                'X-CSRFToken':csrftoken
+            }
+        });
+        return false;
+    }
+
+    var pId = $('#Id_perfil').val();
+    var nom = $('#perf-nom').val();
+    var funcs = [];
+
+    if (pId>=0){
+        $('.list-right ul li').each(function(){
+            if ($(this).attr("sub")==="1"){
+                var nom = $(this).attr("name");
+                var acc = $('#acc-'+nom).val().split("-");
+                for (var i=0;i<acc.length;i++){
+                    if (acc[i]!=""){
+                        funcs.push(acc[i]);
+                    }
+                }
+            }else{
+                funcs.push($(this).attr("id").split("-")[1]);
+            }  
+        });
+    };
+
+    if (pId>=0 && nom.length>0 && nom.length<50){
+        swal({   title: "",
+             text: "Seguro que desea modificar el perfil "+ nom +" ?",
+             type: "warning",
+             showCancelButton: true,
+             confirmButtonText: "Ok"},
+             function(){
+                $btn = $(this).button('loading')
+                $('#processing-modal').modal('toggle');
+                upd_perf(pId,nom,funcs);
+             }
+             );
+    }else{
+        if (pId<0){
+            swal("Ups!","Por favor elija el perfil a modificar.","error");
+        }else if (nom.length===0){
+            swal("Ups!","Por favor indicar un nombre para el perfil.","error");
+        }else{
+            swal("Ups!","El nombre del perfil tiene un máximo de 50 caracteres.","error");
+        }
+    }
+});

@@ -67,12 +67,6 @@
 
 <input id="Id_perfil" name="Id_perfil" value="-1" type="text" hidden>
 
-<div class="well col-md-12">
-    <input type="file" id="fiad">
-    <img src="" width="200" style="display:none;" />
-    </br>
-</div>
-
 <div class="row">
   <div class="col-md-6">
     <legend>Detalles:</legend>
@@ -208,7 +202,6 @@
 </div>
 
 <input id="Id_perfil" value="-1" hidden/>
-<input id="ajaxfuncs" value="-1" hidden/>
 <input id="acc-rep" accesos="1-3-4-30-33-35-36" value="" hidden/>
 <input id="acc-MT" accesos="22-25" value="" hidden/>
 <input id="acc-conf" accesos="11-29" value="" hidden/>
@@ -243,14 +236,4 @@ nosubid = {{nosubid|safe}};
 <script type="text/javascript" src="{% static 'js/sweet-alert.min.js' %}"></script>
 <script type="text/javascript" src="{% static 'js/rightClickMenu.js' %}"></script>
 <script type="text/javascript" src="{% static 'js/seg_Perfiles.js' %}"></script>
-<script type="text/javascript"> 
-$(function(){
-
-$('#fiad').change( function(event) {
-    var tmppath = URL.createObjectURL(event.target.files[0]);
-    $("img").fadeIn("fast").attr('src',tmppath);
-    alert($(this).val());
-});
-});  
-</script>
 {% endblock %}
