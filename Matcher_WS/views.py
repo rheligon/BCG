@@ -581,9 +581,7 @@ def seg_Perfiles(request):
                 perfil = Perfil.objects.get(idperfil=perfid)
 
                 #Borrar opciones anteriores
-                opciones = PerfilOpcion.objects.filter(perfil_idperfil=perfil)
-                for opt in opciones:
-                    opt.delete()
+                opciones = PerfilOpcion.objects.filter(perfil_idperfil=perfil).delete()
 
                 #Crear las nuevas
                 for functid in funcs:
