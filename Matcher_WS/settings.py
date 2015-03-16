@@ -27,6 +27,34 @@ TEMPLATE_DEBUG = True
 ALLOWED_HOSTS = []
 
 
+# The URL of the LDAP server.
+LDAP_AUTH_URL = "ldap://localhost:389"
+
+# The LDAP search base for looking up users.
+LDAP_AUTH_SEARCH_BASE = "ou=people,dc=example,dc=com"
+
+# The LDAP class that represents a user.
+LDAP_AUTH_OBJECT_CLASS = "inetOrgPerson"
+
+# User model fields mapped to the LDAP
+# attributes that represent them.
+LDAP_AUTH_USER_FIELDS = {
+    "username": "uid",
+    "first_name": "givenName",
+    "last_name": "sn",
+    "email": "mail",
+}
+
+# A tuple of fields used to uniquely identify a user.
+LDAP_AUTH_USER_LOOKUP_FIELDS = ("username",)
+
+
+AUTHENTICATION_BACKENDS = (
+    'django.contrib.auth.backends.ModelBackend',
+    'Matcher_WS.backend.MyCustomBackend',
+    'django_python3_ldap.auth.LDAPBackend',
+)
+
 # Application definition
 
 INSTALLED_APPS = (
@@ -37,6 +65,7 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.humanize',
+    'django_python3_ldap',
     'Matcher',
 )
 
@@ -116,6 +145,5 @@ STATICFILES_DIRS = (
 )
 
 ARCHIVOS_FOLDER = os.path.join(BASE_DIR, 'archivos')
-
 
 #AUTH_USER_MODEL = 'userprofile.User'
