@@ -16,10 +16,12 @@ from django.views.decorators.csrf import csrf_exempt
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 from django.contrib.auth.hashers import *
+from django.contrib.auth import update_session_auth_hash
 from datetime import datetime
 
 import os
 from Matcher_WS.settings import ARCHIVOS_FOLDER
+from Matcher_WS.backend import MyAuthBackend
 
 def test(request):
     print(request.META.get('COMPUTERNAME'))
@@ -28,10 +30,15 @@ def test(request):
     print (filenames)
 
     #for archivo in filenames:
-    archivo = path+filenames[0]
-    with open(archivo,'r') as f:
-        for line in f:
-            print (line.replace('\n',''))
+    # archivo = path+filenames[0]
+    # with open(archivo,'r') as f:
+    #     for line in f:
+    #         print (line.replace('\n',''))
+
+    # Get username of logged in user
+    if request.user.is_authenticated():
+        username = request.user.username
+        print (username)
 
     context = {}
     template = "matcher/index.html"
@@ -39,6 +46,15 @@ def test(request):
 
 def timenow():
     return datetime.now().replace(microsecond=0)
+
+def get_ops(login):
+    #Busco la sesion que esta conectada
+    sess = Sesion.objects.get(login=login, conexion="1")
+    #Busco el perfil del usuario
+    perfilid = sess.usuario_idusuario.perfil_idperfil
+    #Coloco las opciones segun el perfil elegido
+    opciones = [opcion for opcion in PerfilOpcion.objects.filter(perfil_idperfil=perfilid)]
+    return opciones
 
 @login_required(login_url='/login')
 def index(request):
@@ -64,18 +80,22 @@ def usr_register(request):
 def usr_login(request):
     message = None
 
-    # if the request method is POST the process the POST values otherwise just render the page
     if request.method == 'POST':
         username = request.POST.get('username', '')
         password = request.POST.get('password', '')
-        user = auth.authenticate(username=username, password=password)
-        if user is not None and user.is_active:
-            # Correct password, and the user is marked "active"
-            auth.login(request, user)
-            message = "Login successful"
-            # Redirect to dashboard
-            return HttpResponseRedirect('/')
-        else:
+        try:
+            sesion = Sesion.objects.filter(login=username, estado__in=["Activo","Pendiente"])[0]
+            user = MyAuthBackend.authenticate(sesion, username=username, password=password)
+            if user is not None and sesion.estado!="Inactivo":
+                auth.login(request, user)
+                message = "Login successful"
+                sesion.conexion = 1
+                sesion.save()
+                # Redirect to dashboard
+                return HttpResponseRedirect('/')
+            else:
+                message ='Your username and password combination are incorrect.'
+        except:
             # Show a message     
             message ='Your username and password combination are incorrect.'
 
@@ -84,8 +104,27 @@ def usr_login(request):
     return render(request, template, context)
 
 def usr_logout(request):
-    auth.logout(request)
-    return HttpResponseRedirect('/')
+    if request.method == 'POST':
+        sessid = request.POST.get('sessid')
+        sesion = Sesion.objects.get(idsesion=sessid)
+        sesion.conexion = 0
+        sesion.save()
+
+        username = sesion.login
+        # grab the user in question 
+        user = User.objects.get(username=username)
+        [s.delete() for s in Session.objects.all() if s.get_decoded().get('_auth_user_id') == user.id]
+
+    if request.method == 'GET':
+        if request.user.is_authenticated():
+            username = request.user.username
+            sesion = Sesion.objects.filter(login=username, estado="Activo")
+            if sesion != []:
+                sess = sesion[0]
+                sess.conexion = 0
+                sess.save()
+        auth.logout(request)
+        return HttpResponseRedirect('/')
 
 @login_required(login_url='/login')             
 def usr_profile_details(request):
@@ -256,9 +295,114 @@ def configuracion(request, tipo):
     if request.method == 'POST':
 
         if tipo == "sis":
-            print(request.POST)
-            print("sis")
-            return JsonResponse()
+            mydict = request.POST.dict()
+            print (mydict)
+
+
+            if mydict["conf_form_name"]=="conf_empresa":
+                nombre = request.POST.get('nombre')
+                g_fin = request.POST.get('g_fin')
+                direccion = request.POST.get('dir')
+                logo = request.POST.get('logo')
+                bic = request.POST.get('bic')
+                pais = request.POST.get('pais')
+                c_conta = request.POST.get('c_conta')
+                d_conta = request.POST.get('d_conta')
+                d_corr = request.POST.get('d_corr')
+                c_corr = request.POST.get('c_corr')
+                p_aut = request.POST.get('p_aut')
+                p_fir = request.POST.get('p_fir')
+                cargo = request.POST.get('cargo')
+
+                # Buscar empresa y configuracion
+                conf = Configuracion.objects.all()[0]
+                empresa = Empresa.objects.all()[0]
+
+                # Se asignan los cambios
+                empresa.nombre = nombre
+                empresa.dir_logo = logo
+                empresa.nombregrupo = g_fin
+                empresa.direccion = direccion
+                empresa.creditoscontabilidad = c_conta
+                empresa.debitoscontabilidad = d_conta
+                empresa.creditoscorresponsal = c_corr
+                empresa.debitoscorresponsal = d_corr
+                empresa.pais = pais
+                empresa.autorizadopor = p_auth 
+                empresa.firmadopor = p_fir
+                empresa.cargofirmante = cargo
+
+                conf.bic = bic
+
+                # Se guarda la empresa y configuracion
+                empresa.save()
+                conf.save()
+
+            if mydict["conf_form_name"]=="conf_gral":
+
+                cont_carg = request.POST.get('cont_carg')
+                corr_carg = request.POST.get('corr_carg')
+                cont_procs = request.POST.get('cont_procs')
+                corr_procs = request.POST.get('corr_procs')
+                m_host = request.POST.get('m-host')
+                m_puerto = request.POST.get('m-puerto')
+                ldap_ip = request.POST.get('ldap-ip')
+                ldap_puerto = request.POST.get('ldap-puerto')
+                ldap_dominio = request.POST.get('ldap-dominio')
+                a_mail = request.POST.get('a-mail')
+                a_puerto = request.POST.get('a-puerto')
+                a_usrn = request.POST.get('a-usrn')
+                a_contr = request.POST.get('a-contr')
+                t_cad = request.POST.get('t_cad')
+                long_min = request.POST.get('long_min')
+                num_fall = request.POST.get('num_fall')
+                rec_ult = request.POST.get('rec_ult')
+                t_ret_log = request.POST.get('t_ret_log')
+                arch = request.POST.get('arch')
+                dir_s_mt95 = request.POST.get('dir_s_mt95')
+                dir_c_mt96 = request.POST.get('dir_c_mt96')
+                dir_s_mt99 = request.POST.get('dir_s_mt99')
+                dir_c_mt99 = request.POST.get('dir_c_mt99')
+                idioma = request.POST.get('Idiom-sel')
+
+                # Buscar empresa y configuracion
+                conf = Configuracion.objects.all()[0]
+
+                # Asignar los cambios
+                conf.archcontabilidadcarg = cont_carg
+                conf.archswiftcarg = corr_carg
+                conf.archcontabilidadproc = cont_procs
+                conf.archswiftproc = corr_procs
+                conf.matcherhost = m_host
+                conf.matcherpuerto = m_puerto
+                conf.ldap_ip = ldap_ip
+                conf.ldap_puerto = ldap_puerto
+                conf.ldap_dominio = ldap_dominio
+                conf.alertasservidor = a_mail
+                conf.alertaspuerto = a_puerto
+                conf.alertasusuario = a_usrn
+                conf.alertaspass = a_contr
+                conf.caducidad = t_cad
+                conf.longitud_minima = long_min
+                conf.num_intentos = num_fall
+                conf.num_passrecordar = rec_ult
+                conf.tiemporetentrazas = t_ret_log
+                conf.dirarchive = arch
+                conf.dirsalida95 = dir_s_mt95
+                conf.dircarga96 = dir_c_mt96
+                conf.dirsalida99 = dir_s_mt99
+                conf.dircarga99 = dir_c_mt99
+                conf.idioma = int(idioma)
+
+                conf.save()
+
+                    # CHECKBOXES DE CONTRASEÑAS
+                    # ce 1
+                    # may 2
+                    # num 3
+                    # alf 4
+
+            return HttpResponseRedirect('/conf/sis/')
 
         if tipo == "arc":
             actn = request.POST.get('action')
@@ -350,8 +494,6 @@ def configuracion(request, tipo):
         return render(request, "matcher/login.html", {})
 
 
-
-
 @login_required(login_url='/login')
 def seg_Usuarios(request):
     if request.method == "POST":
@@ -394,6 +536,12 @@ def seg_Usuarios(request):
                 msg = "No se pudo encontrar el usuario especificado."
                 return JsonResponse({'msg': msg, 'pwd': False})
 
+            user = User.objects.get(username=sesion.login)
+            user.password = newp
+            user.save()
+
+            update_session_auth_hash(request, user)
+
             return JsonResponse({'msg': msg, 'pwd': True})
 
         if actn == "del":
@@ -408,6 +556,9 @@ def seg_Usuarios(request):
 
             user = sesion[0].usuario_idusuario
             user.delete()
+
+            django_usr = User.objects.get(username=sesion[0].login)
+            django_usr.delete()
             return JsonResponse({'msg': msg, 'sessid': sessid, 'elim': True})
 
         if actn == "add":
@@ -459,6 +610,8 @@ def seg_Usuarios(request):
                 except:
                     msg = "No se pudo crear el usuario con las cuentas especificadas."
                     return JsonResponse({'msg': msg, 'add': False})
+
+            user, created = User.objects.get_or_create(username=usrlogin, defaults={'password':newp})
 
             return JsonResponse({'msg': msg, 'sessid':sesion.pk , 'usrid': usuario.idusuario, 'usrnom':usrnom, 'usrapell':usrapell, 'usrci':usrci, 'usrtlf':usrtlf, 'usrmail':usrmail, 'usrdir':usrdir, 'usrperf':usrperf, 'usrobs':usrobs, 'usrlogin':usrlogin, 'usrldap':usrldap, 'add': True})
 

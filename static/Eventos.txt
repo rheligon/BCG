@@ -1,0 +1,43 @@
+IdEvento    Accion
+
+1           Login
+2           Logout
+3           Cargó Estado de Cuenta Automático
+4           Cargó Estado de Cuenta Manual
+5           Realizó Match
+6           Aceptó Propuesta de match
+7           Realizó Match Manual
+8           Creó MTN95
+9           Rompió Match
+10          Autorizó Conciliacion
+11          Editó Configuracion de empresa
+12          Editó Configuracion General y de Seguridad
+13          Agregó Usuario
+14          Editó Usuario
+15          Eliminó Usuario
+16          Agregó Perfil
+17          Editó Perfil
+18          Eliminó Perfil
+19          Realizó Backup
+20          Realizó Restore
+21          Agregó Cuenta
+22          Editó Cuenta
+23          Eliminó Cuenta
+24          Agregó Regla Transformacion
+25          Editó Regla Transformacion
+26          Eliminó Regla Transformacion
+27          Agregó Criterio
+28          Editó Criterio
+29          Eliminó Criterio
+30          Agregó Banco
+31          Editó Banco
+32          Eliminó Banco
+33          Agregó Moneda
+34          Editó Moneda
+35          Eliminó Moneda
+36          Cambió Contraseña
+37          Login Fallido
+38          Cambió Encaje
+39          Realizó Reverso
+40          Creó MTN99
+100         Login

@@ -26,35 +26,19 @@ TEMPLATE_DEBUG = True
 
 ALLOWED_HOSTS = []
 
-
-# The URL of the LDAP server.
-LDAP_AUTH_URL = "ldap://localhost:389"
-
-# The LDAP search base for looking up users.
-LDAP_AUTH_SEARCH_BASE = "ou=people,dc=example,dc=com"
-
-# The LDAP class that represents a user.
-LDAP_AUTH_OBJECT_CLASS = "inetOrgPerson"
-
-# User model fields mapped to the LDAP
-# attributes that represent them.
-LDAP_AUTH_USER_FIELDS = {
-    "username": "uid",
-    "first_name": "givenName",
-    "last_name": "sn",
-    "email": "mail",
-}
-
-# A tuple of fields used to uniquely identify a user.
-LDAP_AUTH_USER_LOOKUP_FIELDS = ("username",)
-
-
 AUTHENTICATION_BACKENDS = (
-    'django.contrib.auth.backends.ModelBackend',
-    'Matcher_WS.backend.MyCustomBackend',
-    'django_python3_ldap.auth.LDAPBackend',
+    'Matcher_WS.backend.MyAuthBackend',
 )
 
+PASSWORD_HASHERS = (
+    'django.contrib.auth.hashers.PBKDF2SHA1PasswordHasher',
+    'django.contrib.auth.hashers.PBKDF2PasswordHasher',
+    'django.contrib.auth.hashers.BCryptSHA256PasswordHasher',
+    'django.contrib.auth.hashers.BCryptPasswordHasher',
+    'django.contrib.auth.hashers.SHA1PasswordHasher',
+    'django.contrib.auth.hashers.MD5PasswordHasher',
+    'django.contrib.auth.hashers.CryptPasswordHasher',
+)
 # Application definition
 
 INSTALLED_APPS = (
@@ -65,7 +49,6 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.humanize',
-    'django_python3_ldap',
     'Matcher',
 )
 
@@ -86,7 +69,6 @@ WSGI_APPLICATION = 'Matcher_WS.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/1.7/ref/settings/#databases
-
 
 # MICROSOFT SERVER DB
 DATABASES = {

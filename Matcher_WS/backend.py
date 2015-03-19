@@ -1,94 +1,67 @@
 #http://www.djangorocks.com/tutorials/creating-a-custom-authentication-backend/creating-the-imap-authentication-backend.html
 
-# import the User object
-from django.contrib.auth.models import User
-
-# import time - this is used to create Django's internal username
-import time
-
-# Name my backend 'MyCustomBackend'
-class MyCustomBackend:
-
-    # Create an authentication method
-    # This is called by the standard Django login procedure
-    def authenticate(self, username=None, password=None):
-        try:
-            # Check if this user is valid on the mail server
-            c = IMAP4('my_mail_server')
-            c.login(username, password)
-            c.logout()
-        except:
-            return None
-
-        try:
-            # Check if the user exists in Django's local database
-            user = User.objects.get(email=username)
-        except User.DoesNotExist:
-            # Create a user in Django's local database
-            user = User.objects.create_user(time.time(), username, 'passworddoesntmatter')
-
-        return user
-
-    # Required for your backend to work properly - unchanged in most scenarios
-    def get_user(self, user_id):
-        try:
-            return User.objects.get(pk=user_id)
-        except User.DoesNotExist:
-            return None
-
-
-
 # http://fle.github.io/combine-ldap-and-classical-authentication-in-django.html
 
 from django.contrib.auth import get_backends, get_user_model
 from django.contrib.auth.backends import ModelBackend
+from django_python3_ldap import ldap
+from django.contrib.auth.hashers import *
+from Matcher.models import Sesion
+from ldap3 import  Server, Connection, SEARCH_SCOPE_WHOLE_SUBTREE, GET_SCHEMA_INFO, STRATEGY_SYNC, AUTH_SIMPLE
+from Matcher_WS.LDAP import * 
 
 class MyAuthBackend(ModelBackend):
-    """ A custom authentication backend overriding django ModelBackend """
 
-    @staticmethod
-    def _is_ldap_backend_activated():
-        """ Returns True if MyLDAPBackend is activated """
-        return MyLDAPBackend in [b.__class__ for b in get_backends()]
+    def authenticate(self, username=None, password=None):
 
-    def authenticate(self, username, password):
-        """ Overrides ModelBackend to refuse LDAP users if MyLDAPBackend is activated """
+        # Si el usuario tiene ldap, se ingresa por ldap
+        if (self.ldap == "1"):
 
-        if self._is_ldap_backend_activated():
-            user_model = get_user_model()
             try:
-                user_model.objects.get(username=username, from_ldap=False)
-            except:
+                sname = SERVER_HOST
+                sport = SERVER_PORT
+                baseDC = ROOT_DC
+
+                # Nombre de los campos en el server LDAP
+                login_field = USERNAME_FIELD
+                fn_field = FIRST_NAME_FIELD
+                ln_field = LAST_NAME_FIELD
+
+                #auth_usr = 'cn=Carolina Perozo,ou=Oficina Caracas,dc=bcgve,dc=local'
+
+                auth_usr = get_username(username)
+                auth_pwd = password
+
+                # Se buscan los 3 atributos para incluirlos en el auth_user de django
+                attrnames = [login_field, ln_field, fn_field]
+
+                s = Server(sname, port=sport, get_info = GET_SCHEMA_INFO)
+                c = Connection(s, auto_bind = True, client_strategy = STRATEGY_SYNC, user=auth_usr, password=auth_pwd, authentication=AUTH_SIMPLE, check_names=True)
+                query = '(&(objectCategory=person)('+login_field+'='+username.upper()+'))'
+                with c:
+                    c.search(baseDC, query, SEARCH_SCOPE_WHOLE_SUBTREE, attributes = attrnames)
+
+                # Crear usuario en auth_django sino se encuentra creado
+                if c.response is not None:
+                    fn = c.response[0]['attributes'][fn_field]
+                    ln = c.response[0]['attributes'][ln_field]
+                    user_model = get_user_model()
+                    user, creado = user_model.objects.get_or_create(username=username, defaults={'first_name':fn, 'last_name':ln})
+                    user.backend = 'Matcher_WS.backend.MyAuthBackend'
+                    
+            except Exception as e:
+                print(e)
                 return None
 
-        user = ModelBackend.authenticate(self, username, password)
+            return user
 
-        return user
+        # Sino posee ldap, se chequea que la clave este correcta
+        enc = 'pbkdf2_sha1$15000$'+self.salt+'$'+self.pass_field
 
+        if (check_password(password,enc)):
+            user_model = get_user_model()
+            user = user_model.objects.get(username=username)
+            user.backend = 'Matcher_WS.backend.MyAuthBackend'
+            return user
 
-from django_auth_ldap.backend import LDAPBackend
-from django.contrib.auth import get_user_model
-
-class MyLDAPBackend(LDAPBackend):
-    """ A custom LDAP authentication backend """
-
-    def authenticate(self, username, password):
-        """ Overrides LDAPBackend.authenticate to save user password in django """
-
-        user = LDAPBackend.authenticate(self, username, password)
-
-        # If user has successfully logged, save his password in django database
-        if user:
-            user.set_password(password)
-            user.save()
-
-        return user
-
-    def get_or_create_user(self, username, ldap_user):
-        """ Overrides LDAPBackend.get_or_create_user to force from_ldap to True """
-        kwargs = {
-            'username': username,
-            'defaults': {'from_ldap': True}
-        }
-        user_model = get_user_model()
-        return user_model.objects.get_or_create(**kwargs)
+        return None

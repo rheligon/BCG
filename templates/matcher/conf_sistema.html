@@ -18,6 +18,7 @@
 
 <form id="ConfEmpForm" method="POST" class="form-horizontal" role="form" data-toggle="validator">
     {% csrf_token %}
+    <input name="conf_form_name" value="conf_empresa" hidden>
     <div class="tab-content">
         <div class="tab-pane active" id="datos-tab">
             <div class="form-group has-feedback">
@@ -131,16 +132,55 @@
 </form>
 
 <legend>Configuracion General y de Seguridad:</legend>
-<ul class="nav nav-tabs" id="seg-tab">
-    <li class="active"><a href="#smatcher-tab" data-toggle="tab">Servidor Match <i class="fa"></i></a></li>
-    <li><a href="#alerta-tab" data-toggle="tab">Alertas <i class="fa"></i></a></li>
-    <li><a href="#contr-tab" data-toggle="tab">Contraseñas <i class="fa"></i></a></li>
-    <li><a href="#log-tab" data-toggle="tab">Logs <i class="fa"></i></a></li>
-    <li><a href="#msgSWIFT-tab" data-toggle="tab">Mensajes SWIFT <i class="fa"></i></a></li>
-</ul>
-<form id="ConfSegForm" method="post" class="form-horizontal">
+<form id="ConfSegForm" method="POST" class="form-horizontal" data-toggle="validator">
     {% csrf_token %}
-    <div class="tab-content">
+    <input name="conf_form_name" value="conf_gral" hidden>
+    <div class="col-md-10 well">
+        <div class="form-group">
+            <label class="col-md-3 control-label" for="Idiom-sel">Idioma: </label>
+            <div class="col-md-2">
+                <select id="Idiom-sel" name="Idiom-sel" class="form-control">
+                  <option value="0">Español</option>
+                  <option value="1">English</option>
+                </select>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-xs-3 control-label">Contabilidad cargados:</label>
+            <div class="col-xs-5">
+                <input type="text" class="form-control" value="{{conf.archcontabilidadcarg}}" name="cont_carg" />
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-xs-3 control-label">Corresponsal Cargados:</label>
+            <div class="col-xs-5">
+                <input type="text" class="form-control" value="{{conf.archswiftcarg}}" name="corr_carg" />
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-xs-3 control-label">Contabilidad Procesados:</label>
+            <div class="col-xs-5">
+                <input type="text" class="form-control" value="{{conf.archcontabilidadproc}}" name="cont_procs" />
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-xs-3 control-label">Corresponsal Procesados:</label>
+            <div class="col-xs-5">
+                <input type="text" class="form-control" value="{{conf.archswiftproc}}" name="corr_procs" />
+            </div>
+        </div>
+    </div>
+
+    <ul class="nav nav-tabs col-md-12" id="seg-tab">
+        <li class="active"><a href="#smatcher-tab" data-toggle="tab">Servidor Match <i class="fa"></i></a></li>
+        <li><a href="#ldap-tab" data-toggle="tab">LDAP <i class="fa"></i></a></li>
+        <li><a href="#alerta-tab" data-toggle="tab">Alertas <i class="fa"></i></a></li>
+        <li><a href="#contr-tab" data-toggle="tab">Contraseñas <i class="fa"></i></a></li>
+        <li><a href="#log-tab" data-toggle="tab">Logs <i class="fa"></i></a></li>
+        <li><a href="#msgSWIFT-tab" data-toggle="tab">Mensajes SWIFT <i class="fa"></i></a></li>
+    </ul>
+    <div class="tab-content col-md-12">
+    <br/>
         <div class="tab-pane active" id="smatcher-tab">
             <div class="form-group">
                 <label class="col-xs-3 control-label">Host:</label>
@@ -153,6 +193,29 @@
                 <label class="col-xs-3 control-label">Puerto:</label>
                 <div class="col-xs-5">
                     <input type="text" class="form-control" value="{{conf.matcherpuerto}}" name="m-puerto" />
+                </div>
+            </div>
+        </div>
+
+        <div class="tab-pane" id="ldap-tab">
+            <div class="form-group">
+                <label class="col-xs-3 control-label">IP:</label>
+                <div class="col-xs-5">
+                    <input type="text" class="form-control" value="{{conf.ldap_ip}}" name="ldap-ip" />
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-xs-3 control-label">Puerto:</label>
+                <div class="col-xs-5">
+                    <input type="text" class="form-control" value="{{conf.ldap_puerto}}" name="ldap-puerto" />
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-xs-3 control-label">Dominio:</label>
+                <div class="col-xs-5">
+                    <input type="text" class="form-control" value="{{conf.ldap_dominio}}" name="ldap-puerto" />
                 </div>
             </div>
         </div>
@@ -270,18 +333,19 @@
             <div class="form-group">
                 <label class="col-xs-3 control-label">Caracteres Obligatorios:</label>
                 <div class="input-group col-xs-5">
-                    <div class="checkbox">
-                      <label class="col-xs-3 control-label"><input name="ce" type="checkbox" value="1">Caracteres Especiales</label>
+                    <div class="checkbox col-md-6">
+                      <label class="col-xs-12 control-label"><input name="ce" type="checkbox" value="1">Caracteres Especiales</label>
                     </div>
-                    </br>
-                    <div class="checkbox">
+                    <div class="checkbox col-md-6">
                       <label class="col-xs-3 control-label"><input name="may" type="checkbox" value="2">Mayúsculas</label>
                     </div>
-                    <div class="checkbox">
-                      <label class="col-xs-3 control-label"><input name="num" type="checkbox" value="3">Numéricos</label>
-                    </div>
-                    <div class="checkbox">
-                      <label class="col-xs-3 control-label"><input name="alf" type="checkbox" value="4">Alfabéticos</label>
+                    <div class="col-md-12">
+                        <div class="checkbox col-md-6">
+                          <label class="col-xs-3 control-label"><input name="num" type="checkbox" value="3">Numéricos</label>
+                        </div>
+                        <div class="checkbox col-md-6">
+                          <label class="col-xs-3 control-label"><input name="alf" type="checkbox" value="4">Alfabéticos</label>
+                        </div>
                     </div>
                 </div>
                 
