@@ -6,39 +6,33 @@ from django.contrib.auth.decorators import login_required
 from django.utils import timezone
 from django.contrib.auth.forms import UserCreationForm
 from django import forms
-
 from Matcher.models import *
-
 from django.db import connection
-
 from django.views.decorators.csrf import csrf_exempt
-
-from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
-
 from django.contrib.auth.hashers import *
 from django.contrib.auth import update_session_auth_hash
 from datetime import datetime
-
 import os
 from Matcher_WS.settings import ARCHIVOS_FOLDER
 from Matcher_WS.backend import MyAuthBackend
+from socket import socket, AF_INET, SOCK_STREAM, error
 
 def test(request):
-    print(request.META.get('COMPUTERNAME'))
-    path = ARCHIVOS_FOLDER+'\CONTA\CARGADO\\'
-    filenames = next(os.walk(path))[2]
-    print (filenames)
+    # print(request.META.get('COMPUTERNAME'))
+    # path = ARCHIVOS_FOLDER+'\CONTA\CARGADO\\'
+    # filenames = next(os.walk(path))[2]
+    # print (filenames)
 
-    #for archivo in filenames:
+    # for archivo in filenames:
     # archivo = path+filenames[0]
     # with open(archivo,'r') as f:
     #     for line in f:
     #         print (line.replace('\n',''))
 
-    # Get username of logged in user
-    if request.user.is_authenticated():
-        username = request.user.username
-        print (username)
+    # # Get username of logged in user
+    # if request.user.is_authenticated():
+    #     username = request.user.username
+    #     print (username)
 
     context = {}
     template = "matcher/index.html"
@@ -212,7 +206,7 @@ def resumen_cuenta(request, cuenta_id):
     return render(request, template, context)
 
 @login_required(login_url='/login')
-def estado_cuentas(request):
+def pd_estadoCuentas(request):
 
     if request.method == 'POST':
 
@@ -280,9 +274,46 @@ def estado_cuentas(request):
         # #cuentas_list = l_cuentas
 
         context = {'cuentas': cuentas}
-        template = "matcher/estadoCuentas.html"
+        template = "matcher/pd_estadoCuentas.html"
 
         return render(request, template, context)
+
+@login_required(login_url='/login')
+def pd_cargaAutomatica(request):
+    print("hola")
+
+@login_required(login_url='/login')
+def Matcher(request):
+
+    template = "matcher/admin_criteriosyreglas.html"
+    context = {}
+
+    # Buscar host y puerto de matcher
+    conf = Configuracion.objects.all()[0]
+    host = conf.matcherhost
+    port = int(conf.matcherpuerto)
+
+    # Crear socket y conectarse
+    sock = socket(AF_INET, SOCK_STREAM)
+    sock.connect((host, port))
+
+    # Enviar mensaje
+    message = "GET / HTTP/1.1\r\n\r\n"
+    try :
+        sock.sendall(message.encode())
+    except error:
+        msg = "No se pudo realizar la llamada a matcher"
+     
+    # Recibir el mensaje de vuelta
+    reply = sock.recv(4096).decode()
+    print (reply)
+
+    # Se cierra el socket
+    sock.close()
+
+    return render(request, template, context)
+
+
 
 @login_required(login_url='/login')
 def mensajesSWIFT(request):
@@ -295,11 +326,9 @@ def configuracion(request, tipo):
     if request.method == 'POST':
 
         if tipo == "sis":
-            mydict = request.POST.dict()
-            print (mydict)
+            tipoconf = request.POST.get('conf_form_name')
 
-
-            if mydict["conf_form_name"]=="conf_empresa":
+            if tipoconf=='conf_empresa':
                 nombre = request.POST.get('nombre')
                 g_fin = request.POST.get('g_fin')
                 direccion = request.POST.get('dir')
@@ -328,7 +357,7 @@ def configuracion(request, tipo):
                 empresa.creditoscorresponsal = c_corr
                 empresa.debitoscorresponsal = d_corr
                 empresa.pais = pais
-                empresa.autorizadopor = p_auth 
+                empresa.autorizadopor = p_aut 
                 empresa.firmadopor = p_fir
                 empresa.cargofirmante = cargo
 
@@ -338,7 +367,7 @@ def configuracion(request, tipo):
                 empresa.save()
                 conf.save()
 
-            if mydict["conf_form_name"]=="conf_gral":
+            if tipoconf=='conf_gral':
 
                 cont_carg = request.POST.get('cont_carg')
                 corr_carg = request.POST.get('corr_carg')
@@ -346,8 +375,8 @@ def configuracion(request, tipo):
                 corr_procs = request.POST.get('corr_procs')
                 m_host = request.POST.get('m-host')
                 m_puerto = request.POST.get('m-puerto')
-                ldap_ip = request.POST.get('ldap-ip')
-                ldap_puerto = request.POST.get('ldap-puerto')
+                ldap_ip = request.POST.get('ldap_ip')
+                ldap_puerto = request.POST.get('ldap_puerto')
                 ldap_dominio = request.POST.get('ldap-dominio')
                 a_mail = request.POST.get('a-mail')
                 a_puerto = request.POST.get('a-puerto')
@@ -364,6 +393,11 @@ def configuracion(request, tipo):
                 dir_s_mt99 = request.POST.get('dir_s_mt99')
                 dir_c_mt99 = request.POST.get('dir_c_mt99')
                 idioma = request.POST.get('Idiom-sel')
+
+                ce = request.POST.get('ce')
+                may = request.POST.get('may')
+                num  = request.POST.get('num')
+                alf = request.POST.get('alf')
 
                 # Buscar empresa y configuracion
                 conf = Configuracion.objects.all()[0]
@@ -394,13 +428,28 @@ def configuracion(request, tipo):
                 conf.dircarga99 = dir_c_mt99
                 conf.idioma = int(idioma)
 
-                conf.save()
+                # Chequeando checkboxes
+                if ce is not None:
+                    conf.caracteresespeciales = 1
+                else:
+                    conf.caracteresespeciales = 0
 
-                    # CHECKBOXES DE CONTRASEÑAS
-                    # ce 1
-                    # may 2
-                    # num 3
-                    # alf 4
+                if num is not None:
+                    conf.numeros = 1
+                else:
+                    conf.numeros = 0
+
+                if may is not None:
+                    conf.mayusculas = 1
+                else:
+                    conf.mayusculas = 0
+
+                if alf is not None:
+                    conf.alfabeticos = 1
+                else:
+                    conf.alfabeticos = 0
+
+                conf.save()
 
             return HttpResponseRedirect('/conf/sis/')
 
@@ -491,7 +540,7 @@ def configuracion(request, tipo):
             return render(request, template, context)
         
         # ninguna, deberia raise 404
-        return render(request, "matcher/login.html", {})
+        return render(request, "matcher/index.html", {})
 
 
 @login_required(login_url='/login')

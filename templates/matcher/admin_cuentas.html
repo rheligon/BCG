@@ -32,8 +32,6 @@
                 <th>No. Cta. Nostro</th>
                 <th>No. Cta. Vostro</th>
                 <th>Código Moneda</th>
-                <th>Estado</th>
-                <th>Criterios de Match</th>
 
             </tr>
         </thead>
@@ -46,8 +44,6 @@
                 <td>{{ cuenta.ref_nostro|default:"" }}</td>
                 <td>{{ cuenta.ref_vostro|default:"" }}</td>
                 <td>{{ cuenta.moneda_idmoneda.codigo|default:"" }}</td>
-                <td>{{ cuenta.estado|default:"" }}</td>
-                <td>{{ cuenta.criterios_match_idcriterio.nombre|default:"" }}</td>
             </tr>
             {% endfor %}
         </tbody>

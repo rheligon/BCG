@@ -23,7 +23,7 @@ urlpatterns = patterns('',
    	url(r'^resumen/(?P<cuenta_id>\d+)/$', 'Matcher_WS.views.resumen_cuenta', name='resumen_cuenta'),
 
     # Estado Cuenta
-    url(r'^cuentas/estado$', 'Matcher_WS.views.estado_cuentas', name='estado_cuenta'),
+    url(r'^cuentas/estado$', 'Matcher_WS.views.pd_estadoCuentas', name='estado_cuenta'),
     
     # Mensajes SWIFT (MT96-MT99)
     url(r'^MT/(?P<tipo>\w+)/$', 'Matcher_WS.views.mensajesSWIFT', name='mensajesSWIFT'),

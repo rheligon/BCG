@@ -201,21 +201,21 @@
             <div class="form-group">
                 <label class="col-xs-3 control-label">IP:</label>
                 <div class="col-xs-5">
-                    <input type="text" class="form-control" value="{{conf.ldap_ip}}" name="ldap-ip" />
+                    <input type="text" class="form-control" value="{{conf.ldap_ip}}" name="ldap_ip" />
                 </div>
             </div>
 
             <div class="form-group">
                 <label class="col-xs-3 control-label">Puerto:</label>
                 <div class="col-xs-5">
-                    <input type="text" class="form-control" value="{{conf.ldap_puerto}}" name="ldap-puerto" />
+                    <input type="text" class="form-control" value="{{conf.ldap_puerto}}" name="ldap_puerto" />
                 </div>
             </div>
 
             <div class="form-group">
                 <label class="col-xs-3 control-label">Dominio:</label>
                 <div class="col-xs-5">
-                    <input type="text" class="form-control" value="{{conf.ldap_dominio}}" name="ldap-puerto" />
+                    <input type="text" class="form-control" value="{{conf.ldap_dominio}}" name="ldap_dominio" />
                 </div>
             </div>
         </div>
@@ -334,17 +334,41 @@
                 <label class="col-xs-3 control-label">Caracteres Obligatorios:</label>
                 <div class="input-group col-xs-5">
                     <div class="checkbox col-md-6">
-                      <label class="col-xs-12 control-label"><input name="ce" type="checkbox" value="1">Caracteres Especiales</label>
+                      <label class="col-xs-12 control-label">
+                        {% if conf.caracteresespeciales == 0 %}
+                            <input name="ce" type="checkbox" value="1">
+                        {% else %}
+                            <input name="ce" type="checkbox" value="1" checked>
+                        {% endif %}
+                        Caracteres Especiales</label>
                     </div>
                     <div class="checkbox col-md-6">
-                      <label class="col-xs-3 control-label"><input name="may" type="checkbox" value="2">Mayúsculas</label>
+                      <label class="col-xs-3 control-label">
+                        {% if conf.mayusculas == 0 %}
+                            <input name="may" type="checkbox" value="2">
+                        {% else %}
+                            <input name="may" type="checkbox" value="2" checked>
+                        {% endif %}
+                        Mayúsculas</label>
                     </div>
                     <div class="col-md-12">
                         <div class="checkbox col-md-6">
-                          <label class="col-xs-3 control-label"><input name="num" type="checkbox" value="3">Numéricos</label>
+                          <label class="col-xs-3 control-label">
+                        {% if conf.numeros == 0 %}
+                            <input name="num" type="checkbox" value="3">
+                        {% else %}
+                            <input name="num" type="checkbox" value="3" checked>
+                        {% endif %}
+                        Numéricos</label>
                         </div>
                         <div class="checkbox col-md-6">
-                          <label class="col-xs-3 control-label"><input name="alf" type="checkbox" value="4">Alfabéticos</label>
+                          <label class="col-xs-3 control-label">
+                        {% if conf.alfabeticos == 0 %}
+                            <input name="alf" type="checkbox" value="4">
+                        {% else %}
+                            <input name="alf" type="checkbox" value="4" checked>
+                        {% endif %}
+                        Alfabéticos</label>
                         </div>
                     </div>
                 </div>

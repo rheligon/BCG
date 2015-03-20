@@ -14,6 +14,14 @@
 #detalleusuarioForm {
     margin-top: 15px;
 }
+
+.scrollDiv
+{
+  margin-top: 5%;
+  height:150px;
+  overflow-y:auto;
+  overflow-x:hidden;
+}
 </style>
 
 <div class="table-responsive col-md-9">
@@ -204,11 +212,13 @@
                                   </div>
                               </div>
                           </div>
-                          <ul class="list-group" type="cuenta">
-                              {% for cuenta in cuentas %}
-                              <li class="list-group-item" id="cta-{{cuenta.idcuenta}}">{{cuenta.codigo}}</li>
-                              {% endfor %}
-                          </ul>
+                          <div class="scrollDiv">
+                            <ul class="list-group" type="cuenta">
+                                {% for cuenta in cuentas %}
+                                <li class="list-group-item" id="cta-{{cuenta.idcuenta}}">{{cuenta.codigo}}</li>
+                                {% endfor %}
+                            </ul>
+                          </div>
                       </div>
                   </div>
 
@@ -230,8 +240,11 @@
                                    <h4>Asignadas</h4>
                               </div>
                           </div>
-                          <ul class="list-group" type="cuenta">
-                          </ul>
+                          <br/><br/>
+                          <div class="scrollDiv">
+                            <ul class="list-group" type="cuenta">
+                            </ul>
+                          </div>
                       </div>
                   </div>
 

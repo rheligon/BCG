@@ -68,11 +68,17 @@ $('.list-arrows button').click(function () {
     //Izquierda
     if ($button.hasClass('move-left')) {
         actives = $('.list-right ul li.active');
+        actives.each(function(){
+            $(this).removeClass("active")
+        })
         actives.clone().appendTo('.list-left ul');
         actives.remove();
     //Derecha
     } else if ($button.hasClass('move-right')) {
         actives = $('.list-left ul li.active');
+        actives.each(function(){
+            $(this).removeClass("active")
+        })
         actives.clone().appendTo('.list-right ul');
         actives.remove();
     }

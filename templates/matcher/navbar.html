@@ -7,12 +7,13 @@
     .panel-body { padding:0px; }
     .panel-body table tr td { padding-left: 15px; }
     .panel-body .table {margin-bottom: 0px; }
-    #nav-id { padding-left:2%;}
+    #nav-id { position: fixed; top: 13%; left: 0;}
 </style>
 
     
 
-<div class="col-sm-2 col-md-2" id="nav-id">
+<div class="col-md-2" id="nav-wrap">
+    <div id="nav-id" class="col-md-2">
     <div class="panel-group" id="accordion">
         <div class="panel panel-default">
             <div class="panel-heading">
@@ -45,7 +46,7 @@
                     <table class="table">
                         <tr>
                             <td>
-                                <span class="fa fa-credit-card fa-lg text-warning"></span><a style="color:gray" href="{% url 'Matcher_WS.views.estado_cuentas'%}">Edo. Cuenta</a>
+                                <span class="fa fa-credit-card fa-lg text-warning"></span><a style="color:gray" href="{% url 'Matcher_WS.views.pd_estadoCuentas'%}">Edo. Cuenta</a>
                             </td>
                         </tr>
                         <tr>
@@ -246,5 +247,14 @@
                 </div>
             </div>
         </div>
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h4 class="panel-title">
+                    <a data-parent="#accordion" href="{% url 'Matcher_WS.views.usr_logout'%}"><span class="fa fa-sign-out">
+                    </span>Logout</a>
+                </h4>
+            </div>
+        </div>
+    </div>
     </div>
 </div>
