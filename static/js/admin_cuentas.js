@@ -633,12 +633,10 @@ $('#acptButton').on('click', function () {
                     var td4 = '<td>' + ref_nostro + '</td>';
                     var td5 = '<td>' + ref_vostro + '</td>';
                     var td6 = '<td>' + data.monedacod + '</td>';
-                    var td7 = '<td>' + estado + '</td>';
-                    var td8 = '<td>' + data.criterionom + '</td>';
 
                     $('#table-cuentas > tbody').append('<tr id ="tr-'+cuentaid+'"></tr>');
 
-                    var jRow = $("#tr-"+cuentaid).append(td1,td2,td3,td4,td5,td6,td7,td8);
+                    var jRow = $("#tr-"+cuentaid).append(td1,td2,td3,td4,td5,td6);
 
                     tabla.row.add(jRow).draw();
 
