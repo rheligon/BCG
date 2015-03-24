@@ -1,0 +1,100 @@
+{% extends "matcher/base.html" %}
+
+{% load staticfiles %}
+
+{% block title %}Bancos disponibles{% endblock %}
+
+{%block head%}
+<link rel="stylesheet" href="{% static 'css/sweet-alert.css' %}">
+<link rel="stylesheet" href="{% static 'css/procesando.css' %}">
+<link rel="stylesheet" href="{% static 'css/picker.css' %}">
+<link rel="stylesheet" href="{% static 'css/picker.date.css' %}">
+{%endblock%}
+
+{% block content %}
+  <div class="col-md-9 col-md-push-1">
+    <div class="well">
+      <form id="form-match" class="form-horizontal">
+        <fieldset>
+          <!-- Form Name -->
+          <legend>Match</legend>
+          <!-- Select Basic -->
+          <div class="form-group">
+            <label class="col-md-4 control-label" for="Cuenta-sel">Seleccione una Cuenta: </label>
+            <div class="col-md-4">
+            <select id="Cuenta-sel" name="Cuenta-sel" class="form-control">
+              <option value="-1">----------</option>
+            </select>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="col-md-4 control-label">Fecha:</label>
+            <div class="col-md-4">
+              <input id="f-match" class="form-control" data-value="{{fecha_hoy}}">
+            </div>
+          </div>
+
+          <div class="col-md-3">
+            <div>
+                <button type="button" id="liberarButton" data-loading-text="Cargando..." class="col-md-7 btn btn-warning" autocomplete="off">
+                    Liberar
+                </button>
+            </div>
+          </div>
+
+          <div class="col-md-3">
+            <div>
+                <button type="button" id="cpButton" data-loading-text="Cargando..." class="col-md-7 btn btn-warning" autocomplete="off">
+                    Match CP
+                </button>
+            </div>
+          </div>
+
+          <div class="col-md-3">
+            <div>
+                <button type="button" id="matchButton" data-loading-text="Cargando..." class="col-md-7 btn btn-warning" autocomplete="off">
+                    Match
+                </button>
+            </div>
+          </div>
+
+          <div class="col-md-3">
+            <div>
+                <button type="button" id="cancelButton" class="col-md-7 btn btn-default">
+                    Cancelar
+                </button>
+            </div>
+          </div>
+
+        </fieldset>
+      </form>
+    </div>
+  </div>
+
+<!-- Static Modal para procesando -->
+<div class="modal modal-static fade" id="processing-modal" role="dialog" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-body">
+                <div class="text-center">
+                    <img src="{% static 'images/procesando.gif' %}" class="icon" />
+                    <h4>Procesando, por favor espere.</h4>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{%endblock%}
+
+{% block script%}
+<script> 
+//define el idioma de la tabla (es/en)
+  idioma_tr = "es"
+</script>
+<script src="{% static 'js/sweet-alert.min.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/picker.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/picker.date.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/pickerlegacy.js' %}"></script>
+<script src="{% static 'js/pd_match.js' %}"></script>
+{% endblock %}

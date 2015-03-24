@@ -11,7 +11,7 @@ from django.db import connection
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.hashers import *
 from django.contrib.auth import update_session_auth_hash
-from datetime import datetime, date, time
+from datetime import datetime, date, time, timedelta
 import time
 import os
 from Matcher_WS.settings import ARCHIVOS_FOLDER
@@ -20,29 +20,34 @@ from socket import socket, AF_INET, SOCK_STREAM, error
 from select import select
 
 def test(request):
-    # print(request.META.get('COMPUTERNAME'))
-    # path = ARCHIVOS_FOLDER+'\CONTA\CARGADO\\'
-    # filenames = next(os.walk(path))[2]
-    # print (filenames)
+    #path = ARCHIVOS_FOLDER+'\CONTA\CARGADO\\'
+    path = Configuracion.objects.all()[0].archcontabilidadcarg+'\\'
+    filenames = next(os.walk(path))[2]
+    print (filenames)
+    print (path)
+    # #for archivo in filenames:
+    archivo = path+filenames[0]
+    leer_archivo(archivo)
 
-    # for archivo in filenames:
-    # archivo = path+filenames[0]
-    # with open(archivo,'r') as f:
-    #     for line in f:
-    #         print (line.replace('\n',''))
+    context = {}
+    template = "matcher/index.html"
+    return render(request, template, context)
 
-    # # Get username of logged in user
-    # if request.user.is_authenticated():
-    #     username = request.user.username
-    #     print (username)
 
-    d = date(2012, 5, 15)
+def leer_archivo(archivo):
+    with open(archivo,'r') as f:
+        for line in f:
+            print (line.replace('\n',''))
+    
+def timenow():
+    return datetime.now().replace(microsecond=0)
+
+def matcher(cuenta,dia,mes,ano):
+    d = date(ano, dia, mes)
     t = datetime.now().time()
     dt = datetime.combine(d,t)
-    mili = int(time.mktime(dt.timetuple()) * 1000 + dt.microsecond / 1000)
 
-    s = mili / 1000.0
-    d = datetime.fromtimestamp(s).strftime('%Y-%m-%d %H:%M:%S.%f')
+    mili = time.mktime(dt.timetuple()) * 1000 + dt.microsecond / 1000
 
     # Buscar host y puerto de matcher
     conf = Configuracion.objects.all()[0]
@@ -52,7 +57,7 @@ def test(request):
     print(host)
     print(port)
     print (d)
-    message = "BMARCH*"+str(mili)+"*1"
+    message = cuenta+"*"+str(mili)+"*1\n"
     print(message)
 
     # Crear socket y conectarse
@@ -62,32 +67,24 @@ def test(request):
     print("se hizo conexion")
 
     # Enviar mensaje
-    #message = "BMARCH*"+str(d)+"*1"
     try :
         sock.sendall(message.encode())
     except error:
         msg = "No se pudo realizar la llamada a matcher"
-     
+
+
     #Recibir el mensaje de vuelta
     # reply = sock.recv(4096).decode()
     # print (reply)
-    x = True
-    while x:
+
+    while True:
         readable, writable, exceptional = select([sock], [], [], 5)
         if readable:
-            data = sock.recv(1)
+            data = sock.recv(4096)
             print (data)
-            x=False
-        print("aun no")
-    # Se cierra el socket
+            break
+        # Codigo mientras se espera
     sock.close()
-
-    context = {}
-    template = "matcher/index.html"
-    return render(request, template, context)
-
-def timenow():
-    return datetime.now().replace(microsecond=0)
 
 def get_ops(login):
     #Busco la sesion que esta conectada
@@ -119,21 +116,6 @@ def index(request):
     template = "matcher/index.html"
     return render(request, template, context)
 
-@csrf_exempt
-def usr_register(request):
-    template = "matcher/register.html"
-
-    if request.method == 'POST':
-        form = UserCreationForm(request.POST)
-        print (form)
-        if form.is_valid():
-            new_user = form.save()
-            return HttpResponseRedirect("/login")
-    else:
-        form = UserCreationForm()
-
-    return render(request, template, {'form': form})
-
 def usr_login(request):
     message = None
 
@@ -148,13 +130,7 @@ def usr_login(request):
                 message = "Login successful"
                 sesion.conexion = 1
                 sesion.save()
-
-                # # Para el log
-                # terminal = request.META.get('COMPUTERNAME')
-                # fechaHora = timenow()
-                # evento = Evento.objects.get(pk=1)
-                # nombre = sesion.usuario_idusuario.nombres+" "+sesion.usuario_idusuario.apellidos
-                # Traza.objects.create(evento_idevento=evento,usuario=nombre, fecha_hora=fechaHora, terminal=terminal)
+                # Para el log
                 log(request,1)
 
                 # Redireccionar a index
@@ -187,7 +163,7 @@ def usr_logout(request):
         sesion.save()
 
         username = sesion.login
-        # grab the user in question 
+        # Buscar el usuario
         user = User.objects.get(username=username)
         [s.delete() for s in Session.objects.all() if s.get_decoded().get('_auth_user_id') == user.id]
 
@@ -199,35 +175,11 @@ def usr_logout(request):
                 sess = sesion[0]
                 sess.conexion = 0
                 sess.save()
-                print("hola")
+
+                # Para el log
                 log(request,2)
-                print("chao")
-                # # Para el log
-                # terminal = request.META.get('COMPUTERNAME')
-                # fechaHora = timenow()
-                # evento = Evento.objects.get(pk=2)
-                # nombre = sesion.usuario_idusuario.nombres+" "+sesion.usuario_idusuario.apellidos
-                # Traza.objects.create(evento_idevento=evento,usuario=nombre, fecha_hora=fechaHora, terminal=terminal)
         auth.logout(request)
         return HttpResponseRedirect('/')
-
-@login_required(login_url='/login')             
-def usr_profile_details(request):
-    date = timezone.now()
-    email = request.user.email
-    name = ' '.join([request.user.first_name, request.user.last_name])
-    joined = request.user.date_joined
-    username = request.user.username
-
-    context = {'date': date, 'email':email, 'name':name, 'joined':joined, 'username':username}
-    template = "matcher/profile_details.html"
-    return render(request, template, context)
-
-@login_required(login_url='/login')
-def usr_profile_edit(request):
-    context = {}
-    template = "matcher/profile_edit.html"
-    return render(request, template, context)
 
 @login_required(login_url='/login')
 def listar_cuentas(request):
@@ -360,35 +312,24 @@ def pd_cargaAutomatica(request):
     print("hola")
 
 @login_required(login_url='/login')
-def Matcher(request):
+def pd_match(request):
+    if request.method == 'POST':
+        fecha = request.POST.get('fecha').split("/")
+        fechaform = datetime(int(fecha[2]),int(fecha[1]),int(fecha[0]))
 
-    template = "matcher/admin_criteriosyreglas.html"
-    context = {}
+        carg = Cargado.objects.all()
+        cuentas_carg = [cargado.estado_cuenta_idedocuenta.cuenta_idcuenta for cargado in carg if cargado.estado_cuenta_idedocuenta.fecha_final == fechaform]
 
-    # Buscar host y puerto de matcher
-    conf = Configuracion.objects.all()[0]
-    host = conf.matcherhost
-    port = int(conf.matcherpuerto)
+        res_json = serializers.serialize('json', cuentas_carg)
+        
+        return JsonResponse(res_json, safe=False)
 
-    # Crear socket y conectarse
-    sock = socket(AF_INET, SOCK_STREAM)
-    sock.connect((host, port))
+    if request.method == 'GET':
 
-    # Enviar mensaje
-    message = "GET / HTTP/1.1\r\n\r\n"
-    try :
-        sock.sendall(message.encode())
-    except error:
-        msg = "No se pudo realizar la llamada a matcher"
-     
-    # Recibir el mensaje de vuelta
-    reply = sock.recv(4096).decode()
-    print (reply)
+        template = "matcher/pd_match.html"
+        context = {}
 
-    # Se cierra el socket
-    sock.close()
-
-    return render(request, template, context)
+        return render(request, template, context)
 
 
 
@@ -927,25 +868,45 @@ def seg_Logs(request):
         desde = request.POST.get('desde')
         hasta = request.POST.get('hasta')
         horas = request.POST.get('horas')
+        usr = request.POST.get('usr')
+        evento = int(request.POST.get('evento'))
 
         if horas=="0":
             #Busqueda por horas desactivada
             fechad = datetime.strptime(desde, '%d/%m/%Y')
-            fechah = datetime.strptime(hasta, '%d/%m/%Y')
+            fechah = datetime.strptime(hasta, '%d/%m/%Y') + timedelta(days=1)
         else:
             #Busqueda por horas activada
             fechad = datetime.strptime(desde, '%d/%m/%Y-%I:%M %p')
             fechah = datetime.strptime(hasta, '%d/%m/%Y-%I:%M %p')
 
-        print(fechad)
-        # horapost = request.POST.get('hora')
-        # hora = time.strptime(horapost, '%I:%M:%p')
-        return JsonResponse({'post': True})
+        trazas = Traza.objects.filter(fecha_hora__gte=fechad, fecha_hora__lte=fechah)
+
+        # Si se selecciono un evento
+        if evento > 0:
+            ev = Evento.objects.get(pk=evento)
+            trazas = trazas.filter(evento_idevento=ev)
+
+
+        # Sacar un arreglo del nombre del usuario
+        usr_split = usr.split(", ")
+
+        # Si el arreglo tiene tamaño 2 (mayor que 1)
+        if (len(usr_split)>1):
+            usr = usr_split[1]+" "+usr_split[0]
+            trazas = trazas.filter(usuario=usr)
+
+
+        res_json = serializers.serialize('json', trazas)
+        
+        return JsonResponse(res_json, safe=False)
 
     if request.method == "GET":
         eventos = Evento.objects.all()
         usuarios = Usuario.objects.all()
-        context = {'eventos':eventos, 'usuarios':usuarios}
+        eventos_acc = [evento.accion for evento in eventos]
+        fecha_hoy = ("/").join(str(timenow().date()).split("-")[::-1])
+        context = {'eventos':eventos, 'usuarios':usuarios, 'eventos_acc':eventos_acc, 'fecha_hoy':fecha_hoy}
         template = "matcher/seg_Logs.html"
 
         return render(request, template, context)

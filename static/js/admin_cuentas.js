@@ -70,6 +70,18 @@ $('.modal:not(.modal-static)').on('hidden.bs.modal', function(){
     $(this).find('form')[0].reset();
 });
 
+
+if (idioma_tr==="es"){
+    //Cambiar el idioma del date picker a español si este es el seleccionado
+    $.extend($.fn.pickadate.defaults, {
+      monthsFull: ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'],
+      weekdaysShort: ['Dom', 'Lun', 'Mar', 'Mie', 'Jue', 'Vie', 'Sab'],
+      today: 'Hoy',
+      clear: 'Limpiar',
+      close: 'Cerrar',
+    });
+}
+
 //Inicializar el DatePicker
 $('#add-fecha-encaje').pickadate({
   format: 'd/m/yyyy',

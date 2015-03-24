@@ -9,14 +9,9 @@ urlpatterns = patterns('',
     # Admin:
     url(r'^admin/', include(admin.site.urls)),
 
-    # Registrar, Login, Logout
-	url(r'^register/$', 'Matcher_WS.views.usr_register', name='register'),
+    # Login, Logout
     url(r'^login/$', 'Matcher_WS.views.usr_login', name='login'),
     url(r'^logout/$', 'Matcher_WS.views.usr_logout', name='logout'),
-
-    # User Profile
-    url(r'^profile/$', 'Matcher_WS.views.usr_profile_details', name='profile_details'),
-    url(r'^profile/edit$', 'Matcher_WS.views.usr_profile_edit', name='profile_edit'),
 
     # Resumen Cuentas
     url(r'^cuentas/$', 'Matcher_WS.views.listar_cuentas', name='listar_cuentas'),
@@ -24,7 +19,11 @@ urlpatterns = patterns('',
 
     # Estado Cuenta
     url(r'^cuentas/estado$', 'Matcher_WS.views.pd_estadoCuentas', name='estado_cuenta'),
+
+    # Procesamiento diario
+    url(r'^procd/match/$', 'Matcher_WS.views.pd_match', name='match'),
     
+
     # Mensajes SWIFT (MT96-MT99)
     url(r'^MT/(?P<tipo>\w+)/$', 'Matcher_WS.views.mensajesSWIFT', name='mensajesSWIFT'),
     
