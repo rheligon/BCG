@@ -12,12 +12,13 @@ from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.hashers import *
 from django.contrib.auth import update_session_auth_hash
 from datetime import datetime, date, time, timedelta
-import time
-import os
 from Matcher_WS.settings import ARCHIVOS_FOLDER
 from Matcher_WS.backend import MyAuthBackend
 from socket import socket, AF_INET, SOCK_STREAM, error
 from select import select
+import time
+import os
+import re
 
 def test(request):
     #path = ARCHIVOS_FOLDER+'\CONTA\CARGADO\\'
@@ -27,17 +28,110 @@ def test(request):
     print (path)
     # #for archivo in filenames:
     archivo = path+filenames[0]
-    leer_archivo(archivo)
+    leer_archivo_conta(archivo)
 
     context = {}
     template = "matcher/index.html"
     return render(request, template, context)
 
 
-def leer_archivo(archivo):
+def leer_archivo_conta(archivo):
     with open(archivo,'r') as f:
+        prevLine = ""
         for line in f:
-            print (line.replace('\n',''))
+            #line = line.replace('\n','') # quitar fin de linea
+            fin_edc = False
+
+            if line == '$':
+                inicio_edc = True
+            if line == '@@':
+                # No matcheara los @@ del medio pq son "@@\n" no "@@" solamente, hay q quitar los \n
+                fin_edc = True
+                print("fin de edc")
+
+            # Expresion regular para linea con formato [x]yyy
+            result = re.search('\[([^]]+)\](.*)', line)
+
+            if result is not None:
+                # Se checkea a ver cual es el codigo
+                if (result.group(1)=="M"):
+                    # Tipo de mensaje
+                    aux = result.group(2)
+                    print ("M: "+aux)
+
+                elif (result.group(1)=="S"):
+                    # BIC del banco que envia
+                    aux = result.group(2)
+                    print ("S: "+aux)
+
+                elif (result.group(1)=="R"):
+                    # BIC del banco que recibe
+                    aux = result.group(2)
+                    print ("R: "+aux)
+
+                elif (result.group(1)=="20"):
+                    # Referencia de la transaccion
+                    aux = result.group(2)
+                    print ("20: "+aux)
+
+                elif (result.group(1)=="25"):
+                    # Numero de cuenta
+                    aux = result.group(2)
+                    print ("25: "+aux)
+
+                elif (result.group(1)=="28C"):
+                    # Numero del estado de cuenta
+                    aux = result.group(2)
+                    print ("28C: "+aux)
+
+                elif (result.group(1)=="60F"):
+                    # 
+                    aux = result.group(2)
+                    res = re.search('([D,C])(\d{6})([a-zA-Z]{3})(.+\,\d{2})', aux)
+                    print ("60F: "+str(res.groups()))
+
+                elif (result.group(1)=="60M"):
+                    # 
+                    aux = result.group(2)
+                    res = re.search('([D,C])(\d{6})([a-zA-Z]{3})(.+\,\d{2})', aux)
+                    print ("60M: "+str(res.groups()))
+
+                elif (result.group(1)=="61"):
+                    # Es una transaccion
+                    aux = result.group(2)
+                    res = re.search('(\d{6})([D,C])(.+\,\d{2})(.{4})([^(]+)\(?([^)]+)?\)?', aux)
+                    print("61: "+str(res.groups()))
+
+                elif (result.group(1)=="62M"):
+                    # Balance final intermedio
+                    aux = result.group(2)
+                    res = re.search('([D,C])(\d{6})([a-zA-Z]{3})(.+\,\d{2})', aux)
+                    print ("62M: "+str(res.groups()))
+
+                elif (result.group(1)=="62F"):
+                    # Balance final real
+                    aux = result.group(2)
+                    res = re.search('([D,C])(\d{6})([a-zA-Z]{3})(.+\,\d{2})', aux)
+                    print ("62F: "+str(res.groups()))
+
+                elif (result.group(1)=="64"):
+                    # Fondos disponibles
+                    aux = result.group(2)
+                    res = re.search('([D,C])(\d{6})([a-zA-Z]{3})(.+\,\d{2})', aux)
+                    print ("64: "+str(res.groups()))
+
+            else:
+            # Linea no comienza con un codigo entre []
+
+                # Se checkea si es algo entre parentesis ()
+                result = re.search('\(([^)]+)\)', line)
+                if result is not None:
+                    print("(): " + result.group(1))
+                else:
+                # Entonces debe ser $ o @@
+                    print("ninguno: "+line)
+
+            prevLine = line
     
 def timenow():
     return datetime.now().replace(microsecond=0)

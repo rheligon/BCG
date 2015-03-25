@@ -19,11 +19,11 @@ $('#f-match').pickadate({
   selectMonths: true,
 })
 
+//Al cambiar la fecha se llama a buscar cuentas para esa fecha
 $('#f-match').on('change', function () {
     $('#processing-modal').modal('toggle');
     busqueda($(this).val());
 });
-
 
 //Buscar logs de acuerdo a la seleccion
 function busqueda(fecha){
@@ -43,7 +43,7 @@ function busqueda(fecha){
                 var a_cod = json_data[i].fields.codigo
 
                 $('#Cuenta-sel').append('<option value="'+a_id+'">'+a_cod+'</option>');
-            };   
+            };
             $('#processing-modal').modal('toggle');
         },
         error: function(q,error){
