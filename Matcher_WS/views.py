@@ -14,6 +14,7 @@ from django.contrib.auth import update_session_auth_hash
 from datetime import datetime, date, time, timedelta
 from Matcher_WS.settings import ARCHIVOS_FOLDER
 from Matcher_WS.backend import MyAuthBackend
+from Matcher_WS.edo_cuenta import edoCta, edc_list, Trans, Bal
 from socket import socket, AF_INET, SOCK_STREAM, error
 from select import select
 import time
@@ -24,30 +25,109 @@ def test(request):
     #path = ARCHIVOS_FOLDER+'\CONTA\CARGADO\\'
     path = Configuracion.objects.all()[0].archcontabilidadcarg+'\\'
     filenames = next(os.walk(path))[2]
-    print (filenames)
-    print (path)
+
     # #for archivo in filenames:
     archivo = path+filenames[0]
-    leer_archivo_conta(archivo)
+
+    edc_l = edc_list()
+
+    with open(archivo,'r') as f:
+        prevLine = ""
+        ult_edc = None # Edo de cuenta actual
+        ult_pag = (-1)
+        
+        for line in f:
+            cod, group = leer_archivo_conta(line)
+
+            if cod == "25":
+                try:
+                    # Se busca la cuenta a ver si se encuentra registrada
+                    cta = Cuenta.objects.filter(ref_nostro=group)[0]
+                except:
+                    # No existe la cuenta
+                    cta = None
+
+                if cta is not None:
+                    esta, ult_edc = edc_l.esta(cta.ref_nostro)
+                    if not esta:
+                        # No se encontraba en la lista
+                        edo = edoCta(cta.ref_nostro)
+                        edo.R = cta.codigo
+                        edc_l.add_edc(edo)
+                        ult_edc = edo
+
+                else:
+                   # La cuenta no esta registrada, informar al usuario
+                   ult_edc = None
+                   print ("No existe la cuenta con referencia nostro: "+ str(group))
+
+            elif cod == "28C":
+                if ult_edc is not None:
+                    # Si existia la cuenta en la base de datos
+                    edc_l.add_28c(ult_edc, group)
+
+            elif cod == "()":
+                # Era una linea entre parentesis
+                if ult_edc is not None:
+                    # Chequear si la linea anterior era 28C, o era una descripcion de transaccion
+                    result = re.search('\[([^]]+)\](.*)', prevLine)
+
+                    if (result.group(1)=="28C"):
+                        # Es un numero de pagina
+                        ult_pag = int(group)-1
+
+                    elif (result.group(1)=="61"):
+                        # Es la descripcion de una transaccion existente
+                        # Se vuelve a parsear la linea anterior para sacar la transaccion y poder comparar
+                        res = re.search('(\d{6})([D,C])(.+\,\d{2})(.{4})([^(]+)\(?([^)]+)?\)?', result.group(2))
+                        # Se crea una tupla transaccion
+                        trans = Trans(res,group)
+                        # Se agrega a la lista
+                        edc_l.add_trans_existe(ult_edc,trans)
+
+
+            elif cod == "60F" or cod == "60M":
+                if ult_edc is not None:
+                    # Si existia la cuenta en la base de datos
+                    #fecha = re.findall('..?', group.group(2))
+                    #fecha = datetime(int("20"+fecha[0]), int(fecha[1]), int(fecha[2]))
+                    bal = Bal(group, None)
+                    edc_l.add_bal_ini(ult_edc,bal,ult_pag, cod[2:])
+
+            elif cod == "62M" or cod == "62F":
+                if ult_edc is not None:
+                    # Si existia la cuenta en la base de datos
+                    bal = Bal(None, group)
+                    edc_l.add_bal_fin(ult_edc,bal,ult_pag,cod[2:])
+
+            elif cod == "61":
+                if ult_edc is not None:
+                    trans = Trans(group)
+                    edc_l.add_trans(ult_edc,trans,ult_pag)
+
+
+
+
+
+
+
+
+
+            prevLine = line
+
+    print(edc_l)
+    for edc in edc_l:
+        for elem in edc.pagsBal:
+            print (elem)
 
     context = {}
     template = "matcher/index.html"
     return render(request, template, context)
 
 
-def leer_archivo_conta(archivo):
-    with open(archivo,'r') as f:
-        prevLine = ""
-        for line in f:
-            #line = line.replace('\n','') # quitar fin de linea
-            fin_edc = False
+def leer_archivo_conta(line):
 
-            if line == '$':
-                inicio_edc = True
-            if line == '@@':
-                # No matcheara los @@ del medio pq son "@@\n" no "@@" solamente, hay q quitar los \n
-                fin_edc = True
-                print("fin de edc")
+            line = line.replace('\n','') # quitar fin de linea
 
             # Expresion regular para linea con formato [x]yyy
             result = re.search('\[([^]]+)\](.*)', line)
@@ -57,68 +137,68 @@ def leer_archivo_conta(archivo):
                 if (result.group(1)=="M"):
                     # Tipo de mensaje
                     aux = result.group(2)
-                    print ("M: "+aux)
+                    return ("M",aux)
 
                 elif (result.group(1)=="S"):
                     # BIC del banco que envia
                     aux = result.group(2)
-                    print ("S: "+aux)
+                    return ("S",aux)
 
                 elif (result.group(1)=="R"):
                     # BIC del banco que recibe
                     aux = result.group(2)
-                    print ("R: "+aux)
+                    return ("R",aux)
 
                 elif (result.group(1)=="20"):
                     # Referencia de la transaccion
                     aux = result.group(2)
-                    print ("20: "+aux)
+                    return ("20",aux)
 
                 elif (result.group(1)=="25"):
                     # Numero de cuenta
                     aux = result.group(2)
-                    print ("25: "+aux)
+                    return ("25",aux)
 
                 elif (result.group(1)=="28C"):
                     # Numero del estado de cuenta
                     aux = result.group(2)
-                    print ("28C: "+aux)
+                    return ("28C", aux)
 
                 elif (result.group(1)=="60F"):
                     # 
                     aux = result.group(2)
                     res = re.search('([D,C])(\d{6})([a-zA-Z]{3})(.+\,\d{2})', aux)
-                    print ("60F: "+str(res.groups()))
+                    return ("60F", res)
 
                 elif (result.group(1)=="60M"):
                     # 
                     aux = result.group(2)
                     res = re.search('([D,C])(\d{6})([a-zA-Z]{3})(.+\,\d{2})', aux)
-                    print ("60M: "+str(res.groups()))
+                    return ("60M", res)
 
                 elif (result.group(1)=="61"):
                     # Es una transaccion
                     aux = result.group(2)
                     res = re.search('(\d{6})([D,C])(.+\,\d{2})(.{4})([^(]+)\(?([^)]+)?\)?', aux)
-                    print("61: "+str(res.groups()))
+                    return ("61", res)
 
                 elif (result.group(1)=="62M"):
                     # Balance final intermedio
                     aux = result.group(2)
                     res = re.search('([D,C])(\d{6})([a-zA-Z]{3})(.+\,\d{2})', aux)
-                    print ("62M: "+str(res.groups()))
+                    return ("62M", res)
 
                 elif (result.group(1)=="62F"):
                     # Balance final real
                     aux = result.group(2)
                     res = re.search('([D,C])(\d{6})([a-zA-Z]{3})(.+\,\d{2})', aux)
-                    print ("62F: "+str(res.groups()))
+                    return ("62F", res)
 
                 elif (result.group(1)=="64"):
                     # Fondos disponibles
                     aux = result.group(2)
                     res = re.search('([D,C])(\d{6})([a-zA-Z]{3})(.+\,\d{2})', aux)
-                    print ("64: "+str(res.groups()))
+                    return ("64", res)
 
             else:
             # Linea no comienza con un codigo entre []
@@ -126,12 +206,15 @@ def leer_archivo_conta(archivo):
                 # Se checkea si es algo entre parentesis ()
                 result = re.search('\(([^)]+)\)', line)
                 if result is not None:
-                    print("(): " + result.group(1))
+                    return ("()", result.group(1))
+
                 else:
                 # Entonces debe ser $ o @@
-                    print("ninguno: "+line)
+                    if line == "$":
+                        return ("$", None)
 
-            prevLine = line
+                    if line == "@@":
+                        return ("@@", None)
     
 def timenow():
     return datetime.now().replace(microsecond=0)
@@ -403,7 +486,28 @@ def pd_estadoCuentas(request):
 
 @login_required(login_url='/login')
 def pd_cargaAutomatica(request):
-    print("hola")
+
+    if request.method == 'POST':
+
+        #path = ARCHIVOS_FOLDER+'\CONTA\CARGADO\\'
+        path = Configuracion.objects.all()[0].archcontabilidadcarg+'\\'
+        filenames = next(os.walk(path))[2]
+        print (filenames)
+        print (path)
+        # #for archivo in filenames:
+        archivo = path+filenames[0]
+        leer_archivo_conta(archivo)
+
+    if request.method == 'GET':
+        path_conta = Configuracion.objects.all()[0].archcontabilidadcarg+'\\'
+        filenames_conta = next(os.walk(path_conta))[2]
+
+        path_corr = Configuracion.objects.all()[0].archswiftcarg+'\\'
+        filenames_corr = next(os.walk(path_corr))[2]
+
+        context = {'filenames_corr':filenames_corr,'filenames_conta':filenames_conta }
+        template = "matcher/index.html"
+        return render(request, template, context)
 
 @login_required(login_url='/login')
 def pd_match(request):
