@@ -20,6 +20,7 @@ from select import select
 import time
 import os
 import re
+import jsonpickle
 
 def test(request):
     #path = ARCHIVOS_FOLDER+'\CONTA\CARGADO\\'
@@ -79,7 +80,7 @@ def test(request):
                     elif (result.group(1)=="61"):
                         # Es la descripcion de una transaccion existente
                         # Se vuelve a parsear la linea anterior para sacar la transaccion y poder comparar
-                        res = re.search('(\d{6})([D,C])(.+\,\d{2})(.{4})([^(]+)\(?([^)]+)?\)?', result.group(2))
+                        res = re.search('(?P<fecha>\d{6})(?P<DoC>[D,C])(?P<monto>.+\,\d{2})(?P<tipo>.{4})(?P<refNostro>[^(]+)\(?(?P<refVostro>[^)]+)?\)?', result.group(2))
                         # Se crea una tupla transaccion
                         trans = Trans(res,group)
                         # Se agrega a la lista
@@ -105,14 +106,6 @@ def test(request):
                     trans = Trans(group)
                     edc_l.add_trans(ult_edc,trans,ult_pag)
 
-
-
-
-
-
-
-
-
             prevLine = line
 
     print(edc_l)
@@ -127,95 +120,188 @@ def test(request):
 
 def leer_archivo_conta(line):
 
-            line = line.replace('\n','') # quitar fin de linea
+    line = line.replace('\n','') # quitar fin de linea
 
-            # Expresion regular para linea con formato [x]yyy
-            result = re.search('\[([^]]+)\](.*)', line)
+    # Expresion regular para linea con formato [x]yyy
+    result = re.search('\[([^]]+)\](.*)', line)
 
-            if result is not None:
-                # Se checkea a ver cual es el codigo
-                if (result.group(1)=="M"):
-                    # Tipo de mensaje
-                    aux = result.group(2)
-                    return ("M",aux)
+    if result is not None:
+        # Se checkea a ver cual es el codigo
+        if (result.group(1)=="M"):
+            # Tipo de mensaje
+            aux = result.group(2)
+            return ("M",aux)
 
-                elif (result.group(1)=="S"):
-                    # BIC del banco que envia
-                    aux = result.group(2)
-                    return ("S",aux)
+        elif (result.group(1)=="S"):
+            # BIC del banco que envia
+            aux = result.group(2)
+            return ("S",aux)
 
-                elif (result.group(1)=="R"):
-                    # BIC del banco que recibe
-                    aux = result.group(2)
-                    return ("R",aux)
+        elif (result.group(1)=="R"):
+            # BIC del banco que recibe
+            aux = result.group(2)
+            return ("R",aux)
 
-                elif (result.group(1)=="20"):
-                    # Referencia de la transaccion
-                    aux = result.group(2)
-                    return ("20",aux)
+        elif (result.group(1)=="20"):
+            # Referencia de la transaccion
+            aux = result.group(2)
+            return ("20",aux)
 
-                elif (result.group(1)=="25"):
-                    # Numero de cuenta
-                    aux = result.group(2)
-                    return ("25",aux)
+        elif (result.group(1)=="25"):
+            # Numero de cuenta
+            aux = result.group(2)
+            return ("25",aux)
 
-                elif (result.group(1)=="28C"):
-                    # Numero del estado de cuenta
-                    aux = result.group(2)
-                    return ("28C", aux)
+        elif (result.group(1)=="28C"):
+            # Numero del estado de cuenta
+            aux = result.group(2)
+            return ("28C", aux)
 
-                elif (result.group(1)=="60F"):
-                    # 
-                    aux = result.group(2)
-                    res = re.search('([D,C])(\d{6})([a-zA-Z]{3})(.+\,\d{2})', aux)
-                    return ("60F", res)
+        elif (result.group(1)=="60F"):
+            # 
+            aux = result.group(2)
+            res = re.search('(?P<DoC>[D,C])(?P<fecha>\d{6})(?P<moneda>[a-zA-Z]{3})(?P<monto>.+\,\d{2})', aux)
+            return ("60F", res)
 
-                elif (result.group(1)=="60M"):
-                    # 
-                    aux = result.group(2)
-                    res = re.search('([D,C])(\d{6})([a-zA-Z]{3})(.+\,\d{2})', aux)
-                    return ("60M", res)
+        elif (result.group(1)=="60M"):
+            # 
+            aux = result.group(2)
+            res = re.search('(?P<DoC>[D,C])(?P<fecha>\d{6})(?P<moneda>[a-zA-Z]{3})(?P<monto>.+\,\d{2})', aux)
+            return ("60M", res)
 
-                elif (result.group(1)=="61"):
-                    # Es una transaccion
-                    aux = result.group(2)
-                    res = re.search('(\d{6})([D,C])(.+\,\d{2})(.{4})([^(]+)\(?([^)]+)?\)?', aux)
-                    return ("61", res)
+        elif (result.group(1)=="61"):
+            # Es una transaccion
+            aux = result.group(2)
+            res = re.search('(?P<fecha>\d{6})(?P<DoC>[D,C])(?P<monto>.+\,\d{2})(?P<tipo>.{4})(?P<refNostro>[^(]+)\(?(?P<refVostro>[^)]+)?\)?', aux)
+            return ("61", res)
 
-                elif (result.group(1)=="62M"):
-                    # Balance final intermedio
-                    aux = result.group(2)
-                    res = re.search('([D,C])(\d{6})([a-zA-Z]{3})(.+\,\d{2})', aux)
-                    return ("62M", res)
+        elif (result.group(1)=="62M"):
+            # Balance final intermedio
+            aux = result.group(2)
+            res = re.search('(?P<DoC>[D,C])(?P<fecha>\d{6})(?P<moneda>[a-zA-Z]{3})(?P<monto>.+\,\d{2})', aux)
+            return ("62M", res)
 
-                elif (result.group(1)=="62F"):
-                    # Balance final real
-                    aux = result.group(2)
-                    res = re.search('([D,C])(\d{6})([a-zA-Z]{3})(.+\,\d{2})', aux)
-                    return ("62F", res)
+        elif (result.group(1)=="62F"):
+            # Balance final real
+            aux = result.group(2)
+            res = re.search('(?P<DoC>[D,C])(?P<fecha>\d{6})(?P<moneda>[a-zA-Z]{3})(?P<monto>.+\,\d{2})', aux)
+            return ("62F", res)
 
-                elif (result.group(1)=="64"):
-                    # Fondos disponibles
-                    aux = result.group(2)
-                    res = re.search('([D,C])(\d{6})([a-zA-Z]{3})(.+\,\d{2})', aux)
-                    return ("64", res)
+        elif (result.group(1)=="64"):
+            # Fondos disponibles
+            aux = result.group(2)
+            res = re.search('(?P<DoC>[D,C])(?P<fecha>\d{6})(?P<moneda>[a-zA-Z]{3})(?P<monto>.+\,\d{2})', aux)
+            return ("64", res)
 
-            else:
-            # Linea no comienza con un codigo entre []
+    else:
+    # Linea no comienza con un codigo entre []
 
-                # Se checkea si es algo entre parentesis ()
-                result = re.search('\(([^)]+)\)', line)
-                if result is not None:
-                    return ("()", result.group(1))
+        # Se checkea si es algo entre parentesis ()
+        result = re.search('\(([^)]+)\)', line)
+        if result is not None:
+            return ("()", result.group(1))
 
-                else:
-                # Entonces debe ser $ o @@
-                    if line == "$":
-                        return ("$", None)
+        else:
+        # Entonces debe ser $ o @@
+            if line == "$":
+                return ("$", None)
 
-                    if line == "@@":
-                        return ("@@", None)
-    
+            if line == "@@":
+                return ("@@", None)
+
+def leer_archivo_corr(line):
+
+    line = line.replace('\n','') # quitar fin de linea
+
+    # Expresion regular para linea con formato [x]yyy
+    result = re.search('\[([^]]+)\](.*)', line)
+
+    if result is not None:
+        # Se checkea a ver cual es el codigo
+        if (result.group(1)=="M"):
+            # Tipo de mensaje
+            aux = result.group(2)
+            return ("M",aux)
+
+        elif (result.group(1)=="S"):
+            # BIC del banco que envia
+            aux = result.group(2)
+            return ("S",aux)
+
+        elif (result.group(1)=="R"):
+            # BIC del banco que recibe
+            aux = result.group(2)
+            return ("R",aux)
+
+        elif (result.group(1)=="20"):
+            # Referencia de la transaccion
+            aux = result.group(2)
+            return ("20",aux)
+
+        elif (result.group(1)=="25"):
+            # Numero de cuenta
+            aux = result.group(2)
+            return ("25",aux)
+
+        elif (result.group(1)=="28C"):
+            # Numero del estado de cuenta
+            aux = result.group(2)
+            return ("28C", aux)
+
+        elif (result.group(1)=="60F"):
+            # 
+            aux = result.group(2)
+            res = re.search('(?P<DoC>[D,C])(?P<fecha>\d{6})(?P<moneda>[a-zA-Z]{3})(?P<monto>.+\,\d{2})', aux)
+            return ("60F", res)
+
+        elif (result.group(1)=="60M"):
+            # 
+            aux = result.group(2)
+            res = re.search('(?P<DoC>[D,C])(?P<fecha>\d{6})(?P<moneda>[a-zA-Z]{3})(?P<monto>.+\,\d{2})', aux)
+            return ("60M", res)
+
+        elif (result.group(1)=="61"):
+            # Es una transaccion
+            aux = result.group(2)
+            res = re.search('(?P<fecha>\d{6})(?P<DoC>[D,C])(?P<monto>.+\,\d{2})(?P<tipo>.{4})(?P<refNostro>[^(]+)\(?(?P<refVostro>[^)]+)?\)?', aux)
+            return ("61", res)
+
+        elif (result.group(1)=="62M"):
+            # Balance final intermedio
+            aux = result.group(2)
+            res = re.search('(?P<DoC>[D,C])(?P<fecha>\d{6})(?P<moneda>[a-zA-Z]{3})(?P<monto>.+\,\d{2})', aux)
+            return ("62M", res)
+
+        elif (result.group(1)=="62F"):
+            # Balance final real
+            aux = result.group(2)
+            res = re.search('(?P<DoC>[D,C])(?P<fecha>\d{6})(?P<moneda>[a-zA-Z]{3})(?P<monto>.+\,\d{2})', aux)
+            return ("62F", res)
+
+        elif (result.group(1)=="64"):
+            # Fondos disponibles
+            aux = result.group(2)
+            res = re.search('(?P<DoC>[D,C])(?P<fecha>\d{6})(?P<moneda>[a-zA-Z]{3})(?P<monto>.+\,\d{2})', aux)
+            return ("64", res)
+
+    else:
+    # Linea no comienza con un codigo entre []
+
+        # Se checkea si es algo entre parentesis ()
+        result = re.search('\(([^)]+)\)', line)
+        if result is not None:
+            return ("()", result.group(1))
+
+        else:
+        # Entonces debe ser $ o @@
+            if line == "$":
+                return ("$", None)
+
+            if line == "@@":
+                return ("@@", None)
+
+
+  
 def timenow():
     return datetime.now().replace(microsecond=0)
 
@@ -249,10 +335,7 @@ def matcher(cuenta,dia,mes,ano):
     except error:
         msg = "No se pudo realizar la llamada a matcher"
 
-
-    #Recibir el mensaje de vuelta
-    # reply = sock.recv(4096).decode()
-    # print (reply)
+    data = ''
 
     while True:
         readable, writable, exceptional = select([sock], [], [], 5)
@@ -262,6 +345,7 @@ def matcher(cuenta,dia,mes,ano):
             break
         # Codigo mientras se espera
     sock.close()
+    return data
 
 def get_ops(login):
     #Busco la sesion que esta conectada
@@ -488,15 +572,105 @@ def pd_estadoCuentas(request):
 def pd_cargaAutomatica(request):
 
     if request.method == 'POST':
+        actn = request.POST.get('action')
 
-        #path = ARCHIVOS_FOLDER+'\CONTA\CARGADO\\'
-        path = Configuracion.objects.all()[0].archcontabilidadcarg+'\\'
-        filenames = next(os.walk(path))[2]
-        print (filenames)
-        print (path)
-        # #for archivo in filenames:
-        archivo = path+filenames[0]
-        leer_archivo_conta(archivo)
+        if actn == 'prevconta':
+
+            filename = request.POST.get('archivo_nom')
+            path = Configuracion.objects.all()[0].archcontabilidadcarg+'\\'
+
+            archivo = path+filename
+
+            edc_l = edc_list()
+
+            with open(archivo,'r') as f:
+                prevLine = ""
+                ult_edc = None # Edo de cuenta actual
+                ult_pag = (-1)
+                
+                for line in f:
+                    cod, group = leer_archivo_conta(line)
+
+                    if cod == "25":
+                        try:
+                            # Se busca la cuenta a ver si se encuentra registrada
+                            cta = Cuenta.objects.filter(ref_nostro=group)[0]
+                        except:
+                            # No existe la cuenta
+                            cta = None
+
+                        if cta is not None:
+                            esta, ult_edc = edc_l.esta(cta.ref_nostro)
+                            if not esta:
+                                # No se encontraba en la lista
+                                edo = edoCta(cta.ref_nostro)
+                                edo.R = cta.codigo
+                                edc_l.add_edc(edo)
+                                ult_edc = edo
+
+                        else:
+                           # La cuenta no esta registrada, informar al usuario
+                           ult_edc = None
+                           print ("No existe la cuenta con referencia nostro: "+ str(group))
+
+                    elif cod == "28C":
+                        if ult_edc is not None:
+                            # Si existia la cuenta en la base de datos
+                            edc_l.add_28c(ult_edc, group)
+
+                    elif cod == "()":
+                        # Era una linea entre parentesis
+                        if ult_edc is not None:
+                            # Chequear si la linea anterior era 28C, o era una descripcion de transaccion
+                            result = re.search('\[([^]]+)\](.*)', prevLine)
+
+                            if (result.group(1)=="28C"):
+                                # Es un numero de pagina
+                                ult_pag = int(group)-1
+
+                            elif (result.group(1)=="61"):
+                                # Es la descripcion de una transaccion existente
+                                # Se vuelve a parsear la linea anterior para sacar la transaccion y poder comparar
+                                res = re.search('(?P<fecha>\d{6})(?P<DoC>[D,C])(?P<monto>.+\,\d{2})(?P<tipo>.{4})(?P<refNostro>[^(]+)\(?(?P<refVostro>[^)]+)?\)?', result.group(2))
+                                # Se crea una tupla transaccion
+                                trans = Trans(res,group)
+                                # Se agrega a la lista
+                                edc_l.add_trans_existe(ult_edc,trans)
+
+
+                    elif cod == "60F" or cod == "60M":
+                        if ult_edc is not None:
+                            # Si existia la cuenta en la base de datos
+                            #fecha = re.findall('..?', group.group(2))
+                            #fecha = datetime(int("20"+fecha[0]), int(fecha[1]), int(fecha[2]))
+                            bal = Bal(group, None)
+                            edc_l.add_bal_ini(ult_edc,bal,ult_pag, cod[2:])
+
+                    elif cod == "62M" or cod == "62F":
+                        if ult_edc is not None:
+                            # Si existia la cuenta en la base de datos
+                            bal = Bal(None, group)
+                            edc_l.add_bal_fin(ult_edc,bal,ult_pag,cod[2:])
+
+                    elif cod == "61":
+                        if ult_edc is not None:
+                            trans = Trans(group)
+                            edc_l.add_trans(ult_edc,trans,ult_pag)
+
+                    prevLine = line
+
+            # En esta identacion ya se termino de leer el archivo
+            res_json = jsonpickle.encode(edc_l, unpicklable=False)
+            return JsonResponse({'prueba':True, 'res':res_json}, safe=False)
+
+        if actn == 'prevcorr':
+            print(actn)
+
+        if actn == 'cargconta':
+            print(actn)
+
+        if actn == 'cargcorr':
+            print(actn)
 
     if request.method == 'GET':
         path_conta = Configuracion.objects.all()[0].archcontabilidadcarg+'\\'
@@ -506,7 +680,7 @@ def pd_cargaAutomatica(request):
         filenames_corr = next(os.walk(path_corr))[2]
 
         context = {'filenames_corr':filenames_corr,'filenames_conta':filenames_conta }
-        template = "matcher/index.html"
+        template = "matcher/pd_cargaAutomatica.html"
         return render(request, template, context)
 
 @login_required(login_url='/login')

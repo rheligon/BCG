@@ -22,6 +22,7 @@ urlpatterns = patterns('',
 
     # Procesamiento diario
     url(r'^procd/match/$', 'Matcher_WS.views.pd_match', name='match'),
+    url(r'^procd/cargAut/$', 'Matcher_WS.views.pd_cargaAutomatica', name='cargaAutomatica'),
     
 
     # Mensajes SWIFT (MT96-MT99)

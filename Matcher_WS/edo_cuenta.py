@@ -4,7 +4,7 @@ class edoCta:
         self.R = ""
         self.cod28c = ""
         self.pagsTrans = [] # Arreglo de arreglos de transacciones
-        self.pagsBal = [] # Arreglo de balances -- No esta en str ni rep
+        self.pagsBal = [] # Arreglo de balances
         self.cod64 = ""
         if cod25 is not None:
             self.cod25 = cod25
@@ -20,7 +20,7 @@ class edoCta:
     def add_trans_existe(self, trans):
         for elem in self.pagsTrans:
             for tran in elem:
-                if tran.grupo.group(1) == trans.grupo.group(1):
+                if tran.trans == trans.trans:
                     tran.desc = trans.desc
 
     def add_bal_ini(self, bal, pag, mof):
@@ -95,42 +95,42 @@ class edc_list:
 class Trans:
 
     def __init__(self, grupo=None, desc=None):
-        self.grupo = None # Un grupo de expresion regular
+        self.trans = None # Un diccionario de grupo de expresion regular
         self.desc = None  # String
 
         if grupo is not None:
-            self.grupo = grupo
+            self.trans = grupo.groupdict()
         if desc is not None:
             self.desc = desc
 
     def __str__(self):
-        return " nro-trans: %s, desc: %s" % (self.grupo.group(5), self.desc)
+        return " trans: %s, desc: %s" % (self.trans, self.desc)
 
     def __repr__(self):
-        return "<Trans nro-trans: %s, desc: %s>" % (self.grupo.group(5), self.desc)
+        return "<Trans trans: %s, desc: %s>" % (self.trans, self.desc)
 
 class Bal:
 
     def __init__(self, inicial=None, final=None):
-        self.inicial = None # Un grupo de expresion regular
-        self.final = None  # Un grupo de expresion regular
+        self.inicial = None # Un diccionario de grupo de expresion regular
+        self.final = None  # Un diccionario de grupo de expresion regular
         self.MoFi = ""      # M o F
         self.MoFf = ""      # M o F
 
         if inicial is not None:
-            self.inicial = inicial
+            self.inicial = inicial.groupdict()
         if final is not None:
-            self.final = final
+            self.final = final.groupdict()
 
     def __str__(self):
         if self.final is not None and self.inicial is not None:
-            return "inicial: %s, final: %s, MoFi: %s, MoFf: %s" % (self.inicial.groups(), self.final.groups(), self.MoFi, self.MoFf)
+            return "inicial: %s, final: %s, MoFi: %s, MoFf: %s" % (self.inicial, self.final, self.MoFi, self.MoFf)
         else:
-            return "inicial: %s, final: %s, MoFi: %s, MoFf: %s" % (self.inicial.groups(), None, self.MoFi, self.MoFf)
+            return "inicial: %s, final: %s, MoFi: %s, MoFf: %s" % (self.inicial, None, self.MoFi, self.MoFf)
 
 
     def __repr__(self):
         if self.final is not None:
-            return "<Trans inicial: %s, final: %s, MoF: %s>" % (self.inicial.groups(), self.final.groups(), self.MoF)
+            return "<Trans inicial: %s, final: %s, MoF: %s>" % (self.inicial, self.final, self.MoF)
         else:
-            return "<Trans inicial: %s, final: %s, MoF: %s>" % (self.inicial.groups(), None, self.MoF)
+            return "<Trans inicial: %s, final: %s, MoF: %s>" % (self.inicial, None, self.MoF)
