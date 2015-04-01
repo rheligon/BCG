@@ -73,9 +73,9 @@ li {
 
 </br>
 
-<legend>Detalles:</legend>
 
 <div class="well table-responsive col-md-12">
+<legend>Detalles:</legend>
     <table id="table-edc" class="table table-bordered table-striped tabla">
         <thead>
             <tr>
@@ -93,7 +93,7 @@ li {
 </div>
 
 <div class="well table-responsive col-md-12">
-  <legend>Detalle Transacciones</legend>
+  <legend>Detalle Transacciones:</legend>
     <table id="table-detalle" class="table table-bordered table-striped tabla">
         <thead>
             <tr>
@@ -111,7 +111,15 @@ li {
         <tbody>
         </tbody>
     </table>
+  <div class="col-md-3 pull-right">
+    <div>
+        <button type="button" id="confButton" data-loading-text="Cargando..." class="col-md-7 btn btn-primary" autocomplete="off">
+            Confirmar
+        </button>
+    </div>
+  </div>
 </div>
+
 
 <!-- Static Modal para procesando -->
 <div class="modal modal-static fade" id="processing-modal" role="dialog" aria-hidden="true">

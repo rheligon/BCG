@@ -2,10 +2,9 @@ class edoCta:
 
     def __init__(self, cod25=None):
         self.R = ""
-        self.cod28c = ""
+        self.cod28c = "Pendiente"
         self.pagsTrans = [] # Arreglo de arreglos de transacciones
         self.pagsBal = [] # Arreglo de balances
-        self.cod64 = ""
         if cod25 is not None:
             self.cod25 = cod25
         else:
@@ -13,7 +12,10 @@ class edoCta:
 
     def add_trans(self, trans, pag):
         if (pag >= len(self.pagsTrans)):
-            self.pagsTrans.append([])
+            ult = pag-len(self.pagsTrans)+1
+            
+            for i in range(0,ult):
+                self.pagsTrans.append([])
 
         self.pagsTrans[pag].append(trans)
 
@@ -25,20 +27,23 @@ class edoCta:
 
     def add_bal_ini(self, bal, pag, mof):
         if (pag >= len(self.pagsBal)):
-            self.pagsBal.append(Bal())
+            ult = pag-len(self.pagsBal)+1
+
+            for i in range(0,ult):
+                self.pagsBal.append(Bal())
 
         self.pagsBal[pag] = bal
-        self.pagsBal[pag].MoFi = mof 
+        self.pagsBal[pag].MoFi = mof
 
     def add_bal_fin(self, bal, pag, mof):
         self.pagsBal[pag].final = bal.final
         self.pagsBal[pag].MoFf = mof
 
     def __str__(self):
-        return " R: %s, cod25: %s, cod28c: %s, pagsTrans: %s, pagsBal: %s, cod64: %s" % (self.R, self.cod25, self.cod28c, str(len(self.pagsTrans)), str(len(self.pagsBal)), self.cod64)
+        return " R: %s, cod25: %s, cod28c: %s, pagsTrans: %s, pagsBal: %s, cod64: %s" % (self.R, self.cod25, self.cod28c, str(len(self.pagsTrans)), str(len(self.pagsBal)))
 
     def __repr__(self):
-        return "<EDC R: %s, cod25: %s, cod28c: %s, pagsTrans: %s, pagsBal: %s, cod64: %s>" % (self.R, self.cod25, self.cod28c, str(len(self.pagsTrans)), str(len(self.pagsBal)), self.cod64)
+        return "<EDC R: %s, cod25: %s, cod28c: %s, pagsTrans: %s, pagsBal: %s, cod64: %s>" % (self.R, self.cod25, self.cod28c, str(len(self.pagsTrans)), str(len(self.pagsBal)))
 
 class edc_list:
     def __init__(self):
@@ -48,42 +53,50 @@ class edc_list:
         self.edcl.append(edc)
 
     def add_28c(self,edc,nro):
-        for elem in self.edcl:
-            if elem.cod25 == edc.cod25:
-                elem.cod28c = nro
+        if edc.cod28c == "Pendiente":
+            for elem in self.edcl:
+                if elem.cod25 == edc.cod25 and elem.cod28c == "Pendiente":
+                    elem.cod28c = nro
+                    return elem
+        else:
+            for elem in self.edcl:
+                if elem.cod25 == edc.cod25 and elem.cod28c == nro:
+                    return elem
+            # No encontro un edc con el mismo num estado de cuenta y misma ref, entonces se agrega
+            edo = edoCta(edc.cod25)
+            edo.R = edc.R
+            edo.cod28c = nro
+            self.add_edc(edo)
+            return edo
 
     def add_trans(self,edc,trans,pag):
         for elem in self.edcl:
-            if elem.cod25 == edc.cod25:
+            if elem.cod25 == edc.cod25 and elem.cod28c == edc.cod28c:
                 elem.add_trans(trans, pag)
 
     def add_trans_existe(self,edc,trans):
         for elem in self.edcl:
-            if elem.cod25 == edc.cod25:
+            if elem.cod25 == edc.cod25 and elem.cod28c == edc.cod28c:
                 elem.add_trans_existe(trans)
 
     def add_bal_ini(self, edc, bal, pag, mof):
         for elem in self.edcl:
-            if elem.cod25 == edc.cod25:
-                elem.add_bal_ini(bal,pag, mof)
+            if elem.cod25 == edc.cod25 and elem.cod28c == edc.cod28c:
+                elem.add_bal_ini(bal,pag,mof)
+
 
     def add_bal_fin(self, edc, bal, pag, mof):
         for elem in self.edcl:
-            if elem.cod25 == edc.cod25:
-                elem.add_bal_fin(bal,pag, mof)
-
+            if elem.cod25 == edc.cod25 and elem.cod28c == edc.cod28c:
+                elem.add_bal_fin(bal,pag,mof)
 
     def esta(self,ref):
+        # Para saber si una referencia nostro esta en la lista,
+        # en caso que este, devuelve el estado de cuenta
         for elem in self.edcl:
             if elem.cod25 == ref:
                 return (True, elem)
         return (False, None)
-
-    def find(self,edc):
-        for elem in self.edcl:
-            if elem.cod25 == edc.cod25:
-                return True
-        return False
 
     def __str__(self):
         return str(self.edcl)

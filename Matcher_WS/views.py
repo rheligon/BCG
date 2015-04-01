@@ -24,76 +24,72 @@ import jsonpickle
 
 def test(request):
     #path = ARCHIVOS_FOLDER+'\CONTA\CARGADO\\'
-    path = Configuracion.objects.all()[0].archcontabilidadcarg+'\\'
+    path = Configuracion.objects.all()[0].archswiftcarg+'\\'
     filenames = next(os.walk(path))[2]
 
-    # #for archivo in filenames:
-    archivo = path+filenames[0]
+    print(filenames[20])
+
+    archivo = path+filenames[20]
 
     edc_l = edc_list()
 
     with open(archivo,'r') as f:
-        prevLine = ""
+        prevLine = ""  # Linea anterior
         ult_edc = None # Edo de cuenta actual
-        ult_pag = (-1)
+        ult_pag = (-1) # Pagina actual
         
         for line in f:
-            cod, group = leer_archivo_conta(line)
+            # Se parsea una linea del archivo en "cod" queda el codigo entre :: 
+            # y en "group" los grupos de campos en el resto de la linea
+            cod, group = leer_archivo_corr(line)
 
             if cod == "25":
                 try:
                     # Se busca la cuenta a ver si se encuentra registrada
-                    cta = Cuenta.objects.filter(ref_nostro=group)[0]
+                    cta = Cuenta.objects.filter(ref_vostro=group)[0]
                 except:
                     # No existe la cuenta
                     cta = None
 
                 if cta is not None:
-                    esta, ult_edc = edc_l.esta(cta.ref_nostro)
+                    esta, ult_edc = edc_l.esta(cta.ref_vostro)
                     if not esta:
                         # No se encontraba en la lista
-                        edo = edoCta(cta.ref_nostro)
+                        edo = edoCta(cta.ref_vostro)
                         edo.R = cta.codigo
                         edc_l.add_edc(edo)
                         ult_edc = edo
-
                 else:
-                   # La cuenta no esta registrada, informar al usuario
-                   ult_edc = None
-                   print ("No existe la cuenta con referencia nostro: "+ str(group))
+                    # La cuenta no esta registrada, informar al usuario
+                    # Cuenta no existe
+                    esta, ult_edc = edc_l.esta(group)
+                    if not esta:
+                        # No se encontraba en la lista
+                        edo = edoCta(group)
+                        edo.R = "---------"
+                        edc_l.add_edc(edo)
+                        ult_edc = edo
+                    print ("No existe la cuenta con referencia vostro: "+ str(group))
 
             elif cod == "28C":
                 if ult_edc is not None:
+                    dic = group.groupdict()
+
+                    if dic["pag"] is not None:
+                        ult_pag = int(dic["pag"])-1
+                    else:
+                        ult_pag = 0
+
                     # Si existia la cuenta en la base de datos
-                    edc_l.add_28c(ult_edc, group)
-
-            elif cod == "()":
-                # Era una linea entre parentesis
-                if ult_edc is not None:
-                    # Chequear si la linea anterior era 28C, o era una descripcion de transaccion
-                    result = re.search('\[([^]]+)\](.*)', prevLine)
-
-                    if (result.group(1)=="28C"):
-                        # Es un numero de pagina
-                        ult_pag = int(group)-1
-
-                    elif (result.group(1)=="61"):
-                        # Es la descripcion de una transaccion existente
-                        # Se vuelve a parsear la linea anterior para sacar la transaccion y poder comparar
-                        res = re.search('(?P<fecha>\d{6})(?P<DoC>[D,C])(?P<monto>.+\,\d{2})(?P<tipo>.{4})(?P<refNostro>[^(]+)\(?(?P<refVostro>[^)]+)?\)?', result.group(2))
-                        # Se crea una tupla transaccion
-                        trans = Trans(res,group)
-                        # Se agrega a la lista
-                        edc_l.add_trans_existe(ult_edc,trans)
-
-
+                    ult_edc = edc_l.add_28c(ult_edc,dic["nroedc"])
+                    
             elif cod == "60F" or cod == "60M":
                 if ult_edc is not None:
                     # Si existia la cuenta en la base de datos
                     #fecha = re.findall('..?', group.group(2))
                     #fecha = datetime(int("20"+fecha[0]), int(fecha[1]), int(fecha[2]))
                     bal = Bal(group, None)
-                    edc_l.add_bal_ini(ult_edc,bal,ult_pag, cod[2:])
+                    edc_l.add_bal_ini(ult_edc,bal,ult_pag,cod[2:])
 
             elif cod == "62M" or cod == "62F":
                 if ult_edc is not None:
@@ -106,12 +102,33 @@ def test(request):
                     trans = Trans(group)
                     edc_l.add_trans(ult_edc,trans,ult_pag)
 
+            elif cod == "$":
+                # Era una linea de descripcion o de bloque
+                if ult_edc is not None:
+                    # Chequear si la linea anterior era un codigo 61 o 86
+                    result = re.search('^:([^:]{2,3})\:(.+)', prevLine)
+
+                    if result is not None:
+                        if (result.group(1)=="61"):
+                            # Es la descripcion de una transaccion existente
+                            # Se vuelve a parsear la linea anterior para sacar la transaccion y poder comparar
+                            res = re.search('(?P<fecha>\d{6})(?P<fentrada>\d{4}?)(?P<DoC>[DCR][CD]?)[A-Z]?(?P<monto>\d+\,\d{0,2})(?P<tipo>.{4})(?P<refNostro>[^/]+)/?/?(?P<refVostro>.+)?', result.group(2))
+                            # Se crea una tupla transaccion
+                            trans = Trans(res,group)
+                            # Se agrega a la lista
+                            edc_l.add_trans_existe(ult_edc,trans)
+
+                        if (result.group(1)=="86"):
+                            # Es la descripcion de una transaccion existente
+                            pass
+
+            # Se guarda la linea anterior en caso de conseguir parentesis
             prevLine = line
 
     print(edc_l)
     for edc in edc_l:
         for elem in edc.pagsBal:
-            print (elem)
+            print(elem)
 
     context = {}
     template = "matcher/index.html"
@@ -160,37 +177,37 @@ def leer_archivo_conta(line):
         elif (result.group(1)=="60F"):
             # 
             aux = result.group(2)
-            res = re.search('(?P<DoC>[D,C])(?P<fecha>\d{6})(?P<moneda>[a-zA-Z]{3})(?P<monto>.+\,\d{2})', aux)
+            res = re.search('(?P<DoC>[DC])(?P<fecha>\d{6})(?P<moneda>[a-zA-Z]{3})(?P<monto>.+\,\d{2})', aux)
             return ("60F", res)
 
         elif (result.group(1)=="60M"):
             # 
             aux = result.group(2)
-            res = re.search('(?P<DoC>[D,C])(?P<fecha>\d{6})(?P<moneda>[a-zA-Z]{3})(?P<monto>.+\,\d{2})', aux)
+            res = re.search('(?P<DoC>[DC])(?P<fecha>\d{6})(?P<moneda>[a-zA-Z]{3})(?P<monto>.+\,\d{2})', aux)
             return ("60M", res)
 
         elif (result.group(1)=="61"):
             # Es una transaccion
             aux = result.group(2)
-            res = re.search('(?P<fecha>\d{6})(?P<DoC>[D,C])(?P<monto>.+\,\d{2})(?P<tipo>.{4})(?P<refNostro>[^(]+)\(?(?P<refVostro>[^)]+)?\)?', aux)
+            res = re.search('(?P<fecha>\d{6})(?P<DoC>[DC])(?P<monto>.+\,\d{2})(?P<tipo>.{4})(?P<refNostro>[^(]+)\(?(?P<refVostro>[^)]+)?\)?', aux)
             return ("61", res)
 
         elif (result.group(1)=="62M"):
             # Balance final intermedio
             aux = result.group(2)
-            res = re.search('(?P<DoC>[D,C])(?P<fecha>\d{6})(?P<moneda>[a-zA-Z]{3})(?P<monto>.+\,\d{2})', aux)
+            res = re.search('(?P<DoC>[DC])(?P<fecha>\d{6})(?P<moneda>[a-zA-Z]{3})(?P<monto>.+\,\d{2})', aux)
             return ("62M", res)
 
         elif (result.group(1)=="62F"):
             # Balance final real
             aux = result.group(2)
-            res = re.search('(?P<DoC>[D,C])(?P<fecha>\d{6})(?P<moneda>[a-zA-Z]{3})(?P<monto>.+\,\d{2})', aux)
+            res = re.search('(?P<DoC>[DC])(?P<fecha>\d{6})(?P<moneda>[a-zA-Z]{3})(?P<monto>.+\,\d{2})', aux)
             return ("62F", res)
 
         elif (result.group(1)=="64"):
             # Fondos disponibles
             aux = result.group(2)
-            res = re.search('(?P<DoC>[D,C])(?P<fecha>\d{6})(?P<moneda>[a-zA-Z]{3})(?P<monto>.+\,\d{2})', aux)
+            res = re.search('(?P<DoC>[DC])(?P<fecha>\d{6})(?P<moneda>[a-zA-Z]{3})(?P<monto>.+\,\d{2})', aux)
             return ("64", res)
 
     else:
@@ -212,28 +229,12 @@ def leer_archivo_conta(line):
 def leer_archivo_corr(line):
 
     line = line.replace('\n','') # quitar fin de linea
-
-    # Expresion regular para linea con formato [x]yyy
-    result = re.search('\[([^]]+)\](.*)', line)
+    # Expresion regular para linea con formato :x:yyy
+    result = re.search('^:([^:]{2,3})\:(.+)', line)
 
     if result is not None:
         # Se checkea a ver cual es el codigo
-        if (result.group(1)=="M"):
-            # Tipo de mensaje
-            aux = result.group(2)
-            return ("M",aux)
-
-        elif (result.group(1)=="S"):
-            # BIC del banco que envia
-            aux = result.group(2)
-            return ("S",aux)
-
-        elif (result.group(1)=="R"):
-            # BIC del banco que recibe
-            aux = result.group(2)
-            return ("R",aux)
-
-        elif (result.group(1)=="20"):
+        if (result.group(1)=="20"):
             # Referencia de la transaccion
             aux = result.group(2)
             return ("20",aux)
@@ -244,61 +245,57 @@ def leer_archivo_corr(line):
             return ("25",aux)
 
         elif (result.group(1)=="28C"):
-            # Numero del estado de cuenta
+            # Numero del estado de cuenta/nro de pagina
             aux = result.group(2)
-            return ("28C", aux)
+            res = re.search('(?P<nroedc>[^/]+)/?(?P<pag>.+)?', aux)
+            return ("28C", res)
 
         elif (result.group(1)=="60F"):
             # 
             aux = result.group(2)
-            res = re.search('(?P<DoC>[D,C])(?P<fecha>\d{6})(?P<moneda>[a-zA-Z]{3})(?P<monto>.+\,\d{2})', aux)
+            res = re.search('(?P<DoC>[DC])(?P<fecha>\d{6})(?P<moneda>[a-zA-Z]{3})(?P<monto>.+\,\d{0,2})', aux)
             return ("60F", res)
 
         elif (result.group(1)=="60M"):
             # 
             aux = result.group(2)
-            res = re.search('(?P<DoC>[D,C])(?P<fecha>\d{6})(?P<moneda>[a-zA-Z]{3})(?P<monto>.+\,\d{2})', aux)
+            res = re.search('(?P<DoC>[DC])(?P<fecha>\d{6})(?P<moneda>[a-zA-Z]{3})(?P<monto>.+\,\d{0,2})', aux)
             return ("60M", res)
 
         elif (result.group(1)=="61"):
             # Es una transaccion
             aux = result.group(2)
-            res = re.search('(?P<fecha>\d{6})(?P<DoC>[D,C])(?P<monto>.+\,\d{2})(?P<tipo>.{4})(?P<refNostro>[^(]+)\(?(?P<refVostro>[^)]+)?\)?', aux)
+            res = re.search('(?P<fecha>^\d{6})(?P<fentrada>\d{4})?(?P<DoC>[DCR][CD]?)[A-Z]?(?P<monto>\d+\,\d{0,2})(?P<tipo>.{4})(?P<refNostro>[^/]+)/?/?(?P<refVostro>.+)?', aux)
             return ("61", res)
 
         elif (result.group(1)=="62M"):
             # Balance final intermedio
             aux = result.group(2)
-            res = re.search('(?P<DoC>[D,C])(?P<fecha>\d{6})(?P<moneda>[a-zA-Z]{3})(?P<monto>.+\,\d{2})', aux)
+            res = re.search('(?P<DoC>[DC])(?P<fecha>\d{6})(?P<moneda>[a-zA-Z]{3})(?P<monto>.+\,\d{0,2})', aux)
             return ("62M", res)
 
         elif (result.group(1)=="62F"):
             # Balance final real
             aux = result.group(2)
-            res = re.search('(?P<DoC>[D,C])(?P<fecha>\d{6})(?P<moneda>[a-zA-Z]{3})(?P<monto>.+\,\d{2})', aux)
+            res = re.search('(?P<DoC>[DC])(?P<fecha>\d{6})(?P<moneda>[a-zA-Z]{3})(?P<monto>.+\,\d{0,2})', aux)
             return ("62F", res)
 
-        elif (result.group(1)=="64"):
-            # Fondos disponibles
+        elif (result.group(1)=="86"):
+            # Descripcion
             aux = result.group(2)
-            res = re.search('(?P<DoC>[D,C])(?P<fecha>\d{6})(?P<moneda>[a-zA-Z]{3})(?P<monto>.+\,\d{2})', aux)
-            return ("64", res)
+            return ("86", aux)
+
+        elif (result.group(1)=="64"):
+            aux = result.group(2)
+            return ("64", aux)
+
+        elif (result.group(1)=="65"):
+            aux = result.group(2)
+            return ("65", aux)
 
     else:
-    # Linea no comienza con un codigo entre []
-
-        # Se checkea si es algo entre parentesis ()
-        result = re.search('\(([^)]+)\)', line)
-        if result is not None:
-            return ("()", result.group(1))
-
-        else:
-        # Entonces debe ser $ o @@
-            if line == "$":
-                return ("$", None)
-
-            if line == "@@":
-                return ("@@", None)
+    # Linea no comienza con un codigo entre ::
+        return ("$", line)
 
 
   
@@ -616,7 +613,7 @@ def pd_cargaAutomatica(request):
                     elif cod == "28C":
                         if ult_edc is not None:
                             # Si existia la cuenta en la base de datos
-                            edc_l.add_28c(ult_edc, group)
+                            ult_edc = edc_l.add_28c(ult_edc, group)
 
                     elif cod == "()":
                         # Era una linea entre parentesis
@@ -644,7 +641,7 @@ def pd_cargaAutomatica(request):
                             #fecha = re.findall('..?', group.group(2))
                             #fecha = datetime(int("20"+fecha[0]), int(fecha[1]), int(fecha[2]))
                             bal = Bal(group, None)
-                            edc_l.add_bal_ini(ult_edc,bal,ult_pag, cod[2:])
+                            edc_l.add_bal_ini(ult_edc,bal,ult_pag,cod[2:])
 
                     elif cod == "62M" or cod == "62F":
                         if ult_edc is not None:
@@ -660,17 +657,128 @@ def pd_cargaAutomatica(request):
                     prevLine = line
 
             # En esta identacion ya se termino de leer el archivo
-            res_json = jsonpickle.encode(edc_l, unpicklable=False)
-            return JsonResponse({'prueba':True, 'res':res_json}, safe=False)
+            res_json = jsonpickle.encode(edc_l)
+            return JsonResponse({'exito':True, 'res':res_json}, safe=False)
 
         if actn == 'prevcorr':
-            print(actn)
+
+            filename = request.POST.get('archivo_nom')
+            path = Configuracion.objects.all()[0].archswiftcarg+'\\'
+            archivo = path+filename
+
+            edc_l = edc_list()
+
+            with open(archivo,'r') as f:
+                prevLine = ""  # Linea anterior
+                ult_edc = None # Edo de cuenta actual
+                ult_pag = (-1) # Pagina actual
+                
+                for line in f:
+                    # Se parsea una linea del archivo en "cod" queda el codigo entre :: 
+                    # y en "group" los grupos de campos en el resto de la linea
+                    cod, group = leer_archivo_corr(line)
+
+                    if cod == "25":
+                        try:
+                            # Se busca la cuenta a ver si se encuentra registrada
+                            cta = Cuenta.objects.filter(ref_vostro=group)[0]
+                        except:
+                            # No existe la cuenta
+                            cta = None
+
+                        if cta is not None:
+                            esta, ult_edc = edc_l.esta(cta.ref_vostro)
+                            if not esta:
+                                # No se encontraba en la lista
+                                edo = edoCta(cta.ref_vostro)
+                                edo.R = cta.codigo
+                                edc_l.add_edc(edo)
+                                ult_edc = edo
+
+                        else:
+                            # La cuenta no esta registrada, informar al usuario
+                            # Cuenta no existe
+                            esta, ult_edc = edc_l.esta(group)
+                            if not esta:
+                                # No se encontraba en la lista
+                                edo = edoCta(group)
+                                edo.R = "---------"
+                                edc_l.add_edc(edo)
+                                ult_edc = edo
+                            print ("No existe la cuenta con referencia vostro: "+ str(group))
+
+                    elif cod == "28C":
+                        if ult_edc is not None:
+                            dic = group.groupdict()
+
+                            if dic["pag"] is not None:
+                                ult_pag = int(dic["pag"])-1
+                            else:
+                                ult_pag = 0
+
+                            # Si existia la cuenta en la base de datos
+                            ult_edc = edc_l.add_28c(ult_edc,dic["nroedc"])
+                            
+                    elif cod == "60F" or cod == "60M":
+                        if ult_edc is not None:
+                            # Si existia la cuenta en la base de datos
+                            #fecha = re.findall('..?', group.group(2))
+                            #fecha = datetime(int("20"+fecha[0]), int(fecha[1]), int(fecha[2]))
+                            bal = Bal(group, None)
+                            edc_l.add_bal_ini(ult_edc,bal,ult_pag,cod[2:])
+
+                    elif cod == "62M" or cod == "62F":
+                        if ult_edc is not None:
+                            # Si existia la cuenta en la base de datos
+                            bal = Bal(None, group)
+                            edc_l.add_bal_fin(ult_edc,bal,ult_pag,cod[2:])
+
+                    elif cod == "61":
+                        if ult_edc is not None:
+                            trans = Trans(group)
+                            edc_l.add_trans(ult_edc,trans,ult_pag)
+
+                    elif cod == "$":
+                        # Era una linea de descripcion o de bloque
+                        if ult_edc is not None:
+                            # Chequear si la linea anterior era un codigo 61 u 86
+                            result = re.search('^:([^:]{2,3})\:(.+)', prevLine)
+                            
+                            if result is not None:
+                                #La linea anterior contenia un codigo
+                                if (result.group(1)=="61"):
+                                    # Es la descripcion de una transaccion existente
+                                    # Se vuelve a parsear la linea anterior para sacar la transaccion y poder comparar
+                                    res = re.search('(?P<fecha>\d{6})(?P<fentrada>\d{4}?)(?P<DoC>[DCR][CD]?)[A-Z]?(?P<monto>\d+\,\d{0,2})(?P<tipo>.{4})(?P<refNostro>[^/]+)/?/?(?P<refVostro>.+)?', result.group(2))
+                                    # Se crea una tupla transaccion
+                                    trans = Trans(res,group)
+                                    # Se agrega a la lista
+                                    edc_l.add_trans_existe(ult_edc,trans)
+
+                                if (result.group(1)=="86"):
+                                # Es la descripcion de una transaccion existente
+                                    print("era 86: "+ line)
+
+                    # Se guarda la linea anterior en caso de conseguir parentesis
+                    prevLine = line
+
+            # En esta identacion ya se termino de leer el archivo
+            res_json = jsonpickle.encode(edc_l)
+            return JsonResponse({'exito':True, 'res':res_json}, safe=False)
 
         if actn == 'cargconta':
-            print(actn)
+            msg = "Archivo cargado con exito"
+            edcl_json = request.POST.get('edcl')
+            edcl = jsonpickle.decode(edcl_json)
+            print(edcl)
+            return JsonResponse({'exito':True, 'msg':msg})
 
         if actn == 'cargcorr':
-            print(actn)
+            msg = "Archivo cargado con exito"
+            edcl_json = request.POST.get('edcl')
+            edcl = jsonpickle.decode(edcl_json)
+            print(edcl)
+            return JsonResponse({'exito':True, 'msg':msg})
 
     if request.method == 'GET':
         path_conta = Configuracion.objects.all()[0].archcontabilidadcarg+'\\'
