@@ -7,6 +7,7 @@ var prev_a_edc; //Ultimo balance seleccionado
 var prev_edcl; //Ultima lista de edc previsualizada
 var prev_acc; //Accion a realizar al confirmar
 var prev_edcl_j; //Ultimo json recibido al previsualizar
+var cargar = true; //variable para saber si se carga o no
 
 function iniciar_tabla_edc(idioma){
 
@@ -162,11 +163,11 @@ $('#prevCorrButton').on('click', function () {
 
 //Boton confirmar carga
 $('#confButton').on('click', function () {
-    if (prev_edcl != undefined){
+    if (prev_edcl != undefined && cargar){
         $('#processing-modal').modal('toggle');
         confirmar(prev_edcl_j,prev_acc);
     }else{
-        alert("elija un archivo primero");
+        swal("Ups!", "Previsualice el archivo a cargar previamente.", "error");
     }
 });
 
@@ -179,47 +180,74 @@ function previsualizar(archivo,accion){
         data: {"archivo_nom": archivo, "action":accion},
         success: function(data){
             var json_data = jQuery.parseJSON(data.res);
-            console.log(json_data);
+            var cod = jQuery.parseJSON(data.cod);
+            var ignorar = true;
+            cargar = true;
 
-            prev_edcl_j = data.res;
-            prev_edcl = json_data.edcl;
+            //Mostrar mensajes de error
+            msg = data.msg.split("$");
+            for (var i=0; i<msg.length;i++){
+                if (msg[i]!=""){
+                    if (cod[i-1] === '3'){
+                        //Salto de numero edc
+                        ignorar = confirm(msg[i]+".\nDesea ignorarlo?");
 
-            for (var i=0; i<json_data.edcl.length; i++){
-                //json_data.edcl[i]
-                var cod_cta = json_data.edcl[i].R
-                var edo_cta = json_data.edcl[i].cod28c
-                var pags = json_data.edcl[i].pagsBal.length
-
-                if (accion === "prevconta"){
-                    prev_acc = "cargconta";
-                    var td2 = '<td> L </td>';
-                }else if (accion === "prevcorr"){
-                    prev_acc = "cargcorr";
-                    var td2 = '<td> S </td>';
+                    }else if (cod[i-1] === '1'){
+                        //Balance inicial no coincide con ult cargado (impedir carga)
+                        cargar = false;
+                        alert(msg[i]);
+                        
+                    }else{
+                        alert(msg[i]);
+                    }
                 }
-                
-                var td3 = '<td>' + edo_cta + '</td>';
+            };
 
-                for (var j=0; j<pags; j++){
+            //Se checkea si el usuario ignora el salto de edc o si el archivo paso las validaciones
+            if (ignorar && cargar){
+                prev_edcl_j = data.res;
+                prev_edcl = json_data.edcl;
 
-                    var td1 = '<td><a edc="'+edo_cta+'" pag="'+j+'">' + cod_cta + '</a></td>';
-                    console.log(i+" "+j);
-                    var fechai = json_data.edcl[i].pagsBal[j].inicial.fecha.match(/.{1,2}/g).reverse().join('/');
-                    var fechaf = json_data.edcl[i].pagsBal[j].final.fecha.match(/.{1,2}/g).reverse().join('/');
-                    //Se cambia la , por . en los montos para poder formatearlo luego
-                    var montoi = parseFloat(json_data.edcl[i].pagsBal[j].inicial.monto.replace(',','.'));
-                    var montof = parseFloat(json_data.edcl[i].pagsBal[j].final.monto.replace(',','.'));
+                for (var i=0; i<json_data.edcl.length; i++){
+                    //json_data.edcl[i]
+                    var cod_cta = json_data.edcl[i].R
+                    var edo_cta = json_data.edcl[i].cod28c
+                    var pags = json_data.edcl[i].pagsBal.length
 
-                    var td4 = '<td>' + (j+1) + '</td>';
-                    var td5 = '<td>' + json_data.edcl[i].pagsBal[j].MoFi+' '+ fechai +' '+json_data.edcl[i].pagsBal[j].inicial.DoC+' '+ $.formatNumber(montoi,{locale:idioma_tr})+'</td>';
-                    var td6 = '<td>' + json_data.edcl[i].pagsBal[j].MoFf+' '+ fechaf +' '+json_data.edcl[i].pagsBal[j].final.DoC+' '+ $.formatNumber(montof,{locale:idioma_tr}) +'</td>';
-    
-    
-                    $('#table-edc > tbody').append('<tr class="text-center" id ="tr-'+cod_cta+"-"+i+j+'"></tr>');
-                    var jRow = $("#tr-"+cod_cta+"-"+i+j).append(td1,td2,td3,td4,td5,td6);
-                    tabla_edc.row.add(jRow);
+                    if (accion === "prevconta"){
+                        prev_acc = "cargconta";
+                        var td2 = '<td> L </td>';
+                    }else if (accion === "prevcorr"){
+                        prev_acc = "cargcorr";
+                        var td2 = '<td> S </td>';
+                    }
+                    
+                    var td3 = '<td>' + edo_cta + '</td>';
+
+                    for (var j=0; j<pags; j++){
+
+                        var td1 = '<td><a edc="'+edo_cta+'" index_edc="'+i+'" pag="'+j+'">' + cod_cta + '</a></td>';
+                        var fechai = json_data.edcl[i].pagsBal[j].inicial.fecha.match(/.{1,2}/g).reverse().join('/');
+                        var fechaf = json_data.edcl[i].pagsBal[j].final.fecha.match(/.{1,2}/g).reverse().join('/');
+                        //Se cambia la , por . en los montos para poder formatearlo luego
+                        var montoi = parseFloat(json_data.edcl[i].pagsBal[j].inicial.monto.replace(',','.'));
+                        var montof = parseFloat(json_data.edcl[i].pagsBal[j].final.monto.replace(',','.'));
+
+                        var td4 = '<td>' + (j+1) + '</td>';
+                        var td5 = '<td>' + json_data.edcl[i].pagsBal[j].MoFi+' '+ fechai +' '+json_data.edcl[i].pagsBal[j].inicial.DoC+' '+ $.formatNumber(montoi,{locale:idioma_tr})+'</td>';
+                        var td6 = '<td>' + json_data.edcl[i].pagsBal[j].MoFf+' '+ fechaf +' '+json_data.edcl[i].pagsBal[j].final.DoC+' '+ $.formatNumber(montof,{locale:idioma_tr}) +'</td>';
+        
+        
+                        $('#table-edc > tbody').append('<tr class="text-center" id ="tr-'+cod_cta+"-"+i+j+'"></tr>');
+                        var jRow = $("#tr-"+cod_cta+"-"+i+j).append(td1,td2,td3,td4,td5,td6);
+                        tabla_edc.row.add(jRow);
+                    }
+                    tabla_edc.draw();
                 }
-                tabla_edc.draw();
+            }else{
+                prev_edcl_j = undefined
+                prev_edcl = undefined
+                cargar = false
             }
 
             $('#processing-modal').modal('toggle');
@@ -256,36 +284,33 @@ $('#table-edc').on('click','a', function(event) {
 
     var pag = parseInt($(this).attr('pag'));
     var edc = $(this).attr('edc');
-
-    for (i=0;i<prev_edcl.length;i++){
-        if (prev_edcl[i].cod28c === edc){
-            var index = i;
-        }
-    }
+    var index = $(this).attr('index_edc');
 
     var transferencias = prev_edcl[index].pagsTrans;
 
     var td1 = '<td>'+edc+'</td>';
+    if (transferencias[pag] != undefined){
+        for (var i=0;i<transferencias[pag].length;i++){
+            //Se saca la fecha, se divide cada dos caracteres, se voltea y se une con /
+            var fecha = transferencias[pag][i].trans.fecha.match(/.{1,2}/g).reverse().join('/');
+            
+            //Se cambia la , por . en los montos para poder formatearlo luego
+            var monto = parseFloat(transferencias[pag][i].trans.monto.replace(',','.'));
 
-    for (var i=0;i<transferencias[pag].length;i++){
-        //Se saca la fecha, se divide cada dos caracteres, se voltea y se une con /
-        var fecha = transferencias[pag][i].trans.fecha.match(/.{1,2}/g).reverse().join('/');
-        
-        //Se cambia la , por . en los montos para poder formatearlo luego
-        var monto = parseFloat(transferencias[pag][i].trans.monto.replace(',','.'));
+            var td2 = '<td>' + (i+1) + '</td>';
+            var td3 = '<td>' + fecha + '</td>';
+            var td4 = '<td>' + transferencias[pag][i].trans.DoC + '</td>';
+            var td5 = '<td>' + $.formatNumber(monto,{locale:idioma_tr}) + '</td>';
+            var td6 = '<td>' + transferencias[pag][i].trans.tipo + '</td>';
+            var td7 = '<td>' + transferencias[pag][i].trans.refNostro + '</td>';
+            var td8 = '<td>' + vacio(transferencias[pag][i].trans.refVostro) + '</td>';
+            var td9 = '<td>' + vacio(transferencias[pag][i].desc) + '</td>';
 
-        var td2 = '<td>' + (i+1) + '</td>';
-        var td3 = '<td>' + fecha + '</td>';
-        var td4 = '<td>' + transferencias[pag][i].trans.DoC + '</td>';
-        var td5 = '<td>' + $.formatNumber(monto,{locale:idioma_tr}) + '</td>';
-        var td6 = '<td>' + transferencias[pag][i].trans.tipo + '</td>';
-        var td7 = '<td>' + transferencias[pag][i].trans.refNostro + '</td>';
-        var td8 = '<td>' + vacio(transferencias[pag][i].trans.refVostro) + '</td>';
-        var td9 = '<td>' + vacio(transferencias[pag][i].desc) + '</td>';
-
-        $('#table-detalle > tbody').append('<tr class="text-center" id ="tr-'+edc+"-det-"+i+'"></tr>');
-        var jRow = $("#tr-"+edc+"-det-"+i).append(td1,td2,td3,td4,td5,td6,td7,td8,td9);
-        tabla_det.row.add(jRow).draw();
+            $('#table-detalle > tbody').append('<tr class="text-center" id ="tr-'+edc+"-det-"+i+'"></tr>');
+            var jRow = $("#tr-"+edc+"-det-"+i).append(td1,td2,td3,td4,td5,td6,td7,td8,td9);
+            tabla_det.row.add(jRow);
+        }
+        tabla_det.draw();
     }
 });
 

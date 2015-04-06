@@ -27,9 +27,11 @@ def test(request):
     path = Configuracion.objects.all()[0].archswiftcarg+'\\'
     filenames = next(os.walk(path))[2]
 
-    print(filenames[20])
+    print(filenames[5])
 
-    archivo = path+filenames[20]
+    archivo = path+filenames[5]
+
+    print(archivo)
 
     edc_l = edc_list()
 
@@ -59,6 +61,7 @@ def test(request):
                         edo.R = cta.codigo
                         edc_l.add_edc(edo)
                         ult_edc = edo
+
                 else:
                     # La cuenta no esta registrada, informar al usuario
                     # Cuenta no existe
@@ -69,7 +72,6 @@ def test(request):
                         edo.R = "---------"
                         edc_l.add_edc(edo)
                         ult_edc = edo
-                    print ("No existe la cuenta con referencia vostro: "+ str(group))
 
             elif cod == "28C":
                 if ult_edc is not None:
@@ -78,7 +80,7 @@ def test(request):
                     if dic["pag"] is not None:
                         ult_pag = int(dic["pag"])-1
                     else:
-                        ult_pag = 0
+                        ult_pag = edc_l.sinpag(ult_edc,dic["nroedc"])
 
                     # Si existia la cuenta en la base de datos
                     ult_edc = edc_l.add_28c(ult_edc,dic["nroedc"])
@@ -86,8 +88,6 @@ def test(request):
             elif cod == "60F" or cod == "60M":
                 if ult_edc is not None:
                     # Si existia la cuenta en la base de datos
-                    #fecha = re.findall('..?', group.group(2))
-                    #fecha = datetime(int("20"+fecha[0]), int(fecha[1]), int(fecha[2]))
                     bal = Bal(group, None)
                     edc_l.add_bal_ini(ult_edc,bal,ult_pag,cod[2:])
 
@@ -105,35 +105,59 @@ def test(request):
             elif cod == "$":
                 # Era una linea de descripcion o de bloque
                 if ult_edc is not None:
-                    # Chequear si la linea anterior era un codigo 61 o 86
+                    # Chequear si la linea anterior era un codigo 61 u 86
                     result = re.search('^:([^:]{2,3})\:(.+)', prevLine)
-
+                    
                     if result is not None:
+                        #La linea anterior contenia un codigo
                         if (result.group(1)=="61"):
                             # Es la descripcion de una transaccion existente
                             # Se vuelve a parsear la linea anterior para sacar la transaccion y poder comparar
-                            res = re.search('(?P<fecha>\d{6})(?P<fentrada>\d{4}?)(?P<DoC>[DCR][CD]?)[A-Z]?(?P<monto>\d+\,\d{0,2})(?P<tipo>.{4})(?P<refNostro>[^/]+)/?/?(?P<refVostro>.+)?', result.group(2))
+                            res = re.search('(?P<fecha>\d{6})(?P<fentrada>\d{4}?)(?P<DoC>R?[CD]{1})[A-Z]?(?P<monto>\d+\,\d{0,2})(?P<tipo>.{4})(?P<refNostro>[^/]+)/?/?(?P<refVostro>.+)?', result.group(2))
                             # Se crea una tupla transaccion
                             trans = Trans(res,group)
                             # Se agrega a la lista
                             edc_l.add_trans_existe(ult_edc,trans)
 
                         if (result.group(1)=="86"):
-                            # Es la descripcion de una transaccion existente
-                            pass
+                        # Es la descripcion de una transaccion existente
+                            print("era 86: "+ line)
 
             # Se guarda la linea anterior en caso de conseguir parentesis
             prevLine = line
 
-    print(edc_l)
     for edc in edc_l:
-        for elem in edc.pagsBal:
-            print(elem)
+        try:
+            cta = Cuenta.objects.filter(ref_vostro=edc.cod25)[0]
+        except:
+            cta = None
+
+        if cta is not None:
+            numpags = len(edc.pagsBal)
+            # Se usa expresion regular para sacar la fecha inicial
+            fecha = re.findall('..?', edc.pagsBal[0].inicial["fecha"])
+            fechaI = datetime(int("20"+fecha[0]), int(fecha[1]), int(fecha[2]))
+
+            # Se usa expresion regular para sacar la fecha final
+            fecha = re.findall('..?', edc.pagsBal[numpags-1].final["fecha"])
+            fechaF = datetime(int("20"+fecha[0]), int(fecha[1]), int(fecha[2]))
+
+            # Se crea la instancia de Estado de Cuenta en la base de datos
+            edocta = EstadoCuenta.objects.create(cuenta_idcuenta=cta,codigo=edc.cod28c,origen='L',pagina=numpags,balance_inicial=edc.pagsBal[0].inicial["monto"].replace(',','.'), balance_final=edc.pagsBal[numpags-1].final["monto"].replace(',','.'), m_finicial=edc.pagsBal[0].MoFi, m_ffinal=edc.pagsBal[numpags-1].MoFf,fecha_inicial=fechaI ,fecha_final=fechaF,  c_dinicial=edc.pagsBal[0].inicial["DoC"], c_dfinal=edc.pagsBal[numpags-1].final["DoC"])
+            
+            for i,transL in enumerate(edc.pagsTrans):
+                k = 1
+                for tran in transL:
+                    # Se usa expresion regular para sacar la fecha final
+                    fecha = re.findall('..?', tran.trans['fecha'])
+                    fecha = datetime(int("20"+fecha[0]), int(fecha[1]), int(fecha[2]))
+
+                    TransabiertaCorresponsal.objects.create(estado_cuenta_idedocuenta=edocta,codigo_transaccion=tran.trans['tipo'], pagina=i+1, fecha_valor=fecha, descripcion=tran.desc, monto=float(tran.trans['monto'].replace(',','.')), credito_debito=tran.trans['DoC'], referencianostro=tran.trans['refNostro'], referenciacorresponsal=tran.trans['refVostro'], codigocuenta=edc.R, numtransaccion=k, campo86_940=None, seguimiento=None)
+                    k = k+1
 
     context = {}
     template = "matcher/index.html"
     return render(request, template, context)
-
 
 def leer_archivo_conta(line):
 
@@ -265,7 +289,7 @@ def leer_archivo_corr(line):
         elif (result.group(1)=="61"):
             # Es una transaccion
             aux = result.group(2)
-            res = re.search('(?P<fecha>^\d{6})(?P<fentrada>\d{4})?(?P<DoC>[DCR][CD]?)[A-Z]?(?P<monto>\d+\,\d{0,2})(?P<tipo>.{4})(?P<refNostro>[^/]+)/?/?(?P<refVostro>.+)?', aux)
+            res = re.search('(?P<fecha>^\d{6})(?P<fentrada>\d{4})?(?P<DoC>R?[CD]{1})[A-Z]?(?P<monto>\d+\,\d{0,2})(?P<tipo>.{4})(?P<refNostro>.+(?=//))/?/?(?P<refVostro>.+)?', aux)
             return ("61", res)
 
         elif (result.group(1)=="62M"):
@@ -297,8 +321,83 @@ def leer_archivo_corr(line):
     # Linea no comienza con un codigo entre ::
         return ("$", line)
 
+def validar_archivo(edc_l,origen):
+    msg = ''
+    cod = []
+    for edc in edc_l:
+        # Validacion cuenta registrada
+        try:
+            # Se busca la cuenta a ver si se encuentra registrada
+            if origen == 'conta':
+                cta = Cuenta.objects.filter(ref_nostro=edc.cod25)[0]
+            elif origen == 'corr':
+                cta = Cuenta.objects.filter(ref_vostro=edc.cod25)[0]
+        except:
+            # No existe la cuenta
+            cta = None
+            aux = "$Debe registrar la Cuenta "+str(edc.cod25)+" antes de cargar el Edo. de Cuenta."
+            msg = msg + aux
+            cod.append('2')
 
-  
+        if cta is not None:
+            # Se verifica si es contabilidad o corresponsal
+            if origen == 'conta':
+                ultedcid = cta.ultimoedocuentacargc
+            elif origen == 'corr':
+                ultedcid = cta.ultimoedocuentacargs
+
+            if ultedcid is not None:
+                # Ya se ha cargado un archivo antes
+                ultedc = EstadoCuenta.objects.get(idedocuenta=ultedcid)
+            else:
+                # No se ha cargado ningun archivo antes
+                ultedc = None
+
+            if ultedc is not None:
+
+                # Validacion balance inicial igual al ult cargado
+                num1 = ultedc.balance_final
+                num2 = float(edc.pagsBal[0].inicial["monto"].replace(',','.'))
+                if num1 != num2:
+                    aux = "$El balance inicial del estado de cuenta no coincide con el ultimo cargado"
+                    msg = msg + aux
+                    cod.append('1')
+
+                # Validacion salto edc
+                if int(edc.cod28c) != int(ultedc.codigo)+1:
+                    aux = "$Hay un salto en la numeracion de los estados de cuenta para la cuenta: "+str(edc.cod25)
+                    msg = msg + aux
+                    cod.append('3')
+
+                # Validacion archivo ya cargado
+                if ultedc.codigo == edc.cod28c:
+                    msg = msg + "$El archivo ya se encuentra cargado."
+                    cod.append('5')
+
+        # Validacion suma balances
+        for i,bal in enumerate(edc.pagsBal):
+            
+            balini = float(bal.inicial["monto"].replace(",","."))
+            balfin = float(bal.final["monto"].replace(",","."))
+
+            if bal.inicial["DoC"] == 'D':
+                balini = -balini
+
+            if i<len(edc.pagsTrans):
+                for trans in edc.pagsTrans[i]:
+
+                    if trans.trans["DoC"] == "C":
+                        balini = balini + float(trans.trans["monto"].replace(",","."))
+
+                    if trans.trans["DoC"] == "D":
+                        balini = balini - float(trans.trans["monto"].replace(",","."))
+
+            if ("%.2f" % abs(balini)) != ("%.2f" % balfin):
+                msg = msg + "$Hay un error en los balances pag: "+str(i+1)
+                cod.append('4')
+
+    return msg,cod
+
 def timenow():
     return datetime.now().replace(microsecond=0)
 
@@ -570,6 +669,7 @@ def pd_cargaAutomatica(request):
 
     if request.method == 'POST':
         actn = request.POST.get('action')
+        msg = ""
 
         if actn == 'prevconta':
 
@@ -604,11 +704,16 @@ def pd_cargaAutomatica(request):
                                 edo.R = cta.codigo
                                 edc_l.add_edc(edo)
                                 ult_edc = edo
-
                         else:
-                           # La cuenta no esta registrada, informar al usuario
-                           ult_edc = None
-                           print ("No existe la cuenta con referencia nostro: "+ str(group))
+                            # La cuenta no esta registrada, informar al usuario
+                            # Cuenta no existe
+                            esta, ult_edc = edc_l.esta(group)
+                            if not esta:
+                                # No se encontraba en la lista
+                                edo = edoCta(group)
+                                edo.R = "---------"
+                                edc_l.add_edc(edo)
+                                ult_edc = edo
 
                     elif cod == "28C":
                         if ult_edc is not None:
@@ -638,8 +743,6 @@ def pd_cargaAutomatica(request):
                     elif cod == "60F" or cod == "60M":
                         if ult_edc is not None:
                             # Si existia la cuenta en la base de datos
-                            #fecha = re.findall('..?', group.group(2))
-                            #fecha = datetime(int("20"+fecha[0]), int(fecha[1]), int(fecha[2]))
                             bal = Bal(group, None)
                             edc_l.add_bal_ini(ult_edc,bal,ult_pag,cod[2:])
 
@@ -656,9 +759,12 @@ def pd_cargaAutomatica(request):
 
                     prevLine = line
 
-            # En esta identacion ya se termino de leer el archivo
+            # En esta identacion ya se termino de leer el archivo, se procede a validar
+            msg,cod = validar_archivo(edc_l,'conta')
+
             res_json = jsonpickle.encode(edc_l)
-            return JsonResponse({'exito':True, 'res':res_json}, safe=False)
+            cod_json = jsonpickle.encode(cod)
+            return JsonResponse({'exito':True, 'res':res_json, 'msg':msg, 'cod':cod_json}, safe=False)
 
         if actn == 'prevcorr':
 
@@ -705,7 +811,6 @@ def pd_cargaAutomatica(request):
                                 edo.R = "---------"
                                 edc_l.add_edc(edo)
                                 ult_edc = edo
-                            print ("No existe la cuenta con referencia vostro: "+ str(group))
 
                     elif cod == "28C":
                         if ult_edc is not None:
@@ -714,7 +819,7 @@ def pd_cargaAutomatica(request):
                             if dic["pag"] is not None:
                                 ult_pag = int(dic["pag"])-1
                             else:
-                                ult_pag = 0
+                                ult_pag = edc_l.sinpag(ult_edc,dic["nroedc"])
 
                             # Si existia la cuenta en la base de datos
                             ult_edc = edc_l.add_28c(ult_edc,dic["nroedc"])
@@ -722,8 +827,6 @@ def pd_cargaAutomatica(request):
                     elif cod == "60F" or cod == "60M":
                         if ult_edc is not None:
                             # Si existia la cuenta en la base de datos
-                            #fecha = re.findall('..?', group.group(2))
-                            #fecha = datetime(int("20"+fecha[0]), int(fecha[1]), int(fecha[2]))
                             bal = Bal(group, None)
                             edc_l.add_bal_ini(ult_edc,bal,ult_pag,cod[2:])
 
@@ -749,7 +852,7 @@ def pd_cargaAutomatica(request):
                                 if (result.group(1)=="61"):
                                     # Es la descripcion de una transaccion existente
                                     # Se vuelve a parsear la linea anterior para sacar la transaccion y poder comparar
-                                    res = re.search('(?P<fecha>\d{6})(?P<fentrada>\d{4}?)(?P<DoC>[DCR][CD]?)[A-Z]?(?P<monto>\d+\,\d{0,2})(?P<tipo>.{4})(?P<refNostro>[^/]+)/?/?(?P<refVostro>.+)?', result.group(2))
+                                    res = re.search('(?P<fecha>\d{6})(?P<fentrada>\d{4}?)(?P<DoC>R?[CD]{1})[A-Z]?(?P<monto>\d+\,\d{0,2})(?P<tipo>.{4})(?P<refNostro>.+(?=//))/?/?(?P<refVostro>.+)?', result.group(2))
                                     # Se crea una tupla transaccion
                                     trans = Trans(res,group)
                                     # Se agrega a la lista
@@ -763,21 +866,82 @@ def pd_cargaAutomatica(request):
                     prevLine = line
 
             # En esta identacion ya se termino de leer el archivo
+            msg,cod = validar_archivo(edc_l,'corr')
+
             res_json = jsonpickle.encode(edc_l)
-            return JsonResponse({'exito':True, 'res':res_json}, safe=False)
+            cod_json = jsonpickle.encode(cod)
+            return JsonResponse({'exito':True, 'res':res_json, 'msg':msg, 'cod':cod_json}, safe=False)
 
         if actn == 'cargconta':
             msg = "Archivo cargado con exito"
             edcl_json = request.POST.get('edcl')
             edcl = jsonpickle.decode(edcl_json)
-            print(edcl)
+
+            for edc in edcl:
+                try:
+                    cta = Cuenta.objects.filter(ref_nostro=edc.cod25)[0]
+                except:
+                    cta = None
+
+                if cta is not None:
+                    numpags = len(edc.pagsBal)
+                    # Se usa expresion regular para sacar la fecha inicial
+                    fecha = re.findall('..?', edc.pagsBal[0].inicial["fecha"])
+                    fechaI = datetime(int("20"+fecha[0]), int(fecha[1]), int(fecha[2]))
+
+                    # Se usa expresion regular para sacar la fecha final
+                    fecha = re.findall('..?', edc.pagsBal[numpags-1].final["fecha"])
+                    fechaF = datetime(int("20"+fecha[0]), int(fecha[1]), int(fecha[2]))
+
+                    # Se crea la instancia de Estado de Cuenta en la base de datos
+                    edocta = EstadoCuenta.objects.create(cuenta_idcuenta=cta,codigo=edc.cod28c,origen='L',pagina=numpags,balance_inicial=edc.pagsBal[0].inicial["monto"].replace(',','.'), balance_final=edc.pagsBal[numpags-1].final["monto"].replace(',','.'), m_finicial=edc.pagsBal[0].MoFi, m_ffinal=edc.pagsBal[numpags-1].MoFf,fecha_inicial=fechaI ,fecha_final=fechaF,  c_dinicial=edc.pagsBal[0].inicial["DoC"], c_dfinal=edc.pagsBal[numpags-1].final["DoC"])
+                    
+                    for i,transL in enumerate(edc.pagsTrans):
+                        k = 1
+                        for tran in transL:
+                            # Se usa expresion regular para sacar la fecha final
+                            fecha = re.findall('..?', tran.trans['fecha'])
+                            fecha = datetime(int("20"+fecha[0]), int(fecha[1]), int(fecha[2]))
+                            
+                            TransabiertaContabilidad.objects.create(estado_cuenta_idedocuenta=edocta,codigo_transaccion=tran.trans['tipo'], pagina=i+1, fecha_valor=fecha, descripcion=tran.desc, monto=float(tran.trans['monto'].replace(',','.')), credito_debito=tran.trans['DoC'], referencianostro=tran.trans['refNostro'], referenciacorresponsal=tran.trans['refVostro'], codigocuenta=edc.R, numtransaccion=k, campo86_940=None, seguimiento=None)
+                            k = k+1
+
             return JsonResponse({'exito':True, 'msg':msg})
 
         if actn == 'cargcorr':
             msg = "Archivo cargado con exito"
             edcl_json = request.POST.get('edcl')
             edcl = jsonpickle.decode(edcl_json)
-            print(edcl)
+
+            for edc in edcl:
+                try:
+                    cta = Cuenta.objects.filter(ref_vostro=edc.cod25)[0]
+                except:
+                    cta = None
+
+                if cta is not None:
+                    numpags = len(edc.pagsBal)
+                    # Se usa expresion regular para sacar la fecha inicial
+                    fecha = re.findall('..?', edc.pagsBal[0].inicial["fecha"])
+                    fechaI = datetime(int("20"+fecha[0]), int(fecha[1]), int(fecha[2]))
+
+                    # Se usa expresion regular para sacar la fecha final
+                    fecha = re.findall('..?', edc.pagsBal[numpags-1].final["fecha"])
+                    fechaF = datetime(int("20"+fecha[0]), int(fecha[1]), int(fecha[2]))
+
+                    # Se crea la instancia de Estado de Cuenta en la base de datos
+                    edocta = EstadoCuenta.objects.create(cuenta_idcuenta=cta,codigo=edc.cod28c,origen='L',pagina=numpags,balance_inicial=edc.pagsBal[0].inicial["monto"].replace(',','.'), balance_final=edc.pagsBal[numpags-1].final["monto"].replace(',','.'), m_finicial=edc.pagsBal[0].MoFi, m_ffinal=edc.pagsBal[numpags-1].MoFf,fecha_inicial=fechaI ,fecha_final=fechaF,  c_dinicial=edc.pagsBal[0].inicial["DoC"], c_dfinal=edc.pagsBal[numpags-1].final["DoC"])
+                    
+                    for i,transL in enumerate(edc.pagsTrans):
+                        k = 1
+                        for tran in transL:
+                            # Se usa expresion regular para sacar la fecha final
+                            fecha = re.findall('..?', tran.trans['fecha'])
+                            fecha = datetime(int("20"+fecha[0]), int(fecha[1]), int(fecha[2]))
+    
+                            TransabiertaCorresponsal.objects.create(estado_cuenta_idedocuenta=edocta,codigo_transaccion=tran.trans['tipo'], pagina=i+1, fecha_valor=fecha, descripcion=tran.desc, monto=float(tran.trans['monto'].replace(',','.')), credito_debito=tran.trans['DoC'], referencianostro=tran.trans['refNostro'], referenciacorresponsal=tran.trans['refVostro'], codigocuenta=edc.R, numtransaccion=k, campo86_940=None, seguimiento=None)
+                            k = k+1
+                            
             return JsonResponse({'exito':True, 'msg':msg})
 
     if request.method == 'GET':

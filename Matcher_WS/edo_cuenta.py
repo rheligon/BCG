@@ -40,10 +40,10 @@ class edoCta:
         self.pagsBal[pag].MoFf = mof
 
     def __str__(self):
-        return " R: %s, cod25: %s, cod28c: %s, pagsTrans: %s, pagsBal: %s, cod64: %s" % (self.R, self.cod25, self.cod28c, str(len(self.pagsTrans)), str(len(self.pagsBal)))
+        return " R: %s, cod25: %s, cod28c: %s, pagsTrans: %s, pagsBal: %s" % (self.R, self.cod25, self.cod28c, str(len(self.pagsTrans)), str(len(self.pagsBal)))
 
     def __repr__(self):
-        return "<EDC R: %s, cod25: %s, cod28c: %s, pagsTrans: %s, pagsBal: %s, cod64: %s>" % (self.R, self.cod25, self.cod28c, str(len(self.pagsTrans)), str(len(self.pagsBal)))
+        return "<EDC R: %s, cod25: %s, cod28c: %s, pagsTrans: %s, pagsBal: %s>" % (self.R, self.cod25, self.cod28c, str(len(self.pagsTrans)), str(len(self.pagsBal)))
 
 class edc_list:
     def __init__(self):
@@ -68,6 +68,12 @@ class edc_list:
             edo.cod28c = nro
             self.add_edc(edo)
             return edo
+
+    def sinpag(self,edc,nro):
+        for elem in self.edcl:
+                if elem.cod25 == edc.cod25 and elem.cod28c == nro:
+                    return len(elem.pagsBal)
+        return 0
 
     def add_trans(self,edc,trans,pag):
         for elem in self.edcl:
