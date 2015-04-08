@@ -1,16 +1,17 @@
 class edoCta:
 
     def __init__(self, cod25=None):
-        self.R = ""
-        self.cod28c = "Pendiente"
+        self.R = "" # Codigo banco
+        self.cod28c = "Pendiente" # Numero Edc
         self.pagsTrans = [] # Arreglo de arreglos de transacciones
         self.pagsBal = [] # Arreglo de balances
-        if cod25 is not None:
+        if cod25 is not None: #Numero de la cuenta
             self.cod25 = cod25
         else:
             self.cod25 = ""
 
     def add_trans(self, trans, pag):
+        #Sirve para agregar una nueva transferencia a la lista de edc en la pagina dada
         if (pag >= len(self.pagsTrans)):
             ult = pag-len(self.pagsTrans)+1
             
@@ -20,12 +21,14 @@ class edoCta:
         self.pagsTrans[pag].append(trans)
 
     def add_trans_existe(self, trans):
+        # Sirve para agregar la descripcion de una transferencia ya agregada previamente
         for elem in self.pagsTrans:
             for tran in elem:
                 if tran.trans == trans.trans:
                     tran.desc = trans.desc
 
     def add_bal_ini(self, bal, pag, mof):
+        # Sirve para agregar el balance inicial
         if (pag >= len(self.pagsBal)):
             ult = pag-len(self.pagsBal)+1
 
@@ -36,6 +39,7 @@ class edoCta:
         self.pagsBal[pag].MoFi = mof
 
     def add_bal_fin(self, bal, pag, mof):
+        # Sirve para agregar el balance final
         self.pagsBal[pag].final = bal.final
         self.pagsBal[pag].MoFf = mof
 
@@ -97,7 +101,7 @@ class edc_list:
                 elem.add_bal_fin(bal,pag,mof)
 
     def esta(self,ref):
-        # Para saber si una referencia nostro esta en la lista,
+        # Para saber si una referencia esta en la lista,
         # en caso que este, devuelve el estado de cuenta
         for elem in self.edcl:
             if elem.cod25 == ref:

@@ -502,6 +502,8 @@ $('#acptButton').on('click', function () {
                              text: data.msg,
                              type: "error",
                              confirmButtonText: "Ok" });
+                    $('#acptButton').parent().toggle('hidden');
+                    $('#cancelButton').parent().toggle('hidden');
                 }
                 $('#acptButton').parent().toggle('hidden');
                 $('#cancelButton').parent().toggle('hidden');
