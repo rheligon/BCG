@@ -24,29 +24,13 @@ import re
 import jsonpickle
 
 def test(request):
-    path = ARCHIVOS_FOLDER+'\CSV\\'
-    #path = Configuracion.objects.all()[0].archswiftcarg+'\\'
-    filenames = next(os.walk(path))[2]
+    fecha = timenow()
+    millis = dma_millis(10,12,2010)
 
-    #print(filenames)
+    msg = matcher('BMARCH',millis,'1')
 
-    archivo = path+filenames[8]
-
-
-    edc_l = edc_list()
-
-    with open(archivo,'r') as f:
-
-        ncta = next(f).replace("\n","")
-
-        result = re.match("[$,{]",ncta)
-
-        edc_l,msgs = leer_punto_coma(ncta,'corr',f)
-
-        msg,cod = validar_archivo(edc_l,'corr')
-
-        print(edc_l)
-        print(msg)
+    print("MATCHER DEVOLVIO")
+    print(msg.split('*'))
 
     context = {}
     template = "matcher/index.html"
@@ -55,29 +39,29 @@ def test(request):
 def timenow():
     return datetime.now().replace(microsecond=0)
 
-def matcher(cuenta,dia,mes,ano):
-    d = date(ano, dia, mes)
+def dma_millis(dia,mes,ano):
+    d = date(ano, mes, dia)
     t = datetime.now().time()
     dt = datetime.combine(d,t)
 
-    mili = time.mktime(dt.timetuple()) * 1000 + dt.microsecond / 1000
+    millis = time.mktime(dt.timetuple()) * 1000 + dt.microsecond / 1000
+    return int(millis)
 
+def matcher(cuenta,millis,funciones='1'):
     # Buscar host y puerto de matcher
-    conf = Configuracion.objects.all()[0]
-    host = conf.matcherhost
-    port = int(conf.matcherpuerto)
+    try:
+        conf = Configuracion.objects.all()[0]
+        host = conf.matcherhost
+        port = int(conf.matcherpuerto)
+    except:
+        # No existe una configuracion previa
+        print("No hay configuracion previa en la BD")
 
-    print(host)
-    print(port)
-    print (d)
-    message = cuenta+"*"+str(mili)+"*1\n"
-    print(message)
+    message = cuenta+"*"+str(millis)+"*"+funciones+"\r\n"
 
     # Crear socket y conectarse
     sock = socket(AF_INET, SOCK_STREAM)
     sock.connect((host, port))
-
-    print("se hizo conexion")
 
     # Enviar mensaje
     try :
@@ -91,11 +75,10 @@ def matcher(cuenta,dia,mes,ano):
         readable, writable, exceptional = select([sock], [], [], 5)
         if readable:
             data = sock.recv(4096)
-            print (data)
             break
         # Codigo mientras se espera
     sock.close()
-    return data
+    return data.decode()
 
 def get_ops(login):
     #Busco la sesion que esta conectada
@@ -678,24 +661,74 @@ def pd_cargaAutomatica(request):
 @login_required(login_url='/login')
 def pd_match(request):
     if request.method == 'POST':
-        fecha = request.POST.get('fecha').split("/")
-        fechaform = datetime(int(fecha[2]),int(fecha[1]),int(fecha[0]))
+        actn = request.POST.get('action')
+        if actn == 'buscar':
+            fecha = request.POST.get('fecha').split("/")
+            fechaform = datetime(int(fecha[2]),int(fecha[1]),int(fecha[0]))
 
-        # FALTA FILTRAR LAS CUENTAS QUE DEVUELVO CON LAS CUENTAS ASIGNADAS AL USUARIO
-        carg = Cargado.objects.all()
-        cuentas_carg = [cargado.estado_cuenta_idedocuenta.cuenta_idcuenta for cargado in carg if cargado.estado_cuenta_idedocuenta.fecha_final == fechaform]
+            # FALTA FILTRAR LAS CUENTAS QUE DEVUELVO CON LAS CUENTAS ASIGNADAS AL USUARIO
+            carg = Cargado.objects.all()
+            cuentas_carg = [cargado.estado_cuenta_idedocuenta.cuenta_idcuenta for cargado in carg if cargado.estado_cuenta_idedocuenta.fecha_final == fechaform]
 
-        res_json = serializers.serialize('json', cuentas_carg)
-        
-        return JsonResponse(res_json, safe=False)
+            res_json = serializers.serialize('json', cuentas_carg)
+            
+            return JsonResponse(res_json, safe=False)
+
+        if actn == 'match':
+            cuentaid = request.POST.get('ctaid')
+            fecha = request.POST.get('fecha').split("/")
+
+            cta = Cuenta.objects.get(idcuenta=cuentaid)
+            millis = dma_millis(int(fecha[0]),int(fecha[1]),int(fecha[2]))
+            procesos = str(cta.tipo_proceso)
+
+            # Checkear si la cuenta esta tomada
+            conc = cta.concurrencia
+
+            # Checkear si hay elementos en la tabla propuestos
+            mprop = Matchpropuestos.objects.all()
+            matches = [prop for prop in mprop if prop.ta_conta.codigocuenta == cta.codigo]
+
+            if not matches and conc is None:
+                # Lista vacia, por lo que no hay propuestos en la BD para la cuenta
+                msg = matcher(cta.codigo,millis,procesos)
+                match = True
+            else:
+                # Checkear si la cuenta esta tomada
+                if conc is not None:
+                    msg = '*La cuenta se encuentra tomada, liberar antes de matchear.'
+                else:
+                    # La cuenta no esta tomada, pero posee elementos en propuestos
+                    msg = '*Existen elementos en la tabla propuestos para la cuenta especificada.'
+                match = False
+
+            return JsonResponse({'msg':msg, 'match':match})
+
+        if actn == 'matchcp':
+            fecha = request.POST.get('fecha').split("/")
+            millis = dma_millis(int(fecha[0]),int(fecha[1]),int(fecha[2]))
+
+            msg = matcher('CuentasPropias',millis,'2')
+
+            return JsonResponse({'msg':msg, 'match':True})
+
+        if actn == 'liberar':
+            cuentaid = request.POST.get('ctaid')
+            cta = Cuenta.objects.get(idcuenta=cuentaid)
+
+            cta.concurrencia = None
+            cta.save()
+
+            msg = 'Cuenta liberada exitosamente'
+
+            return JsonResponse({'msg':msg})
+
 
     if request.method == 'GET':
         template = "matcher/pd_match.html"
         context = {}
 
         return render(request, template, context)
-
-
 
 @login_required(login_url='/login')
 def mensajesSWIFT(request):
