@@ -280,7 +280,6 @@ class EncajelegalBk(models.Model):
     class Meta:
         db_table = 'EncajeLegal_BK'
 
-
 class EstadoCuenta(models.Model):
     idedocuenta = sqlserver_ado.fields.BigAutoField(db_column='idEdoCuenta', primary_key=True)  
     cuenta_idcuenta = models.ForeignKey(Cuenta, db_column='Cuenta_idCuenta', blank=True, null=True)  
@@ -295,10 +294,14 @@ class EstadoCuenta(models.Model):
     fecha_final = models.DateTimeField(db_column='Fecha_Final')  
     c_dinicial = models.CharField(db_column='C_DInicial', max_length=1)  
     c_dfinal = models.CharField(db_column='C_DFinal', max_length=1)  
-    idbk = models.BigIntegerField(db_column='idBK', blank=True, null=True)  
+    idbk = models.BigIntegerField(db_column='idBK', blank=True, null=True)
+
+    def natural_key(self):
+        return (self.idedocuenta, self.codigo)
 
     class Meta:
         db_table = 'Estado_Cuenta'
+        unique_together = (('idedocuenta','codigo'),)
 
 
 class EstadoCuentaBk(models.Model):
@@ -806,7 +809,7 @@ class TransabiertaContabilidad(models.Model):
     codigocuenta = models.CharField(db_column='CodigoCuenta', max_length=10)  
     numtransaccion = models.IntegerField(db_column='NumTransaccion')  
     seguimiento = models.TextField(db_column='Seguimiento', blank=True)  
-    idbk = models.BigIntegerField(db_column='idBK', blank=True, null=True)  
+    idbk = models.BigIntegerField(db_column='idBK', blank=True, null=True)
 
     class Meta:
         db_table = 'TransAbierta_Contabilidad'

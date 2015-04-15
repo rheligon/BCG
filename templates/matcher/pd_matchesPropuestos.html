@@ -1,0 +1,109 @@
+{% extends "matcher/base.html" %}
+
+{% load staticfiles %}
+
+{% block title %}Partidas Abiertas{% endblock %}
+
+{%block head%}
+<!-- No hace falta cargar dataTables.css original si se incluye el de bootstrap -->
+<link rel="stylesheet" href="{% static 'css/dataTables/dataTables.bootstrap.css' %}">
+<link rel="stylesheet" href="{% static 'css/dataTables/dataTables.scroller.css' %}">
+<link rel="stylesheet" href="{% static 'css/sweet-alert.css' %}">
+<link rel="stylesheet" href="{% static 'css/procesando.css' %}">
+<link rel="stylesheet" href="{% static 'css/picker.css' %}">
+<link rel="stylesheet" href="{% static 'css/picker.date.css' %}">
+{%endblock%}
+
+{% block content %}
+<style>
+div.dataTables_wrapper {
+    font-size: 95%;
+    margin: 0 auto;
+}
+table {
+  width: 100%;
+}
+</style>
+
+
+
+<!-- Select Basic -->
+<div class="form-group col-md-12">
+  <label class="col-md-3" for="Cuenta-sel">Seleccione una cuenta: </label>
+  <div class="col-md-3">
+    <select id="Cuenta-sel" name="Cuenta-sel" class="form-control">
+      <option value="">----------</option>
+      {% for cuenta in cuentas %}
+      <option id="opt-{{cuenta.idcuenta}}" value="{{cuenta.codigo}}">{{cuenta.codigo}}</option>
+      {% endfor %}
+    </select>
+  </div>
+
+  <div class="col-md-3 col-md-push-2">
+      <button type="button" id="srchButton" data-loading-text="Cargando..." class="col-md-6 btn btn-primary" autocomplete="off" data-toggle="modal" data-target="#add-regla-modal">
+          Buscar
+      </button>
+  </div>
+</div>
+
+<div id="pbardiv" class="col-md-8 col-md-push-2" hidden>
+  <div class="progress" >
+    <div id="pbar" class="progress-bar" role="progressbar" max="0" current="0" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="min-width: 2em;">
+      <p id="pbartxt">0%</p>
+    </div>
+  </div>
+</div>
+
+<div class="table-responsive col-md-12 dataTables_wrapper">
+    <table id="table-pa" style="width:100%;" class="table table-bordered table-striped tabla">
+        <thead>
+            <tr>
+                <th>E/C</th>
+                <th>Pág</th>
+                <th>Fecha</th>
+                <th>Tipo</th>
+                <th>Ref Nostro</th>
+                <th>Ref Vostro</th>
+                <th>Detalles</th>
+                <th>C/D</th>
+                <th>Monto</th>
+                <th>S/L</th>
+                <th>Sel</th>
+            </tr>
+        </thead>
+        <tbody id="tb-pa">
+        </tbody>
+    </table>
+</div>
+
+<input id="Id-regla" name="Id-regla" value="0" type="text" hidden>
+
+<!-- Static Modal para procesando -->
+<div class="modal modal-static fade" id="processing-modal" role="dialog" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-body">
+                <div class="text-center">
+                    <img src="{% static 'images/procesando.gif' %}" class="icon" />
+                    <h4>Procesando, por favor espere.</h4>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block script%}
+<script> //define el idioma de la tabla (es/en)
+         idioma_tr = "es" </script>
+<script src="{% static 'js/jquery.dataTables.min.js' %}" type="text/javascript"></script>
+<script src="{% static 'js/dataTables.scroller.js' %}" type="text/javascript"></script>
+<script src="{% static 'js/dataTables.bootstrap.js' %}" type="text/javascript"></script>
+<script src="{% static 'js/sweet-alert.min.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/jshashtable.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/numberformatter.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/picker.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/picker.date.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/pickerlegacy.js' %}"></script>
+<script src="{% static 'js/pd_matchesPropuestos.js' %}" type="text/javascript"></script>
+{% endblock %}

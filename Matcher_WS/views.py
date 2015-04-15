@@ -55,7 +55,7 @@ def matcher(cuenta,millis,funciones='1'):
         port = int(conf.matcherpuerto)
     except:
         # No existe una configuracion previa
-        print("No hay configuracion previa en la BD")
+        return("No hay configuracion previa en la BD")
 
     message = cuenta+"*"+str(millis)+"*"+funciones+"\r\n"
 
@@ -67,7 +67,7 @@ def matcher(cuenta,millis,funciones='1'):
     try :
         sock.sendall(message.encode())
     except error:
-        msg = "No se pudo realizar la llamada a matcher"
+        return("No se pudo realizar la llamada a matcher")
 
     data = ''
 
@@ -728,6 +728,54 @@ def pd_match(request):
         template = "matcher/pd_match.html"
         context = {}
 
+        return render(request, template, context)
+
+
+@login_required(login_url='/login')
+def pd_matchesPropuestos(request):
+    if request.method == 'POST':
+        actn = request.POST.get('action')
+        if actn == 'buscar':
+            ctaid = request.POST.get('ctaid')
+            mp = Matchpropuestos.objects.all()
+            
+            mpf = [matches for matches in mp if matches.ta_conta.codigocuenta == ctaid and matches.ta_corres != None]
+            
+            res_json = jsonpickle.encode(mpf, unpicklable=False)
+
+            return JsonResponse({'mpf':res_json}, safe=False)
+
+    if request.method == 'GET':
+
+        template = "matcher/pd_matchesPropuestos.html"
+        cuentas = Cuenta.objects.all().order_by('codigo')
+        context = {'cuentas':cuentas}
+        return render(request, template, context)
+
+
+@login_required(login_url='/login')
+def pd_partidasAbiertas(request):
+    if request.method == 'POST':
+        actn = request.POST.get('action')
+        if actn == 'buscar':
+            ctaid = request.POST.get('ctaid')
+            cta = Cuenta.objects.get(idcuenta=ctaid)
+            
+            ta_conta = TransabiertaContabilidad.objects.filter(codigocuenta=cta.codigo)
+            ta_corr = TransabiertaCorresponsal.objects.filter(codigocuenta=cta.codigo)
+
+            res_json_conta = serializers.serialize('json', ta_conta, use_natural_foreign_keys=True)
+            res_json_corr = serializers.serialize('json', ta_corr, use_natural_foreign_keys=True)
+
+
+            return JsonResponse({'r_conta':res_json_conta, 'r_corr':res_json_corr}, safe=False)
+
+
+    if request.method == 'GET':
+
+        template = "matcher/pd_partidasAbiertas.html"
+        cuentas = Cuenta.objects.all().order_by('codigo')
+        context = {'cuentas':cuentas}
         return render(request, template, context)
 
 @login_required(login_url='/login')
