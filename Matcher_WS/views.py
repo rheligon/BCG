@@ -758,11 +758,93 @@ def pd_partidasAbiertas(request):
     if request.method == 'POST':
         actn = request.POST.get('action')
         if actn == 'buscar':
+            #Obtener filtros
+            filtromonto = request.POST.getlist('filterArray[0][]')
+            filtroref = request.POST.getlist('filterArray[1][]')
+            filtrocod = request.POST.getlist('filterArray[2][]')
+            filtrofecha = request.POST.getlist('filterArray[3][]')
+            filtrotipo = request.POST.getlist('filterArray[4][]')
+            filtroorigen = request.POST.getlist('filterArray[5][]')
+
+            #Obtener id de la cuenta
             ctaid = request.POST.get('ctaid')
             cta = Cuenta.objects.get(idcuenta=ctaid)
-            
-            ta_conta = TransabiertaContabilidad.objects.filter(codigocuenta=cta.codigo)
-            ta_corr = TransabiertaCorresponsal.objects.filter(codigocuenta=cta.codigo)
+
+            #Chequear si se selecciono un filtro de origen
+            if filtroorigen:
+                origen = filtroorigen[0]
+
+                if origen == 'S':
+                    ta_conta = TransabiertaContabilidad.objects.none()
+                    ta_corr = TransabiertaCorresponsal.objects.filter(codigocuenta=cta.codigo)
+
+                if origen == 'L':
+                    ta_corr = TransabiertaCorresponsal.objects.none()
+                    ta_conta = TransabiertaContabilidad.objects.filter(codigocuenta=cta.codigo)
+            else:
+                #No hay filtro por lo que se usan ambas
+                ta_conta = TransabiertaContabilidad.objects.filter(codigocuenta=cta.codigo)
+                ta_corr = TransabiertaCorresponsal.objects.filter(codigocuenta=cta.codigo)
+
+            #Chequear si se selecciono monto
+            if filtromonto:
+                montod = filtromonto[0]
+                montoh = filtromonto[1]
+
+                ta_conta = ta_conta.filter(monto__gte=montod,monto__lte=montoh)
+                ta_corr = ta_corr.filter(monto__gte=montod,monto__lte=montoh)
+
+            #Chequear si se selecciono referencia
+            if filtroref:
+                reftipo = filtroref[0]
+                reftxt = filtroref[1]
+
+                if reftipo == 'N':
+                    ta_conta = ta_conta.filter(referencianostro=reftxt)
+                    ta_corr = ta_corr.filter(referencianostro=reftxt)
+
+                if reftipo == 'V':
+                    ta_conta = ta_conta.filter(referenciacorresponsal=reftxt)
+                    ta_corr = ta_corr.filter(referenciacorresponsal=reftxt)
+
+                if reftipo == 'D':
+                    ta_conta = ta_conta.filter(descripcion=reftxt)
+                    ta_corr = ta_corr.filter(descripcion=reftxt)                 
+
+            #Chequear si se selecciono Credito/debito
+            if filtrocod:
+                cod = filtrocod[0]
+
+                ta_conta = ta_conta.filter(credito_debito=cod)
+                ta_corr = ta_corr.filter(credito_debito=cod)
+
+            #Chequear si se selecciono fechas desde y hasta
+            if filtrofecha:
+                fechad = None
+                fechah = None
+
+                if filtrofecha[0] != '':
+                    fechad = datetime.strptime(filtrofecha[0], '%d/%m/%Y')
+
+                if filtrofecha[1] != '':
+                    fechah = datetime.strptime(filtrofecha[1], '%d/%m/%Y')
+
+                if fechad is not None and fechah is not None:
+                    ta_conta = ta_conta.filter(fecha_valor__gte=fechad,fecha_valor__lte=fechah)
+                    ta_corr = ta_corr.filter(fecha_valor__gte=fechad,fecha_valor__lte=fechah)
+                elif fechad is not None:
+                    ta_conta = ta_conta.filter(fecha_valor__gte=fechad)
+                    ta_corr = ta_corr.filter(fecha_valor__gte=fechad)
+                elif fechah is not None:
+                    ta_conta = ta_conta.filter(fecha_valor__lte=fechah)
+                    ta_corr = ta_corr.filter(fecha_valor__lte=fechah)
+
+            #Chequear si se selecciono tipo transferencia
+            if filtrotipo:
+                tipo = filtrotipo[0]
+
+                ta_conta = ta_conta.filter(codigo_transaccion=tipo)
+                ta_corr = ta_corr.filter(codigo_transaccion=tipo)
 
             res_json_conta = serializers.serialize('json', ta_conta, use_natural_foreign_keys=True)
             res_json_corr = serializers.serialize('json', ta_corr, use_natural_foreign_keys=True)
@@ -774,6 +856,86 @@ def pd_partidasAbiertas(request):
     if request.method == 'GET':
 
         template = "matcher/pd_partidasAbiertas.html"
+        cuentas = Cuenta.objects.all().order_by('codigo')
+        context = {'cuentas':cuentas}
+        return render(request, template, context)
+
+@login_required(login_url='/login')
+def pd_matchesConfirmados(request):
+
+    if request.method == 'POST':
+        actn = request.POST.get('action')
+        if actn == 'buscar':
+            #Obtener filtros
+            filtromonto = request.POST.getlist('filterArray[0][]')
+            filtromatch = request.POST.getlist('filterArray[1][]')
+            filtroref = request.POST.getlist('filterArray[2][]')
+            filtrofecham = request.POST.getlist('filterArray[3][]')
+            filtrofecha = request.POST.getlist('filterArray[4][]')
+
+            #Obtener id de la cuenta
+            ctaid = request.POST.get('ctaid')
+            cta = Cuenta.objects.get(idcuenta=ctaid)
+
+            print(request.POST)
+
+            '''
+            #Chequear si se selecciono monto
+            if filtromonto:
+                montod = filtromonto[0]
+                montoh = filtromonto[1]
+
+                ta_conta = ta_conta.filter(monto__gte=montod,monto__lte=montoh)
+                ta_corr = ta_corr.filter(monto__gte=montod,monto__lte=montoh)
+
+            #Chequear si se selecciono referencia
+            if filtroref:
+                reftipo = filtroref[0]
+                reftxt = filtroref[1]
+
+                if reftipo == 'N':
+                    ta_conta = ta_conta.filter(referencianostro=reftxt)
+                    ta_corr = ta_corr.filter(referencianostro=reftxt)
+
+                if reftipo == 'V':
+                    ta_conta = ta_conta.filter(referenciacorresponsal=reftxt)
+                    ta_corr = ta_corr.filter(referenciacorresponsal=reftxt)
+
+                if reftipo == 'D':
+                    ta_conta = ta_conta.filter(descripcion=reftxt)
+                    ta_corr = ta_corr.filter(descripcion=reftxt)                 
+
+            #Chequear si se selecciono fechas desde y hasta
+            if filtrofecha:
+                fechad = None
+                fechah = None
+
+                if filtrofecha[0] != '':
+                    fechad = datetime.strptime(filtrofecha[0], '%d/%m/%Y')
+
+                if filtrofecha[1] != '':
+                    fechah = datetime.strptime(filtrofecha[1], '%d/%m/%Y')
+
+                if fechad is not None and fechah is not None:
+                    ta_conta = ta_conta.filter(fecha_valor__gte=fechad,fecha_valor__lte=fechah)
+                    ta_corr = ta_corr.filter(fecha_valor__gte=fechad,fecha_valor__lte=fechah)
+                elif fechad is not None:
+                    ta_conta = ta_conta.filter(fecha_valor__gte=fechad)
+                    ta_corr = ta_corr.filter(fecha_valor__gte=fechad)
+                elif fechah is not None:
+                    ta_conta = ta_conta.filter(fecha_valor__lte=fechah)
+                    ta_corr = ta_corr.filter(fecha_valor__lte=fechah)
+
+            res_json_conta = serializers.serialize('json', ta_conta, use_natural_foreign_keys=True)
+            res_json_corr = serializers.serialize('json', ta_corr, use_natural_foreign_keys=True)
+
+
+            return JsonResponse({'r_conta':res_json_conta, 'r_corr':res_json_corr}, safe=False)
+            '''
+
+    if request.method == 'GET':
+
+        template = "matcher/pd_matchesConfirmados.html"
         cuentas = Cuenta.objects.all().order_by('codigo')
         context = {'cuentas':cuentas}
         return render(request, template, context)

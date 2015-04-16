@@ -68,15 +68,15 @@ table {
 
         <div class="checkbox col-md-4" style="margin-top: 10px;">
           <label>
-            <input type="checkbox" class="cbfilter" id="ref-cb" value="1">
-            Referencias
+            <input type="checkbox" class="cbfilter" id="match-cb" value="2">
+            Match
           </label>
         </div>
 
         <div class="checkbox col-md-4" style="margin-top: 10px;">
           <label>
-            <input type="checkbox" class="cbfilter" id="cod-cb" value="2">
-            Crédito/Débito
+            <input type="checkbox" class="cbfilter" id="ref-cb" value="1">
+            Referencias
           </label>
         </div>
       </div>
@@ -84,26 +84,18 @@ table {
       <div class="row">
         <div class="checkbox col-md-4">
           <label>
-            <input type="checkbox" class="cbfilter" id="fecha-cb" value="3">
+            <input type="checkbox" class="cbfilter" id="fecham-cb" value="3">
+            Fecha Match
+          </label>
+        </div>
+
+        <div class="checkbox col-md-4" style="margin-top: 10px;">
+          <label>
+            <input type="checkbox" class="cbfilter" id="fecha-cb" value="4">
             Fecha
           </label>
         </div>
-
-        <div class="checkbox col-md-4" style="margin-top: 10px;">
-          <label>
-            <input type="checkbox" class="cbfilter" id="tipo-cb" value="4">
-            Tipo Trans.
-          </label>
-        </div>
-
-        <div class="checkbox col-md-4" style="margin-top: 10px;">
-          <label>
-            <input type="checkbox" class="cbfilter" id="origen-cb" value="5">
-            Origen
-          </label>
-        </div>
       </div>
-
     </div>
 
 
@@ -123,6 +115,16 @@ table {
             <label class="control-label">Hasta: </label>  
             <div>
             <input id="monto-hasta" type="text" placeholder="" class="form-control input-md">
+            </div>
+          </div>
+        </div>
+
+        <div id="filter-match" hidden>
+          <!-- Text input-->
+          <div class="form-group col-md-10">
+            <label class="control-label">Match ID: </label>  
+            <div>
+            <input id="match-id" type="text" placeholder="" class="form-control input-md">
             </div>
           </div>
         </div>
@@ -157,18 +159,15 @@ table {
           </div>
         </div>
 
-        <div id="filter-cod" hidden>
-          <div class="col-md-6"> 
-            <label class="radio-inline">
-              <input type="radio" name="radiocod" id="cred-radio" value="C">
-              Crédito
-            </label> 
+        <div id="filter-fecham" hidden>
+          <div class="form-group">
+            <label class="col-md-2 control-label">Desde:</label>
+            <div class="col-md-4"><input id="fm-desde" class="form-control"></div>
           </div>
-          <div class="col-md-6"> 
-            <label class="radio-inline">
-              <input type="radio" name="radiocod" id="deb-radio" value="D">
-              Débito
-            </label>
+
+          <div class="form-group">
+            <label class="col-md-2 control-label">Hasta:</label>
+            <div class="col-md-4"><input id="fm-hasta" class="form-control"></div>
           </div>
         </div>
 
@@ -181,31 +180,6 @@ table {
           <div class="form-group">
             <label class="col-md-2 control-label">Hasta:</label>
             <div class="col-md-4"><input id="f-hasta" class="form-control"></div>
-          </div>
-        </div>
-
-        <div id="filter-tipo" hidden>
-          <!-- Text input-->
-          <div class="form-group col-md-10">
-            <label class="control-label">Tipo Trans.: </label>  
-            <div>
-            <input id="tipo-trans" type="text" placeholder="" class="form-control input-md">
-            </div>
-          </div>
-        </div>
-
-        <div id="filter-origen" hidden>
-          <div class="col-md-6"> 
-            <label class="radio-inline">
-              <input type="radio" name="radioorig" id="conta-radio" value="L">
-              Libro (L)
-            </label> 
-          </div>
-          <div class="col-md-6"> 
-            <label class="radio-inline">
-              <input type="radio" name="radioorig" id="corr-radio" value="S">
-              Corresponsal (S)
-            </label>
           </div>
         </div>
 
@@ -281,5 +255,5 @@ table {
 <script type="text/javascript" src="{% static 'js/picker.js' %}"></script>
 <script type="text/javascript" src="{% static 'js/picker.date.js' %}"></script>
 <script type="text/javascript" src="{% static 'js/pickerlegacy.js' %}"></script>
-<script src="{% static 'js/pd_partidasAbiertas.js' %}" type="text/javascript"></script>
+<script src="{% static 'js/pd_matchesConfirmados.js' %}" type="text/javascript"></script>
 {% endblock %}

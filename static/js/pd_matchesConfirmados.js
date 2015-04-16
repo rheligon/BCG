@@ -3,7 +3,7 @@ var tabla = iniciar_tabla(idioma_tr);
 var faltaconta = false;
 var faltacorr = false;
 var matchArray = [];
-var filterArray = [[],[],[],[],[],[]];
+var filterArray = [[],[],[],[],[]];
 
 function dateFormat(fecha){
     var date = new Date(Date.parse(fecha));
@@ -86,6 +86,22 @@ if (idioma_tr==="es"){
 }
 
 //Inicializar el DatePicker
+$('#fm-desde').pickadate({
+  format: 'd/m/yyyy',
+  formatSubmit:'d/m/yyyy',
+  selectYears: true,
+  selectMonths: true,
+})
+
+//Inicializar el DatePicker
+$('#fm-hasta').pickadate({
+  format: 'd/m/yyyy',
+  formatSubmit:'d/m/yyyy',
+  selectYears: true,
+  selectMonths: true,
+})
+
+//Inicializar el DatePicker
 $('#f-desde').pickadate({
   format: 'd/m/yyyy',
   formatSubmit:'d/m/yyyy',
@@ -117,22 +133,23 @@ $('#cancelButton').on('click', function () {
         $('#monto-hasta').val('');
     }
 
+    if (idaux==='match'){
+        $('#match-id').val('');
+    }
+
     if (idaux==='ref'){
         $(id+' input[type=radio]:checked').prop('checked', false);
         $('#ref-txt').val('');
     }
 
-    if (idaux==='cod'){
-        $(id+' input[type=radio]:checked').prop('checked', false);
+    if (idaux==='fecham'){
+        $('#fm-desde').val('');
+        $('#fm-hasta').val('');
     }
 
     if (idaux==='fecha'){
         $('#f-desde').val('');
         $('#f-hasta').val('');
-    }
-
-    if (idaux==='tipo'){
-        $('#tipo-trans').val('');
     }
 
     if (idaux==='origen'){
@@ -176,39 +193,32 @@ $('#srchButton').on('click', function () {
             filterArray[0].push($('#monto-hasta').val());
         }
 
+        if (idaux==='match'){
+            var mid = $('#match-id').val();
+            filterArray[1].push(mid);
+        }
+
         if (idaux==='ref'){
             var rad = $(id+' input[type=radio]:checked').val();
             if (rad != undefined ){
-                filterArray[1].push(rad);
-                filterArray[1].push($('#ref-txt').val());
+                filterArray[2].push(rad);
+                filterArray[2].push($('#ref-txt').val());
             }
         }
 
-        if (idaux==='cod'){
-            var rad = $(id+' input[type=radio]:checked').val();
-            if (rad != undefined ){
-                filterArray[2].push(rad);
-            }
+        if (idaux==='fecham'){
+            var fd = $('#fm-desde').val();
+            var fh = $('#fm-hasta').val();
+            filterArray[3].push(fd);
+            filterArray[3].push(fh);
         }
 
         if (idaux==='fecha'){
             var fd = $('#f-desde').val();
             var fh = $('#f-hasta').val();
-            filterArray[3].push(fd);
-            filterArray[3].push(fh);
-        }
-
-        if (idaux==='tipo'){
-            var tipo = $('#tipo-trans').val();
-            filterArray[4].push(tipo);
-        }
-
-        if (idaux==='origen'){
-            var rad = $(id+' input[type=radio]:checked').val();
-            if (rad != undefined ){
-                filterArray[5].push(rad);
-            }
-        }        
+            filterArray[4].push(fd);
+            filterArray[4].push(fh);
+        }   
       });
 
       //Llamar funcion de busqueda
@@ -253,7 +263,7 @@ $('.cbfilter').on('click', function(){
 function busqueda(ctaid,filterArray){
     $.ajax({
         type:"POST",
-        url: "/procd/pAbiertas/",
+        url: "/procd/mConfirmados/",
         data: {"ctaid": ctaid, 'filterArray':filterArray ,'action':'buscar'},
         success: function(data){
             var json_conta = jQuery.parseJSON(data.r_conta);
@@ -264,11 +274,11 @@ function busqueda(ctaid,filterArray){
 
             // Initalize and start iterating
             var contaIter = new heavyLifter(json_conta,'conta');
-            contaIter.startCalculation();
+            //contaIter.startCalculation();
 
             // Initalize and start iterating
             var corrIter = new heavyLifter(json_corr,'corr');
-            corrIter.startCalculation();
+            //corrIter.startCalculation();
 
             //var edc_conta = jQuery.parseJSON(data.edcj_conta);
             //var edc_corr = jQuery.parseJSON(data.edcj_corr);
@@ -398,14 +408,8 @@ function heavyLifter(jsonArr,tipo) {
 
         //Barra de progreso
         var max = $('#pbar').attr('max');
-        if (max === '0'){
-            var prog = 100;
-        }else{
-            var prog = Math.round(current/max*100);
-        }
+        var prog = Math.round(current/max*100);
         var width = prog+'%';
-
-        console.log(prog);
 
         $('#pbartxt').text(width);
         $('#pbar').css('width', width);
