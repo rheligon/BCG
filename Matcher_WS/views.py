@@ -90,7 +90,7 @@ def get_ops(login):
     return opciones
 
 def log(request,eid,detalles=None):
-    # Para el log
+    # Funcion que recibe el request, ve cual es el usr loggeado y realiza el log
     username = request.user.username 
     terminal = request.META.get('COMPUTERNAME')
     fechaHora = timenow()
@@ -732,24 +732,30 @@ def pd_match(request):
 
 
 @login_required(login_url='/login')
-def pd_matchesPropuestos(request):
+def pd_matchesPropuestos(request, cuenta):
     if request.method == 'POST':
-        actn = request.POST.get('action')
-        if actn == 'buscar':
-            ctaid = request.POST.get('ctaid')
-            mp = Matchpropuestos.objects.all()
-            
-            mpf = [matches for matches in mp if matches.ta_conta.codigocuenta == ctaid and matches.ta_corres != None]
-            
-            res_json = jsonpickle.encode(mpf, unpicklable=False)
+        my_dict = dict(request.POST)
+        print(my_dict)
 
-            return JsonResponse({'mpf':res_json}, safe=False)
+       #for key,value in my_dict.items():
+       #    do stuff
+
+        template = "matcher/pd_matchesPropuestos.html"
+        msg = 'Matches Confirmados Exitosamente!'
+        context = {'cuentas':None, 'matches':None, 'cta':None, 'msg':msg}
+        return render(request, template, context)
 
     if request.method == 'GET':
 
+        if cuenta is not None:
+            matches = Matchpropuestos.objects.filter(ta_conta__codigocuenta=cuenta).order_by('idmatch')
+        else:
+            matches = None
+
         template = "matcher/pd_matchesPropuestos.html"
+
         cuentas = Cuenta.objects.all().order_by('codigo')
-        context = {'cuentas':cuentas}
+        context = {'cuentas':cuentas, 'matches':matches, 'cta':cuenta, 'msg':None}
         return render(request, template, context)
 
 

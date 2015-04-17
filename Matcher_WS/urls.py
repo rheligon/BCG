@@ -23,7 +23,7 @@ urlpatterns = patterns('',
     # Procesamiento diario
     url(r'^procd/cargAut/$', 'Matcher_WS.views.pd_cargaAutomatica', name='cargaAutomatica'),
     url(r'^procd/match/$', 'Matcher_WS.views.pd_match', name='match'),
-    url(r'^procd/mPropuestos/$', 'Matcher_WS.views.pd_matchesPropuestos', name='matchesPropuestos'),
+    url(r'^procd/mPropuestos/((?P<cuenta>\w+)/)?$', 'Matcher_WS.views.pd_matchesPropuestos', name='matchesPropuestos'),
     url(r'^procd/pAbiertas/$', 'Matcher_WS.views.pd_partidasAbiertas', name='partidasAbiertas'),
     url(r'^procd/mConfirmados/$', 'Matcher_WS.views.pd_matchesConfirmados', name='matchesConfirmados'),
     

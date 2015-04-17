@@ -398,14 +398,13 @@ function heavyLifter(jsonArr,tipo) {
 
         //Barra de progreso
         var max = $('#pbar').attr('max');
+        
         if (max === '0'){
             var prog = 100;
         }else{
             var prog = Math.round(current/max*100);
         }
         var width = prog+'%';
-
-        console.log(prog);
 
         $('#pbartxt').text(width);
         $('#pbar').css('width', width);
