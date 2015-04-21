@@ -38,7 +38,7 @@ $('#Cuenta-sel').change(function() {
 
     }
   }else{
-    tabla.clear().draw();
+    tabla.fnClearTable();
   }
 });
 
@@ -92,8 +92,9 @@ function iniciar_tabla(idioma){
 
 //Funcion para añadir al POST los checkboxes que no estan visibles
 $('form').bind('submit', function(e) {
-    var rows   = tabla.fnGetNodes(),
-          inputs = [];
+    var rows   = tabla.fnGetNodes(), inputs = [];
+
+    console.log(rows.length);
      
     // Añade al POST los checkboxes que no estan visibles
     for ( var i = 0, len = rows.length; i < len; i++) {

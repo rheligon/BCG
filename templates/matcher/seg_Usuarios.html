@@ -43,7 +43,7 @@
                     <td>{{ sesion.usuario_idusuario.apellidos|default:"" }}, {{ sesion.usuario_idusuario.nombres|default:"" }}</td>
                     <td>{{ sesion.usuario_idusuario.perfil_idperfil.nombre|default:"" }}</td>
                     <td>{{ sesion.estado|default:"" }}</td>
-                    {% if sesion.conexion != "1" %}
+                    {% if sesion.conexion|add:"0" != 1 %}
                       <td>Logout</td>
                     {% else %}
                       <td>Login</td>

@@ -4,6 +4,9 @@ var faltaconta = false;
 var faltacorr = false;
 var matchArray = [];
 var filterArray = [[],[],[],[],[],[]];
+var edcArray = [[],[]];
+var r_conta = undefined;
+var r_corr = undefined;
 
 function dateFormat(fecha){
     var date = new Date(Date.parse(fecha));
@@ -38,6 +41,8 @@ function check_falta(tipo){
             },
             8000
         );
+        tabla.fnDraw();
+        edcArray = [[],[]];
     }
 }
 
@@ -45,7 +50,7 @@ function iniciar_tabla(idioma){
 
     if (idioma==="es"){
 
-        return $('#table-pa').DataTable({
+        return $('#table-pa').dataTable({
             //poner if con idioma, el ingles es predeterminado
             language: {
                 url: '/static/json/Spanish-tables.json'
@@ -60,7 +65,7 @@ function iniciar_tabla(idioma){
 
     }else if (idioma==="en"){
 
-        return $('#table-pa').DataTable({
+        return $('#table-pa').dataTable({
             language: {
                 url: '/static/json/English-tables.json'
             },
@@ -160,7 +165,8 @@ $('#srchButton').on('click', function () {
       $('#pbar').attr('current', 0);
       $('#pbartxt').text('0%');
       $('#pbar').css('width', '0%');
-      tabla.clear().draw();
+      //tabla.clear().draw();
+      tabla.fnClearTable();
       faltaconta = false;
       faltacorr = false;
       matchArray =[];
@@ -219,8 +225,6 @@ $('#srchButton').on('click', function () {
 
 //Introducir en el arreglo las filas que se haya chequeado el checkbox
 $('#table-pa').on('click','input[type=checkbox]', function(event) {
-    console.log($(this));
-
    if($(this).is(':checked')){
         matchArray.push($(this).closest('tr').attr('id'));
    }else{
@@ -229,6 +233,90 @@ $('#table-pa').on('click','input[type=checkbox]', function(event) {
           matchArray.splice( index, 1 );
         }
    }
+
+});
+
+//Chequear todos los cb
+$('#checkAllButton').on('click', function () {
+    var selec = parseInt($(this).attr('selec'));
+    var rows   = tabla.fnGetNodes();
+    matchArray = [];
+
+    if (selec === 0){
+        $('#checkAllButton').attr('selec',1);
+
+        //Añadir checks a los checkboxes no escondidos
+        $('.chkSelection').each(function(){
+            $(this).prop('checked',true);
+            matchArray.push($(this).closest('tr').attr('id'));
+        });
+
+        // Añadir checks a los checkboxes escondidos
+        for ( var i = 0, len = rows.length; i < len; i++) {
+            var $fields = $(rows[i]).find('input[type="checkbox"]:hidden');
+             
+            $fields.each(function (idx, el) {
+                    matchArray.push($(el).closest('tr').attr('id'));
+                    $(el).prop('checked',true);
+            });
+        }
+
+    }else{
+        $('#checkAllButton').attr('selec',0);
+
+        //Quitar checks a los checkboxes no escondidos
+        $('.chkSelection').each(function(){
+            $(this).prop('checked',false)
+
+        });
+
+
+        // Quitar checks de los checkboxes escondidos
+        for ( var i = 0, len = rows.length; i < len; i++) {
+            var $fields = $(rows[i]).find('input[type="checkbox"]:hidden:checked');
+             
+            $fields.each(function (idx, el) {
+                    $(el).prop('checked',false);
+            });
+        }
+    }
+});
+
+//Verificar suma de montos y enviar tds
+$('#matchButton').on('click', function () {
+    if (matchArray.length <2){
+        swal("","Debe elegir una pareja primero","error");
+    }else{
+        
+        var montocredito = 0;
+        var montodebito = 0;
+        var rows = tabla.fnGetNodes();
+
+        for (var i=0,len=rows.length;i<len;i++){
+
+            var tds = $(rows[i]).find('td');
+
+            if (tds.eq(10).children().prop('checked')){
+
+                if (tds.eq(7).html() === 'C'){
+                    montocredito += parseFloat(tds.eq(8).attr('monto'));
+
+                }else if (tds.eq(7).html() === 'D'){
+                    montodebito += parseFloat(tds.eq(8).attr('monto'));
+                }
+
+            }
+        }
+
+        console.log(montodebito);
+        console.log(montocredito);
+
+        //verificar si los montos estan bien, sino mostrar error
+        hacer_match(matchArray);
+        $('#processing-modal').modal('toggle');
+    }
+
+
 });
 
 //Mostrar o esconder filtros elegidos
@@ -249,7 +337,7 @@ $('.cbfilter').on('click', function(){
     }
 });
 
-//Buscar logs de acuerdo a la seleccion
+//Buscar partidas de acuerdo a la seleccion
 function busqueda(ctaid,filterArray){
     $.ajax({
         type:"POST",
@@ -258,6 +346,7 @@ function busqueda(ctaid,filterArray){
         success: function(data){
             var json_conta = jQuery.parseJSON(data.r_conta);
             var json_corr = jQuery.parseJSON(data.r_corr);
+            edcArray = data.r_edcn;
 
             $('#pbardiv').prop('hidden', false);
             $('#pbar').attr('max', json_corr.length+json_conta.length);
@@ -270,66 +359,35 @@ function busqueda(ctaid,filterArray){
             var corrIter = new heavyLifter(json_corr,'corr');
             corrIter.startCalculation();
 
-            //var edc_conta = jQuery.parseJSON(data.edcj_conta);
-            //var edc_corr = jQuery.parseJSON(data.edcj_corr);
-
-            // for (var i = 0; i < json_conta.length; i++) {
-            //     var a_id = json_conta[i].pk;
-            //     var a_cod = json_conta[i].fields.codigo;
-
-            //     var td1 = '<td>' + json_conta[i].fields.campo86_940 + '</td>';
-            //     var td2 = '<td>' + json_conta[i].fields.pagina + '</td>';
-            //     var td3 = '<td>' + dateFormat(json_conta[i].fields.fecha_valor) + '</td>';
-            //     var td4 = '<td>' + json_conta[i].fields.codigo_transaccion + '</td>';
-            //     var td5 = '<td>' + vacio(json_conta[i].fields.referencianostro) + '</td>';
-            //     var td6 = '<td>' + vacio(json_conta[i].fields.referenciacorresponsal) + '</td>';
-            //     var td7 = '<td>' + vacio(json_conta[i].fields.descripcion) + '</td>';
-            //     var td8 = '<td>' + json_conta[i].fields.credito_debito + '</td>';
-            //     var td9 = '<td>' + json_conta[i].fields.monto + '</td>';
-            //     var td10 = '<td>L</td>';
-            //     var td11 = '<td>S</td>';
-
-            //     $('#table-pa > tbody').append('<tr id ="trconta-'+a_id+'"></tr>');
-
-            //     var jRow = $("#trconta-"+a_id).append(td1,td2,td3,td4,td5,td6,td7,td8,td9,td10,td11);
-            //     tabla.row.add(jRow);
-            //     prog++;
-            //     $('#proctxt').text(Math.round(max/prog)*100);
-            // };
-
-
-            // for (var i = 0; i < json_corr.length; i++) {
-            //     console.log(i);
-            //     var a_id = json_corr[i].pk;
-            //     var a_cod = json_corr[i].fields.codigo;
-
-            //     var td1 = '<td>' + json_corr[i].fields.campo86_940 + '</td>';
-            //     var td2 = '<td>' + json_corr[i].fields.pagina + '</td>';
-            //     var td3 = '<td>' + dateFormat(json_corr[i].fields.fecha_valor) + '</td>';
-            //     var td4 = '<td>' + json_corr[i].fields.codigo_transaccion + '</td>';
-            //     var td5 = '<td>' + vacio(json_corr[i].fields.referencianostro) + '</td>';
-            //     var td6 = '<td>' + vacio(json_corr[i].fields.referenciacorresponsal) + '</td>';
-            //     var td7 = '<td>' + vacio(json_corr[i].fields.descripcion) + '</td>';
-            //     var td8 = '<td>' + json_corr[i].fields.credito_debito + '</td>';
-            //     var td9 = '<td>' + json_corr[i].fields.monto + '</td>';
-            //     var td10 = '<td>S</td>';
-            //     var td11 = '<td>S</td>';
-
-            //     $('#table-pa > tbody').append('<tr id ="trcorr-'+a_id+'"></tr>');
-
-            //     var jRow = $("#trcorr-"+a_id).append(td1,td2,td3,td4,td5,td6,td7,td8,td9,td10,td11);
-            //     tabla.row.add(jRow);
-            //     prog++;
-            //     $('#proctxt').text(Math.round(max/prog)*100);
-            // };
-
-            //tabla.draw();
             $('#processing-modal').modal('toggle');
         },
         error: function(q,error){
             alert(q.responseText) //debug
             $('#processing-modal').modal('toggle');
-            swal("Ups!", "Hubo un error buscando las cuentas para la fecha especificada.", "error");
+            swal("Ups!", "Hubo un error buscando las partidas para la cuenta especificada.", "error");
+        },
+        dataType:'json',
+        headers:{
+            'X-CSRFToken':csrftoken
+        }
+    });
+    return false;
+};
+
+//Hacer match de acuerdo a la seleccion
+function hacer_match(matchArray){
+    $.ajax({
+        type:"POST",
+        url: "/procd/pAbiertas/",
+        data: {'matchArray':matchArray ,'action':'match'},
+        success: function(data){
+            console.log(data.msg)
+            $('#processing-modal').modal('toggle');
+        },
+        error: function(q,error){
+            alert(q.responseText) //debug
+            $('#processing-modal').modal('toggle');
+            swal("Ups!", "Hubo un error matcheando las partidas para la cuenta especificada.", "error");
         },
         dataType:'json',
         headers:{
@@ -386,14 +444,18 @@ function heavyLifter(jsonArr,tipo) {
             if( this.currentPosition >= this.elementsLength ){
                 clearInterval(this.inter);
                 check_falta(this.tipo);
-                tabla.draw();
+                //tabla.draw();
                 break;
             }
             // Add to counter
             this.currentPosition++;
             current++;
-            
-            calcularfila(this.array[i],this.tipo );
+
+            if (this.tipo==='conta'){
+                calcularfila(this.array[i],this.tipo,edcArray[0][i]);
+            }else{
+                calcularfila(this.array[i],this.tipo,edcArray[1][i]);
+            }
         }
 
         //Barra de progreso
@@ -411,25 +473,26 @@ function heavyLifter(jsonArr,tipo) {
         $('#pbar').attr('current', current);
         
         if( n === 0 ){
-            tabla.draw();
+            //tabla.draw();
+            tabla.fnDraw();
         }
 
     }
 }
 
-function calcularfila(elem,tipo){
+function calcularfila(elem,tipo,edc){
     var a_id = elem.pk;
     var a_cod = elem.fields.codigo;
 
-    var td1 = '<td>' + elem.fields.estado_cuenta_idedocuenta[1] + '</td>';
+    var td1 = '<td>' + edc + '</td>';
     var td2 = '<td>' + elem.fields.pagina + '</td>';
     var td3 = '<td>' + dateFormat(elem.fields.fecha_valor) + '</td>';
     var td4 = '<td>' + elem.fields.codigo_transaccion + '</td>';
     var td5 = '<td>' + vacio(elem.fields.referencianostro) + '</td>';
     var td6 = '<td>' + vacio(elem.fields.referenciacorresponsal) + '</td>';
     var td7 = '<td>' + vacio(elem.fields.descripcion) + '</td>';
-    var td8 = '<td>' + elem.fields.credito_debito + '</td>';
-    var td9 = '<td>' + $.formatNumber(elem.fields.monto,{locale:idioma_tr}) + '</td>';
+    var td8 = '<td class="cod">' + elem.fields.credito_debito + '</td>';
+    var td9 = '<td class="monto" monto="'+elem.fields.monto+'">' + $.formatNumber(elem.fields.monto,{locale:idioma_tr}) + '</td>';
     if (tipo==='conta'){
         var td10 = '<td>L</td>';
     }else{
@@ -440,5 +503,6 @@ function calcularfila(elem,tipo){
     $('#table-pa > tbody').append('<tr id ="tr-'+tipo+'-'+a_id+'"></tr>');
 
     var jRow = $("#tr-"+tipo+"-"+a_id).append(td1,td2,td3,td4,td5,td6,td7,td8,td9,td10,td11);
-    tabla.row.add(jRow);
+    //tabla.row.add(jRow);
+    tabla.fnAddData(jRow,false);
 }

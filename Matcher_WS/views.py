@@ -8,9 +8,11 @@ from django.contrib.auth.forms import UserCreationForm
 from django import forms
 from Matcher.models import *
 from django.db import connection
+from django.db.models import Min
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.hashers import *
 from django.contrib.auth import update_session_auth_hash
+from django.contrib.sessions.models import Session
 from datetime import datetime, date, time, timedelta
 from Matcher_WS.settings import ARCHIVOS_FOLDER
 from Matcher_WS.backend import MyAuthBackend
@@ -157,9 +159,12 @@ def usr_logout(request):
         sesion.save()
 
         username = sesion.login
+        print(username)
         # Buscar el usuario
         user = User.objects.get(username=username)
         [s.delete() for s in Session.objects.all() if s.get_decoded().get('_auth_user_id') == user.id]
+
+        return JsonResponse({'sessid':sessid})
 
     if request.method == 'GET':
         if request.user.is_authenticated():
@@ -735,14 +740,18 @@ def pd_match(request):
 def pd_matchesPropuestos(request, cuenta):
     if request.method == 'POST':
         my_dict = dict(request.POST)
+        print(len(my_dict))
+        del my_dict['csrfmiddlewaretoken'] #Sirve para quitar el token antiforgery del diccionario
+        print(len(my_dict))
         print(my_dict)
 
        #for key,value in my_dict.items():
-       #    do stuff
+       #    hacer algo (key es el numero de iteracion, value es Matchpropuestos ID)
 
         template = "matcher/pd_matchesPropuestos.html"
         msg = 'Matches Confirmados Exitosamente!'
-        context = {'cuentas':None, 'matches':None, 'cta':None, 'msg':msg}
+        cuentas = Cuenta.objects.all().order_by('codigo')
+        context = {'cuentas':cuentas, 'matches':None, 'cta':None, 'msg':msg}
         return render(request, template, context)
 
     if request.method == 'GET':
@@ -755,6 +764,7 @@ def pd_matchesPropuestos(request, cuenta):
         template = "matcher/pd_matchesPropuestos.html"
 
         cuentas = Cuenta.objects.all().order_by('codigo')
+
         context = {'cuentas':cuentas, 'matches':matches, 'cta':cuenta, 'msg':None}
         return render(request, template, context)
 
@@ -763,6 +773,14 @@ def pd_matchesPropuestos(request, cuenta):
 def pd_partidasAbiertas(request):
     if request.method == 'POST':
         actn = request.POST.get('action')
+
+        if actn == 'match':
+            matchArray = request.POST.getlist('matchArray[]')
+            print(matchArray)
+
+            return JsonResponse({'msg':'EXITO'})
+
+
         if actn == 'buscar':
             #Obtener filtros
             filtromonto = request.POST.getlist('filterArray[0][]')
@@ -782,15 +800,15 @@ def pd_partidasAbiertas(request):
 
                 if origen == 'S':
                     ta_conta = TransabiertaContabilidad.objects.none()
-                    ta_corr = TransabiertaCorresponsal.objects.filter(codigocuenta=cta.codigo)
+                    ta_corr = TransabiertaCorresponsal.objects.filter(codigocuenta=cta.codigo).select_related('estado_cuenta_idedocuenta')
 
                 if origen == 'L':
                     ta_corr = TransabiertaCorresponsal.objects.none()
-                    ta_conta = TransabiertaContabilidad.objects.filter(codigocuenta=cta.codigo)
+                    ta_conta = TransabiertaContabilidad.objects.filter(codigocuenta=cta.codigo).select_related('estado_cuenta_idedocuenta')
             else:
                 #No hay filtro por lo que se usan ambas
-                ta_conta = TransabiertaContabilidad.objects.filter(codigocuenta=cta.codigo)
-                ta_corr = TransabiertaCorresponsal.objects.filter(codigocuenta=cta.codigo)
+                ta_conta = TransabiertaContabilidad.objects.filter(codigocuenta=cta.codigo).select_related('estado_cuenta_idedocuenta')
+                ta_corr = TransabiertaCorresponsal.objects.filter(codigocuenta=cta.codigo).select_related('estado_cuenta_idedocuenta')
 
             #Chequear si se selecciono monto
             if filtromonto:
@@ -852,11 +870,15 @@ def pd_partidasAbiertas(request):
                 ta_conta = ta_conta.filter(codigo_transaccion=tipo)
                 ta_corr = ta_corr.filter(codigo_transaccion=tipo)
 
-            res_json_conta = serializers.serialize('json', ta_conta, use_natural_foreign_keys=True)
-            res_json_corr = serializers.serialize('json', ta_corr, use_natural_foreign_keys=True)
+            edcN = [[],[]]
 
+            edcN[0] = [ta.estado_cuenta_idedocuenta.codigo for ta in ta_conta]
+            edcN[1] = [ta.estado_cuenta_idedocuenta.codigo for ta in ta_corr]
 
-            return JsonResponse({'r_conta':res_json_conta, 'r_corr':res_json_corr}, safe=False)
+            res_json_conta = serializers.serialize('json', ta_conta)
+            res_json_corr = serializers.serialize('json', ta_corr) #, use_natural_foreign_keys=True
+
+            return JsonResponse({'r_conta':res_json_conta, 'r_corr':res_json_corr, 'r_edcn':edcN}, safe=False)
 
 
     if request.method == 'GET':

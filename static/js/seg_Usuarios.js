@@ -233,29 +233,23 @@ function desb_usr(sessId){
     return false;
 };
 
-//Desbloquear usuario
-function desb_usr(sessId){
+//Cerrar sesion usuario
+function cerrar_usr(sessId){
     $.ajax({
         type:"POST",
-        url: "/seguridad/usuarios/",
-        data: {"sessid": sessId, "action": 'desb'},
+        url: "/logout/",
+        data: {"sessid": sessId},
         success: function(data){
-            if (data.desb){
-                var sessid = data.sessid;
-                $('#tr-'+sessid+' > td').eq(3).html("Activo");
-
-                swal({   title: "",
-                         text: data.msg,
-                         type: "success",
-                         confirmButtonText: "Ok" });
-                }else{
-                    swal({   title: "Ups!",
-                         text: data.msg,
-                         type: "error",
-                         confirmButtonText: "Ok" });
-                }
-                $('#processing-modal').modal('toggle');
-                $btn.button('reset');    
+            var sessid = data.sessid;
+            $('#tr-'+sessid+' > td').eq(4).html("Logout");
+            $('#processing-modal').modal('toggle');
+            $btn.button('reset');
+        },
+        error: function(jqXHR, error){
+            alert(jqXHR.responseText) //debug
+            $('#processing-modal').modal('toggle');
+            $btn.button('reset');
+            swal("Ups!", "Hubo un error en la clave", "error");
         },
         dataType:'json',
         headers:{
@@ -403,6 +397,18 @@ $('#desbButton').on('click', function () {
         desb_usr(sessid);
     }else{
         swal('Ups!','Por favor seleccione el usuario a desbloquear primero.','error');
+    }
+});
+
+//Cerrar sesion de usuario
+$('#logoutButton').on('click', function () {
+    var sessid = $('#Id_usuario').val();
+    if (sessid>=0){
+        $btn = $(this).button('loading')
+        $('#processing-modal').modal('toggle');
+        cerrar_usr(sessid);
+    }else{
+        swal('Ups!','Por favor seleccione el usuario al que se desea cerrar la sesion primero.','error');
     }
 });
 
