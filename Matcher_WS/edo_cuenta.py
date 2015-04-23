@@ -154,6 +154,6 @@ class Bal:
 
     def __repr__(self):
         if self.final is not None:
-            return "<Trans inicial: %s, final: %s, MoF: %s>" % (self.inicial, self.final, self.MoF)
+            return "<Trans inicial: %s, final: %s, MoFi: %s, MoFf: %s>" % (self.inicial, self.final, self.MoFi, self.MoFf)
         else:
-            return "<Trans inicial: %s, final: %s, MoF: %s>" % (self.inicial, None, self.MoF)
+            return "<Trans inicial: %s, final: %s, MoFi: %s, MoFf: %s>" % (self.inicial, None, self.MoFi, self.MoFf)

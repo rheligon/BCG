@@ -8,7 +8,7 @@ from django.contrib.auth.forms import UserCreationForm
 from django import forms
 from Matcher.models import *
 from django.db import connection
-from django.db.models import Min
+from django.db.models import Sum
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.hashers import *
 from django.contrib.auth import update_session_auth_hash
@@ -26,17 +26,11 @@ import re
 import jsonpickle
 
 def test(request):
-    fecha = timenow()
-    millis = dma_millis(10,12,2010)
 
-    msg = matcher('BMARCH',millis,'1')
+    ser = setConsolidado('BMARCH',request)
 
-    print("MATCHER DEVOLVIO")
-    print(msg.split('*'))
+    return JsonResponse(ser, safe=False)
 
-    context = {}
-    template = "matcher/index.html"
-    return render(request, template, context)
 
 def timenow():
     return datetime.now().replace(microsecond=0)
@@ -104,6 +98,153 @@ def log(request,eid,detalles=None):
         Traza.objects.create(evento_idevento=evento,usuario=nombre, fecha_hora=fechaHora, terminal=terminal, detalles=detalles)
     else:
         Traza.objects.create(evento_idevento=evento,usuario=nombre, fecha_hora=fechaHora, terminal=terminal)
+
+def setConsolidado(codCta,request):
+
+    #Obtengo el nombre del usuario
+    username = request.user.username
+    sesion = Sesion.objects.get(login=username)
+    nombre = sesion.usuario_idusuario.nombres+" "+sesion.usuario_idusuario.apellidos
+
+    try:
+        # Obtengo cuenta a consolidar
+        cuenta = Cuenta.objects.get(codigo=codCta)
+
+        # Busco ultima fecha de conciliacion
+        ultFC = cuenta.ultimafechaconciliacion
+
+        # Busco ultimo edc procesado de contabilidad
+        idEcCont = cuenta.ultimoedocuentaprocc
+
+        # Busco ultimo edc procesado de corresponsal
+        idEcCorr = cuenta.ultimoedocuentaprocs
+
+        if (ultFC != None and idEcCont != None and idEcCorr != None):
+            # Obtengo creditos Trans_Abiertas Contabilidad hasta la fecha indicada
+            totalCredCont = TransabiertaContabilidad.objects.filter(fecha_valor__lte=ultFC,credito_debito__in=['C','RD']).aggregate(Sum('monto'))
+            
+            #Se devuelve un diccionario por lo que accedo al valor del primer (unico) elemento
+            totalCredCont = next(iter(totalCredCont.values()))
+            
+            if totalCredCont is None:
+                totalCredCont = 0
+            
+            print('credcont ' + str(totalCredCont))
+
+            # Obtengo debitos Trans_Abiertas Contabilidad hasta la fecha indicada
+            totalDebCont = TransabiertaContabilidad.objects.filter(fecha_valor__lte=ultFC,credito_debito__in=['D','RC']).aggregate(Sum('monto'))
+            totalDebCont = next(iter(totalDebCont.values()))
+            
+            if totalDebCont is None:
+                totalDebCont = 0
+
+            print('debcont ' + str(totalDebCont))
+
+            # Obtengo creditos Trans_Abiertas Corresponsal hasta la fecha indicada
+            totalCredCorr = TransabiertaCorresponsal.objects.filter(fecha_valor__lte=ultFC,credito_debito__in=['C','RD']).aggregate(Sum('monto'))
+            totalCredCorr = next(iter(totalCredCorr.values()))
+            
+            if totalCredCorr is None:
+                totalCredCorr = 0
+            
+            print('credcorr ' + str(totalCredCorr))
+
+            # Obtengo debitos Trans_Abiertas Contabilidad hasta la fecha indicada
+            totalDebCorr = TransabiertaCorresponsal.objects.filter(fecha_valor__lte=ultFC,credito_debito__in=['D','RC']).aggregate(Sum('monto'))
+            totalDebCorr = next(iter(totalDebCorr.values()))
+
+            if totalDebCorr is None:
+                totalDebCorr = 0
+
+            print('debcorr ' + str(totalDebCorr))
+
+            # Busco el balance final del ultimo edc procesado de Contabilidad
+            try:
+                EdcCont = EstadoCuenta.objects.get(idedocuenta=idEcCont)
+            except:
+                EdcCont = None
+
+            if EdcCont is not None:
+                if EdcCont.c_dfinal == 'D':
+                    balanceCont = -1 * EdcCont.balance_final
+                else:
+                    balanceCont = EdcCont.balance_final
+            else: 
+                balanceCont = 0
+
+            print('balcont ' + str(balanceCont))
+
+            # Busco el balance final del ultimo edc procesado de SWIFT
+            try:
+                EdcCorr = EstadoCuenta.objects.get(idedocuenta=idEcCorr)
+            except:
+                EdcCorr = None
+
+            if EdcCorr is not None:
+                if EdcCorr.c_dfinal == 'D':
+                    balanceCorr = -1 * EdcCorr.balance_final
+                else:
+                    balanceCorr = EdcCorr.balance_final
+            else: 
+                balanceCorr = 0
+
+            print('balcorr ' + str(balanceCorr))
+
+            # Busco encajes asociados a la cuenta
+            encaje = cuenta.montoencajeactual
+
+            if encaje is None:
+                encaje = 0
+
+            print('encaje ' + str(encaje))
+
+            # Saco los totales de los saldos
+
+            if cuenta.tipo_cta == 2:
+                # Saldo real para cuentas propias
+                totalCont = balanceCont
+                totalCorr = totalCredCorr - totalDebCorr
+
+                total = totalCont - totalCorr
+                diferencia = round(total)
+            else:
+                # Se sacan los saldos reales de contabilidad y corresponsal
+                totalCont = -(totalCredCorr - totalDebCorr + encaje) + balanceCont
+                totalCorr = -(totalCredCont - totalDebCont) + balanceCorr
+
+                total = totalCont + totalCorr
+
+                diferencia = round(total,2) #Deberia ser siempre 0
+
+            print('totcont ' + str(totalCont))
+            print('totcorr ' + str(totalCorr))
+            print('diferencia ' + str(diferencia))
+
+            # Selecciono la cuenta de la tabla Consolidado para cambiar los datos de la conciliacion
+            consolidado, creado = Conciliacionconsolidado.objects.get_or_create(cuenta_idcuenta=cuenta, defaults={'totalcreditoscontabilidad':totalCredCont, 'totaldebitoscontabilidad':totalDebCont, 'totalcreditoscorresponsal':totalCredCorr, 'totaldebitoscorresponsal':totalDebCorr, 'saldocontabilidad':totalCont, 'saldocorresponsal':totalCorr, 'diferencia':diferencia, 'balancefinalcontabilidad':balanceCont, 'balancefinalcorresponsal':balanceCorr, 'realizadopor':nombre})
+
+            if not creado:
+                saldoContAnt = consolidado.saldocontabilidad
+
+                consolidado.cuenta_idcuenta = cuenta
+                consolidado.totalcreditoscontabilidad = totalCredCont
+                consolidado.totaldebitoscontabilidad  = totalDebCont
+                consolidado.totalcreditoscorresponsal = totalCredCorr
+                consolidado.totaldebitoscorresponsal = totalDebCorr
+                consolidado.saldocontabilidad = totalCont
+                consolidado.saldocorresponsal = totalCorr
+                consolidado.diferencia = diferencia
+                consolidado.balancefinalcontabilidad = balanceCont
+                consolidado.balancefinalcorresponsal = balanceCorr
+                consolidado.realizadopor = nombre
+
+                consolidado.save()
+
+            # Falta enviar correo si la diferencia != 0 
+        
+    except Exception as e:
+        #Hubo algun error
+        print (e)
 
 
 @login_required(login_url='/login')
@@ -247,31 +388,26 @@ def pd_estadoCuentas(request):
 
             if (cop == 'carg'):
                 try:
-                    cargados = Cargado.objects.all()
-                    edc = [cargado.estado_cuenta_idedocuenta for cargado in cargados if cargado.estado_cuenta_idedocuenta.codigo == edcid]
-                    conocor = edc[0].origen
+                    cargado = Cargado.objects.get(estado_cuenta_idedocuenta=edcid)
+                    edc = cargado.estado_cuenta_idedocuenta
                 except Cargado.DoesNotExist:
                     msg = "No se encontro el estado de cuenta especificado, asegurese de hacer click en el estado de cuenta a eliminar."
-                    return JsonResponse({'msg': msg, 'elim': False, 'conocor': conocor, 'codigo': edcid})
-
-                cargado = Cargado.objects.get(estado_cuenta_idedocuenta=edc[0].idedocuenta)
+                    return JsonResponse({'msg': msg, 'elim': False, 'conocor': cop, 'codigo': edcid})
                 
-                cargado.delete()
-                edc[0].delete()
+                conocor = edc.origen
+                edc.delete()
                 return JsonResponse({'msg': msg, 'elim': True, 'conocor': conocor, 'codigo': edcid})
+            
             elif (cop == 'proc'):
                 try:
-                    procesados = Procesado.objects.all()
-                    edc = [procesado.estado_cuenta_idedocuenta for procesado in procesados if procesado.estado_cuenta_idedocuenta.codigo == edcid]
-                    conocor = edc[0].origen
+                    procesado = Procesado.objects.get(estado_cuenta_idedocuenta=edcid)
+                    edc = procesado.estado_cuenta_idedocuenta
                 except Procesado.DoesNotExist:
                     msg = "No se encontro el estado de cuenta especificado, asegurese de hacer click en el estado de cuenta a eliminar."
                     return JsonResponse({'msg': msg, 'elim': False, 'conocor': conocor, 'codigo': edcid})
-                
-                procesado = Procesado.objects.get(estado_cuenta_idedocuenta=edc[0].idedocuenta)
-                
-                procesado.delete()
-                edc[0].delete()
+
+                conocor = edc.origen
+                edc.delete()
                 return JsonResponse({'msg': msg, 'elim': True, 'conocor': conocor, 'codigo': edcid})
             
             msg = "No se encontro el estado de cuenta especificado, asegurese de hacer click en el estado de cuenta a eliminar." 
@@ -598,6 +734,9 @@ def pd_cargaAutomatica(request):
                     # Se crea la instancia de Estado de Cuenta en la base de datos
                     edocta = EstadoCuenta.objects.create(cuenta_idcuenta=cta,codigo=edc.cod28c,origen='L',pagina=numpags,balance_inicial=edc.pagsBal[0].inicial["monto"].replace(',','.'), balance_final=edc.pagsBal[numpags-1].final["monto"].replace(',','.'), m_finicial=edc.pagsBal[0].MoFi, m_ffinal=edc.pagsBal[numpags-1].MoFf,fecha_inicial=fechaI ,fecha_final=fechaF,  c_dinicial=edc.pagsBal[0].inicial["DoC"], c_dfinal=edc.pagsBal[numpags-1].final["DoC"])
                     
+                    # Se crea la instancia en la tabla Cargado
+                    Cargado.objects.create(estado_cuenta_idedocuenta=edocta)
+
                     for i,transL in enumerate(edc.pagsTrans):
                         k = 1
                         for tran in transL:
@@ -635,8 +774,12 @@ def pd_cargaAutomatica(request):
                     fechaF = datetime(int("20"+fecha[0]), int(fecha[1]), int(fecha[2]))
 
                     # Se crea la instancia de Estado de Cuenta en la base de datos
-                    edocta = EstadoCuenta.objects.create(cuenta_idcuenta=cta,codigo=edc.cod28c,origen='L',pagina=numpags,balance_inicial=edc.pagsBal[0].inicial["monto"].replace(',','.'), balance_final=edc.pagsBal[numpags-1].final["monto"].replace(',','.'), m_finicial=edc.pagsBal[0].MoFi, m_ffinal=edc.pagsBal[numpags-1].MoFf,fecha_inicial=fechaI ,fecha_final=fechaF,  c_dinicial=edc.pagsBal[0].inicial["DoC"], c_dfinal=edc.pagsBal[numpags-1].final["DoC"])
+                    edocta = EstadoCuenta.objects.create(cuenta_idcuenta=cta,codigo=edc.cod28c,origen='S',pagina=numpags,balance_inicial=edc.pagsBal[0].inicial["monto"].replace(',','.'), balance_final=edc.pagsBal[numpags-1].final["monto"].replace(',','.'), m_finicial=edc.pagsBal[0].MoFi, m_ffinal=edc.pagsBal[numpags-1].MoFf,fecha_inicial=fechaI ,fecha_final=fechaF,  c_dinicial=edc.pagsBal[0].inicial["DoC"], c_dfinal=edc.pagsBal[numpags-1].final["DoC"])
                     
+                    # Se crea la instancia en la tabla Cargado
+                    Cargado.objects.create(estado_cuenta_idedocuenta=edocta)
+
+
                     for i,transL in enumerate(edc.pagsTrans):
                         k = 1
                         for tran in transL:
@@ -745,8 +888,10 @@ def pd_matchesPropuestos(request, cuenta):
         print(len(my_dict))
         print(my_dict)
 
-       #for key,value in my_dict.items():
-       #    hacer algo (key es el numero de iteracion, value es Matchpropuestos ID)
+        for key,value in my_dict.items():
+            #hacer algo (key es el numero de iteracion, value es Matchpropuestos ID)
+            mp = Matchpropuestos.objects.get(pk=value)
+                
 
         template = "matcher/pd_matchesPropuestos.html"
         msg = 'Matches Confirmados Exitosamente!'
@@ -776,7 +921,65 @@ def pd_partidasAbiertas(request):
 
         if actn == 'match':
             matchArray = request.POST.getlist('matchArray[]')
-            print(matchArray)
+            justificacion = request.POST.get('justificacion')
+
+            codigoMatch = ''
+            codigoCuenta = None
+            primeraVuelta = True
+
+            for match in matchArray:
+                m_split = match.split('-')
+                tipo = m_split[1]  # conta o corr
+                Mid = m_split[2]
+
+                if tipo == 'conta':
+                    ta = TransabiertaContabilidad.objects.get(pk=Mid)
+                    tc = TranscerradaContabilidad.objects.create(codigo_transaccion=ta.codigo_transaccion, fecha=ta.fecha_valor,monto=ta.monto,credito_debito=ta.credito_debito,codigocuenta=ta.codigocuenta,numtransaccion=ta.numtransaccion)
+
+                    tc.estado_cuenta_idedocuenta = ta.estado_cuenta_idedocuenta
+                    tc.pagina = ta.pagina
+                    tc.descripcion = ta.descripcion
+                    tc.referencianostro = ta.referencianostro
+                    tc.referenciacorresponsal = ta.referenciacorresponsal
+                    tc.campo86_940 = ta.campo86_940
+                    tc.seguimiento = ta.seguimiento
+                
+                if tipo == 'corr':
+                    ta = TransabiertaCorresponsal.objects.get(pk=Mid)
+                    tc = TranscerradaCorresponsal.objects.create(codigo_transaccion=ta.codigo_transaccion, fecha=ta.fecha_valor,monto=ta.monto,credito_debito=ta.credito_debito,codigocuenta=ta.codigocuenta,numtransaccion=ta.numtransaccion)
+
+                    tc.estado_cuenta_idedocuenta = ta.estado_cuenta_idedocuenta
+                    tc.pagina = ta.pagina
+                    tc.descripcion = ta.descripcion
+                    tc.referencianostro = ta.referencianostro
+                    tc.referenciacorresponsal = ta.referenciacorresponsal
+                    tc.campo86_940 = ta.campo86_940
+                    tc.seguimiento = ta.seguimiento
+
+
+
+                #Se calcula el codigomatch si es la primera vuelta
+                if primeraVuelta:
+                        edc = ta.estado_cuenta_idedocuenta
+                        codigoMatch = edc.codigo + str(ta.pagina) + str(ta.numtransaccion) + str(ta.fecha_valor)[:2]
+                        codigoCuenta = ta.codigocuenta
+                        primeraVuelta = False
+
+                #Se guardan los valores
+                tc.save()
+                #Se borra de transabierta
+                ta.delete()
+
+                # Se crea la instancia Matchconfirmado
+                mc = Matchconfirmado.objects.create(fecha=ta.fecha_valor, auto_manual=1, justificacion=justificacion, codigomatch=codigoMatch)
+                if tipo == 'conta':
+                    mc.tc_conta = tc
+                if tipo == 'corr':
+                    mc.tc_corres = tc
+                mc.save()
+
+            # Se llama la funcion de poner consolidado
+            setConsolidado(codigoCuenta,request)
 
             return JsonResponse({'msg':'EXITO'})
 

@@ -76,8 +76,10 @@ $('.table').on('click','a[type=edc]', function(event) {
 
     //asignacion de elemento a eliminar
     var a_modo = $(this).attr("modo");
-    var a_cod = $(this).attr("id");
+    var e_id = $(this).attr("id").split('-')[1];
+    var a_cod = $(this).attr("cod");
     $("#elim-data").attr("modo", a_modo);
+    $("#elim-data").attr("eid", e_id);
     $("#elim-data").attr("cod", a_cod);
 });
 
@@ -158,9 +160,9 @@ function est_cuenta(cuentaId){
 
                     var date_ini = new Date(json_data[carg][i].fields.fecha_inicial)
                     var date_fin = new Date(json_data[carg][i].fields.fecha_final)
-                    var cod = json_data[carg][i].fields.codigo
+                    var cod = json_data[carg][i].pk
 
-                    var td1 = '<td>'+ '<a id="'+ cod +'" type="edc" modo="carg">' + bankcod + '</a></td>';
+                    var td1 = '<td>'+ '<a id="c-'+ cod +'" type="edc" cod="'+json_data[carg][i].fields.codigo+'" modo="carg">' + bankcod + '</a></td>';
                     var td2 = '<td> cargado </td>';
                     var td3 = '<td>' + json_data[carg][i].fields.codigo + '</td>';
                     var td4 = '<td>' + json_data[carg][i].fields.pagina + '</td>';
@@ -199,8 +201,6 @@ function est_cuenta(cuentaId){
                         }
                     }
                 }
-                t_conta.draw();
-                t_corr.draw();
             }
 
             if (json_data[proc].length>=1){
@@ -212,9 +212,9 @@ function est_cuenta(cuentaId){
 
                     var date_ini = new Date(json_data[proc][i].fields.fecha_inicial)
                     var date_fin = new Date(json_data[proc][i].fields.fecha_final)
-                    var cod = json_data[proc][i].fields.codigo
+                    var cod = json_data[proc][i].pk
 
-                    var td1 = '<td>'+ '<a id="'+ cod +'" type="edc" modo="proc">' + bankcod + '</a></td>';
+                    var td1 = '<td>'+ '<a id="p-'+ cod +'" type="edc" cod="'+json_data[proc][i].fields.codigo+'" modo="proc">' + bankcod + '</a></td>';
                     var td2 = '<td> procesado </td>';
                     var td3 = '<td>' + json_data[proc][i].fields.codigo + '</td>';
                     var td4 = '<td>' + json_data[proc][i].fields.pagina + '</td>';
@@ -229,15 +229,13 @@ function est_cuenta(cuentaId){
                         t_conta.row.add(jRow);
                         
                         if (!ult_conp_existe){
-                            ult_edc_corp = i;
+                            ult_edc_conp = i;
                             ult_conp_existe = true;
                         }
                         
                         if (json_data[proc][ult_edc_conp].fields.codigo < json_data[proc][i].fields.codigo){
                             ult_edc_conp = i;
                         }
-
-                        
 
                     }else{
                         $('#table-corr > tbody').append('<tr id ="tr-cor-'+cod+'"></tr>');
@@ -248,79 +246,88 @@ function est_cuenta(cuentaId){
                             ult_edc_corp = i;
                             ult_corp_existe = true;
                         }
+
                         if (json_data[proc][ult_edc_corp].fields.codigo < json_data[proc][i].fields.codigo){
                             ult_edc_corp = i;
                         }
                     }
                 }
-                t_conta.draw();
-                t_corr.draw();
             }
 
-            if (ult_conc_existe || ult_conp_existe){
-                var fecha_conc = new Date(json_data[proc][ult_edc_conc].fields.fecha_final)
-                var fecha_conp = new Date(json_data[proc][ult_edc_conp].fields.fecha_final)
 
-                $('#edc-ccon').val(json_data[proc][ult_edc_conc].fields.codigo);
+            if (ult_conc_existe){
+                var fecha_conc = new Date(json_data[carg][ult_edc_conc].fields.fecha_final)
+                $('#edc-ccon').val(json_data[carg][ult_edc_conc].fields.codigo);
                 $('#f-ccon').val(fecha_conc.toLocaleDateString());
-                $('#sf-ccon-cd').html(json_data[proc][ult_edc_conc].fields.c_dfinal);
-                $('#sf-ccon').val(commas(json_data[proc][ult_edc_conc].fields.balance_final));
-
-                $('#edc-pcon').val(json_data[proc][ult_edc_conp].fields.codigo);
-                $('#f-pcon').val(fecha_conp.toLocaleDateString());
-                $('#sf-pcon-cd').html(json_data[proc][ult_edc_conp].fields.c_dfinal);
-                $('#sf-pcon').val(commas(json_data[proc][ult_edc_conp].fields.balance_final));
-                
-                if (!ult_conc_existe){
-                    $('#edc-ccon').val(json_data[proc][ult_edc_conp].fields.codigo);
-                    $('#f-ccon').val(fecha_conp.toLocaleDateString());
-                    $('#sf-ccon-cd').html(json_data[proc][ult_edc_conp].fields.c_dfinal);
-                    $('#sf-ccon').val(commas(json_data[proc][ult_edc_conp].fields.balance_final)); 
-                }
-
+                $('#sf-ccon-cd').html(json_data[carg][ult_edc_conc].fields.c_dfinal);
+                $('#sf-ccon').val(commas(json_data[carg][ult_edc_conc].fields.balance_final));
             }else{
                 $('#edc-ccon').val("");
                 $('#f-ccon').val("");
                 $('#sf-ccon-cd').html("");
                 $('#sf-ccon').val("");
+            }
 
+            if (ult_conp_existe){
+                var fecha_conp = new Date(json_data[proc][ult_edc_conp].fields.fecha_final)
+                $('#edc-pcon').val(json_data[proc][ult_edc_conp].fields.codigo);
+                $('#f-pcon').val(fecha_conp.toLocaleDateString());
+                $('#sf-pcon-cd').html(json_data[proc][ult_edc_conp].fields.c_dfinal);
+                $('#sf-pcon').val(commas(json_data[proc][ult_edc_conp].fields.balance_final));
+            
+                if (!ult_conc_existe){
+                    $('#edc-ccon').val(json_data[proc][ult_edc_conp].fields.codigo);
+                    $('#f-ccon').val(fecha_conp.toLocaleDateString());
+                    $('#sf-ccon-cd').html(json_data[proc][ult_edc_conp].fields.c_dfinal);
+                    $('#sf-ccon').val(commas(json_data[proc][ult_edc_conp].fields.balance_final));
+                }
+
+
+            }else{
                 $('#edc-pcon').val("");
                 $('#f-pcon').val("");
                 $('#sf-pcon-cd').html("");
                 $('#sf-pcon').val("");
             }
-            if (ult_corc_existe || ult_corp_existe){
-                var fecha_corc = new Date(json_data[proc][ult_edc_corc].fields.fecha_final)
-                var fecha_corp = new Date(json_data[proc][ult_edc_corp].fields.fecha_final)
 
-                $('#edc-ccor').val(json_data[proc][ult_edc_corc].fields.codigo);
+            if (ult_corc_existe){
+                var fecha_corc = new Date(json_data[carg][ult_edc_corc].fields.fecha_final)
+                $('#edc-ccor').val(json_data[carg][ult_edc_corc].fields.codigo);
                 $('#f-ccor').val(fecha_corc.toLocaleDateString());
-                $('#sf-ccor-cd').html(json_data[proc][ult_edc_corc].fields.c_dfinal);
-                $('#sf-ccor').val(commas(json_data[proc][ult_edc_corc].fields.balance_final));
-
-                $('#edc-pcor').val(json_data[proc][ult_edc_corp].fields.codigo);
-                $('#f-pcor').val(fecha_corp.toLocaleDateString());
-                $('#sf-pcor-cd').html(json_data[proc][ult_edc_corp].fields.c_dfinal);
-                $('#sf-pcor').val(commas(json_data[proc][ult_edc_corp].fields.balance_final));
-
-                if (!ult_corc_existe){
-                    $('#edc-ccor').val(json_data[proc][ult_edc_corp].fields.codigo);
-                    $('#f-ccor').val(fecha_corp.toLocaleDateString());
-                    $('#sf-ccor-cd').html(json_data[proc][ult_edc_corp].fields.c_dfinal);
-                    $('#sf-ccor').val(commas(json_data[proc][ult_edc_corp].fields.balance_final));
-
-                }
+                $('#sf-ccor-cd').html(json_data[carg][ult_edc_corc].fields.c_dfinal);
+                $('#sf-ccor').val(commas(json_data[carg][ult_edc_corc].fields.balance_final));
             }else{
                 $('#edc-ccor').val("");
                 $('#f-ccor').val("");
                 $('#sf-ccor-cd').html("");
                 $('#sf-ccor').val("");
+            }
 
+            if (ult_corp_existe){
+                var fecha_corp = new Date(json_data[proc][ult_edc_corp].fields.fecha_final)
+                $('#edc-pcor').val(json_data[proc][ult_edc_corp].fields.codigo);
+                $('#f-pcor').val(fecha_corp.toLocaleDateString());
+                $('#sf-pcor-cd').html(json_data[proc][ult_edc_corp].fields.c_dfinal);
+                $('#sf-pcor').val(commas(json_data[proc][ult_edc_corp].fields.balance_final));
+            
+                if (!ult_corc_existe){
+                    $('#edc-ccor').val(json_data[proc][ult_edc_corp].fields.codigo);
+                    $('#f-ccor').val(fecha_corp.toLocaleDateString());
+                    $('#sf-ccor-cd').html(json_data[proc][ult_edc_corp].fields.c_dfinal);
+                    $('#sf-ccor').val(commas(json_data[proc][ult_edc_corp].fields.balance_final));
+                }
+
+            }else{
                 $('#edc-pcor').val("");
                 $('#f-pcor').val("");
                 $('#sf-pcor-cd').html("");
                 $('#sf-pcor').val("");
             }
+
+
+            t_conta.draw();
+            t_corr.draw();
+
         },
         error: function(error){
             $('#processing-modal').modal('toggle');
@@ -336,6 +343,7 @@ function est_cuenta(cuentaId){
 
 //Eliminar Estado de Cuenta
 $('#delButton').on('click', function () {
+    event.preventDefault();
     var $btn;
    
     function del_edc(edcId, cop){
@@ -349,9 +357,10 @@ $('#delButton').on('click', function () {
                          type: "success",
                          confirmButtonText: "Ok" });
                 $('#processing-modal').modal('toggle');
+
                 $btn.button('reset');
                 var origen, tabla;
-
+                
                 if (data.conocor === "L"){
                     origen = "con"
                     tabla = t_conta
@@ -364,8 +373,6 @@ $('#delButton').on('click', function () {
                     tabla.row($('#tr-'+ origen+'-'+data.codigo)).remove().draw();
                     $('#elim-data').attr("cod","-1");
                 }
-
-                
             },
             dataType:'json',
             headers:{
@@ -375,7 +382,8 @@ $('#delButton').on('click', function () {
         return false;
     }
 
-    var codEdc = $('#elim-data').attr('cod')
+    var codEdc = $('#elim-data').attr('cod');
+    var idEdc = $('#elim-data').attr('eid');
 
     if (codEdc!="-1"){
         swal({   title: "",
@@ -386,7 +394,7 @@ $('#delButton').on('click', function () {
          function(){
             $btn = $(this).button('loading')
             $('#processing-modal').modal('toggle');
-            del_edc(codEdc,$('#elim-data').attr('modo'));
+            del_edc(idEdc,$('#elim-data').attr('modo'));
          });
     }else{
         swal("Ups!","Por favor seleccionar un estado de cuenta a eliminar previamente.","error");

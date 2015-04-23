@@ -260,6 +260,31 @@ table {
   </div>
 </div>
 
+<div class="modal fade" id="justificacion-modal" role="dialog">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <form style="margin-left:8%;" method="POST" >
+
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          <h4 class="modal-title">Agregar una Justificacion</h4>
+        </div>
+        <div class="modal-body row">
+          <div class="field">
+              <label>Justificacion: </label>
+              <div class="ui left labeled input col-md-10">
+                  <input type="text" id="justificacion" class="form-control">
+              </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+          <button id="just-submit" type="button" class="btn btn-primary">Aceptar</button>
+        </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
 <!-- Static Modal para procesando -->
 <div class="modal modal-static fade" id="processing-modal" role="dialog" aria-hidden="true">
     <div class="modal-dialog">

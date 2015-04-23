@@ -5,8 +5,6 @@ var faltacorr = false;
 var matchArray = [];
 var filterArray = [[],[],[],[],[],[]];
 var edcArray = [[],[]];
-var r_conta = undefined;
-var r_corr = undefined;
 
 function dateFormat(fecha){
     var date = new Date(Date.parse(fecha));
@@ -171,6 +169,8 @@ $('#srchButton').on('click', function () {
       faltacorr = false;
       matchArray =[];
       filterArray = [[],[],[],[],[],[]];
+      edcArray = [[],[]];
+      $('#checkAllButton').attr('selec',0);
 
       //Checkear los filtros
       $('.cbfilter:checked').each(function(){
@@ -288,8 +288,8 @@ $('#matchButton').on('click', function () {
         swal("","Debe elegir una pareja primero","error");
     }else{
         
-        var montocredito = 0;
-        var montodebito = 0;
+        var montocredito = 0.0;
+        var montodebito = 0.0;
         var rows = tabla.fnGetNodes();
 
         for (var i=0,len=rows.length;i<len;i++){
@@ -308,15 +308,53 @@ $('#matchButton').on('click', function () {
             }
         }
 
-        console.log(montodebito);
-        console.log(montocredito);
+        //Verificar si los montos estan bien y llamar match, sino mostrar error
+        var diferencia = montocredito-montodebito;
+        diferencia = 0;
 
-        //verificar si los montos estan bien, sino mostrar error
-        hacer_match(matchArray);
-        $('#processing-modal').modal('toggle');
+        if (Math.round(diferencia) != 0.0){
+            if (idioma_tr === 'es'){
+                var title = 'Montos Incorrectos:';
+
+                var msg = 'Créditos:\nTotal Créditos: '+ $.formatNumber(montocredito,{locale:idioma_tr});
+                msg += '\n\nDébitos:\nTotal Débitos: '+$.formatNumber((-montodebito),{locale:idioma_tr});
+                msg += '\n\nDiferencia: '+$.formatNumber(diferencia,{locale:idioma_tr});
+            }else if (idioma_tr === 'en'){
+                var title = 'Incorrect ammounts:';
+
+                var msg = 'Credits:\nCredits Total: '+ $.formatNumber(montocredito,{locale:idioma_tr});
+                msg += '\n\nDebits:\nDebits Total: '+$.formatNumber((-montodebito),{locale:idioma_tr});
+                msg += '\n\nDifference: '+$.formatNumber(diferencia,{locale:idioma_tr});
+            }
+
+            swal({  title: title,
+                    text: msg,
+                    type: "error",
+                    confirmButtonText: "Ok" });
+        }else{
+            //Pedir justificacion
+            $('#justificacion-modal').modal('toggle');
+        }
     }
 
 
+});
+
+//Cuando se llena la justificacion, se llama a hacer match
+$('#just-submit').on('click', function(){
+    event.preventDefault();
+
+    var justificacion = $('#justificacion').val();
+
+    $('#justificacion-modal').modal('toggle');
+    $('#processing-modal').modal('toggle');
+    
+    hacer_match(matchArray, justificacion);
+});
+
+//Resetear campos del formulario cuando se esconde (la justificacion)
+$('.modal:not(.modal-static)').on('hidden.bs.modal', function(){
+    $(this).find('form')[0].reset();
 });
 
 //Mostrar o esconder filtros elegidos
@@ -375,14 +413,18 @@ function busqueda(ctaid,filterArray){
 };
 
 //Hacer match de acuerdo a la seleccion
-function hacer_match(matchArray){
+function hacer_match(matchArray,justificacion){
     $.ajax({
         type:"POST",
         url: "/procd/pAbiertas/",
-        data: {'matchArray':matchArray ,'action':'match'},
+        data: {'matchArray':matchArray,'justificacion':justificacion, 'action':'match'},
         success: function(data){
-            console.log(data.msg)
             $('#processing-modal').modal('toggle');
+            swal({  title: title,
+                    text: data.msg,
+                    type: "success",
+                    confirmButtonText: "Ok" });
+            tabla.fnClearTable();
         },
         error: function(q,error){
             alert(q.responseText) //debug

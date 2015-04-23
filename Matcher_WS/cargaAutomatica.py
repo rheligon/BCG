@@ -1,14 +1,12 @@
 import re
 from Matcher_WS.edo_cuenta import edoCta, edc_list, Trans, Bal
 from Matcher.models import Cuenta, Formatoarchivo, EstadoCuenta
+from datetime import datetime
 
 def leer_linea_conta(line):
-
     line = line.replace('\n','') # quitar fin de linea
-
     # Expresion regular para linea con formato [x]yyy
     result = re.search('\[([^]]+)\](.*)', line)
-
     if result is not None:
         # Se checkea a ver cual es el codigo
         if (result.group(1)=="M"):
@@ -92,6 +90,8 @@ def leer_linea_conta(line):
 
             if line == "@@":
                 return ("@@", None)
+
+            return (None,None)
 
 def leer_linea_corr(line):
 
@@ -186,7 +186,7 @@ def leer_punto_coma(ncta,origen,f):
             cta = Cuenta.objects.filter(ref_vostro=ncta)[0]
             # Se verifica que el tipo de archivo sea el adecuado
             tipoarch = cta.tipo_carga_corr
-            print(tipoarch)
+            
             if tipoarch != 1:
                 msg = '$La cuenta posee como formato el MT950 pero se esta tratando de leer un archivo ;'
                 cta = None
@@ -360,8 +360,12 @@ def validar_archivo(edc_l,origen):
                 ultedcid = cta.ultimoedocuentacargs
 
             if ultedcid is not None:
-                # Ya se ha cargado un archivo antes
-                ultedc = EstadoCuenta.objects.get(idedocuenta=ultedcid)
+                try:
+                    # Ya se ha cargado un archivo antes
+                    ultedc = EstadoCuenta.objects.get(idedocuenta=ultedcid)
+                except:
+                    # Se elimino el edc al cual se hacia referencia
+                    ultedc = None
             else:
                 # No se ha cargado ningun archivo antes
                 ultedc = None
@@ -383,7 +387,10 @@ def validar_archivo(edc_l,origen):
                     cod.append('3')
 
                 # Validacion archivo ya cargado
-                if ultedc.codigo == edc.cod28c:
+                fecha = re.findall('..?', edc.pagsBal[0].final['fecha'])
+                fecha_verif = datetime(int("20"+fecha[0]), int(fecha[1]), int(fecha[2]))
+                
+                if ultedc.codigo == edc.cod28c and ultedc.fecha_final == fecha_verif:
                     msg = msg + "$El archivo ya se encuentra cargado."
                     cod.append('5')
 
