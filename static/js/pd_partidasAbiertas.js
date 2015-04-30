@@ -420,7 +420,7 @@ function hacer_match(matchArray,justificacion){
         data: {'matchArray':matchArray,'justificacion':justificacion, 'action':'match'},
         success: function(data){
             $('#processing-modal').modal('toggle');
-            swal({  title: title,
+            swal({  title: '',
                     text: data.msg,
                     type: "success",
                     confirmButtonText: "Ok" });

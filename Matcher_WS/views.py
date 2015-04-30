@@ -1,4 +1,5 @@
 from django.core import serializers
+from django.core.mail import send_mail
 from django.shortcuts import render, get_object_or_404
 from django.contrib import auth
 from django.http import HttpResponseRedirect, HttpResponse, JsonResponse
@@ -8,7 +9,7 @@ from django.contrib.auth.forms import UserCreationForm
 from django import forms
 from Matcher.models import *
 from django.db import connection
-from django.db.models import Sum
+from django.db.models import Sum, Q
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.hashers import *
 from django.contrib.auth import update_session_auth_hash
@@ -17,6 +18,7 @@ from datetime import datetime, date, time, timedelta
 from Matcher_WS.settings import ARCHIVOS_FOLDER
 from Matcher_WS.backend import MyAuthBackend
 from Matcher_WS.edo_cuenta import edoCta, edc_list, Trans, Bal
+from Matcher_WS.mailConf import enviar_mail
 from Matcher_WS.cargaAutomatica import leer_linea_conta, leer_linea_corr, leer_punto_coma, validar_archivo
 from socket import socket, AF_INET, SOCK_STREAM, error
 from select import select
@@ -24,12 +26,15 @@ import time
 import os
 import re
 import jsonpickle
+import sys
+import traceback
+import shutil
 
 def test(request):
 
-    ser = setConsolidado('BMARCH',request)
+    enviar_mail('Prueba Mail','msg','rheligon@gmail.com')
 
-    return JsonResponse(ser, safe=False)
+    return JsonResponse('exito', safe=False)
 
 
 def timenow():
@@ -245,7 +250,6 @@ def setConsolidado(codCta,request):
     except Exception as e:
         #Hubo algun error
         print (e)
-
 
 @login_required(login_url='/login')
 def index(request):
@@ -713,6 +717,7 @@ def pd_cargaAutomatica(request):
         if actn == 'cargconta':
             msg = "Archivo cargado con exito"
             edcl_json = request.POST.get('edcl')
+            filename = request.POST.get('filename')
             edcl = jsonpickle.decode(edcl_json)
 
             for edc in edcl:
@@ -750,10 +755,17 @@ def pd_cargaAutomatica(request):
                     cta.ultimoedocuentacargc = edocta.idedocuenta
                     cta.save()
 
+
+            #Mover archivo a procesado
+            pathsrc = Configuracion.objects.all()[0].archcontabilidadcarg+'\\'+filename
+            pathdest = Configuracion.objects.all()[0].archcontabilidadproc+'\\'+filename
+            shutil.move(pathsrc,pathdest)
+
             return JsonResponse({'exito':True, 'msg':msg})
 
         if actn == 'cargcorr':
             msg = "Archivo cargado con exito"
+            filename = request.POST.get('filename')
             edcl_json = request.POST.get('edcl')
             edcl = jsonpickle.decode(edcl_json)
 
@@ -793,6 +805,11 @@ def pd_cargaAutomatica(request):
                     cta.ultimoedocuentacargs = edocta.idedocuenta
                     cta.save()
                             
+            # Mover el archivo a procesado
+            pathsrc = Configuracion.objects.all()[0].archswiftcarg+'\\'+filename
+            pathdest = Configuracion.objects.all()[0].archswiftproc+'\\'+filename
+            shutil.move(pathsrc,pathdest)
+
             return JsonResponse({'exito':True, 'msg':msg})
 
     if request.method == 'GET':
@@ -891,6 +908,7 @@ def pd_matchesPropuestos(request, cuenta):
         for key,value in my_dict.items():
             #hacer algo (key es el numero de iteracion, value es Matchpropuestos ID)
             mp = Matchpropuestos.objects.get(pk=value)
+            print(mp)
                 
 
         template = "matcher/pd_matchesPropuestos.html"
@@ -930,7 +948,7 @@ def pd_partidasAbiertas(request):
             for match in matchArray:
                 m_split = match.split('-')
                 tipo = m_split[1]  # conta o corr
-                Mid = m_split[2]
+                Mid = m_split[2] # Match id
 
                 if tipo == 'conta':
                     ta = TransabiertaContabilidad.objects.get(pk=Mid)
@@ -960,15 +978,13 @@ def pd_partidasAbiertas(request):
 
                 #Se calcula el codigomatch si es la primera vuelta
                 if primeraVuelta:
-                        edc = ta.estado_cuenta_idedocuenta
-                        codigoMatch = edc.codigo + str(ta.pagina) + str(ta.numtransaccion) + str(ta.fecha_valor)[:2]
-                        codigoCuenta = ta.codigocuenta
-                        primeraVuelta = False
+                    edc = ta.estado_cuenta_idedocuenta
+                    codigoMatch = edc.codigo + str(ta.pagina) + str(ta.numtransaccion) + str(ta.fecha_valor)[:2]
+                    codigoCuenta = ta.codigocuenta
+                    primeraVuelta = False
 
-                #Se guardan los valores
+                #Se guardan los valores en trans cerrada
                 tc.save()
-                #Se borra de transabierta
-                ta.delete()
 
                 # Se crea la instancia Matchconfirmado
                 mc = Matchconfirmado.objects.create(fecha=ta.fecha_valor, auto_manual=1, justificacion=justificacion, codigomatch=codigoMatch)
@@ -977,6 +993,10 @@ def pd_partidasAbiertas(request):
                 if tipo == 'corr':
                     mc.tc_corres = tc
                 mc.save()
+
+
+                #Se borra de trans abierta
+                ta.delete()
 
             # Se llama la funcion de poner consolidado
             setConsolidado(codigoCuenta,request)
@@ -1092,32 +1112,37 @@ def pd_partidasAbiertas(request):
         return render(request, template, context)
 
 @login_required(login_url='/login')
-def pd_matchesConfirmados(request):
+def pd_matchesConfirmados(request,cuenta):
 
     if request.method == 'POST':
         actn = request.POST.get('action')
+
         if actn == 'buscar':
             #Obtener filtros
-            filtromonto = request.POST.getlist('filterArray[0][]')
-            filtromatch = request.POST.getlist('filterArray[1][]')
-            filtroref = request.POST.getlist('filterArray[2][]')
-            filtrofecham = request.POST.getlist('filterArray[3][]')
-            filtrofecha = request.POST.getlist('filterArray[4][]')
+            jsonArray = request.POST.get('filterArray')
+            filterArray = jsonpickle.decode(jsonArray)
+
+            filtromonto = filterArray[0]
+            filtromatch = filterArray[1] # No lo he usado
+            filtroref = filterArray[2]
+            filtrofecham = filterArray[3] # No lo he usado
+            filtrofecha = filterArray[4]
 
             #Obtener id de la cuenta
             ctaid = request.POST.get('ctaid')
-            cta = Cuenta.objects.get(idcuenta=ctaid)
+            cta = Cuenta.objects.get(codigo=ctaid)
 
-            print(request.POST)
 
-            '''
+            #No hay filtro por lo que se usan ambas
+            mConf = Matchconfirmado.objects.filter(Q(tc_conta__codigocuenta=cuenta)|Q(tc_corres__codigocuenta=cuenta)).select_related('tc_corres','tc_conta')
+
             #Chequear si se selecciono monto
             if filtromonto:
                 montod = filtromonto[0]
                 montoh = filtromonto[1]
 
-                ta_conta = ta_conta.filter(monto__gte=montod,monto__lte=montoh)
-                ta_corr = ta_corr.filter(monto__gte=montod,monto__lte=montoh)
+                mConf = mConf.filter(tc_conta__monto__gte=montod,tc_conta__monto__lte=montoh)
+                mConf = mConf.filter(tc_corres__monto__gte=montod,tc_corres__monto__lte=montoh)
 
             #Chequear si se selecciono referencia
             if filtroref:
@@ -1125,16 +1150,37 @@ def pd_matchesConfirmados(request):
                 reftxt = filtroref[1]
 
                 if reftipo == 'N':
-                    ta_conta = ta_conta.filter(referencianostro=reftxt)
-                    ta_corr = ta_corr.filter(referencianostro=reftxt)
+                    mConf = mConf.filter(tc_conta__referencianostro=reftxt)
+                    mConf = mConf.filter(tc_corres__referencianostro=reftxt)
 
                 if reftipo == 'V':
-                    ta_conta = ta_conta.filter(referenciacorresponsal=reftxt)
-                    ta_corr = ta_corr.filter(referenciacorresponsal=reftxt)
+                    mConf = mConf.filter(tc_conta__referenciacorresponsal=reftxt)
+                    mConf = mConf.filter(tc_corres__referenciacorresponsal=reftxt)
 
                 if reftipo == 'D':
-                    ta_conta = ta_conta.filter(descripcion=reftxt)
-                    ta_corr = ta_corr.filter(descripcion=reftxt)                 
+                    mConf = mConf.filter(tc_conta__descripcion=reftxt)
+                    mConf = mConf.filter(tc_corres__descripcion=reftxt)
+
+            '''
+            #Chequear si se selecciono fechas de match desde y hasta
+            if filtrofecham:
+                fechad = None
+                fechah = None
+
+                if filtrofecham[0] != '':
+                    fechad = datetime.strptime(filtrofecha[0], '%d/%m/%Y')
+
+                if filtrofecham[1] != '':
+                    fechah = datetime.strptime(filtrofecha[1], '%d/%m/%Y')
+
+                if fechad is not None and fechah is not None:
+                    mConf = mConf.filter(fecha__gte=fechad,fecha__lte=fechah)
+                elif fechad is not None:
+                    mConf = mConf.filter(fecha__gte=fechad)
+                elif fechah is not None:
+                    mConf = mConf.filter(fecha__lte=fechah)
+
+            '''
 
             #Chequear si se selecciono fechas desde y hasta
             if filtrofecha:
@@ -1148,27 +1194,36 @@ def pd_matchesConfirmados(request):
                     fechah = datetime.strptime(filtrofecha[1], '%d/%m/%Y')
 
                 if fechad is not None and fechah is not None:
-                    ta_conta = ta_conta.filter(fecha_valor__gte=fechad,fecha_valor__lte=fechah)
-                    ta_corr = ta_corr.filter(fecha_valor__gte=fechad,fecha_valor__lte=fechah)
+                    mConf = mConf.filter(fecha__gte=fechad,fecha__lte=fechah)
                 elif fechad is not None:
-                    ta_conta = ta_conta.filter(fecha_valor__gte=fechad)
-                    ta_corr = ta_corr.filter(fecha_valor__gte=fechad)
+                    mConf = mConf.filter(fecha__gte=fechad)
                 elif fechah is not None:
-                    ta_conta = ta_conta.filter(fecha_valor__lte=fechah)
-                    ta_corr = ta_corr.filter(fecha_valor__lte=fechah)
+                    mConf = mConf.filter(fecha__lte=fechah)
+            
 
-            res_json_conta = serializers.serialize('json', ta_conta, use_natural_foreign_keys=True)
-            res_json_corr = serializers.serialize('json', ta_corr, use_natural_foreign_keys=True)
+            cuentas = Cuenta.objects.all().order_by('codigo')
+            context = {'cuentas':cuentas, 'matches':mConf, 'cta':cuenta, 'fArray':filterArray, 'msg':None}
+            template = "matcher/pd_matchesConfirmados.html"
+            return render(request, template, context)
 
-
-            return JsonResponse({'r_conta':res_json_conta, 'r_corr':res_json_corr}, safe=False)
-            '''
+        if actn == 'romper':
+            matchArray = request.POST.getlist('matchArray[]')
+            print(matchArray)
+            print(cuenta)
+            msg = 'EXITO'
+            return JsonResponse({'msg': msg, 'elim': True})
 
     if request.method == 'GET':
 
+        if cuenta is not None:
+            matches = Matchconfirmado.objects.filter(Q(tc_conta__codigocuenta=cuenta)|Q(tc_corres__codigocuenta=cuenta)).order_by('codigomatch')
+        else:
+            matches = None
+
         template = "matcher/pd_matchesConfirmados.html"
+
         cuentas = Cuenta.objects.all().order_by('codigo')
-        context = {'cuentas':cuentas}
+        context = {'cuentas':cuentas, 'matches':matches, 'cta':cuenta, 'fArray':[[],[],[],[],[]], 'msg':None}
         return render(request, template, context)
 
 @login_required(login_url='/login')
@@ -2004,7 +2059,8 @@ def admin_cuentas(request):
             tcargcont = request.POST.get('tcargcont')
             tcargcorr = request.POST.get('tcargcorr')
             tproc = request.POST.get('tproc')
-
+            alertas = request.POST.getlist('alertas[]')
+            
             try:
                 criterio = CriteriosMatch.objects.get(pk=criterioid)
             except CriteriosMatch.DoesNotExist:
@@ -2024,6 +2080,18 @@ def admin_cuentas(request):
                 return JsonResponse({'msg': msg, 'add': False})
 
             cuenta =  Cuenta.objects.create(criterios_match_idcriterio = criterio, banco_corresponsal_idbanco = banco, codigo=codigo, moneda_idmoneda=moneda, ref_nostro=ref_nostro, ref_vostro=ref_vostro, descripcion=desc, estado=estado, tiempo_retension=tretencion, num_saltos=nsaltos, transaccion_giro=tgiro, intraday=intraday, correo_alertas=mailalertas, tipo_cta=tipo_cta, tipo_cargacont=tcargcont, tipo_carga_corr=tcargcorr, tipo_proceso=tproc)
+                       
+            #Se crean las alertas seleccionadas
+            if alertas:
+                for elem in alertas:
+                    alertaval = elem.split(',')
+                    alertacod = alertaval[0]
+
+                    alerta = Alertas.objects.get(idalertas=alertacod)
+                    valor = int(alertaval[1])
+
+                    AlertasCuenta.objects.create(alertas_idalertas=alerta,cuenta_idcuenta=cuenta,valor=valor)
+
             msg = "Cuenta creada satisfactoriamente."
             #Para el log
             log(request,21,codigo)
@@ -2059,6 +2127,7 @@ def admin_cuentas(request):
             tcargcont = request.POST.get('tcargcont')
             tcargcorr = request.POST.get('tcargcorr')
             tproc = request.POST.get('tproc')
+            alertas = request.POST.getlist('alertas[]')
 
             try:
                 cuentaobj = Cuenta.objects.filter(pk=cuentaid)
@@ -2110,6 +2179,22 @@ def admin_cuentas(request):
             cuenta.tipo_proceso = tproc
 
             cuenta.save()
+
+            #Se eliminan las alertas que existian anteriormente
+            alertasExist = AlertasCuenta.objects.filter(cuenta_idcuenta=cuenta)
+            [alerta.delete() for alerta in alertasExist]
+
+            #Se crean las alertas seleccionadas
+            if alertas:
+                for elem in alertas:
+                    alertaval = elem.split(',')
+                    alertacod = alertaval[0]
+
+                    alerta = Alertas.objects.get(idalertas=alertacod)
+                    valor = int(alertaval[1])
+
+                    AlertasCuenta.objects.create(alertas_idalertas=alerta,cuenta_idcuenta=cuenta,valor=valor)
+
             msg = "Cuenta modificada satisfactoriamente."
 
             #Para el log
@@ -2123,9 +2208,14 @@ def admin_cuentas(request):
         bancos = BancoCorresponsal.objects.all().order_by('codigo')
         monedas = Moneda.objects.all().order_by('codigo')
         criterios = CriteriosMatch.objects.all().order_by('nombre')
-        
+        alertas = []
+
+        for cuenta in cuentas:
+            alertC = AlertasCuenta.objects.filter(cuenta_idcuenta=cuenta).select_related('alertas_idalertas')
+            alertas.append([[alerta.alertas_idalertas.idalertas,alerta.valor] for alerta in alertC])
+
         template = "matcher/admin_cuentas.html"
-        context = {'cuentas':cuentas, 'bancos':bancos, 'monedas':monedas, 'criterios':criterios}
+        context = {'cuentas':cuentas, 'bancos':bancos, 'monedas':monedas, 'alertas':alertas, 'criterios':criterios}
         return render(request, template, context)
 
 @login_required(login_url='/login')

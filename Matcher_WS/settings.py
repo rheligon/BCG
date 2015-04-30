@@ -127,3 +127,6 @@ STATICFILES_DIRS = (
 )
 
 ARCHIVOS_FOLDER = os.path.join(BASE_DIR, 'archivos')
+
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587

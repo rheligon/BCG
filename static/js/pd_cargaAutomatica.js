@@ -8,6 +8,7 @@ var prev_edcl; //Ultima lista de edc previsualizada
 var prev_acc; //Accion a realizar al confirmar
 var prev_edcl_j; //Ultimo json recibido al previsualizar
 var cargar = true; //variable para saber si se carga o no
+var filename; //Nombre del archivo elegido
 
 function iniciar_tabla_edc(idioma){
 
@@ -143,7 +144,8 @@ $('#prevContaButton').on('click', function () {
             prev_a_edc = undefined;
             tabla_edc.clear().draw();
             tabla_det.clear().draw();
-            previsualizar(prev_a.attr("name"),'prevconta');
+            filename = prev_a.attr("name");
+            previsualizar(filename,'prevconta');
         }
     }
 });
@@ -156,7 +158,8 @@ $('#prevCorrButton').on('click', function () {
             prev_a_edc = undefined;
             tabla_edc.clear().draw();
             tabla_det.clear().draw();
-            previsualizar(prev_a.attr("name"),'prevcorr');
+            filename = prev_a.attr("name");
+            previsualizar(filename,'prevcorr');
         }
     }
 });
@@ -316,15 +319,28 @@ $('#table-edc').on('click','a', function(event) {
 
 //Cargar archivo elegido
 function confirmar(edcl,accion){
+    var actn = accion;
+
     $.ajax({
         type:"POST",
         url: "/procd/cargAut/",
-        data: {"edcl": edcl, "action":accion},
+        data: {"edcl": edcl, "filename":filename, "action":accion},
         success: function(data){
             swal({   title: "",
-                             text: data.msg,
-                             type: "success",
-                             confirmButtonText: "Ok" });
+                     text: data.msg,
+                     type: "success",
+                     confirmButtonText: "Ok" });
+            
+            if (actn==='cargconta'){
+                $('.conta[name="'+filename+'"]').remove();
+            }else{
+                $('.corr[name="'+filename+'"]').remove();
+            }
+
+            tabla_edc.clear().draw();
+            tabla_det.clear().draw();
+            cargar = false;
+            
             $('#processing-modal').modal('toggle');
         },
         error: function(q,error){

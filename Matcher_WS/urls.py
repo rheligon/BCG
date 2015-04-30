@@ -25,7 +25,7 @@ urlpatterns = patterns('',
     url(r'^procd/match/$', 'Matcher_WS.views.pd_match', name='match'),
     url(r'^procd/mPropuestos/((?P<cuenta>\w+)/)?$', 'Matcher_WS.views.pd_matchesPropuestos', name='matchesPropuestos'),
     url(r'^procd/pAbiertas/$', 'Matcher_WS.views.pd_partidasAbiertas', name='partidasAbiertas'),
-    url(r'^procd/mConfirmados/$', 'Matcher_WS.views.pd_matchesConfirmados', name='matchesConfirmados'),
+    url(r'^procd/mConfirmados/((?P<cuenta>\w+)/)?$', 'Matcher_WS.views.pd_matchesConfirmados', name='matchesConfirmados'),
     
 
     # Mensajes SWIFT (MT96-MT99)

@@ -1,51 +1,26 @@
 var csrftoken = $.cookie('csrftoken');
 var tabla = iniciar_tabla(idioma_tr);
-var faltaconta = false;
-var faltacorr = false;
-var matchArray = [];
 var filterArray = [[],[],[],[],[]];
 
-function dateFormat(fecha){
-    var date = new Date(Date.parse(fecha));
-    date.setDate(date.getDate() + 1);
-    return date.toLocaleDateString();
-}
+$(document).ready(function() {
+    //Al cargar la pagina se coloca en el select el valor de la cuenta elegida
+    $('#Cuenta-sel').val($('#id-cuenta').val());
 
-function vacio(str){
-    if (str===""){
-        return str
-    }else if (str==="None"){
-        return ""
-    }else if (str===null){
-        return ""
-    }
-    return str
-}
+    //Se coloca un timeout para la alerta si existe        
+    setTimeout(
+        function(){ 
+            $('#msgAlert').prop('hidden', true);
+        },
+        6000
+    );
+});
 
-function check_falta(tipo){
-
-    if (tipo === 'conta'){
-        faltaconta = false;
-    }else if(tipo==='corr'){
-        faltacorr = false;
-    }
-
-    if (!faltaconta && !faltacorr){
-        $('#pbar').addClass('progress-bar-success');
-        setTimeout(
-            function(){ 
-                $('#pbardiv').prop('hidden', true);
-            },
-            8000
-        );
-    }
-}
 
 function iniciar_tabla(idioma){
 
     if (idioma==="es"){
 
-        return $('#table-pa').DataTable({
+        return $('#table-pa').dataTable({
             //poner if con idioma, el ingles es predeterminado
             language: {
                 url: '/static/json/Spanish-tables.json'
@@ -60,7 +35,7 @@ function iniciar_tabla(idioma){
 
     }else if (idioma==="en"){
 
-        return $('#table-pa').DataTable({
+        return $('#table-pa').dataTable({
             language: {
                 url: '/static/json/English-tables.json'
             },
@@ -86,22 +61,6 @@ if (idioma_tr==="es"){
 }
 
 //Inicializar el DatePicker
-$('#fm-desde').pickadate({
-  format: 'd/m/yyyy',
-  formatSubmit:'d/m/yyyy',
-  selectYears: true,
-  selectMonths: true,
-})
-
-//Inicializar el DatePicker
-$('#fm-hasta').pickadate({
-  format: 'd/m/yyyy',
-  formatSubmit:'d/m/yyyy',
-  selectYears: true,
-  selectMonths: true,
-})
-
-//Inicializar el DatePicker
 $('#f-desde').pickadate({
   format: 'd/m/yyyy',
   formatSubmit:'d/m/yyyy',
@@ -117,74 +76,40 @@ $('#f-hasta').pickadate({
   selectMonths: true,
 })
 
-//Resetear los filtros
-$('#cancelButton').on('click', function () {
+//Inicializar el DatePicker
+$('#fm-desde').pickadate({
+  format: 'd/m/yyyy',
+  formatSubmit:'d/m/yyyy',
+  selectYears: true,
+  selectMonths: true,
+})
 
-    //Checkear los filtros
-    $('.cbfilter').each(function(){
+//Inicializar el DatePicker
+$('#fm-hasta').pickadate({
+  format: 'd/m/yyyy',
+  formatSubmit:'d/m/yyyy',
+  selectYears: true,
+  selectMonths: true,
+})
 
-    $(this).prop('checked', false); //descheckear checkbox
-    
-    var idaux = $(this).attr('id').split('-')[0];
-    var id = '#filter-'+idaux;
+//Boton de buscar matches para la cuenta elegida
+$('#srchButton').on('click', function() {
 
-    if (idaux==='monto'){
-        $('#monto-desde').val('');
-        $('#monto-hasta').val('');
-    }
+  var cuentaId = $('#Cuenta-sel').val();
 
-    if (idaux==='match'){
-        $('#match-id').val('');
-    }
+  if (cuentaId!=''){
 
-    if (idaux==='ref'){
-        $(id+' input[type=radio]:checked').prop('checked', false);
-        $('#ref-txt').val('');
-    }
-
-    if (idaux==='fecham'){
-        $('#fm-desde').val('');
-        $('#fm-hasta').val('');
-    }
-
-    if (idaux==='fecha'){
-        $('#f-desde').val('');
-        $('#f-hasta').val('');
-    }
-
-    if (idaux==='origen'){
-        $(id+' input[type=radio]:checked').prop('checked', false);
-    }
-    });
-
-    filterArray = [[],[],[],[],[],[]];
-    $('#filter-div').hide();
-});
-
-//Buscar partidas con la cuenta y filtros elegidos
-$('#srchButton').on('click', function () {
-    var ctaid = $('#Cuenta-sel').val();
-
-    if (ctaid<=0){
-      swal("Ups!", "Porfavor elija una cuenta primero.", "error");
-    }else{
-
-      $('#processing-modal').modal('toggle');
+    $('#processing-modal').modal('toggle');
 
       //Inicializar todo de nuevo
-      $('#pbar').removeClass('progress-bar-success');
-      $('#pbar').attr('max', 0);
-      $('#pbar').attr('current', 0);
-      $('#pbartxt').text('0%');
-      $('#pbar').css('width', '0%');
-      tabla.clear().draw();
-      faltaconta = false;
-      faltacorr = false;
-      matchArray =[];
-      filterArray = [[],[],[],[],[],[]];
+      tabla.fnClearTable();
+      filterArray = [[],[],[],[],[]];
 
-      //Checkear los filtros
-      $('.cbfilter:checked').each(function(){
+        $('#checkAllButton').attr('selec',0);
+
+    //Checkear los filtros
+    $('.cbfilter:checked').each(function(){
+
         var idaux = $(this).attr('id').split('-')[0];
         var id = '#filter-'+idaux;
 
@@ -194,8 +119,8 @@ $('#srchButton').on('click', function () {
         }
 
         if (idaux==='match'){
-            var mid = $('#match-id').val();
-            filterArray[1].push(mid);
+            var match = $('#match-id').val();
+            filterArray[1].push(match);
         }
 
         if (idaux==='ref'){
@@ -219,27 +144,87 @@ $('#srchButton').on('click', function () {
             filterArray[4].push(fd);
             filterArray[4].push(fh);
         }   
-      });
+    });
 
-      //Llamar funcion de busqueda
-      busqueda(ctaid,filterArray);
+    var url = '/procd/mConfirmados/'+cuentaId+'\/';
+    var serialFilter = JSON.stringify(filterArray);
+
+    busqueda(url,'POST',{
+        ctaid: cuentaId,
+        filterArray: serialFilter,
+        csrfmiddlewaretoken: csrftoken,
+        action: 'buscar'
+    });
+
+  }else{
+
+    tabla.fnClearTable();
+  
+  }
+});
+
+//Buscar matches de acuerdo a la seleccion
+//Esta funcion crea un form para poder hacer post de la cuenta y el arreglo de filtros
+function busqueda(action, method, input) {
+    'use strict';
+    var form;
+    form = $('<form />', {
+        action: action,
+        method: method,
+        style: 'display: none;'
+    });
+    if (typeof input !== 'undefined' && input !== null) {
+        $.each(input, function (name, value) {
+            $('<input />', {
+                type: 'hidden',
+                name: name,
+                value: value
+            }).appendTo(form);
+        });
     }
-});
+    form.appendTo('body').submit();
+}
 
+//Resetear los filtros
+$('#cancelButton').on('click', function () {
 
-//Introducir en el arreglo las filas que se haya chequeado el checkbox
-$('#table-pa').on('click','input[type=checkbox]', function(event) {
-    console.log($(this));
+    //Checkear los filtros
+    $('.cbfilter').each(function(){
 
-   if($(this).is(':checked')){
-        matchArray.push($(this).closest('tr').attr('id'));
-   }else{
-        var index = matchArray.indexOf($(this).closest('tr').attr('id'));
-        if (index >= 0) {
-          matchArray.splice( index, 1 );
+        $(this).prop('checked', false); //descheckear checkbox
+        
+        var idaux = $(this).attr('id').split('-')[0];
+        var id = '#filter-'+idaux;
+
+        if (idaux==='monto'){
+            $('#monto-desde').val('');
+            $('#monto-hasta').val('');
         }
-   }
+
+        if (idaux==='match'){
+            $('#match-id').val('');
+        }
+
+        if (idaux==='ref'){
+            $(id+' input[type=radio]:checked').prop('checked', false);
+            $('#ref-txt').val('');
+        }
+
+        if (idaux==='fecham'){
+            $('#fm-desde').val('');
+            $('#fm-hasta').val('');
+        }
+
+        if (idaux==='fecha'){
+            $('#f-desde').val('');
+            $('#f-hasta').val('');
+        }
+    });
+
+    filterArray = [[],[],[],[],[]];
+    $('#filter-div').hide();
 });
+
 
 //Mostrar o esconder filtros elegidos
 $('.cbfilter').on('click', function(){
@@ -259,87 +244,79 @@ $('.cbfilter').on('click', function(){
     }
 });
 
-//Buscar logs de acuerdo a la seleccion
-function busqueda(ctaid,filterArray){
+//Chequear todos los cb
+$('#checkAllButton').on('click', function () {
+    var selec = parseInt($(this).attr('selec'));
+    var rows   = tabla.fnGetNodes();
+
+    if (selec === 0){
+        $('#checkAllButton').attr('selec',1);
+
+        // Añadir checks a los checkboxes
+        for ( var i = 0, len = rows.length; i < len; i++) {
+            var $fields = $(rows[i]).find('input[type="checkbox"]');
+             
+            $fields.each(function (idx, el) {
+                    $(el).prop('checked',true);
+            });
+        }
+
+    }else{
+        $('#checkAllButton').attr('selec',0);
+
+        // Quitar checks de los checkboxes
+        for ( var i = 0, len = rows.length; i < len; i++) {
+            var $fields = $(rows[i]).find('input[type="checkbox"]:checked');
+             
+            $fields.each(function (idx, el) {
+                    $(el).prop('checked',false);
+            });
+        }
+    }
+});
+
+//Funcion para añadir los checkboxes que no estan visibles
+$('#romperButton').on('click', function() {
+    var rows = tabla.fnGetNodes(), inputs = [];
+     
+    // Añade al POST los checkboxes que no estan visibles
+    for ( var i = 0, len = rows.length; i < len; i++) {
+        var $fields = $(rows[i]).find('input[type="checkbox"]');
+         
+        $fields.each(function (idx, el) {
+            if (!$(this).is(':checked')){
+                inputs.push($(this).val());
+            }
+        });
+    }
+
+    var ctaid = $('#id-cuenta').val();
+    $('#processing-modal').modal('toggle');
+
+    //Tengo en inputs los codigomatches
+    romper_match(inputs,ctaid);
+});
+
+//Hacer match de acuerdo a la seleccion
+function romper_match(matchArray,ctaid){
     $.ajax({
         type:"POST",
-        url: "/procd/mConfirmados/",
-        data: {"ctaid": ctaid, 'filterArray':filterArray ,'action':'buscar'},
+        url: "/procd/mConfirmados/"+ctaid+"\/",
+        data: {'matchArray':matchArray, 'action':'romper'},
         success: function(data){
-            var json_conta = jQuery.parseJSON(data.r_conta);
-            var json_corr = jQuery.parseJSON(data.r_corr);
-
-            $('#pbardiv').prop('hidden', false);
-            $('#pbar').attr('max', json_corr.length+json_conta.length);
-
-            // Initalize and start iterating
-            var contaIter = new heavyLifter(json_conta,'conta');
-            //contaIter.startCalculation();
-
-            // Initalize and start iterating
-            var corrIter = new heavyLifter(json_corr,'corr');
-            //corrIter.startCalculation();
-
-            //var edc_conta = jQuery.parseJSON(data.edcj_conta);
-            //var edc_corr = jQuery.parseJSON(data.edcj_corr);
-
-            // for (var i = 0; i < json_conta.length; i++) {
-            //     var a_id = json_conta[i].pk;
-            //     var a_cod = json_conta[i].fields.codigo;
-
-            //     var td1 = '<td>' + json_conta[i].fields.campo86_940 + '</td>';
-            //     var td2 = '<td>' + json_conta[i].fields.pagina + '</td>';
-            //     var td3 = '<td>' + dateFormat(json_conta[i].fields.fecha_valor) + '</td>';
-            //     var td4 = '<td>' + json_conta[i].fields.codigo_transaccion + '</td>';
-            //     var td5 = '<td>' + vacio(json_conta[i].fields.referencianostro) + '</td>';
-            //     var td6 = '<td>' + vacio(json_conta[i].fields.referenciacorresponsal) + '</td>';
-            //     var td7 = '<td>' + vacio(json_conta[i].fields.descripcion) + '</td>';
-            //     var td8 = '<td>' + json_conta[i].fields.credito_debito + '</td>';
-            //     var td9 = '<td>' + json_conta[i].fields.monto + '</td>';
-            //     var td10 = '<td>L</td>';
-            //     var td11 = '<td>S</td>';
-
-            //     $('#table-pa > tbody').append('<tr id ="trconta-'+a_id+'"></tr>');
-
-            //     var jRow = $("#trconta-"+a_id).append(td1,td2,td3,td4,td5,td6,td7,td8,td9,td10,td11);
-            //     tabla.row.add(jRow);
-            //     prog++;
-            //     $('#proctxt').text(Math.round(max/prog)*100);
-            // };
-
-
-            // for (var i = 0; i < json_corr.length; i++) {
-            //     console.log(i);
-            //     var a_id = json_corr[i].pk;
-            //     var a_cod = json_corr[i].fields.codigo;
-
-            //     var td1 = '<td>' + json_corr[i].fields.campo86_940 + '</td>';
-            //     var td2 = '<td>' + json_corr[i].fields.pagina + '</td>';
-            //     var td3 = '<td>' + dateFormat(json_corr[i].fields.fecha_valor) + '</td>';
-            //     var td4 = '<td>' + json_corr[i].fields.codigo_transaccion + '</td>';
-            //     var td5 = '<td>' + vacio(json_corr[i].fields.referencianostro) + '</td>';
-            //     var td6 = '<td>' + vacio(json_corr[i].fields.referenciacorresponsal) + '</td>';
-            //     var td7 = '<td>' + vacio(json_corr[i].fields.descripcion) + '</td>';
-            //     var td8 = '<td>' + json_corr[i].fields.credito_debito + '</td>';
-            //     var td9 = '<td>' + json_corr[i].fields.monto + '</td>';
-            //     var td10 = '<td>S</td>';
-            //     var td11 = '<td>S</td>';
-
-            //     $('#table-pa > tbody').append('<tr id ="trcorr-'+a_id+'"></tr>');
-
-            //     var jRow = $("#trcorr-"+a_id).append(td1,td2,td3,td4,td5,td6,td7,td8,td9,td10,td11);
-            //     tabla.row.add(jRow);
-            //     prog++;
-            //     $('#proctxt').text(Math.round(max/prog)*100);
-            // };
-
-            //tabla.draw();
             $('#processing-modal').modal('toggle');
+            console.log(matchArray);
+            
+            swal({  title: '',
+                    text: data.msg,
+                    type: "success",
+                    confirmButtonText: "Ok" });
+            //tabla.fnClearTable();
         },
         error: function(q,error){
             alert(q.responseText) //debug
             $('#processing-modal').modal('toggle');
-            swal("Ups!", "Hubo un error buscando las cuentas para la fecha especificada.", "error");
+            swal("Ups!", "Hubo un error matcheando las partidas para la cuenta especificada.", "error");
         },
         dataType:'json',
         headers:{
@@ -349,101 +326,3 @@ function busqueda(ctaid,filterArray){
     return false;
 };
 
-
-function heavyLifter(jsonArr,tipo) {
- 
-    this.elementsLength = jsonArr.length; // Amount of operations
-    this.currentPosition = 0;   // Current position
-    this.array = jsonArr;
-    this.tipo = tipo;
-    this.inter = undefined;
- 
-    // Initializer to start the iterator
-    this.startCalculation = function() {
-        // Reset current position to zero
-        this.currentPosition = 0;
-        // Start looping
-        this.inter = setInterval(
-            this.calculate.bind(this),
-            4000
-        );
-
-        if (tipo === 'conta'){
-            faltaconta = true;
-        }else if(tipo==='corr'){
-            faltacorr = true;
-        }
-
-    }
- 
-    this.calculate = function(){
-        // Check that we still have iterations left, otherwise, return
-        // out of function without calling a new one.
-        if( this.currentPosition > this.elementsLength ){
-            check_falta(this.tipo);
-            return;
-        } 
- 
-        // save currentposition, because we'll alter it
-        // in the loop
-        var n = this.currentPosition;
-        var current = parseInt($('#pbar').attr('current'));
-
-
-        // Batch process 50 elements at a time
-        for( var i = n; i < n+350; i++ ){
-            // Check that we haven't run out of elements
-            if( this.currentPosition >= this.elementsLength ){
-                clearInterval(this.inter);
-                check_falta(this.tipo);
-                tabla.draw();
-                break;
-            }
-            // Add to counter
-            this.currentPosition++;
-            current++;
-            
-            calcularfila(this.array[i],this.tipo );
-        }
-
-        //Barra de progreso
-        var max = $('#pbar').attr('max');
-        var prog = Math.round(current/max*100);
-        var width = prog+'%';
-
-        $('#pbartxt').text(width);
-        $('#pbar').css('width', width);
-        $('#pbar').attr('current', current);
-        
-        if( n === 0 ){
-            tabla.draw();
-        }
-
-    }
-}
-
-function calcularfila(elem,tipo){
-    var a_id = elem.pk;
-    var a_cod = elem.fields.codigo;
-
-    var td1 = '<td>' + elem.fields.estado_cuenta_idedocuenta[1] + '</td>';
-    var td2 = '<td>' + elem.fields.pagina + '</td>';
-    var td3 = '<td>' + dateFormat(elem.fields.fecha_valor) + '</td>';
-    var td4 = '<td>' + elem.fields.codigo_transaccion + '</td>';
-    var td5 = '<td>' + vacio(elem.fields.referencianostro) + '</td>';
-    var td6 = '<td>' + vacio(elem.fields.referenciacorresponsal) + '</td>';
-    var td7 = '<td>' + vacio(elem.fields.descripcion) + '</td>';
-    var td8 = '<td>' + elem.fields.credito_debito + '</td>';
-    var td9 = '<td>' + $.formatNumber(elem.fields.monto,{locale:idioma_tr}) + '</td>';
-    if (tipo==='conta'){
-        var td10 = '<td>L</td>';
-    }else{
-        var td10 = '<td>S</td>';
-    }
-    var td11 = '<td style="text-align:center; width: 24px;"><input class="chkSelection" type="checkbox" id="cb-'+tipo+'-'+a_id+'"></td>';
-
-    $('#table-pa > tbody').append('<tr id ="tr-'+tipo+'-'+a_id+'"></tr>');
-
-    var jRow = $("#tr-"+tipo+"-"+a_id).append(td1,td2,td3,td4,td5,td6,td7,td8,td9,td10,td11);
-    tabla.row.add(jRow);
-}

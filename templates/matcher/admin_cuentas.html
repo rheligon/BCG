@@ -1,7 +1,6 @@
 {% extends "matcher/base.html" %}
 {% load staticfiles %}
 
-
 {% block head %}
 <link rel="stylesheet" href="{% static 'css/dataTables/dataTables.bootstrap.css' %}">
 <link rel="stylesheet" href="{% static 'css/sweet-alert.css' %}">
@@ -38,7 +37,7 @@
         <tbody>
             {% for cuenta in cuentas %}
             <tr id= "tr-{{cuenta.idcuenta}}">
-                <td id= "td-{{cuenta.idcuenta}}"><a cod="{{cuenta.codigo }}" id="{{cuenta.idcuenta}}" criterio="{{cuenta.criterios_match_idcriterio.idcriterio}}" desc="{{cuenta.descripcion}}" banco="{{cuenta.banco_corresponsal_idbanco.idbanco}}" moneda="{{cuenta.moneda_idmoneda.idmoneda}}" nostro="{{cuenta.ref_nostro}}" vostro="{{cuenta.ref_vostro}}" estado="{{cuenta.estado}}" nsaltos="{{cuenta.num_saltos}}" tgiro="{{cuenta.transaccion_giro}}" retencion="{{cuenta.tiempo_retension}}" correoa="{{cuenta.correo_alertas}}" intraday="{{cuenta.intraday}}" tipocta="{{cuenta.tipo_cta}}" tipoccont="{{cuenta.tipo_cargacont}}" tipoccorr="{{cuenta.tipo_carga_corr}}" proc="{{cuenta.tipo_proceso}}" type="cuenta">{{cuenta.codigo }}</a></td>
+                <td id= "td-{{cuenta.idcuenta}}"><a cod="{{cuenta.codigo}}" id="{{cuenta.idcuenta}}" criterio="{{cuenta.criterios_match_idcriterio.idcriterio}}" desc="{{cuenta.descripcion}}" banco="{{cuenta.banco_corresponsal_idbanco.idbanco}}" moneda="{{cuenta.moneda_idmoneda.idmoneda}}" nostro="{{cuenta.ref_nostro}}" vostro="{{cuenta.ref_vostro}}" estado="{{cuenta.estado}}" nsaltos="{{cuenta.num_saltos}}" tgiro="{{cuenta.transaccion_giro}}" retencion="{{cuenta.tiempo_retension}}" correoa="{{cuenta.correo_alertas}}" intraday="{{cuenta.intraday}}" tipocta="{{cuenta.tipo_cta}}" tipoccont="{{cuenta.tipo_cargacont}}" tipoccorr="{{cuenta.tipo_carga_corr}}" proc="{{cuenta.tipo_proceso}}" pos="{{forloop.counter0}}" type="cuenta">{{cuenta.codigo}}</a></td>
                 <td>{{ cuenta.descripcion|default:"" }}</td>
                 <td>{{ cuenta.banco_corresponsal_idbanco.codigo|default:"" }}</td>
                 <td>{{ cuenta.ref_nostro|default:"" }}</td>
@@ -384,39 +383,39 @@
               <div class="col-md-8 checkboxes">
                   <div class="checkbox col-md-7">
                     <label for="Alertas-0">
-                      <input type="checkbox" name="Alertas" id="Alertas-0" value="0">
+                      <input type="checkbox" name="Alertas" id="Alertas-11" value="11">
                       Días sin conciliar antes de enviar alerta
                     </label>
                   </div>
                   <div class="col-md-3">
-                    <input type="text" id="spin0" value="0" disabled/>
+                    <input type="text" id="spin11" value="0" disabled/>
                   </div>
                   <div class="checkbox col-md-7">
                     <label for="Alertas-1">
-                      <input type="checkbox" name="Alertas" id="Alertas-1" value="1">
+                      <input type="checkbox" name="Alertas" id="Alertas-7" value="7">
                       Cambios del saldo mayores al
                     </label>
                   </div>
                   <div class="col-md-3">
-                    <input type="text" id="spin1" value="0" disabled/>
+                    <input type="text" id="spin7" value="0" disabled/>
                   </div>
                   <div class="checkbox col-md-7">
                     <label for="Alertas-2">
-                      <input type="checkbox" name="Alertas" id="Alertas-2" value="2">
+                      <input type="checkbox" name="Alertas" id="Alertas-4" value="4">
                       Partidas pendientes por más de
                     </label>
                   </div>
                   <div class="col-md-3">
-                    <input type="text" id="spin2" value="0" disabled/>
+                    <input type="text" id="spin4" value="0" disabled/>
                   </div>
                   <div class="checkbox col-md-7">
                     <label for="Alertas-3">
-                      <input type="checkbox" name="Alertas" id="Alertas-3" value="3">
+                      <input type="checkbox" name="Alertas" id="Alertas-6" value="6">
                       No se han cargado estado de cuenta en los últimos
                     </label>
                   </div>
                   <div class="col-md-3">
-                    <input type="text" id="spin3" value="0" disabled/>
+                    <input type="text" id="spin6" value="0" disabled/>
                   </div>
               </div>
 
@@ -424,21 +423,21 @@
 
                   <div class="checkbox">
                     <label for="Alertas-4">
-                      <input type="checkbox" name="Alertas" id="Alertas-4" value="4">
+                      <input type="checkbox" name="Alertas" id="Alertas-13" value="13">
                       Partidas Pendientes sin Observación
                     </label>
                   </div>
 
                   <div class="checkbox">
                     <label for="Alertas-5">
-                      <input type="checkbox" name="Alertas" id="Alertas-5" value="5">
+                      <input type="checkbox" name="Alertas" id="Alertas-8" value="8">
                       Diferencias de saldo luego de conciliar
                     </label>
                   </div>
 
                   <div class="checkbox">
                     <label for="Alertas-6">
-                      <input type="checkbox" name="Alertas" id="Alertas-6" value="6">
+                      <input type="checkbox" name="Alertas" id="Alertas-15" value="15">
                       Cuenta sobregirada
                     </label>
                   </div>
@@ -584,8 +583,11 @@
 
 {% block script %}
 
-<script> //define el idioma de la tabla (es/en)
-         idioma_tr = "es" </script>
+<script> 
+  //define el idioma de la tabla (es/en)
+  idioma_tr = "es"
+  alertasArray = {{alertas}}
+</script>
 <script src="{% static 'js/validator.js' %}" type="text/javascript"></script>
 <script src="{% static 'js/jquery.dataTables.min.js' %}" type="text/javascript"></script>
 <script src="{% static 'js/dataTables.bootstrap.js' %}" type="text/javascript"></script>

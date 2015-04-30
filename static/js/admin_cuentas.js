@@ -95,7 +95,7 @@ $('#add-fecha-encaje').pickadate({
 })
 
 //Inicializar los Spinner
-$("#spin1").TouchSpin({
+$("#spin7").TouchSpin({
     verticalbuttons: true,
     min: 0,
     max: 100,
@@ -105,7 +105,7 @@ $("#spin1").TouchSpin({
     postfix: '%'
 });
 
-$("#spin0, #spin2, #spin3").TouchSpin({
+$("#spin11, #spin4, #spin6").TouchSpin({
     verticalbuttons: true,
     min: 0,
     max: 100,
@@ -135,17 +135,17 @@ $("#dg-spin1").TouchSpin({
 });
 
 //Habilitar los Spinner si se elige el checkbox
-$('#Alertas-0').change(function () {
-    $("#spin0").prop("disabled", !this.checked);
+$('#Alertas-11').change(function () {
+    $("#spin11").prop("disabled", !this.checked);
 });
-$('#Alertas-1').change(function () {
-    $("#spin1").prop("disabled", !this.checked);
+$('#Alertas-7').change(function () {
+    $("#spin7").prop("disabled", !this.checked);
 });
-$('#Alertas-2').change(function () {
-    $("#spin2").prop("disabled", !this.checked);
+$('#Alertas-4').change(function () {
+    $("#spin4").prop("disabled", !this.checked);
 });
-$('#Alertas-3').change(function () {
-    $("#spin3").prop("disabled", !this.checked);
+$('#Alertas-6').change(function () {
+    $("#spin6").prop("disabled", !this.checked);
 });
 
 
@@ -161,13 +161,14 @@ function clean_cta_form(){
     //Alertas
     $('#a-mail').val("");
     var checkbalertas = $('input[name="Alertas"]');
-    for (var i=0;i<7;i++){
-        if (i<4){
-          $('#spin'+i).val(0);
-          $("#spin"+i).prop("disabled", true);
-        };
-        $(checkbalertas[i]).attr("checked",false);
-    };
+    checkbalertas.each(function(){
+        var cbid = $(this).attr('id');
+        var cbval = $(this).val();
+
+        $('#spin'+cbval).val(0);
+        $("#spin"+cbval).prop("disabled", true);
+        $(this).attr("checked",false);
+    });
 
     //Formatos y procesos
     $("#TipoCuenta-sel").val(-1);
@@ -231,6 +232,7 @@ $('#table-cuentas').on('click','a[type=cuenta]', function(event) {
     var a_tipoccont = $(this).attr("tipoccont");
     var a_tipoccorr = $(this).attr("tipoccorr");
     var a_proc = $(this).attr("proc");
+    var a_pos = parseInt($(this).attr("pos"));
 
 
     //Estilo de elemento elegido
@@ -259,6 +261,22 @@ $('#table-cuentas').on('click','a[type=cuenta]', function(event) {
 
     //Alertas
     $('#a-mail').val(a_correoa);
+    var alert = alertasArray[a_pos];
+
+    if (alert.length > 0){
+        for (var i=0;i<alert.length;i++){
+            var alertid = parseInt(alert[i][0]);
+            var alertval = alert[i][1];
+
+            $('#Alertas-'+alertid).prop('checked',true);
+
+            if (alertid === 4 || alertid === 6 || alertid === 7 || alertid === 11){
+                $('#spin'+alertid).val(alertval);
+                $('#spin'+alertid).prop('disabled',false);
+            }
+        }
+    }
+
 
     //Formatos y procesos
     $("#TipoCuenta-sel").val(a_tipocta);
@@ -572,7 +590,7 @@ $('#acptButton').on('click', function () {
         $.ajax({
             type:"POST",
             url: "/admin/cuentas/",
-            data: {'criterioid':criterioid,'ctacod':ctacod,'bancoid':bancoid,'monedaid':monedaid,'ref_nostro':ref_nostro,'ref_vostro':ref_vostro,'desc':desc,'estado':estado,'tretencion':tretencion,'nsaltos':nsaltos,'tgiro':tgiro,'intraday':intraday,'amail':amail,'tipocta':tipocta,'tcargcont':tcargcont,'tcargcorr':tcargcorr,'tproc':tproc,"action": "add"},
+            data: {'criterioid':criterioid,'ctacod':ctacod,'bancoid':bancoid,'monedaid':monedaid,'ref_nostro':ref_nostro,'ref_vostro':ref_vostro,'desc':desc,'estado':estado,'tretencion':tretencion,'nsaltos':nsaltos,'tgiro':tgiro,'intraday':intraday,'amail':amail,'tipocta':tipocta,'tcargcont':tcargcont,'tcargcorr':tcargcorr,'tproc':tproc, 'alertas[]':talerta ,"action": "add"},
             success: function(data){
 
                 if (data.add){
@@ -597,6 +615,9 @@ $('#acptButton').on('click', function () {
                     var tcargcont = data.tcargcont;
                     var tcargcorr = data.tcargcorr;
                     var procs = data.tproc;
+                    var pos = alertasArray.length;
+
+                    console.log(pos);
 
                     $('#Id_cuenta').val(cuentaid);
 
@@ -610,6 +631,18 @@ $('#acptButton').on('click', function () {
 
                     //Alertas
                     $('#a-mail').val(amail);
+                    //En talerta tengo las alertas marcadas
+                    for (var i=0;i<talerta.length;i++){
+                        var alerta = talerta[i][0];
+                        var valor = talerta[i][1];
+                        var spin = $('#spin'+alerta);
+
+                        spin.val(valor);
+                        spin.prop("disabled", false);
+                        $('#Alertas-'+alerta).prop("checked",true);
+                    }
+
+                    alertasArray.push(talerta);
 
                     //Formatos y procesos
                     $("#TipoCuenta-sel").val(tipocta);
@@ -639,7 +672,7 @@ $('#acptButton').on('click', function () {
                     $('#F4_criterio').val(EmptyNotNone(criterio.attr('fecha4')));
                     $('#F5_criterio').val(EmptyNotNone(criterio.attr('fecha5')));
 
-                    var td1 = '<td>'+ '<a cod="'+codC+'" id="'+cuentaid+'" criterio="'+criterioid+'" desc="'+desc+'" banco="'+bancoid+'" moneda="'+monedaid+'" nostro="'+ref_nostro+'" vostro="'+ref_vostro+'" estado="'+estado+'" nsaltos="'+nsaltos+'" tgiro="'+tgiro+'" retencion="'+tretencion+'" correoa="'+amail+'" intraday="'+intraday+'" tipocta="'+tipocta+'" tipoccont="'+tcargcont+'" tipoccorr="'+tcargcorr+'" proc="'+procs+'" type="cuenta">'+codC+'</a>';
+                    var td1 = '<td>'+ '<a cod="'+codC+'" id="'+cuentaid+'" criterio="'+criterioid+'" desc="'+desc+'" banco="'+bancoid+'" moneda="'+monedaid+'" nostro="'+ref_nostro+'" vostro="'+ref_vostro+'" estado="'+estado+'" nsaltos="'+nsaltos+'" tgiro="'+tgiro+'" retencion="'+tretencion+'" correoa="'+amail+'" intraday="'+intraday+'" tipocta="'+tipocta+'" tipoccont="'+tcargcont+'" tipoccorr="'+tcargcorr+'" proc="'+procs+'" pos="'+pos+'" type="cuenta">'+codC+'</a>';
                     var td2 = '<td>' + desc + '</td>';
                     var td3 = '<td>' + data.bancocod + '</td>';
                     var td4 = '<td>' + ref_nostro + '</td>';
@@ -667,7 +700,7 @@ $('#acptButton').on('click', function () {
                 $('#addButton').parent().toggle('hidden');
                 $('#delButton').parent().toggle('hidden');
                 $('#processing-modal').modal('toggle');
-                $btn.button('reset')
+                $btn.button('reset');
             },
             error: function(jqXHR, error){
                 alert(jqXHR.responseText) //debug
@@ -698,10 +731,27 @@ $('#acptButton').on('click', function () {
     var tipocta = $('#TipoCuenta-sel').val();
     var tcargcont = $('#FormConta-sel').val();
     var tcargcorr = $('#FormCorr-sel').val();
+    
+    //Seleccionar procesos marcados
     var procs = $('input[name="Proc"]:checked');
     var tproc = "";
     for (var i=0;i<procs.length;i++){
         tproc += $(procs[i]).val();
+    }
+
+    //Seleccionar alertas marcadas
+    var alertas = $('input[name="Alertas"]:checked');
+    var talerta = [];
+    for (var i=0;i<alertas.length;i++){
+        var valor = $(alertas[i]).val();
+        var spin = $('#spin'+valor);
+        var spinval = spin.val();
+        
+        if (spinval === undefined){
+            spinval = -1;
+        }
+
+        talerta.push([valor,spinval]);
     }
 
     if (codC.length>0 && codC.length<11 && criterioid>0 && bancoid>0 && monedaid>0 && ref_nostro.length>0 && ref_vostro.length>0 && tipocta>=0 && tcargcont>=0 && tcargcorr>=0 && procs.length>0 && desc.length<=45 && ref_vostro.length<=35 && ref_nostro.length<=35 && tgiro.length<=20 && amail.length<=45 ){
@@ -713,7 +763,7 @@ $('#acptButton').on('click', function () {
              function(){
                 $btn = $(this).button('loading')
                 $('#processing-modal').modal('toggle');
-                add_cta(criterioid,codC,bancoid,monedaid,ref_nostro,ref_vostro,desc,estado,tretencion,nsaltos,tgiro,intraday,amail,tipocta,tcargcont,tcargcorr,tproc);
+                add_cta(criterioid,codC,bancoid,monedaid,ref_nostro,ref_vostro,desc,estado,tretencion,nsaltos,tgiro,intraday,amail,tipocta,tcargcont,tcargcorr,tproc,talerta);
              }
              );
     }else{
@@ -755,15 +805,14 @@ $('#acptButton').on('click', function () {
 $('#updButton').on('click', function () {
     var $btn;
    
-    function upd_cta(cuentaid,criterioid,ctacod,bancoid,monedaid,ref_nostro,ref_vostro,desc,estado,tretencion,nsaltos,tgiro,intraday,amail,tipocta,tcargcont,tcargcorr,tproc){
+    function upd_cta(cuentaid,criterioid,ctacod,bancoid,monedaid,ref_nostro,ref_vostro,desc,estado,tretencion,nsaltos,tgiro,intraday,amail,tipocta,tcargcont,tcargcorr,tproc,talerta){
         $.ajax({
             type:"POST",
             url: "/admin/cuentas/",
-            data: {'cuentaid':cuentaid ,'criterioid':criterioid,'ctacod':ctacod,'bancoid':bancoid,'monedaid':monedaid,'ref_nostro':ref_nostro,'ref_vostro':ref_vostro,'desc':desc,'estado':estado,'tretencion':tretencion,'nsaltos':nsaltos,'tgiro':tgiro,'intraday':intraday,'amail':amail,'tipocta':tipocta,'tcargcont':tcargcont,'tcargcorr':tcargcorr,'tproc':tproc,"action": "upd"},
+            data: {'cuentaid':cuentaid ,'criterioid':criterioid,'ctacod':ctacod,'bancoid':bancoid,'monedaid':monedaid,'ref_nostro':ref_nostro,'ref_vostro':ref_vostro,'desc':desc,'estado':estado,'tretencion':tretencion,'nsaltos':nsaltos,'tgiro':tgiro,'intraday':intraday,'amail':amail,'tipocta':tipocta,'tcargcont':tcargcont,'tcargcorr':tcargcorr,'tproc':tproc, 'alertas[]':talerta ,"action": "upd"},
             success: function(data){
 
                 if (data.modif){
-
                     clean_cta_form();
                     var cuentaid = data.cuentaid;
                     var codC = data.codigo;
@@ -797,6 +846,16 @@ $('#updButton').on('click', function () {
 
                     //Alertas
                     $('#a-mail').val(amail);
+                    //En talerta tengo las alertas marcadas
+                    for (var i=0;i<talerta.length;i++){
+                        var alerta = talerta[i][0];
+                        var valor = talerta[i][1];
+                        var spin = $('#spin'+alerta);
+
+                        spin.val(valor);
+                        spin.prop("disabled", false);
+                        $('#Alertas-'+alerta).prop("checked",true);
+                    }
 
                     //Formatos y procesos
                     $("#TipoCuenta-sel").val(tipocta);
@@ -885,9 +944,26 @@ $('#updButton').on('click', function () {
     var tcargcont = $('#FormConta-sel').val();
     var tcargcorr = $('#FormCorr-sel').val();
     var procs = $('input[name="Proc"]:checked');
+    
+    //Sacar los procesos seleccionados
     var tproc = "";
     for (var i=0;i<procs.length;i++){
         tproc += $(procs[i]).val();
+    }
+
+    //Sacar las alertas seleccionadas
+    var alertas = $('input[name="Alertas"]:checked');
+    var talerta = [];
+    for (var i=0;i<alertas.length;i++){
+        var valor = $(alertas[i]).val();
+        var spin = $('#spin'+valor);
+        var spinval = spin.val();
+
+        if (spinval === undefined){
+            spinval = -1;
+        }
+
+        talerta.push([valor,spinval]);
     }
 
     if (cuentaid>0 && codC.length>0 && codC.length<11 && criterioid>0 && bancoid>0 && monedaid>0 && ref_nostro.length>0 && ref_vostro.length>0 && tipocta>=0 && tcargcont>=0 && tcargcorr>=0 && procs.length>0 && desc.length<=45 && ref_vostro.length<=35 && ref_nostro.length<=35 && tgiro.length<=20 && amail.length<=45 ){
@@ -899,7 +975,7 @@ $('#updButton').on('click', function () {
              function(){
                 $btn = $(this).button('loading')
                 $('#processing-modal').modal('toggle');
-                upd_cta(cuentaid,criterioid,codC,bancoid,monedaid,ref_nostro,ref_vostro,desc,estado,tretencion,nsaltos,tgiro,intraday,amail,tipocta,tcargcont,tcargcorr,tproc);
+                upd_cta(cuentaid,criterioid,codC,bancoid,monedaid,ref_nostro,ref_vostro,desc,estado,tretencion,nsaltos,tgiro,intraday,amail,tipocta,tcargcont,tcargcorr,tproc,talerta);
              }
              );
     }else{
