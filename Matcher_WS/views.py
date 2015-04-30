@@ -755,7 +755,6 @@ def pd_cargaAutomatica(request):
                     cta.ultimoedocuentacargc = edocta.idedocuenta
                     cta.save()
 
-
             #Mover archivo a procesado
             pathsrc = Configuracion.objects.all()[0].archcontabilidadcarg+'\\'+filename
             pathdest = Configuracion.objects.all()[0].archcontabilidadproc+'\\'+filename
@@ -900,16 +899,28 @@ def pd_match(request):
 def pd_matchesPropuestos(request, cuenta):
     if request.method == 'POST':
         my_dict = dict(request.POST)
-        print(len(my_dict))
         del my_dict['csrfmiddlewaretoken'] #Sirve para quitar el token antiforgery del diccionario
-        print(len(my_dict))
+        
         print(my_dict)
 
         for key,value in my_dict.items():
             #hacer algo (key es el numero de iteracion, value es Matchpropuestos ID)
             mp = Matchpropuestos.objects.get(pk=value)
             print(mp)
-                
+
+            #Eliminar de la tabla de propuestos
+            #mp.delete()
+
+        #Llamar store proc
+        #cursor = connection.cursor()
+        #try:
+        #    cursor.execute('EXEC [dbo].[confirmarMatches] %s', (cuenta,))
+        #finally:
+        #    cursor.close()
+
+        #Llamar calculo conciliacion
+        #setConsolidado(cuenta,request)
+            
 
         template = "matcher/pd_matchesPropuestos.html"
         msg = 'Matches Confirmados Exitosamente!'
@@ -2060,7 +2071,7 @@ def admin_cuentas(request):
             tcargcorr = request.POST.get('tcargcorr')
             tproc = request.POST.get('tproc')
             alertas = request.POST.getlist('alertas[]')
-            
+
             try:
                 criterio = CriteriosMatch.objects.get(pk=criterioid)
             except CriteriosMatch.DoesNotExist:
