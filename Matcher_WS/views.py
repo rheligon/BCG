@@ -1238,6 +1238,181 @@ def pd_matchesConfirmados(request,cuenta):
         return render(request, template, context)
 
 @login_required(login_url='/login')
+def reportes(request):
+
+    if request.method == 'POST':
+        print(request.POST)
+        reporte = request.POST.get('rep')
+        respuesta = reporte+'*'
+
+
+        #####
+        # REPORTES DE PROCESAMIENTO DIARIO
+        #####
+        if reporte=='reporteconciliacion':
+            codCta = request.POST.get('pd_conc_codcta')
+            tipoCta = request.POST.get('pd_conc_tipocta')
+            fecha = request.POST.get('pd_conc_fecha')
+
+
+        if reporte=='reportematchespropuestos':
+            codCta = request.POST.get('pd_mprop_codcta')
+
+
+        if reporte=='reportepartidasabiertas':
+            codCta = request.POST.get('pd_partab_codcta')
+            radio = request.POST.get('radiopa')
+
+            if radio=='monto':
+                montod = request.POST.get('pd_partab_monto-desde')
+                montoh = request.POST.get('pd_partab_monto-hasta')
+
+            if radio=='ref':
+                nostro = request.POST.get('pd_partab_nostro')
+                vostro = request.POST.get('pd_partab_vostro')
+
+            if radio=='trans':
+                sl = request.POST.get('pd_partab_sl')
+                edo = request.POST.get('pd_partab_edo')
+                pag = request.POST.get('pd_partab_pag')
+                trans = request.POST.get('pd_partab_trans')
+
+            if radio=='fecha':
+                fdesde = request.POST.get('pd_partab_f-desde')
+                fhasta = request.POST.get('pd_partab_f-hasta')
+
+        if reporte=='reportematchesconfirmados':
+            codCta = request.POST.get('pd_mconf_codcta')
+            radio = request.POST.get('radiomc')
+
+            if radio=='monto':
+                montod = request.POST.get('pd_mconf_monto-desde')
+                montoh = request.POST.get('pd_mconf_monto-hasta')
+
+            if radio=='ref':
+                nostro = request.POST.get('pd_mconf_nostro')
+                vostro = request.POST.get('pd_mconf_vostro')
+
+            if radio=='match':
+                mid = request.POST.get('pd_mconf_match')
+
+            if radio=='fecha':
+                fdesde = request.POST.get('pd_mconf_f-desde')
+                fhasta = request.POST.get('pd_mconf_f-hasta')
+
+        if reporte=='reportehistoricoconciliacion':
+            codCta = request.POST.get('pd_hist_codcta')
+            tipoCta = request.POST.get('pd_hist_tipocta')
+            fecha = request.POST.get('pd_hist_fecha')
+
+        if reporte=='reporteposforex':
+            moneda = request.POST.get('pd_posmon_monl')
+            fecha = request.POST.get('pd_posmon_fecha')
+
+        if reporte=='reportegiros':
+            codCta = request.POST.get('pd_giro_codcta')
+            tipo = request.POST.get('pd_giro_tipo')
+
+        if reporte=='reporteestadoscuenta':
+            tipoCta = request.POST.get('pd_edcs_tipocta')
+            fdesde = request.POST.get('pd_edcs_f-desde')
+            fhasta = request.POST.get('pd_edcs_f-hasta')
+
+
+        #####
+        # REPORTES DE MENSAJES SWIFT
+        #####
+        if reporte=='reportemt95mt96':
+            codCta = request.POST.get('ms_mt_codcta')
+
+
+        #####
+        # REPORTES DE CONFIGURACION
+        #####
+        if reporte=='reporteconfiguracion':
+            tipo = request.POST.get('tipo')
+
+        #####
+        # REPORTES DE SEGURIDAD
+        #####
+        if reporte=='reporteusuarios':
+            usuario = request.POST.get('seg_usr_usuario') #tiene la CI
+
+            if usuario == '-1':
+                # son todos (tipo=1)
+                tipo = '1'
+                print('todos')
+            else:
+                # detallado (tipo=0)
+                tipo = '0'
+                print('detallado')
+
+        if reporte=='reporteperfiles':
+            perfil = request.POST.get('seg_per_perfil')
+
+            if perfil == '-1':
+                #son todos (tipo=1)
+                tipo = '1'
+                print('todos')
+            else:
+                #detallado (tipo=0)
+                tipo = '0'
+                print('detallado')
+
+        #####
+        # REPORTES DE ADMINISTRACION
+        #####
+        if reporte=='reportecuentas':
+            codCta = request.POST.get('adm_cta_codcta')
+
+            if codCta == '-1':
+                #son todos (tipo=1)
+                tipo = '1'
+                print('todos')
+            else:
+                #detallado (tipo=0)
+                tipo = '0'
+                print('detallado')
+
+        if reporte=='reportecuentas':
+            codCta = request.POST.get('adm_rdt_codcta')
+
+        if reporte=='reportecriteriosmatch':
+            print('cdm')
+
+        if reporte=='reportebancos':
+            print('ban')
+
+        if reporte=='reportemonedas':
+            print('mon')
+
+        #####
+        # REPORTES Avanzados
+        #####
+        if reporte=='reportectassobregiradas':
+            fecha = request.POST.get('avz_ctas_fecha')
+
+        if reporte=='reportesaldos':
+            tipoCta = request.POST.get('avz_sconc_tipocta')
+            fecha = request.POST.get('avz_sconc_fecha')
+
+        if reporte=='reportealgo': #preguntar el de avanzado-observaciones
+            codCta = request.POST.get('avz_obs_codcta')
+            fecha = request.POST.get('avz_obs_fecha')
+
+
+
+    if request.method == 'GET':
+        template = "matcher/reportes.html"
+        cuentas = Cuenta.objects.all().order_by('codigo')
+        usuarios = Usuario.objects.all().order_by('apellidos')
+        perfiles = Perfil.objects.all().order_by('nombre')
+        eventos = Evento.objects.all().order_by('accion')
+
+        context = {'cuentas':cuentas, 'perfiles':perfiles, 'usuarios':usuarios, 'eventos':eventos}
+        return render(request, template, context)
+
+@login_required(login_url='/login')
 def mensajesSWIFT(request):
     template = "matcher/admin_criteriosyreglas.html"
     context = {}

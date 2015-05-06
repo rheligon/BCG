@@ -27,6 +27,8 @@ urlpatterns = patterns('',
     url(r'^procd/pAbiertas/$', 'Matcher_WS.views.pd_partidasAbiertas', name='partidasAbiertas'),
     url(r'^procd/mConfirmados/((?P<cuenta>\w+)/)?$', 'Matcher_WS.views.pd_matchesConfirmados', name='matchesConfirmados'),
     
+    # Reportes
+    url(r'^reportes/$', 'Matcher_WS.views.reportes', name='reportes'),
 
     # Mensajes SWIFT (MT96-MT99)
     url(r'^MT/(?P<tipo>\w+)/$', 'Matcher_WS.views.mensajesSWIFT', name='mensajesSWIFT'),

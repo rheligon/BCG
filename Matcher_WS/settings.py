@@ -90,7 +90,7 @@ DATABASES = {
 # DATABASES = {
 #     'default': {
 #         'ENGINE': 'django.db.backends.oracle',
-#         'NAME': 'Myname',
+#         'NAME': 'Matcher',
 #         'HOST': '190.168.1.128',
 #         'PORT': '1433',
 #         'USER': 'sa',
