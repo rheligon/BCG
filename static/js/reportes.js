@@ -73,7 +73,7 @@ if (idioma_tr==="es"){
     });
 }
 
-//Inicializar el DatePicker
+//Inicializar el DatePicker proc diario conciliacion
 $('#pd_conc_fecha').pickadate({
   format: 'dd/mm/yyyy',
   selectYears: true,
@@ -86,8 +86,6 @@ $('#pd_partab_f-desde').pickadate({
   selectYears: true,
   selectMonths: true,
 })
-
-//Inicializar el DatePicker partidas abiertas
 $('#pd_partab_f-hasta').pickadate({
   format: 'dd/mm/yyyy',
   selectYears: true,
@@ -100,8 +98,6 @@ $('#pd_mconf_f-desde').pickadate({
   selectYears: true,
   selectMonths: true,
 })
-
-//Inicializar el DatePicker matches conf
 $('#pd_mconf_f-hasta').pickadate({
   format: 'dd/mm/yyyy',
   selectYears: true,
@@ -128,13 +124,42 @@ $('#pd_edcs_f-desde').pickadate({
   selectYears: true,
   selectMonths: true,
 })
-
-//Inicializar el DatePicker edocta
 $('#pd_edcs_f-hasta').pickadate({
   format: 'dd/mm/yyyy',
   selectYears: true,
   selectMonths: true,
 })
+
+//Inicializar el DatePicker logs
+$('#seg_log_f-desde').pickadate({
+  format: 'dd/mm/yyyy',
+  selectYears: true,
+  selectMonths: true,
+})
+$('#seg_log_f-hasta').pickadate({
+  format: 'dd/mm/yyyy',
+  selectYears: true,
+  selectMonths: true,
+})
+
+// Spinner de la hora
+$('#seg_log_h-desde').timepicker({
+    minuteStep: 5,
+    showInputs: false,
+    disableFocus: true
+});
+
+// Spinner de la hora
+$('#seg_log_h-hasta').timepicker({
+    minuteStep: 5,
+    showInputs: false,
+    disableFocus: true
+});
+
+// cambiar unos iconos para que aparezcan en el timepicker
+$('.icon-chevron-up').addClass('fa fa-chevron-up');
+$('.icon-chevron-down').addClass('fa fa-chevron-down');
+
 
 //Inicializar el DatePicker ctas sobregiradas
 $('#avz_ctas_fecha').pickadate({
@@ -154,6 +179,31 @@ $('#avz_obs_fecha').pickadate({
   selectYears: true,
   selectMonths: true,
 })
+
+//Inicializar el DatePicker estadistica partidas abiertas
+$('#est_pa_f-desde').pickadate({
+  format: 'dd/mm/yyyy',
+  selectYears: true,
+  selectMonths: true,
+})
+$('#est_pa_f-hasta').pickadate({
+  format: 'dd/mm/yyyy',
+  selectYears: true,
+  selectMonths: true,
+})
+
+//Inicializar el DatePicker partidas abiertas avanzadas
+$('#avz_paavz_f-desde').pickadate({
+  format: 'dd/mm/yyyy',
+  selectYears: true,
+  selectMonths: true,
+})
+$('#avz_paavz_f-hasta').pickadate({
+  format: 'dd/mm/yyyy',
+  selectYears: true,
+  selectMonths: true,
+})
+
 
 
 //Click en el reporte muestra los campos y oculta los otros
@@ -207,4 +257,58 @@ $('.pdmcfilter').on('click',function(){
     $('#pd_mconf_campos').show();
     $('#pd_mconf_campos_'+aux).show();
 
+});
+
+//Mostrar subcampos partidas abiertas avanzadas
+$('.avzpafilter').on('click',function(){
+    var id = $(this).attr('id');
+    var aux = id.split('-')[1];
+
+    if (prevrad!= undefined){
+        $('#avz_paavz_campos_'+prevrad).hide();
+    }
+
+    prevrad = aux;
+
+    $('#avz_paavz_campos').show();
+    $('#avz_paavz_campos_'+aux).show();
+
+});
+
+//Mostrar o esconder campo de codCP en conciliacion ya que es para cuentas propias
+$('#pd_conc_tipocta').on('change', function(){
+  if ($(this).val() === '2'){
+    $('#codcpdiv').show();
+  }else{
+    $('#codcpdiv').hide();
+  }
+})
+
+//Mostrar o esconder campo de codCP en paavanzadas ya que es para cuentas propias
+$('#avz_paavz_tipocta').on('change', function(){
+  if ($(this).val() === '2'){
+    $('#codcpavzdiv').show();
+  }else{
+    $('#codcpavzdiv').hide();
+  }
+})
+
+//Habilitar o desabilitar Datepicker Desde en Est partidas abiertas
+$('#est_pa_fuente').on('change', function(){
+    $('#est_pa_f-desde').prop('disabled',!$('#est_pa_f-desde').is(':disabled'));
+})
+
+//Al hacer click en ejecutar pdf
+$('.pdf').on('click', function(){
+  $('#tipoArch').val('pdf');
+});
+
+//Al hacer click en ejecutar excel
+$('.xls').on('click', function(){
+  $('#tipoArch').val('xls');
+});
+
+//Funcion para añadir al POST el tipo de archivo
+$('form').bind('submit', function(e) {
+    $(this).append('<input type="hidden" name="tipoArch" value="' + $('#tipoArch').val() +'">');
 });

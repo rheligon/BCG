@@ -311,7 +311,7 @@ function romper_match(matchArray,ctaid){
                     text: data.msg,
                     type: "success",
                     confirmButtonText: "Ok" });
-            //tabla.fnClearTable();
+            tabla.fnClearTable();
         },
         error: function(q,error){
             alert(q.responseText) //debug

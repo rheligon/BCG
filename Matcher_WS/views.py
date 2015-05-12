@@ -2,12 +2,11 @@ from django.core import serializers
 from django.core.mail import send_mail
 from django.shortcuts import render, get_object_or_404
 from django.contrib import auth
-from django.http import HttpResponseRedirect, HttpResponse, JsonResponse
+from django.http import HttpResponseRedirect, HttpResponse, JsonResponse, HttpResponseNotFound
 from django.contrib.auth.decorators import login_required
 from django.utils import timezone
 from django.contrib.auth.forms import UserCreationForm
 from django import forms
-from Matcher.models import *
 from django.db import connection
 from django.db.models import Sum, Q
 from django.views.decorators.csrf import csrf_exempt
@@ -15,13 +14,19 @@ from django.contrib.auth.hashers import *
 from django.contrib.auth import update_session_auth_hash
 from django.contrib.sessions.models import Session
 from datetime import datetime, date, time, timedelta
+
+from Matcher.models import *
+
 from Matcher_WS.settings import ARCHIVOS_FOLDER
 from Matcher_WS.backend import MyAuthBackend
 from Matcher_WS.edo_cuenta import edoCta, edc_list, Trans, Bal
 from Matcher_WS.mailConf import enviar_mail
 from Matcher_WS.cargaAutomatica import leer_linea_conta, leer_linea_corr, leer_punto_coma, validar_archivo
-from socket import socket, AF_INET, SOCK_STREAM, error
-from select import select
+from Matcher_WS.Matcher_call import matcher, dma_millis
+from Matcher_WS.funciones_get import get_ops, get_cuentas, get_ci, get_idioma
+from Matcher_WS.generar_reporte import pdfView, generarReporte
+from Matcher_WS.setConsolidado import setConsolidado
+
 import time
 import os
 import re
@@ -31,229 +36,17 @@ import traceback
 import shutil
 
 def test(request):
-
+    
     enviar_mail('Prueba Mail','msg','rheligon@gmail.com')
+    
+    ops = get_ops(request)
+    print (ops)
 
     return JsonResponse('exito', safe=False)
 
-
-def timenow():
-    return datetime.now().replace(microsecond=0)
-
-def dma_millis(dia,mes,ano):
-    d = date(ano, mes, dia)
-    t = datetime.now().time()
-    dt = datetime.combine(d,t)
-
-    millis = time.mktime(dt.timetuple()) * 1000 + dt.microsecond / 1000
-    return int(millis)
-
-def matcher(cuenta,millis,funciones='1'):
-    # Buscar host y puerto de matcher
-    try:
-        conf = Configuracion.objects.all()[0]
-        host = conf.matcherhost
-        port = int(conf.matcherpuerto)
-    except:
-        # No existe una configuracion previa
-        return("No hay configuracion previa en la BD")
-
-    message = cuenta+"*"+str(millis)+"*"+funciones+"\r\n"
-
-    # Crear socket y conectarse
-    sock = socket(AF_INET, SOCK_STREAM)
-    sock.connect((host, port))
-
-    # Enviar mensaje
-    try :
-        sock.sendall(message.encode())
-    except error:
-        return("No se pudo realizar la llamada a matcher")
-
-    data = ''
-
-    while True:
-        readable, writable, exceptional = select([sock], [], [], 5)
-        if readable:
-            data = sock.recv(4096)
-            break
-        # Codigo mientras se espera
-    sock.close()
-    return data.decode()
-
-def get_ops(login):
-    #Busco la sesion que esta conectada
-    sess = Sesion.objects.get(login=login, conexion="1")
-    #Busco el perfil del usuario
-    perfilid = sess.usuario_idusuario.perfil_idperfil
-    #Coloco las opciones segun el perfil elegido
-    opciones = [opcion for opcion in PerfilOpcion.objects.filter(perfil_idperfil=perfilid)]
-    return opciones
-
-def log(request,eid,detalles=None):
-    # Funcion que recibe el request, ve cual es el usr loggeado y realiza el log
-    username = request.user.username 
-    terminal = request.META.get('COMPUTERNAME')
-    fechaHora = timenow()
-    evento = Evento.objects.get(pk=eid)
-    sesion = Sesion.objects.get(login=username)
-    nombre = sesion.usuario_idusuario.nombres+" "+sesion.usuario_idusuario.apellidos
-
-    if detalles is not None:
-        Traza.objects.create(evento_idevento=evento,usuario=nombre, fecha_hora=fechaHora, terminal=terminal, detalles=detalles)
-    else:
-        Traza.objects.create(evento_idevento=evento,usuario=nombre, fecha_hora=fechaHora, terminal=terminal)
-
-def setConsolidado(codCta,request):
-
-    #Obtengo el nombre del usuario
-    username = request.user.username
-    sesion = Sesion.objects.get(login=username)
-    nombre = sesion.usuario_idusuario.nombres+" "+sesion.usuario_idusuario.apellidos
-
-    try:
-        # Obtengo cuenta a consolidar
-        cuenta = Cuenta.objects.get(codigo=codCta)
-
-        # Busco ultima fecha de conciliacion
-        ultFC = cuenta.ultimafechaconciliacion
-
-        # Busco ultimo edc procesado de contabilidad
-        idEcCont = cuenta.ultimoedocuentaprocc
-
-        # Busco ultimo edc procesado de corresponsal
-        idEcCorr = cuenta.ultimoedocuentaprocs
-
-        if (ultFC != None and idEcCont != None and idEcCorr != None):
-            # Obtengo creditos Trans_Abiertas Contabilidad hasta la fecha indicada
-            totalCredCont = TransabiertaContabilidad.objects.filter(fecha_valor__lte=ultFC,credito_debito__in=['C','RD']).aggregate(Sum('monto'))
-            
-            #Se devuelve un diccionario por lo que accedo al valor del primer (unico) elemento
-            totalCredCont = next(iter(totalCredCont.values()))
-            
-            if totalCredCont is None:
-                totalCredCont = 0
-            
-            print('credcont ' + str(totalCredCont))
-
-            # Obtengo debitos Trans_Abiertas Contabilidad hasta la fecha indicada
-            totalDebCont = TransabiertaContabilidad.objects.filter(fecha_valor__lte=ultFC,credito_debito__in=['D','RC']).aggregate(Sum('monto'))
-            totalDebCont = next(iter(totalDebCont.values()))
-            
-            if totalDebCont is None:
-                totalDebCont = 0
-
-            print('debcont ' + str(totalDebCont))
-
-            # Obtengo creditos Trans_Abiertas Corresponsal hasta la fecha indicada
-            totalCredCorr = TransabiertaCorresponsal.objects.filter(fecha_valor__lte=ultFC,credito_debito__in=['C','RD']).aggregate(Sum('monto'))
-            totalCredCorr = next(iter(totalCredCorr.values()))
-            
-            if totalCredCorr is None:
-                totalCredCorr = 0
-            
-            print('credcorr ' + str(totalCredCorr))
-
-            # Obtengo debitos Trans_Abiertas Contabilidad hasta la fecha indicada
-            totalDebCorr = TransabiertaCorresponsal.objects.filter(fecha_valor__lte=ultFC,credito_debito__in=['D','RC']).aggregate(Sum('monto'))
-            totalDebCorr = next(iter(totalDebCorr.values()))
-
-            if totalDebCorr is None:
-                totalDebCorr = 0
-
-            print('debcorr ' + str(totalDebCorr))
-
-            # Busco el balance final del ultimo edc procesado de Contabilidad
-            try:
-                EdcCont = EstadoCuenta.objects.get(idedocuenta=idEcCont)
-            except:
-                EdcCont = None
-
-            if EdcCont is not None:
-                if EdcCont.c_dfinal == 'D':
-                    balanceCont = -1 * EdcCont.balance_final
-                else:
-                    balanceCont = EdcCont.balance_final
-            else: 
-                balanceCont = 0
-
-            print('balcont ' + str(balanceCont))
-
-            # Busco el balance final del ultimo edc procesado de SWIFT
-            try:
-                EdcCorr = EstadoCuenta.objects.get(idedocuenta=idEcCorr)
-            except:
-                EdcCorr = None
-
-            if EdcCorr is not None:
-                if EdcCorr.c_dfinal == 'D':
-                    balanceCorr = -1 * EdcCorr.balance_final
-                else:
-                    balanceCorr = EdcCorr.balance_final
-            else: 
-                balanceCorr = 0
-
-            print('balcorr ' + str(balanceCorr))
-
-            # Busco encajes asociados a la cuenta
-            encaje = cuenta.montoencajeactual
-
-            if encaje is None:
-                encaje = 0
-
-            print('encaje ' + str(encaje))
-
-            # Saco los totales de los saldos
-
-            if cuenta.tipo_cta == 2:
-                # Saldo real para cuentas propias
-                totalCont = balanceCont
-                totalCorr = totalCredCorr - totalDebCorr
-
-                total = totalCont - totalCorr
-                diferencia = round(total)
-            else:
-                # Se sacan los saldos reales de contabilidad y corresponsal
-                totalCont = -(totalCredCorr - totalDebCorr + encaje) + balanceCont
-                totalCorr = -(totalCredCont - totalDebCont) + balanceCorr
-
-                total = totalCont + totalCorr
-
-                diferencia = round(total,2) #Deberia ser siempre 0
-
-            print('totcont ' + str(totalCont))
-            print('totcorr ' + str(totalCorr))
-            print('diferencia ' + str(diferencia))
-
-            # Selecciono la cuenta de la tabla Consolidado para cambiar los datos de la conciliacion
-            consolidado, creado = Conciliacionconsolidado.objects.get_or_create(cuenta_idcuenta=cuenta, defaults={'totalcreditoscontabilidad':totalCredCont, 'totaldebitoscontabilidad':totalDebCont, 'totalcreditoscorresponsal':totalCredCorr, 'totaldebitoscorresponsal':totalDebCorr, 'saldocontabilidad':totalCont, 'saldocorresponsal':totalCorr, 'diferencia':diferencia, 'balancefinalcontabilidad':balanceCont, 'balancefinalcorresponsal':balanceCorr, 'realizadopor':nombre})
-
-            if not creado:
-                saldoContAnt = consolidado.saldocontabilidad
-
-                consolidado.cuenta_idcuenta = cuenta
-                consolidado.totalcreditoscontabilidad = totalCredCont
-                consolidado.totaldebitoscontabilidad  = totalDebCont
-                consolidado.totalcreditoscorresponsal = totalCredCorr
-                consolidado.totaldebitoscorresponsal = totalDebCorr
-                consolidado.saldocontabilidad = totalCont
-                consolidado.saldocorresponsal = totalCorr
-                consolidado.diferencia = diferencia
-                consolidado.balancefinalcontabilidad = balanceCont
-                consolidado.balancefinalcorresponsal = balanceCorr
-                consolidado.realizadopor = nombre
-
-                consolidado.save()
-
-            # Falta enviar correo si la diferencia != 0 
-        
-    except Exception as e:
-        #Hubo algun error
-        print (e)
-
 @login_required(login_url='/login')
 def index(request):
-    context = {}
+    context = {'ops':get_ops(request)}
     template = "matcher/index.html"
     return render(request, template, context)
 
@@ -328,18 +121,7 @@ def usr_logout(request):
 @login_required(login_url='/login')
 def listar_cuentas(request):
 
-    cuentas_list = Cuenta.objects.all()
-
-    # Filtrar a las cuentas del usuario que esta
-    # uso id=1 pq es el unico que tiene en la base de datos
-    
-    # uc = UsuarioCuenta.objects.filter(usuario_idusuario=1)
-    # l_cuentas = []
-    # for cuenta in uc:
-    #     l_cuentas.append(cuenta.cuenta_idcuenta)
-    # cuentas_list = l_cuentas
-
-    context = {'cuentas': cuentas_list}
+    context = {'cuentas': get_cuentas(request), 'ops':get_ops(request)}
     template = "matcher/listarCuentas.html"
 
     return render(request, template, context)
@@ -373,7 +155,7 @@ def resumen_cuenta(request, cuenta_id):
         cod = ['C']*4
 
 
-    context = {'cuenta': cuenta, 'cons':cons, 'cod': cod}
+    context = {'cuenta': cuenta, 'cons':cons, 'cod': cod, 'ops':get_ops(request)}
     template = "matcher/ResumenCuenta.html"
 
     return render(request, template, context)
@@ -430,18 +212,8 @@ def pd_estadoCuentas(request):
         return JsonResponse(res_json, safe=False)
         
     if request.method == 'GET':
-        cuentas = Cuenta.objects.all().order_by('codigo')
 
-        # Filtrar a las cuentas del usuario que esta
-        # uso id=1 pq es el unico que tiene en la base de datos
-        
-        # uc = UsuarioCuenta.objects.filter(usuario_idusuario=1)
-        # l_cuentas = []
-        # for cuenta in uc:
-        #     l_cuentas.append(cuenta.cuenta_idcuenta)
-        # #cuentas_list = l_cuentas
-
-        context = {'cuentas': cuentas}
+        context = {'cuentas': get_cuentas(request), 'ops':get_ops(request)}
         template = "matcher/pd_estadoCuentas.html"
 
         return render(request, template, context)
@@ -818,7 +590,7 @@ def pd_cargaAutomatica(request):
         path_corr = Configuracion.objects.all()[0].archswiftcarg+'\\'
         filenames_corr = next(os.walk(path_corr))[2]
 
-        context = {'filenames_corr':filenames_corr,'filenames_conta':filenames_conta }
+        context = {'filenames_corr':filenames_corr,'filenames_conta':filenames_conta, 'ops':get_ops(request)}
         template = "matcher/pd_cargaAutomatica.html"
         return render(request, template, context)
 
@@ -830,9 +602,16 @@ def pd_match(request):
             fecha = request.POST.get('fecha').split("/")
             fechaform = datetime(int(fecha[2]),int(fecha[1]),int(fecha[0]))
 
-            # FALTA FILTRAR LAS CUENTAS QUE DEVUELVO CON LAS CUENTAS ASIGNADAS AL USUARIO
+            # Cuentas asignadas al usuario
+            cuentas = get_cuentas(request)
+            
             carg = Cargado.objects.all()
             cuentas_carg = [cargado.estado_cuenta_idedocuenta.cuenta_idcuenta for cargado in carg if cargado.estado_cuenta_idedocuenta.fecha_final == fechaform]
+
+            # Se eliminan las cuentas que no estan asignadas al usuario
+            for elem in cuentas_carg:
+                if elem not in cuentas:
+                    cuentas_carg.remove(elem)
 
             res_json = serializers.serialize('json', cuentas_carg)
             
@@ -890,7 +669,7 @@ def pd_match(request):
 
     if request.method == 'GET':
         template = "matcher/pd_match.html"
-        context = {}
+        context = {'ops':get_ops(request)}
 
         return render(request, template, context)
 
@@ -925,7 +704,7 @@ def pd_matchesPropuestos(request, cuenta):
         template = "matcher/pd_matchesPropuestos.html"
         msg = 'Matches Confirmados Exitosamente!'
         cuentas = Cuenta.objects.all().order_by('codigo')
-        context = {'cuentas':cuentas, 'matches':None, 'cta':None, 'msg':msg}
+        context = {'cuentas':cuentas, 'matches':None, 'cta':None, 'msg':msg, 'ops':get_ops(request)}
         return render(request, template, context)
 
     if request.method == 'GET':
@@ -937,9 +716,7 @@ def pd_matchesPropuestos(request, cuenta):
 
         template = "matcher/pd_matchesPropuestos.html"
 
-        cuentas = Cuenta.objects.all().order_by('codigo')
-
-        context = {'cuentas':cuentas, 'matches':matches, 'cta':cuenta, 'msg':None}
+        context = {'cuentas':get_cuentas(request), 'matches':matches, 'cta':cuenta, 'msg':None, 'ops':get_ops(request)}
         return render(request, template, context)
 
 
@@ -984,8 +761,6 @@ def pd_partidasAbiertas(request):
                     tc.referenciacorresponsal = ta.referenciacorresponsal
                     tc.campo86_940 = ta.campo86_940
                     tc.seguimiento = ta.seguimiento
-
-
 
                 #Se calcula el codigomatch si es la primera vuelta
                 if primeraVuelta:
@@ -1118,8 +893,7 @@ def pd_partidasAbiertas(request):
     if request.method == 'GET':
 
         template = "matcher/pd_partidasAbiertas.html"
-        cuentas = Cuenta.objects.all().order_by('codigo')
-        context = {'cuentas':cuentas}
+        context = {'cuentas':get_cuentas(request), 'ops':get_ops(request)}
         return render(request, template, context)
 
 @login_required(login_url='/login')
@@ -1134,9 +908,9 @@ def pd_matchesConfirmados(request,cuenta):
             filterArray = jsonpickle.decode(jsonArray)
 
             filtromonto = filterArray[0]
-            filtromatch = filterArray[1] # No lo he usado
+            filtromatch = filterArray[1]
             filtroref = filterArray[2]
-            filtrofecham = filterArray[3] # No lo he usado
+            filtrofecham = filterArray[3]
             filtrofecha = filterArray[4]
 
             #Obtener id de la cuenta
@@ -1154,7 +928,12 @@ def pd_matchesConfirmados(request,cuenta):
 
                 mConf = mConf.filter(tc_conta__monto__gte=montod,tc_conta__monto__lte=montoh)
                 mConf = mConf.filter(tc_corres__monto__gte=montod,tc_corres__monto__lte=montoh)
-
+            
+            #Chequear si se selecciono matchid
+            if filtromatch:
+                filtromatchid = filtromatch[0]
+                mConf = mConf.filter(codigomatch__contains=filtromatchid)
+            
             #Chequear si se selecciono referencia
             if filtroref:
                 reftipo = filtroref[0]
@@ -1172,7 +951,6 @@ def pd_matchesConfirmados(request,cuenta):
                     mConf = mConf.filter(tc_conta__descripcion=reftxt)
                     mConf = mConf.filter(tc_corres__descripcion=reftxt)
 
-            '''
             #Chequear si se selecciono fechas de match desde y hasta
             if filtrofecham:
                 fechad = None
@@ -1191,7 +969,6 @@ def pd_matchesConfirmados(request,cuenta):
                 elif fechah is not None:
                     mConf = mConf.filter(fecha__lte=fechah)
 
-            '''
 
             #Chequear si se selecciono fechas desde y hasta
             if filtrofecha:
@@ -1205,23 +982,51 @@ def pd_matchesConfirmados(request,cuenta):
                     fechah = datetime.strptime(filtrofecha[1], '%d/%m/%Y')
 
                 if fechad is not None and fechah is not None:
-                    mConf = mConf.filter(fecha__gte=fechad,fecha__lte=fechah)
+                    mConf = mConf.filter(Q(tc_conta__fecha__gte=fechad,tc_conta__fecha__lte=fechah)|Q(tc_corres__fecha__gte=fechad,tc_corres__fecha__lte=fechah))
                 elif fechad is not None:
-                    mConf = mConf.filter(fecha__gte=fechad)
+                    mConf = mConf.filter(Q(tc_conta__fecha__gte=fechad)|Q(tc_corres__fecha__gte=fechad))
                 elif fechah is not None:
-                    mConf = mConf.filter(fecha__lte=fechah)
+                    mConf = mConf.filter(Q(tc_conta__fecha__lte=fechah)|Q(tc_corres__fecha__lte=fechah))
             
 
             cuentas = Cuenta.objects.all().order_by('codigo')
-            context = {'cuentas':cuentas, 'matches':mConf, 'cta':cuenta, 'fArray':filterArray, 'msg':None}
+            context = {'cuentas':cuentas, 'matches':mConf, 'cta':cuenta, 'fArray':filterArray, 'msg':None, 'ops':get_ops(request)}
             template = "matcher/pd_matchesConfirmados.html"
             return render(request, template, context)
 
         if actn == 'romper':
             matchArray = request.POST.getlist('matchArray[]')
-            print(matchArray)
-            print(cuenta)
-            msg = 'EXITO'
+
+            for cod in matchArray:
+                mco = Matchconfirmado.objects.filter(codigomatch=cod).select_related('tc_corres','tc_conta')
+
+                for mc in mco:
+                    # Tengo en mc una instancia de match confirmado
+                    # Se pasa a transaccion abierta
+                    if mc.tc_conta is not None and mc.tc_corres is not None:
+                        tc = mc.tc_conta
+                        TransabiertaContabilidad.objects.create(estado_cuenta_idedocuenta = tc.estado_cuenta_idedocuenta, codigo_transaccion=tc.codigo_transaccion, pagina=tc.pagina, fecha_valor=tc.fecha, descripcion = tc.descripcion, monto=tc.monto,credito_debito=tc.credito_debito, referencianostro = tc.referencianostro, referenciacorresponsal = tc.referenciacorresponsal, campo86_940 = tc.campo86_940, codigocuenta=tc.codigocuenta, numtransaccion=tc.numtransaccion, seguimiento=tc.seguimiento)
+
+                        tc2 = mc.tc_corres
+                        TransabiertaCorresponsal.objects.create(estado_cuenta_idedocuenta = tc2.estado_cuenta_idedocuenta, codigo_transaccion=tc2.codigo_transaccion, pagina=tc2.pagina, fecha_valor=tc2.fecha, descripcion = tc2.descripcion, monto=tc2.monto,credito_debito=tc2.credito_debito, referencianostro = tc2.referencianostro, referenciacorresponsal = tc2.referenciacorresponsal, campo86_940 = tc2.campo86_940, codigocuenta=tc2.codigocuenta, numtransaccion=tc2.numtransaccion, seguimiento=tc2.seguimiento)
+                        
+                        tc.delete()
+                        tc2.delete()
+
+                    elif mc.tc_conta is not None and mc.tc_corres is None:
+                        tc = mc.tc_conta
+                        TransabiertaContabilidad.objects.create(estado_cuenta_idedocuenta = tc.estado_cuenta_idedocuenta, codigo_transaccion=tc.codigo_transaccion, pagina=tc.pagina, fecha_valor=tc.fecha, descripcion = tc.descripcion, monto=tc.monto,credito_debito=tc.credito_debito, referencianostro = tc.referencianostro, referenciacorresponsal = tc.referenciacorresponsal, campo86_940 = tc.campo86_940, codigocuenta=tc.codigocuenta, numtransaccion=tc.numtransaccion, seguimiento=tc.seguimiento)
+                        tc.delete()
+
+                    elif mc.tc_corres is not None and mc.tc_conta is None:
+                        tc = mc.tc_corres
+                        TransabiertaCorresponsal.objects.create(estado_cuenta_idedocuenta = tc.estado_cuenta_idedocuenta, codigo_transaccion=tc.codigo_transaccion, pagina=tc.pagina, fecha_valor=tc.fecha, descripcion = tc.descripcion, monto=tc.monto,credito_debito=tc.credito_debito, referencianostro = tc.referencianostro, referenciacorresponsal = tc.referenciacorresponsal, campo86_940 = tc.campo86_940, codigocuenta=tc.codigocuenta, numtransaccion=tc.numtransaccion, seguimiento=tc.seguimiento)
+                        tc.delete()
+
+                    #Se borra de la tabla de match confirmado
+                    mc.delete()
+
+            msg = 'Matches rotos con éxito'
             return JsonResponse({'msg': msg, 'elim': True})
 
     if request.method == 'GET':
@@ -1233,8 +1038,7 @@ def pd_matchesConfirmados(request,cuenta):
 
         template = "matcher/pd_matchesConfirmados.html"
 
-        cuentas = Cuenta.objects.all().order_by('codigo')
-        context = {'cuentas':cuentas, 'matches':matches, 'cta':cuenta, 'fArray':[[],[],[],[],[]], 'msg':None}
+        context = {'cuentas':get_cuentas(request), 'matches':matches, 'cta':cuenta, 'fArray':[[],[],[],[],[]], 'msg':None, 'ops':get_ops(request)}
         return render(request, template, context)
 
 @login_required(login_url='/login')
@@ -1243,7 +1047,8 @@ def reportes(request):
     if request.method == 'POST':
         print(request.POST)
         reporte = request.POST.get('rep')
-        respuesta = reporte+'*'
+        tipoarch = request.POST.get('tipoArch')
+        respuesta = reporte+'*'+tipoarch+'*'
 
 
         #####
@@ -1253,70 +1058,163 @@ def reportes(request):
             codCta = request.POST.get('pd_conc_codcta')
             tipoCta = request.POST.get('pd_conc_tipocta')
             fecha = request.POST.get('pd_conc_fecha')
+            tipo = request.POST.get('tipo')
+            usuario = get_ci(request)
+
+            codCP = request.POST.get('pd_conc_codcp')
+
+            if tipo == '0':
+                if codCta == '-1':
+                    zona=''
+                    tipo='1'
+                else:
+                    zona = Cuenta.objects.get(codigo=codCta)
+                    zona = zona.zona
+                    zona = notnone(zona)
+
+            if tipo == '3':
+                Cta = Cuenta.objects.get(codigo=codCta)
+                tipoCta = str(Cta.tipo_cta)
+                zona = notnone(Cta.zona)
+            
+            respuesta += fecha+','+codCta+','+tipo+','+tipoCta+','+zona+','+notnone(codCP)+','+usuario
 
 
         if reporte=='reportematchespropuestos':
             codCta = request.POST.get('pd_mprop_codcta')
 
+            respuesta += codCta
 
-        if reporte=='reportepartidasabiertas':
+
+        if reporte=='reportepartabiertas':
             codCta = request.POST.get('pd_partab_codcta')
             radio = request.POST.get('radiopa')
+
+            respuesta += codCta+','
+
+            if radio=='todas':
+                tipo='0'
+
+                respuesta += tipo
 
             if radio=='monto':
                 montod = request.POST.get('pd_partab_monto-desde')
                 montoh = request.POST.get('pd_partab_monto-hasta')
+                tipo = '1'
+
+                respuesta += tipo+','+montod+','+montoh
+
+            if radio=='fecha':
+                fdesde = request.POST.get('pd_partab_f-desde')
+                fhasta = request.POST.get('pd_partab_f-hasta')
+                tipo = '2'
+
+                respuesta += tipo+','+fdesde+','+fhasta
 
             if radio=='ref':
                 nostro = request.POST.get('pd_partab_nostro')
                 vostro = request.POST.get('pd_partab_vostro')
+
+                if vostro == '':
+                    tipo = '3'
+                    respuesta += tipo+','+nostro
+
+                elif nostro == '':
+                    tipo = '4'
+                    respuesta += tipo+','+vostro
+
+                else:
+                    tipo = '5'
+                    respuesta += tipo+','+nostro+','+vostro
 
             if radio=='trans':
                 sl = request.POST.get('pd_partab_sl')
                 edo = request.POST.get('pd_partab_edo')
                 pag = request.POST.get('pd_partab_pag')
                 trans = request.POST.get('pd_partab_trans')
+                tipo = '6'
 
-            if radio=='fecha':
-                fdesde = request.POST.get('pd_partab_f-desde')
-                fhasta = request.POST.get('pd_partab_f-hasta')
+                respuesta += tipo+','+sl+','+edo+','+pag+','+trans
+
 
         if reporte=='reportematchesconfirmados':
             codCta = request.POST.get('pd_mconf_codcta')
             radio = request.POST.get('radiomc')
 
+            respuesta += codCta+','
+
+            if radio=='todas':
+                respuesta += '0'
+            
             if radio=='monto':
                 montod = request.POST.get('pd_mconf_monto-desde')
                 montoh = request.POST.get('pd_mconf_monto-hasta')
+
+                respuesta += '1,'+montod+','+montoh
+
+            if radio=='fecha':
+                fdesde = request.POST.get('pd_mconf_f-desde')
+                fhasta = request.POST.get('pd_mconf_f-hasta')
+
+                respuesta += '2,'+fdesde+','+fhasta
+
+            if radio=='match':
+                mid = request.POST.get('pd_mconf_match')
+
+                respuesta += '3,'+mid
 
             if radio=='ref':
                 nostro = request.POST.get('pd_mconf_nostro')
                 vostro = request.POST.get('pd_mconf_vostro')
 
-            if radio=='match':
-                mid = request.POST.get('pd_mconf_match')
+                if vostro == '':
+                    tipo = '4'
+                    respuesta += tipo+','+nostro
 
-            if radio=='fecha':
-                fdesde = request.POST.get('pd_mconf_f-desde')
-                fhasta = request.POST.get('pd_mconf_f-hasta')
+                elif nostro == '':
+                    tipo = '5'
+                    respuesta += tipo+','+vostro
+                else:
+                    tipo = '4'
+                    respuesta += tipo+','+nostro
 
         if reporte=='reportehistoricoconciliacion':
             codCta = request.POST.get('pd_hist_codcta')
             tipoCta = request.POST.get('pd_hist_tipocta')
             fecha = request.POST.get('pd_hist_fecha')
 
+            if tipoCta == '2':
+                zona = Cuenta.objects.get(codigo=codCta)
+                zona = zona.zona
+                zona = notnone(zona)
+                codCP = ''
+            else:
+                zona = ''
+                codCP = ''
+
+            usuario = get_ci(request)
+
+            respuesta += fecha+','+codCta+','+tipoCta+','+zona+','+codCP+','+usuario
+
         if reporte=='reporteposforex':
             moneda = request.POST.get('pd_posmon_monl')
             fecha = request.POST.get('pd_posmon_fecha')
+
+            respuesta += fecha+','+moneda
 
         if reporte=='reportegiros':
             codCta = request.POST.get('pd_giro_codcta')
             tipo = request.POST.get('pd_giro_tipo')
 
-        if reporte=='reporteestadoscuenta':
+            respuesta += codCta+','+tipo
+
+        if reporte=='reporteedoscuenta':
             tipoCta = request.POST.get('pd_edcs_tipocta')
             fdesde = request.POST.get('pd_edcs_f-desde')
             fhasta = request.POST.get('pd_edcs_f-hasta')
+            usuario = get_ci(request)
+
+            respuesta += tipoCta+','+fdesde+','+fhasta+','+usuario
 
 
         #####
@@ -1325,12 +1223,15 @@ def reportes(request):
         if reporte=='reportemt95mt96':
             codCta = request.POST.get('ms_mt_codcta')
 
+            respuesta += codCta
+
 
         #####
         # REPORTES DE CONFIGURACION
         #####
         if reporte=='reporteconfiguracion':
             tipo = request.POST.get('tipo')
+            respuesta += tipo
 
         #####
         # REPORTES DE SEGURIDAD
@@ -1347,35 +1248,72 @@ def reportes(request):
                 tipo = '0'
                 print('detallado')
 
+            respuesta += usuario+','+tipo
+
         if reporte=='reporteperfiles':
             perfil = request.POST.get('seg_per_perfil')
 
             if perfil == '-1':
                 #son todos (tipo=1)
                 tipo = '1'
-                print('todos')
             else:
                 #detallado (tipo=0)
                 tipo = '0'
-                print('detallado')
+            
+            respuesta += perfil+','+tipo
+
+        if reporte == 'reportelog':
+            usuario = request.POST.get('seg_log_usuario')
+            evento = request.POST.get('seg_log_ev-sel')
+
+            fdesde = request.POST.get('seg_log_f-desde')
+            hdesde = request.POST.get('seg_log_h-desde')
+
+            fhasta = request.POST.get('seg_log_f-hasta')
+            hhasta = request.POST.get('seg_log_h-hasta')
+
+            bhoras = request.POST.get('seg_log_bhoras')
+
+            if bhoras is None:
+                bhoras = '0'
+
+            hdesde = hdesde.split(' ')[0]
+            hhasta = hhasta.split(' ')[0]
+
+            respuesta = 'reportelogsporfechas'
+
+            if usuario == '-1' and evento == '-1':
+                respuesta += '*'+fdesde+','+fhasta+','+hdesde+','+hhasta+','+bhoras
+            
+            elif usuario == '-1' and evento != '-1':
+                respuesta += 'event*'+fdesde+','+fhasta+','+hdesde+','+hhasta+','+bhoras+','+evento
+
+            elif usuario != '-1' and evento == '-1':
+                respuesta += 'usuarios*'+fdesde+','+fhasta+','+hdesde+','+hhasta+','+bhoras+','+usuario
+
+            else:
+                respuesta += 'usuariosevent*'+fdesde+','+fhasta+','+hdesde+','+hhasta+','+bhoras+','+usuario+','+evento
 
         #####
         # REPORTES DE ADMINISTRACION
         #####
         if reporte=='reportecuentas':
             codCta = request.POST.get('adm_cta_codcta')
+            usuario = get_ci(request)
 
             if codCta == '-1':
                 #son todos (tipo=1)
                 tipo = '1'
-                print('todos')
             else:
                 #detallado (tipo=0)
                 tipo = '0'
-                print('detallado')
 
-        if reporte=='reportecuentas':
+            respuesta += usuario+','+codCta+','+tipo
+
+        if reporte=='reportereglastransf':
             codCta = request.POST.get('adm_rdt_codcta')
+
+            respuesta += codCta
 
         if reporte=='reportecriteriosmatch':
             print('cdm')
@@ -1391,31 +1329,100 @@ def reportes(request):
         #####
         if reporte=='reportectassobregiradas':
             fecha = request.POST.get('avz_ctas_fecha')
+            usuario = get_ci(request)
+            
+            respuesta += fecha+','+usuario
 
         if reporte=='reportesaldos':
             tipoCta = request.POST.get('avz_sconc_tipocta')
             fecha = request.POST.get('avz_sconc_fecha')
+            usuario = get_ci(request)
+            
+            respuesta += tipoCta+','+fecha+','+usuario
 
-        if reporte=='reportealgo': #preguntar el de avanzado-observaciones
-            codCta = request.POST.get('avz_obs_codcta')
-            fecha = request.POST.get('avz_obs_fecha')
+        # El de observaciones es de conciliacion tipo 3
 
+        if reporte=='reportepartabiertasavz':
+            tipoCta = request.POST.get('avz_paavz_tipocta')
+            tipo = request.POST.get('radiopaavz')
+            codCP = request.POST.get('avz_paavz_codCP')
+            orden = request.POST.get('avz_paavz_ord')
 
+            respuesta += tipoCta+','
+
+            if tipo=='todas':
+                respuesta += '0'
+            
+            if tipo=='monto':
+                montod = request.POST.get('avz_paavz_monto-desde')
+                montoh = request.POST.get('avz_paavz_monto-hasta')
+
+                respuesta += '1,'+montod+','+montoh
+
+            if tipo=='fecha':
+                fdesde = request.POST.get('avz_paavz_f-desde')
+                fhasta = request.POST.get('avz_paavz_f-hasta')
+
+                respuesta += '2,'+fdesde+','+fhasta
+
+            if tipo=='ref':
+                nostro = request.POST.get('avz_paavz_nostro')
+                vostro = request.POST.get('avz_paavz_vostro')
+
+                respuesta += '3,'+nostro+','+vostro
+
+        #####
+        # REPORTES Estadísticas
+        #####
+        if reporte=='reporteestpartidasabiertas':
+            codCta = request.POST.get('est_pa_codcta')
+            tipoCta = request.POST.get('est_pa_tipocta')
+            fuente = request.POST.get('est_pa_fuente')
+            fdesde = request.POST.get('est_pa_f-desde')
+            fhasta = request.POST.get('est_pa_f-hasta')
+            usuario = get_ci(request)
+
+            respuesta += tipoCta+','+codCta+','+fdesde+','+fhasta+','+usuario+','+fuente
+
+        if reporte=='reporteestmatchconf':
+            codCta = request.POST.get('est_pcon_codcta')
+            tipoCta = request.POST.get('est_pcon_tipocta')
+            fdesde = request.POST.get('est_pcon_f-desde')
+            fhasta = request.POST.get('est_pcon_f-hasta')
+            usuario = get_ci(request)
+
+            respuesta += tipoCta+','+codCta+','+fdesde+','+fhasta+','+usuario
+
+        if reporte=='reporteestpartcarg':
+            codCta = request.POST.get('est_pcar_codcta')
+            tipoCta = request.POST.get('est_pcar_tipocta')
+            fdesde = request.POST.get('est_pcar_f-desde')
+            fhasta = request.POST.get('est_pcar_f-hasta')
+            usuario = get_ci(request)
+            
+            respuesta += tipoCta+','+codCta+','+fdesde+','+fhasta+','+usuario
+
+        nombreRep = generarReporte(respuesta)
+
+        if nombreRep == "errorconn":
+            return HttpResponseNotFound('<h1>Error de conexion, verificar que el servidor de reportes este funcionando.</h1>')
+
+        return (pdfView(nombreRep))
 
     if request.method == 'GET':
         template = "matcher/reportes.html"
-        cuentas = Cuenta.objects.all().order_by('codigo')
         usuarios = Usuario.objects.all().order_by('apellidos')
         perfiles = Perfil.objects.all().order_by('nombre')
         eventos = Evento.objects.all().order_by('accion')
+        fecha_hoy = ("/").join(str(timenow().date()).split("-")[::-1])
 
-        context = {'cuentas':cuentas, 'perfiles':perfiles, 'usuarios':usuarios, 'eventos':eventos}
+        context = {'cuentas':get_cuentas(request), 'perfiles':perfiles, 'usuarios':usuarios, 'eventos':eventos, 'fecha_hoy':fecha_hoy, 'ops':get_ops(request)}
         return render(request, template, context)
 
 @login_required(login_url='/login')
 def mensajesSWIFT(request):
     template = "matcher/admin_criteriosyreglas.html"
-    context = {}
+    context = {'ops':get_ops(request)}
     return render(request, template, context)
 
 @login_required(login_url='/login')
@@ -1622,12 +1629,7 @@ def configuracion(request, tipo):
             empresa = Empresa.objects.all()
             conf = Configuracion.objects.all()
 
-            # ARREGLAR
-            if request.method == 'POST':
-                form = request.POST
-                print (form)
-
-            context = {'empresa': empresa[0], 'conf': conf[0]}
+            context = {'empresa': empresa[0], 'conf': conf[0], 'ops':get_ops(request)}
             return render(request, template, context)
 
         if tipo == "arc":
@@ -1640,7 +1642,7 @@ def configuracion(request, tipo):
                 form = request.POST
                 print (form)
 
-            context = {'archivos':archivos, 'cuentas':cuentas, 'campos_disp':campos_disp}
+            context = {'archivos':archivos, 'cuentas':cuentas, 'campos_disp':campos_disp, 'ops':get_ops(request)}
             return render(request, template, context)
         
         # ninguna, deberia raise 404
@@ -1782,6 +1784,8 @@ def seg_Usuarios(request):
             return JsonResponse({'msg': msg, 'sessid':sesion.pk , 'usrid': usuario.idusuario, 'usrnom':usrnom, 'usrapell':usrapell, 'usrci':usrci, 'usrtlf':usrtlf, 'usrmail':usrmail, 'usrdir':usrdir, 'usrperf':usrperf, 'usrobs':usrobs, 'usrlogin':usrlogin, 'usrldap':usrldap, 'add': True})
 
         if actn == "upd":
+            ops = get_ops(request) # Obtener opciones permitidas al usuario
+
             sessid = request.POST.get('sessid')
             usrnom = request.POST.get('usrnom')
             usrapell = request.POST.get('usrapell')
@@ -1798,17 +1802,20 @@ def seg_Usuarios(request):
             # Obtener cuentas asignadas
             cuentas_asig =[cta.split('-')[1] for cta in usrctas]
 
-            # Buscar sesion
-            sesion = Sesion.objects.filter(pk=sessid)[0]
-            sesion.ldap = usrldap
-            sesion.save()
-
-            # Buscar perfil asignados
-            perfil = Perfil.objects.filter(pk=usrperf)[0]
-
-            # Buscar y modificar usuario
             try:
+                # Buscar sesion
+                sesion = Sesion.objects.filter(pk=sessid)[0]
+                # Buscar usuario
                 usuario = Usuario.objects.filter(pk=sesion.usuario_idusuario.idusuario)[0]
+                # Buscar perfil asignados
+                perfil = Perfil.objects.filter(pk=usrperf)[0]
+            except:
+                msg = "No se pudo modificar el usuario especificado."
+                return JsonResponse({'msg': msg, 'modif': False})
+
+            # Chequear si el usuario posee permiso para modificar los datos
+            if 14 in ops:
+                # modificar usuario
                 usuario.ci = usrci
                 usuario.perfil_idperfil = perfil
                 usuario.nombres = usrnom
@@ -1818,23 +1825,26 @@ def seg_Usuarios(request):
                 usuario.mail = usrmail
                 usuario.observaciones = usrobs
                 usuario.save()
-            except:
-                msg = "No se pudo modificar el usuario especificado."
-                return JsonResponse({'msg': msg, 'modif': False})
 
-            # Buscar cuentas asignadas al usuario
-            cuentas_old = UsuarioCuenta.objects.filter(usuario_idusuario=usuario)
-            for cuenta in cuentas_old:
-                cuenta.delete()
+                # Guardar el checkbox de ldap, en caso de haberse cambiado
+                sesion.ldap = usrldap
+                sesion.save()
 
-            # Crear relacion usuario cuentas
-            for cuenta in cuentas_asig:
-                try:
-                    cuenta = Cuenta.objects.filter(pk=cuenta)[0]
-                    UsuarioCuenta.objects.create(usuario_idusuario=usuario, cuenta_idcuenta=cuenta)
-                except:
-                    msg = "No se pudo crear el usuario con las cuentas especificadas."
-                    return JsonResponse({'msg': msg, 'modif': False})
+            # Chequear si el usuario posee permiso para modificar cuentas
+            if 32 in ops:
+                # Buscar cuentas asignadas al usuario y borrarlas
+                cuentas_old = UsuarioCuenta.objects.filter(usuario_idusuario=usuario)
+                for cuenta in cuentas_old:
+                    cuenta.delete()
+
+                # Crear relacion usuario cuentas nuevas
+                for cuenta in cuentas_asig:
+                    try:
+                        cuenta = Cuenta.objects.filter(pk=cuenta)[0]
+                        UsuarioCuenta.objects.create(usuario_idusuario=usuario, cuenta_idcuenta=cuenta)
+                    except:
+                        msg = "No se pudo crear el usuario con las cuentas especificadas."
+                        return JsonResponse({'msg': msg, 'modif': False})
 
             # Para el log
             log(request,14,sesion.login)
@@ -1846,7 +1856,7 @@ def seg_Usuarios(request):
         perfiles = Perfil.objects.all().order_by('nombre')
         cuentas = Cuenta.objects.all().order_by('codigo')
         # filtrar por usuario
-        context = {'sesiones': sesion_list, 'perfiles':perfiles, 'cuentas':cuentas }
+        context = {'sesiones': sesion_list, 'perfiles':perfiles, 'cuentas':cuentas, 'ops':get_ops(request)}
         template = "matcher/seg_Usuarios.html"
 
         return render(request, template, context)
@@ -1936,7 +1946,7 @@ def seg_Perfiles(request):
         nosub = [opcion.nombre for opcion in opciones]
         nosubid = [str(opcion.idopcion) for opcion in opciones]
 
-        context = {'perfiles': perfiles, 'opciones':opciones, 'nosub':nosub, 'nosubid':nosubid}
+        context = {'perfiles': perfiles, 'opciones':opciones, 'nosub':nosub, 'nosubid':nosubid, 'ops':get_ops(request)}
         template = "matcher/seg_Perfiles.html"
 
         return render(request, template, context)
@@ -1985,7 +1995,7 @@ def seg_Logs(request):
         usuarios = Usuario.objects.all()
         eventos_acc = [evento.accion for evento in eventos]
         fecha_hoy = ("/").join(str(timenow().date()).split("-")[::-1])
-        context = {'eventos':eventos, 'usuarios':usuarios, 'eventos_acc':eventos_acc, 'fecha_hoy':fecha_hoy}
+        context = {'eventos':eventos, 'usuarios':usuarios, 'eventos_acc':eventos_acc, 'fecha_hoy':fecha_hoy, 'ops':get_ops(request)}
         template = "matcher/seg_Logs.html"
 
         return render(request, template, context)
@@ -2046,9 +2056,7 @@ def seg_backupRestore(request):
             return JsonResponse({'msg': msg,'bkUp': True})
 
     if request.method == "GET":
-        cuentas_list = Cuenta.objects.all().order_by('codigo')
-        # filtrar por usuario
-        context = {'cuentas': cuentas_list}
+        context = {'cuentas': get_cuentas(request), 'ops':get_ops(request)}
         template = "matcher/seg_backupRestore.html"
 
         return render(request, template, context)
@@ -2119,7 +2127,7 @@ def admin_bancos(request):
     if request.method == 'GET':
         bancos = BancoCorresponsal.objects.all()
 
-        context = {'bancos': bancos, 'idioma': "es"}
+        context = {'bancos': bancos, 'idioma': get_idioma(), 'ops':get_ops(request)}
         template = "matcher/admin_bancos.html"
 
         return render(request, template, context)
@@ -2191,7 +2199,7 @@ def admin_monedas(request):
         template = "matcher/admin_monedas.html"
         monedas = Moneda.objects.all()
 
-        context = {'monedas': monedas}
+        context = {'monedas': monedas, 'ops':get_ops(request)}
         return render(request, template, context)
 
 @login_required(login_url='/login')
@@ -2295,6 +2303,9 @@ def admin_cuentas(request):
             return JsonResponse({'msg': msg, 'cuentaid': cuentaid, 'elim': True})
 
         if actn == 'upd':
+
+            ops = get_ops(request) # Obtener opciones permitidas
+
             cuentaid = request.POST.get('cuentaid')
             criterioid = request.POST.get('criterioid')
             codigo = request.POST.get('ctacod')
@@ -2322,6 +2333,7 @@ def admin_cuentas(request):
                 msg = "No se encontro la cuenta especificada."
                 return JsonResponse({'msg': msg, 'modif': False})
 
+            # Obtener criterio para asignar a la cuenta
             if (cuenta.criterios_match_idcriterio.idcriterio != criterioid):
                 try:
                     criterio = CriteriosMatch.objects.get(pk=criterioid)
@@ -2329,57 +2341,75 @@ def admin_cuentas(request):
                     msg = "No se encontro el criterio especificado."
                     return JsonResponse({'msg': msg, 'modif': False})
 
+            # Checkeo si el usuario tiene permitida la opcion de modif criterio
+            if 23 in ops:
                 cuenta.criterios_match_idcriterio = criterio
+
+
+            # Datos Generales
+            #################
+            # Checkeo si el usuario tiene permitida la opcion de modif param generales
+            if 6 in ops:
+                # Obtener banco para asignar a la cuenta
+                if (cuenta.banco_corresponsal_idbanco.idbanco!=bancoid):
+                    try:
+                        banco = BancoCorresponsal.objects.get(pk=bancoid)
+                    except CriteriosMatch.DoesNotExist:
+                        msg = "No se encontro el banco especificado."
+                        return JsonResponse({'msg': msg, 'modif': False})
+
+                    cuenta.banco_corresponsal_idbanco = banco
+
+                # Obtener moneda para asignar a la cuenta
+                if (cuenta.moneda_idmoneda.idmoneda!=monedaid):
+                    try:
+                        moneda = Moneda.objects.get(pk=monedaid)
+                    except Moneda.DoesNotExist:
+                        msg = "No se encontro la moneda especificada."
+                        return JsonResponse({'msg': msg, 'modif': False})
+
+                    cuenta.moneda_idmoneda = moneda
+
+                cuenta.codigo = codigo
+                cuenta.ref_nostro = ref_nostro
+                cuenta.ref_vostro = ref_vostro
+                cuenta.descripcion = desc
+
+                # Pestaña Formatos y procesos
+                #############################
+                cuenta.correo_alertas = mailalertas
+                cuenta.tipo_cta = tipo_cta
+                cuenta.tipo_cargacont = tcargcont
+                cuenta.tipo_carga_corr = tcargcorr
+                cuenta.tipo_proceso = tproc
             
-            if (cuenta.banco_corresponsal_idbanco.idbanco!=bancoid):
-                try:
-                    banco = BancoCorresponsal.objects.get(pk=bancoid)
-                except CriteriosMatch.DoesNotExist:
-                    msg = "No se encontro el banco especificado."
-                    return JsonResponse({'msg': msg, 'modif': False})
+                # Pestaña Parametros
+                ####################
+                cuenta.estado = estado
+                cuenta.tiempo_retension = tretencion
+                cuenta.num_saltos = nsaltos
+                cuenta.transaccion_giro = tgiro
+                cuenta.intraday = intraday
 
-                cuenta.banco_corresponsal_idbanco = banco
-
-            if (cuenta.moneda_idmoneda.idmoneda!=monedaid):
-                try:
-                    moneda = Moneda.objects.get(pk=monedaid)
-                except Moneda.DoesNotExist:
-                    msg = "No se encontro la moneda especificada."
-                    return JsonResponse({'msg': msg, 'modif': False})
-
-                cuenta.moneda_idmoneda = moneda
-
-            cuenta.codigo = codigo
-            cuenta.ref_nostro = ref_nostro
-            cuenta.ref_vostro = ref_vostro
-            cuenta.descripcion = desc
-            cuenta.estado = estado
-            cuenta.tiempo_retension = tretencion
-            cuenta.num_saltos = nsaltos
-            cuenta.transaccion_giro = tgiro
-            cuenta.intraday = intraday
-            cuenta.correo_alertas = mailalertas
-            cuenta.tipo_cta = tipo_cta
-            cuenta.tipo_cargacont = tcargcont
-            cuenta.tipo_carga_corr = tcargcorr
-            cuenta.tipo_proceso = tproc
 
             cuenta.save()
 
-            #Se eliminan las alertas que existian anteriormente
-            alertasExist = AlertasCuenta.objects.filter(cuenta_idcuenta=cuenta)
-            [alerta.delete() for alerta in alertasExist]
+            # Checkeo si el usuario tiene permitida la opcion de modif alertas
+            if 12 in ops:
+                #Se eliminan las alertas que existian anteriormente
+                alertasExist = AlertasCuenta.objects.filter(cuenta_idcuenta=cuenta)
+                [alerta.delete() for alerta in alertasExist]
 
-            #Se crean las alertas seleccionadas
-            if alertas:
-                for elem in alertas:
-                    alertaval = elem.split(',')
-                    alertacod = alertaval[0]
+                #Se crean las alertas seleccionadas
+                if alertas:
+                    for elem in alertas:
+                        alertaval = elem.split(',')
+                        alertacod = alertaval[0]
 
-                    alerta = Alertas.objects.get(idalertas=alertacod)
-                    valor = int(alertaval[1])
+                        alerta = Alertas.objects.get(idalertas=alertacod)
+                        valor = int(alertaval[1])
 
-                    AlertasCuenta.objects.create(alertas_idalertas=alerta,cuenta_idcuenta=cuenta,valor=valor)
+                        AlertasCuenta.objects.create(alertas_idalertas=alerta,cuenta_idcuenta=cuenta,valor=valor)
 
             msg = "Cuenta modificada satisfactoriamente."
 
@@ -2390,7 +2420,7 @@ def admin_cuentas(request):
 
 
     if request.method == 'GET':
-        cuentas = Cuenta.objects.all().order_by('codigo')
+        cuentas = get_cuentas(request)
         bancos = BancoCorresponsal.objects.all().order_by('codigo')
         monedas = Moneda.objects.all().order_by('codigo')
         criterios = CriteriosMatch.objects.all().order_by('nombre')
@@ -2401,7 +2431,7 @@ def admin_cuentas(request):
             alertas.append([[alerta.alertas_idalertas.idalertas,alerta.valor] for alerta in alertC])
 
         template = "matcher/admin_cuentas.html"
-        context = {'cuentas':cuentas, 'bancos':bancos, 'monedas':monedas, 'alertas':alertas, 'criterios':criterios}
+        context = {'cuentas':cuentas, 'bancos':bancos, 'monedas':monedas, 'alertas':alertas, 'criterios':criterios, 'ops':get_ops(request)}
         return render(request, template, context)
 
 @login_required(login_url='/login')
@@ -2497,12 +2527,8 @@ def admin_reglas_transf(request):
             return JsonResponse({'reglaid':reglaid, 'nombre':nombre, 'mascconta':mascconta, 'masccorr':masccorr, 'selrefconta':selrefconta, 'selrefcorr':selrefcorr, 'transconta':transconta, 'transcorr':transcorr, 'tipo':tipo, 'msg':msg, 'modif':True})
 
     if request.method == 'GET':
-
-        cuentas = Cuenta.objects.all()
-
-
         template = "matcher/admin_reglasTransf.html"
-        context = {'cuentas':cuentas}
+        context = {'cuentas':get_cuentas(request), 'ops':get_ops(request)}
         return render(request, template, context)
 
 @login_required(login_url='/login')
@@ -2603,11 +2629,38 @@ def admin_crit_reglas(request):
     if request.method == 'GET':
         template = "matcher/admin_criteriosReglas.html"
         criterios = CriteriosMatch.objects.all()
-        context = {'criterios':criterios}
+        context = {'criterios':criterios, 'ops':get_ops(request)}
         return render(request, template, context)
+
+
+#################################################################################################
+## Otras funciones
 
 def NoneNotEmpty(s):
     if s and s!="None":
         return s
     else:
         return None
+
+def notnone(string):
+    if string == None:
+        return ''
+    else:
+        return string
+
+def timenow():
+    return datetime.now().replace(microsecond=0)
+
+def log(request,eid,detalles=None):
+    # Funcion que recibe el request, ve cual es el usr loggeado y realiza el log
+    username = request.user.username 
+    terminal = request.META.get('COMPUTERNAME')
+    fechaHora = timenow()
+    evento = Evento.objects.get(pk=eid)
+    sesion = Sesion.objects.get(login=username)
+    nombre = sesion.usuario_idusuario.nombres+" "+sesion.usuario_idusuario.apellidos
+
+    if detalles is not None:
+        Traza.objects.create(evento_idevento=evento,usuario=nombre, fecha_hora=fechaHora, terminal=terminal, detalles=detalles)
+    else:
+        Traza.objects.create(evento_idevento=evento,usuario=nombre, fecha_hora=fechaHora, terminal=terminal)

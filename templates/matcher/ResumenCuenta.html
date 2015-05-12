@@ -96,12 +96,10 @@
 
 <h3> Detalles Última Conciliación</h3>
 <h4> Fecha: <small>{{cuenta.ultimafechaconciliacion|date:"d/m/Y"}}</small></h4>
-<hr/>
 <div>
     <div class="row clearfix">
-        <div class="col-md-3 column">
+        <div class="col-md-3 well" style="margin-top:15%;">
             <div class="row clearfix">
-                    <br/><br/><br/><br/><br/><br/><br/>
                      <form class="form-vertical">
                         <fieldset>
                             <!-- Appended Input-->
@@ -126,13 +124,13 @@
             </div>
         </div>
 
-        <div class="col-md-6 column">
+        <div class="col-md-6">
             <div class="row clearfix" style="text-align:center">
                 <br/>
-                <div class="col-md-6 column">
+                <div class="well col-md-5">
                     <h3> Concepto </h3>
                 </div>
-                <div class="col-md-6 column">
+                <div class="well col-md-5 col-md-push-1">
                     <h3> Monto </h3>
                 </div>
             </div>
@@ -190,31 +188,28 @@
         </div>
 
 
-        <div class="col-md-3 column">
-            <div class="row clearfix">
-                     <br/><br/><br/><br/><br/><br/><br/>
-                     <form class="form-horizontal">
-                        <fieldset>
-                            <!-- Appended Input-->
-                            <div class="form-group col-md-12">
-                              <label class="control-label" for="sald_tot_conta">Total Saldo Contabilidad</label>
-                                <div class="input-group">
-                                  <input id="sald_tot_conta" name="sald_tot_conta" class="form-control" value="{{cons.saldocontabilidad|intcomma|cut:"-"}}" type="text" readonly>
-                                  <span class="input-group-addon">{{cod.2}}</span>
-                                </div>
-                            </div>
+        <div class="col-md-3 well" style="margin-top:15%;">
+           <form class="form-horizontal">
+              <fieldset>
+                  <!-- Appended Input-->
+                  <div class="form-group col-md-12">
+                    <label class="control-label" for="sald_tot_conta">Total Saldo Contabilidad</label>
+                      <div class="input-group">
+                        <input id="sald_tot_conta" name="sald_tot_conta" class="form-control" value="{{cons.saldocontabilidad|intcomma|cut:"-"}}" type="text" readonly>
+                        <span class="input-group-addon">{{cod.2}}</span>
+                      </div>
+                  </div>
 
-                            <!-- Appended Input-->
-                            <div class="form-group col-md-12">
-                                <label class="control-label" for="sald_tot_corr">Total Saldo Corresponsal</label>
-                                <div class="input-group">
-                                  <input id="sald_tot_corr" name="sald_tot_corr" class="form-control" value="{{cons.saldocorresponsal|intcomma|cut:"-"}}" type="text" readonly>
-                                  <span class="input-group-addon">{{cod.3}}</span>
-                                </div>
-                            </div>
-                        </fieldset>
-                    </form>
-            </div>
+                  <!-- Appended Input-->
+                  <div class="form-group col-md-12">
+                      <label class="control-label" for="sald_tot_corr">Total Saldo Corresponsal</label>
+                      <div class="input-group">
+                        <input id="sald_tot_corr" name="sald_tot_corr" class="form-control" value="{{cons.saldocorresponsal|intcomma|cut:"-"}}" type="text" readonly>
+                        <span class="input-group-addon">{{cod.3}}</span>
+                      </div>
+                  </div>
+              </fieldset>
+          </form>
         </div>
     </div>
 </div>

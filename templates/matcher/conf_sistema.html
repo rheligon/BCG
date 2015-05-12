@@ -9,6 +9,7 @@
 }
 </style>
 
+{% if 29 in ops %}
 <legend>Configuracion por Empresa:</legend>
 <ul class="nav nav-tabs" id="emp-tab">
     <li class="active"><a href="#datos-tab" data-toggle="tab">Datos Generales <i class="fa"></i></a></li>
@@ -130,7 +131,9 @@
         </div>
     </div>
 </form>
+{%endif%}
 
+{% if 11 in ops %}
 <legend>Configuracion General y de Seguridad:</legend>
 <form id="ConfSegForm" method="POST" class="form-horizontal" data-toggle="validator">
     {% csrf_token %}
@@ -384,6 +387,8 @@
         </div>
     </div>
 </form>
+{%endif%}
+
 {% endblock %}
 
 {% block script %}

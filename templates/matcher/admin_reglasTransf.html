@@ -25,6 +25,7 @@
     </select>
   </div>
 
+  {% if 17 in ops %}
   <div class="col-md-3 col-md-push-2">
       <button type="button" id="addButton" data-loading-text="Cargando..." class="col-md-6 btn btn-success" autocomplete="off" data-toggle="modal" data-target="#add-regla-modal">
           Agregar
@@ -36,6 +37,7 @@
           Eliminar
       </button>
   </div>
+  {%endif%}
 </div>
 
 <div class="row">

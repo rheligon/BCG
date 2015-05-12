@@ -133,11 +133,16 @@ table {
         </tbody>
     </table>
 </div>
+
 <div class="col-md-3 pull-right" style="margin-top:2%;">
+
+  {% if 13 in ops %}
   <button type="submit" id="acptButton" data-loading-text="Cargando..." class="col-md-6 btn btn-primary" autocomplete="off">
       Aceptar
   </button>
+  {%endif%}
 </div>
+
 </form>
 
 

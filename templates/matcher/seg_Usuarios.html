@@ -55,20 +55,26 @@
     </table>
     <hr/><br/>
 </div>
-<div class="col-md-3">
-    <button type="button" id="addButton" data-loading-text="Cargando..." class="col-md-5 btn btn-success" autocomplete="off" data-toggle="modal" data-target="#add-banco-modal">
-        Agregar
-    </button>
-</div>
+{% if 31 in ops %}
+  <div class="col-md-3">
+      <button type="button" id="addButton" data-loading-text="Cargando..." class="col-md-5 btn btn-success" autocomplete="off" data-toggle="modal" data-target="#add-banco-modal">
+          Agregar
+      </button>
+      
+  </div>
+  <div style="padding-top:1%;" class="col-md-3">
+
+      <button type="button" id="delButton" data-loading-text="Cargando..." class="col-md-5 btn btn-danger" autocomplete="off">
+          Eliminar
+      </button>
+  </div>
+{% endif %}
 <div style="padding-top:1%;" class="col-md-3">
-    <button type="button" id="delButton" data-loading-text="Cargando..." class="col-md-5 btn btn-danger" autocomplete="off">
-        Eliminar
-    </button>
-</div>
-<div style="padding-top:1%;" class="col-md-3">
+    {% if 14 in ops or 32 in ops%}
     <button type="button" id="updButton" data-loading-text="Cargando..." class="col-md-5 btn btn-primary" autocomplete="off">
         Modificar
     </button>
+    {% endif %}
 </br>
 </br>
 </br>
@@ -223,7 +229,7 @@
                   </div>
 
                   <div class="list-arrows col-md-1 text-center">
-
+                    {% if 32 in ops %}
                       <button class="btn btn-default btn-sm move-right">
                           <span class="glyphicon glyphicon-chevron-right"></span>
                       </button>
@@ -231,6 +237,7 @@
                       <button class="btn btn-default btn-sm move-left">
                           <span class="glyphicon glyphicon-chevron-left"></span>
                       </button>
+                      {% endif %}
                   </div>
 
                   <div class="dual-list list-right col-md-5">
@@ -282,9 +289,11 @@
             </div>
 
             <div class="col-md-12">
+              {% if 27 in ops %}
               <button type="button" id="contrRstButton" data-loading-text="Cargando..." class="col-md-4 btn btn-success" autocomplete="off">
                   Reset Contraseña
               </button>
+              {% endif %}
             </div>
 
           </div>

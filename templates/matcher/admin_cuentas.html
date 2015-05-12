@@ -56,16 +56,21 @@
     <legend>Detalles:</legend>
   </div>
   <div class="col-md-2 col-md-push-2">
+    {% if 17 in ops %}
       <button type="button" name="Agregar" id="addButton" data-loading-text="Cargando..." class="col-md-7 btn btn-success" autocomplete="off">
           Agregar
       </button>
+    {% endif %}
   </div>
   <div class="col-md-2 col-md-push-1">
+    {% if 7 in ops %}
       <button type="button" name="Eliminar" id="delButton" data-loading-text="Cargando..." class="col-md-7 btn btn-danger" autocomplete="off">
           Eliminar
       </button>
+    {% endif %}
   </div>
-    <div class="col-md-2 col-md-push-2" hidden>
+  {% if 17 in ops %}
+  <div class="col-md-2 col-md-push-2" hidden>
       <button type="button" name="Aceptar" id="acptButton" data-loading-text="Cargando..." class="col-md-7 btn btn-info" autocomplete="off">
           Aceptar
       </button>
@@ -75,15 +80,20 @@
           Cancelar
       </button>
   </div>
+  {%endif%}
   <div class="col-md-2">
+    {% if 6 in ops or 12 in ops or 23 in ops %}
       <button type="button" id="updButton" data-loading-text="Cargando..." class="col-md-7 btn btn-primary" autocomplete="off">
           Modificar
       </button>
+    {% endif %}
   </div>
 </div>
 <ul class="nav nav-tabs" id="seg-tab">
     <li class="active"><a href="#datosg-tab" data-toggle="tab">Datos Generales <i class="fa"></i></a></li>
+    {% if 12 in ops %}
     <li><a href="#alerta-tab" data-toggle="tab">Alertas <i class="fa"></i></a></li>
+    {% endif%}
     <li><a href="#fyp-tab" data-toggle="tab">Formatos y Procesos<i class="fa"></i></a></li>
 </ul>
 <form id="detalleCuentaForm" method="post" class="form-horizontal">
@@ -146,8 +156,12 @@
             <div class="well col-md-7">
               <ul class="nav nav-tabs" id="dg-tab">
                   <li class="active"><a href="#dg-param-tab" data-toggle="tab">Parámetros<i class="fa"></i></a></li>
+                  {% if 23 in ops %}
                   <li><a href="#dg-critmatch-tab" data-toggle="tab">Criterios Match <i class="fa"></i></a></li>
+                  {% endif %}
+                  {% if 16 in ops %}
                   <li><a href="#dg-reglastrans-tab" data-toggle="tab">Reglas Transformación<i class="fa"></i></a></li>
+                  {% endif %}
                   <li><a href="#dg-encaje-tab" data-toggle="tab">Encaje<i class="fa"></i></a></li>
               </ul>
 

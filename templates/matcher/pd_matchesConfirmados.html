@@ -344,19 +344,20 @@ table {
     </table>
 </div>
 
+{% if 9 in ops %}
 <div class="row">
   <div class="col-md-3 col-md-push-7">
     <button type="button" id="checkAllButton" data-loading-text="Cargando..." class="col-md-6 btn btn-primary" selec="1">
         Selecc. Todas
     </button>
   </div>
-
   <div class="col-md-3 col-md-push-6">
     <button type="button" id="romperButton" data-loading-text="Cargando..." class="col-md-6 btn btn-warning" autocomplete="off">
         Romper
     </button>
   </div>
 </div>
+{%endif%}
 
 <!-- Static Modal para procesando -->
 <div class="modal modal-static fade" id="processing-modal" role="dialog" aria-hidden="true">

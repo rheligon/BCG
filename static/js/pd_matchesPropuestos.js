@@ -96,12 +96,14 @@ $('form').bind('submit', function(e) {
      
     // Añade al POST los checkboxes que no estan visibles
     for ( var i = 0, len = rows.length; i < len; i++) {
-        var $fields = $(rows[i]).find('input[type="checkbox"]:hidden:checked');
+        var $fields = $(rows[i]).find('input[type="checkbox"]');
          
         $fields.each(function (idx, el) {
-            inputs.push('<input type="hidden" name="' + $(el).attr('name') + '" value="' + $(el).val() +'">');
+            if (!$(this).is(':checked')){
+                inputs.push('<input type="hidden" name="' + $(el).attr('name') + '" value="' + $(el).val() +'">');
+            }
         });
     }
      
-    $(this).append( inputs.join('') );
+    $(this).append(inputs.join(''));
 });

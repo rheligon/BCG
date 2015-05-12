@@ -34,6 +34,7 @@
                 </div>
             </div>
         </div>
+
         <div class="panel panel-default">
             <div class="panel-heading">
                 <h4 class="panel-title">
@@ -49,26 +50,37 @@
                                 <span class="fa fa-credit-card fa-lg text-warning"></span><a style="color:gray" href="{% url 'Matcher_WS.views.pd_estadoCuentas'%}">Edo. Cuenta</a>
                             </td>
                         </tr>
+
+                        {% if 2 in ops %}
                         <tr>
                             <td>
                                 <span class="fa fa-stack-overflow fa-lg"></span><a style="color:gray" href="{% url 'Matcher_WS.views.pd_cargaAutomatica'%}">Carga Automática</a>
                             </td>
                         </tr>
+                        {%endif%}
+
+                        {% if 10 in ops %}
                         <tr>
                             <td>
                                 <span class="fa fa-pencil-square-o fa-lg"></span><a style="color:gray" href="{% url 'Matcher_WS.views.listar_cuentas'%}">Carga Manual</a>
                             </td>
                         </tr>
+                        {%endif%}
+
+                        {% if 8 in ops %}
                         <tr>
                             <td>
                                 <span class="fa fa-cog fa-spin fa-lg"></span><a style="color:gray" href="{% url 'Matcher_WS.views.pd_match'%}">Match</a>
                             </td>
                         </tr>
+                        {% endif%}
+
                         <tr>
                             <td>
                                 <span class="fa fa-link fa-lg text-warning"></span><a style="color:gray" href="{% url 'Matcher_WS.views.pd_matchesPropuestos'%}">Matches Propuestos</a>
                             </td>
                         </tr>
+
                         <tr>
                             <td>
                                 <span class="fa fa-chain-broken fa-lg text-danger"></span><a style="color:gray" href="{% url 'Matcher_WS.views.pd_partidasAbiertas'%}">Partidas Abiertas</a>
@@ -92,6 +104,8 @@
                 </div>
             </div>
         </div>
+
+        {% if 33 in ops or 35 in ops or 36 in ops or 30 in ops or 1 in ops or 3 in ops or 4 in ops%}
         <div class="panel panel-default">
             <div class="panel-heading">
                 <h4 class="panel-title">
@@ -100,6 +114,9 @@
                 </h4>
             </div>
         </div>
+        {%endif%}
+
+        {% if 22 in ops or 25 in ops%}
         <div class="panel panel-default">
             <div class="panel-heading">
                 <h4 class="panel-title">
@@ -110,20 +127,28 @@
             <div id="collapseFour" class="panel-collapse collapse">
                 <div class="panel-body">
                     <table class="table">
+                        {% if 25 in ops %}
                         <tr>
                             <td>
                                 <span class="fa fa-envelope-o text-primary"></span><a style="color:gray" href="#96">MT96</a>
                             </td>
                         </tr>
+                        {%endif%}
+
+                        {% if 22 in ops %}
                         <tr>
                             <td>
                                 <span class="fa fa-envelope-o text-primary"></span><a style="color:gray" href="#99">MT99</a>
                             </td>
                         </tr>
+                        {%endif%}
                     </table>
                 </div>
             </div>
         </div>
+        {%endif%}
+
+        {% if 29 in ops or 11 in ops or 34 in ops%}
         <div class="panel panel-default">
             <div class="panel-heading">
                 <h4 class="panel-title">
@@ -134,20 +159,29 @@
             <div id="collapseFive" class="panel-collapse collapse">
                 <div class="panel-body">
                     <table class="table">
+                        {% if 29 in ops or 11 in ops%}
                         <tr>
                             <td>
                                 <span class="fa fa-wrench text-primary"></span><a style="color:gray" href="{% url 'Matcher_WS.views.configuracion' 'sis' %}">Conf. Sistema</a>
                             </td>
                         </tr>
+                        {%endif%}
+
+                        {% if 34 in ops %}
                         <tr>
                             <td>
                                 <span class="fa fa-folder-open text-warning"></span><a style="color:gray" href="{% url 'Matcher_WS.views.configuracion' 'arc'  %}">Formato Archivo</a>
                             </td>
                         </tr>
+                        {%endif%}
                     </table>
                 </div>
             </div>
         </div>
+        {%endif%}
+
+
+        {% if 14 in ops or 31 in ops or 32 in ops or 27 in ops or 5 in ops or 24 in ops or 18 in ops%}
         <div class="panel panel-default">
             <div class="panel-heading">
                 <h4 class="panel-title">
@@ -158,30 +192,45 @@
             <div id="collapseSix" class="panel-collapse collapse">
                 <div class="panel-body">
                     <table class="table">
+                        {% if 14 in ops or 31 in ops or 32 in ops or 27 in ops%}
                         <tr>
                             <td>
                                 <span class="fa fa-users fa-lg text-primary"></span><a style="color:gray" href="{% url 'Matcher_WS.views.seg_Usuarios'%}">Usuarios</a>
                             </td>
                         </tr>
+                        {%endif%}
+
+                        {% if 5 in ops %}
                         <tr>
                             <td>
                                 <span class="fa fa-th-list fa-lg text-primary"></span><a style="color:gray" href="{% url 'Matcher_WS.views.seg_Perfiles'%}">Perfiles</a>
                             </td>
                         </tr>
+                        {%endif%}
+
+                        {% if 24 in ops %}
                         <tr>
                             <td>
                                 <span class="fa fa-book fa-lg text-warning"></span><a style="color:gray" href="{% url 'Matcher_WS.views.seg_Logs'%}">Logs</a>
                             </td>
                         </tr>
+                        {%endif%}
+
+                        {% if 18 in ops %}
                         <tr>
                             <td>
                                 <span class="fa fa-exclamation-triangle fa-lg text-danger"></span><a style="color:gray" href="{% url 'Matcher_WS.views.seg_backupRestore'%}">Backup/Restore</a>
                             </td>
                         </tr>
+                        {% endif %}
+
                     </table>
                 </div>
             </div>
         </div>
+        {%endif%}
+
+        {% if 21 in ops or 28 in ops or 19 in ops or 15 in ops or 23 in ops or 16 in ops or 17 in ops or 6 in ops or 7 in ops or 12 in ops%}
         <div class="panel panel-default">
             <div class="panel-heading">
                 <h4 class="panel-title">
@@ -192,35 +241,51 @@
             <div id="collapseSeven" class="panel-collapse collapse">
                 <div class="panel-body">
                     <table class="table">
+                        {% if 21 in ops %}
                         <tr>
                             <td>
                                 <span class="fa fa-building-o fa-lg text-info"></span><a style="color:gray" href="{% url 'Matcher_WS.views.admin_bancos'%}">Bancos</a>
                             </td>
                         </tr>
+                        {%endif%}
+
+                        {% if 28 in ops %}
                         <tr>
                             <td>
                                 <span class="fa fa-money fa-lg text-success"></span><a style="color:gray" href="{% url 'Matcher_WS.views.admin_monedas'%}">Monedas</a>
                             </td>
                         </tr>
+                        {%endif%}
+
+                        {% if 23 in ops or 17 in ops or 6 in ops or 7 in ops or 12 in ops%}
                         <tr>
                             <td>
                                 <span class="fa fa-suitcase fa-lg text-warning"></span><a style="color:gray" href="{% url 'Matcher_WS.views.admin_cuentas'%}">Cuentas</a>
                             </td>
                         </tr>
+                        {%endif%}
+
+                        {% if 19 in ops %}
                         <tr>
                             <td>
                                 <span class="fa fa-retweet fa-lg text-info"></span><a style="color:gray" href="{% url 'Matcher_WS.views.admin_reglas_transf'%}">Reglas de Transformación</a>
                             </td>
                         </tr>
+                        {%endif%}
+
+                        {% if 15 in ops %}
                         <tr>
                             <td>
                                 <span class="fa fa-key fa-lg text-warning"></span><a style="color:gray" href="{% url 'Matcher_WS.views.admin_crit_reglas'%}">Criterios y reglas del Sistema</a>
                             </td>
                         </tr>
+                        {%endif%}
                     </table>
                 </div>
             </div>
         </div>
+        {%endif%}
+
         <div class="panel panel-default">
             <div class="panel-heading">
                 <h4 class="panel-title">

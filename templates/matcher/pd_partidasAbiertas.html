@@ -246,6 +246,7 @@ table {
     </table>
 </div>
 
+{% if 26 in ops %}
 <div class="row">
   <div class="col-md-3 col-md-push-7">
     <button type="button" id="checkAllButton" data-loading-text="Cargando..." class="col-md-6 btn btn-primary" selec="0">
@@ -254,11 +255,13 @@ table {
   </div>
 
   <div class="col-md-3 col-md-push-6">
+
     <button type="button" id="matchButton" data-loading-text="Cargando..." class="col-md-6 btn btn-success" autocomplete="off">
         Match
     </button>
   </div>
 </div>
+{%endif%}
 
 <div class="modal fade" id="justificacion-modal" role="dialog">
   <div class="modal-dialog">

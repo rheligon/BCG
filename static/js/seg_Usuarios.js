@@ -59,6 +59,12 @@ function clean_cta_form(){
     $("#contusr").val("");
     $("#contusr2").val("");
     $("#ldapcb").attr("checked",false);
+
+    //Estilo de elemento elegido previamente
+    var a_idaux = $("#Id_usuario").val();
+    $("#Id_usuario").val(-1);
+    $('#'+a_idaux).parent().css("background-color","");
+    $('#'+a_idaux).css("color","");
 };
 
 //Flechas dual-list
@@ -151,10 +157,17 @@ $('#table-usuarios').on('click','a[type=usuario]', function(event) {
     }
 
     //Estilo de elemento elegido
-    $('#'+a_idaux).parent().css("background-color","")
-    $('#'+a_idaux).css("color","")
-    $(this).parent().css("background-color","#337ab7")
-    $(this).css("color","white")
+    $('#'+a_idaux).parent().css("background-color","");
+    $('#'+a_idaux).css("color","");
+    $(this).parent().css("background-color","#337ab7");
+    $(this).css("color","white");
+
+
+    //Esconder boton de aceptar y cancelar en caso de estar visibles
+    if (!$('#acptButton').parent().is(':hidden')){
+        $('#acptButton').parent().toggle('hidden');
+        $('#cancelButton').parent().toggle('hidden');
+    }
 });
 
 //Rellenar cuentas de acuerdo a la seleccion de usuario
@@ -491,10 +504,10 @@ $('#acptButton').on('click', function () {
                     tabla.row.add(jRow).draw();
 
                     //Estilo de elemento elegido
-                    $('#'+a_idaux).parent().css("background-color","")
-                    $('#'+a_idaux).css("color","")
-                    $('#'+a_id).parent().css("background-color","#337ab7")
-                    $('#'+a_id).css("color","white")
+                    $('#'+a_idaux).parent().css("background-color","");
+                    $('#'+a_idaux).css("color","");
+                    $('#'+a_id).parent().css("background-color","#337ab7");
+                    $('#'+a_id).css("color","white");
 
                     //Readonly para el nombre de Usuario
                     $("#nomusr").attr("readonly",true);
@@ -508,8 +521,6 @@ $('#acptButton').on('click', function () {
                              text: data.msg,
                              type: "error",
                              confirmButtonText: "Ok" });
-                    $('#acptButton').parent().toggle('hidden');
-                    $('#cancelButton').parent().toggle('hidden');
                 }
                 $('#acptButton').parent().toggle('hidden');
                 $('#cancelButton').parent().toggle('hidden');
@@ -634,8 +645,7 @@ $('#updButton').on('click', function () {
                              type: "error",
                              confirmButtonText: "Ok" });
                 }
-                $('#acptButton').parent().toggle('hidden');
-                $('#cancelButton').parent().toggle('hidden');
+
                 $('#processing-modal').modal('toggle');
                 $btn.button('reset')
             },
