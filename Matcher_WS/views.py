@@ -24,7 +24,7 @@ from Matcher_WS.mailConf import enviar_mail
 from Matcher_WS.cargaAutomatica import leer_linea_conta, leer_linea_corr, leer_punto_coma, validar_archivo
 from Matcher_WS.Matcher_call import matcher, dma_millis
 from Matcher_WS.funciones_get import get_ops, get_cuentas, get_ci, get_idioma
-from Matcher_WS.generar_reporte import pdfView, generarReporte
+from Matcher_WS.generar_reporte import generarReporte, pdfView, xlsView
 from Matcher_WS.setConsolidado import setConsolidado
 
 import time
@@ -527,10 +527,16 @@ def pd_cargaAutomatica(request):
                     cta.ultimoedocuentacargc = edocta.idedocuenta
                     cta.save()
 
+                    #Para el log
+                    detalle = cta.codigo+' - No. '+edc.cod28c +' - L'
+                    log(request,3,detalle)
+
             #Mover archivo a procesado
             pathsrc = Configuracion.objects.all()[0].archcontabilidadcarg+'\\'+filename
             pathdest = Configuracion.objects.all()[0].archcontabilidadproc+'\\'+filename
             shutil.move(pathsrc,pathdest)
+
+            #log(request,3)
 
             return JsonResponse({'exito':True, 'msg':msg})
 
@@ -575,6 +581,10 @@ def pd_cargaAutomatica(request):
 
                     cta.ultimoedocuentacargs = edocta.idedocuenta
                     cta.save()
+
+                    #Para el Log
+                    detalle = cta.codigo+' - No. '+edc.cod28c +' - S'
+                    log(request,3,detalle)
                             
             # Mover el archivo a procesado
             pathsrc = Configuracion.objects.all()[0].archswiftcarg+'\\'+filename
@@ -636,6 +646,9 @@ def pd_match(request):
                 # Lista vacia, por lo que no hay propuestos en la BD para la cuenta
                 msg = matcher(cta.codigo,millis,procesos)
                 match = True
+
+                #Para el log
+                log(request,5,cta.codigo)
             else:
                 # Checkear si la cuenta esta tomada
                 if conc is not None:
@@ -652,6 +665,9 @@ def pd_match(request):
             millis = dma_millis(int(fecha[0]),int(fecha[1]),int(fecha[2]))
 
             msg = matcher('CuentasPropias',millis,'2')
+
+            #Para el log
+            log(request,5,'CuentasPropias')
 
             return JsonResponse({'msg':msg, 'match':True})
 
@@ -680,26 +696,27 @@ def pd_matchesPropuestos(request, cuenta):
         my_dict = dict(request.POST)
         del my_dict['csrfmiddlewaretoken'] #Sirve para quitar el token antiforgery del diccionario
         
-        print(my_dict)
+        #print(my_dict)
 
         for key,value in my_dict.items():
             #hacer algo (key es el numero de iteracion, value es Matchpropuestos ID)
-            mp = Matchpropuestos.objects.get(pk=value)
-            print(mp)
+            mp = Matchpropuestos.objects.get(pk=value[0])
 
             #Eliminar de la tabla de propuestos
-            #mp.delete()
+            mp.delete()
 
         #Llamar store proc
-        #cursor = connection.cursor()
-        #try:
-        #    cursor.execute('EXEC [dbo].[confirmarMatches] %s', (cuenta,))
-        #finally:
-        #    cursor.close()
+        cursor = connection.cursor()
+        try:
+            cursor.execute('EXEC [dbo].[confirmarMatches] %s', (cuenta,))
+        finally:
+            cursor.close()
 
         #Llamar calculo conciliacion
-        #setConsolidado(cuenta,request)
-            
+        setConsolidado(cuenta,request)
+
+        #Para el log
+        log(request,6,cuenta)
 
         template = "matcher/pd_matchesPropuestos.html"
         msg = 'Matches Confirmados Exitosamente!'
@@ -713,6 +730,8 @@ def pd_matchesPropuestos(request, cuenta):
             matches = Matchpropuestos.objects.filter(ta_conta__codigocuenta=cuenta).order_by('idmatch')
         else:
             matches = None
+
+        matches = Matchpropuestos.objects.all()
 
         template = "matcher/pd_matchesPropuestos.html"
 
@@ -1050,7 +1069,6 @@ def reportes(request):
         tipoarch = request.POST.get('tipoArch')
         respuesta = reporte+'*'+tipoarch+'*'
 
-
         #####
         # REPORTES DE PROCESAMIENTO DIARIO
         #####
@@ -1062,6 +1080,14 @@ def reportes(request):
             usuario = get_ci(request)
 
             codCP = request.POST.get('pd_conc_codcp')
+
+            if tipoarch == 'autcon':
+                #Pasar conciliacion a historico
+                print('hola')
+                return HttpResponseRedirect('/reportes/')
+
+                # Para el log
+                #log(request,10)
 
             if tipo == '0':
                 if codCta == '-1':
@@ -1382,6 +1408,9 @@ def reportes(request):
             fhasta = request.POST.get('est_pa_f-hasta')
             usuario = get_ci(request)
 
+            if fuente == '0':
+                fdesde = fhasta
+
             respuesta += tipoCta+','+codCta+','+fdesde+','+fhasta+','+usuario+','+fuente
 
         if reporte=='reporteestmatchconf':
@@ -1407,7 +1436,11 @@ def reportes(request):
         if nombreRep == "errorconn":
             return HttpResponseNotFound('<h1>Error de conexion, verificar que el servidor de reportes este funcionando.</h1>')
 
-        return (pdfView(nombreRep))
+        # Si es pdf retorno pdf, sino retorno excel
+        if tipoarch == 'pdf':
+            return (pdfView(nombreRep))
+        elif tipoarch == 'xls':
+            return (xlsView(nombreRep))
 
     if request.method == 'GET':
         template = "matcher/reportes.html"

@@ -93,7 +93,12 @@ function iniciar_tabla(idioma){
 //Funcion para añadir al POST los checkboxes que no estan visibles
 $('form').bind('submit', function(e) {
     var rows   = tabla.fnGetNodes(), inputs = [];
-     
+
+    //Obtener el csrf token 
+    var csrf = $(this).find('input[name="csrfmiddlewaretoken"]');
+    //Incluir el token en el form para que se acepte el post
+    inputs.push('<input type="hidden" name="' + csrf.attr('name') + '" value="' + csrf.val() +'">');
+
     // Añade al POST los checkboxes que no estan visibles
     for ( var i = 0, len = rows.length; i < len; i++) {
         var $fields = $(rows[i]).find('input[type="checkbox"]');
@@ -104,6 +109,10 @@ $('form').bind('submit', function(e) {
             }
         });
     }
-     
+
+    //Quito del form todos los checkboxes seleccionados
+    $(this).empty();
+
+    //Añado el token csrf y los checkboxes que no estan seleccionados
     $(this).append(inputs.join(''));
 });

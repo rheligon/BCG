@@ -37,25 +37,28 @@ def generarReporte(message):
     myfile = sock.makefile('r')
     nombrerep = myfile.readline().replace('\n','')
 
+    print(nombrerep)
+
     # Comienza a recibir el reporte
-    f = open('archivos/'+nombrerep+'.pdf','wb')
-    data, addr = sock.recvfrom(buf)
-    
-    try:
-        while(data):
-            f.write(data)
-            sock.settimeout(2)
-            data, addr = sock.recvfrom(buf)
-    except:
-        f.close()
-        sock.close()
-        print ("Error File")
+    with open('archivos/'+nombrerep,'wb') as f:
+        
+        data, addr = sock.recvfrom(buf)
+        
+        try:
+            while(data):
+                f.write(data)
+                sock.settimeout(2)
+                data, addr = sock.recvfrom(buf)
+        except:
+            f.close()
+            sock.close()
+            print ("Error File")
 
     return nombrerep
 
 def pdfView(nombre):
     try:
-        with open('archivos/'+nombre+'.pdf', 'rb') as pdf:
+        with open('archivos/'+nombre, 'rb') as pdf:
             response = HttpResponse(pdf.read(),content_type='application/pdf')
             response['Content-Disposition'] = 'filename='+nombre
             return response
@@ -64,7 +67,7 @@ def pdfView(nombre):
 
 def xlsView(nombre):
     try:
-        with open('archivos/'+nombre+'.xls', 'rb') as xls:
+        with open('archivos/'+nombre, 'rb') as xls:
             response = HttpResponse(xls.read(),content_type='application/vnd.ms-excel')
             response['Content-Disposition'] = 'attachment;filename='+nombre
             return response

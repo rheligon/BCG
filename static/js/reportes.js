@@ -308,7 +308,19 @@ $('.xls').on('click', function(){
   $('#tipoArch').val('xls');
 });
 
+//Al hacer click en autorizar conciliacion
+$('.autcon').on('click', function(){
+  $('#tipoArch').val('autcon');
+});
+
+
+
 //Funcion para añadir al POST el tipo de archivo
 $('form').bind('submit', function(e) {
+
+    if ($('#tipoArch').val() === 'autcon'){
+      $(this).removeAttr("target");
+    }
+    
     $(this).append('<input type="hidden" name="tipoArch" value="' + $('#tipoArch').val() +'">');
 });
