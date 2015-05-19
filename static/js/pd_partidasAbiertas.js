@@ -58,7 +58,6 @@ function iniciar_tabla(idioma){
             "scrollCollapse": true,
             "deferRender": true,
             "orderClasses": false,
-            "ordering":  false,
         })
 
     }else if (idioma==="en"){
@@ -72,7 +71,6 @@ function iniciar_tabla(idioma){
             "scrollCollapse": true,
             "deferRender": true,
             "orderClasses": false,
-            "ordering":  false,
         })
     };
 };

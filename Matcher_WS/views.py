@@ -37,10 +37,12 @@ import shutil
 
 def test(request):
     
-    enviar_mail('Prueba Mail','msg','rheligon@gmail.com')
+    #enviar_mail('Prueba Mail','msg','rheligon@gmail.com')
     
-    ops = get_ops(request)
-    print (ops)
+    #ops = get_ops(request)
+    #print (ops)
+
+    setConsolidado('BMARCH',request)
 
     return JsonResponse('exito', safe=False)
 
@@ -57,6 +59,25 @@ def usr_login(request):
         username = request.POST.get('username', '')
         password = request.POST.get('password', '')
         try:
+
+            '''
+            usr = 'PRUEBA1'
+            usrpwd = 'prueba1'
+
+            # Hash password
+            newp = make_password(usrpwd, hasher='pbkdf2_sha1')
+            x, x, salt, hashp = newp.split("$")
+
+            #Crear usuario de django
+            user, created = User.objects.get_or_create(username=usr, defaults={'password':newp})
+
+            #Cambiar clave guardada por nueva
+            sess = Sesion.objects.get(pk=9)
+            sess.pass_field = hashp
+            sess.salt = salt
+            sess.save()
+            '''
+
             sesion = Sesion.objects.filter(login=username, estado__in=["Activo","Pendiente"])[0]
             user = MyAuthBackend.authenticate(sesion, username=username, password=password)
             if user is not None and sesion.estado!="Inactivo":
@@ -80,8 +101,9 @@ def usr_login(request):
                 detalles = "Usuario: "+username
                 Traza.objects.create(evento_idevento=evento,usuario=nombre, fecha_hora=fechaHora, terminal=terminal, detalles=detalles)
 
-        except:
-            # Show a message     
+        except Exception as e:
+            # Show a message  
+            print (e)   
             message ='Ese usuario no existe en la base de datos.'
 
     context = {'message': message}
@@ -200,8 +222,8 @@ def pd_estadoCuentas(request):
             return JsonResponse({'msg': msg, 'elim':False})
 
 
-        cargados = Cargado.objects.all()
-        procesados = Procesado.objects.all()
+        cargados = Cargado.objects.all().order_by('-estado_cuenta_idedocuenta__fecha_final')
+        procesados = Procesado.objects.all().order_by('-estado_cuenta_idedocuenta__fecha_final')
 
         cargado_l = [cargado.estado_cuenta_idedocuenta for cargado in cargados if cargado.estado_cuenta_idedocuenta.cuenta_idcuenta.idcuenta == cuentaid]
         procesado_l = [procesado.estado_cuenta_idedocuenta for procesado in procesados if procesado.estado_cuenta_idedocuenta.cuenta_idcuenta.idcuenta == cuentaid]
@@ -536,8 +558,6 @@ def pd_cargaAutomatica(request):
             pathdest = Configuracion.objects.all()[0].archcontabilidadproc+'\\'+filename
             shutil.move(pathsrc,pathdest)
 
-            #log(request,3)
-
             return JsonResponse({'exito':True, 'msg':msg})
 
         if actn == 'cargcorr':
@@ -573,8 +593,13 @@ def pd_cargaAutomatica(request):
                         k = 1
                         for tran in transL:
                             # Se usa expresion regular para sacar la fecha final
-                            fecha = re.findall('..?', tran.trans['fecha'])
-                            fecha = datetime(int("20"+fecha[0]), int(fecha[1]), int(fecha[2]))
+                            if tran.trans['fentrada']:
+                                fechaaux = re.findall('..?', tran.trans['fecha'])
+                                fecha = re.findall('..?', tran.trans['fentrada'])
+                                fecha = datetime(int("20"+fechaaux[0]), int(fecha[0]), int(fecha[1]))
+                            else:
+                                fecha = re.findall('..?', tran.trans['fecha'])
+                                fecha = datetime(int("20"+fecha[0]), int(fecha[1]), int(fecha[2]))
     
                             TransabiertaCorresponsal.objects.create(estado_cuenta_idedocuenta=edocta,codigo_transaccion=tran.trans['tipo'], pagina=i+1, fecha_valor=fecha, descripcion=tran.desc, monto=float(tran.trans['monto'].replace(',','.')), credito_debito=tran.trans['DoC'], referencianostro=tran.trans['refNostro'], referenciacorresponsal=tran.trans['refVostro'], codigocuenta=edc.R, numtransaccion=k, campo86_940=None, seguimiento=None)
                             k = k+1
@@ -727,11 +752,9 @@ def pd_matchesPropuestos(request, cuenta):
     if request.method == 'GET':
 
         if cuenta is not None:
-            matches = Matchpropuestos.objects.filter(ta_conta__codigocuenta=cuenta).order_by('idmatch')
+            matches = Matchpropuestos.objects.filter(ta_conta__codigocuenta=cuenta).order_by('puntaje')
         else:
             matches = None
-
-        matches = Matchpropuestos.objects.all()
 
         template = "matcher/pd_matchesPropuestos.html"
 
@@ -759,9 +782,8 @@ def pd_partidasAbiertas(request):
 
                 if tipo == 'conta':
                     ta = TransabiertaContabilidad.objects.get(pk=Mid)
-                    tc = TranscerradaContabilidad.objects.create(codigo_transaccion=ta.codigo_transaccion, fecha=ta.fecha_valor,monto=ta.monto,credito_debito=ta.credito_debito,codigocuenta=ta.codigocuenta,numtransaccion=ta.numtransaccion)
+                    tc = TranscerradaContabilidad.objects.create(estado_cuenta_idedocuenta = ta.estado_cuenta_idedocuenta, codigo_transaccion=ta.codigo_transaccion, fecha=ta.fecha_valor,monto=ta.monto,credito_debito=ta.credito_debito,codigocuenta=ta.codigocuenta,numtransaccion=ta.numtransaccion)
 
-                    tc.estado_cuenta_idedocuenta = ta.estado_cuenta_idedocuenta
                     tc.pagina = ta.pagina
                     tc.descripcion = ta.descripcion
                     tc.referencianostro = ta.referencianostro
@@ -771,9 +793,8 @@ def pd_partidasAbiertas(request):
                 
                 if tipo == 'corr':
                     ta = TransabiertaCorresponsal.objects.get(pk=Mid)
-                    tc = TranscerradaCorresponsal.objects.create(codigo_transaccion=ta.codigo_transaccion, fecha=ta.fecha_valor,monto=ta.monto,credito_debito=ta.credito_debito,codigocuenta=ta.codigocuenta,numtransaccion=ta.numtransaccion)
+                    tc = TranscerradaCorresponsal.objects.create(estado_cuenta_idedocuenta = ta.estado_cuenta_idedocuenta ,codigo_transaccion=ta.codigo_transaccion, fecha_valor=ta.fecha_valor,monto=ta.monto,credito_debito=ta.credito_debito,codigocuenta=ta.codigocuenta,numtransaccion=ta.numtransaccion)
 
-                    tc.estado_cuenta_idedocuenta = ta.estado_cuenta_idedocuenta
                     tc.pagina = ta.pagina
                     tc.descripcion = ta.descripcion
                     tc.referencianostro = ta.referencianostro
@@ -806,7 +827,7 @@ def pd_partidasAbiertas(request):
             # Se llama la funcion de poner consolidado
             setConsolidado(codigoCuenta,request)
 
-            return JsonResponse({'msg':'EXITO'})
+            return JsonResponse({'msg':'Éxito'}, safe=False )
 
 
         if actn == 'buscar':
@@ -938,7 +959,7 @@ def pd_matchesConfirmados(request,cuenta):
 
 
             #No hay filtro por lo que se usan ambas
-            mConf = Matchconfirmado.objects.filter(Q(tc_conta__codigocuenta=cuenta)|Q(tc_corres__codigocuenta=cuenta)).select_related('tc_corres','tc_conta')
+            mConf = Matchconfirmado.objects.filter(Q(tc_conta__codigocuenta=cuenta)|Q(tc_corres__codigocuenta=cuenta)).select_related('tc_corres','tc_conta').order_by('codigomatch')
 
             #Chequear si se selecciono monto
             if filtromonto:
@@ -1007,14 +1028,15 @@ def pd_matchesConfirmados(request,cuenta):
                 elif fechah is not None:
                     mConf = mConf.filter(Q(tc_conta__fecha__lte=fechah)|Q(tc_corres__fecha__lte=fechah))
             
-
             cuentas = Cuenta.objects.all().order_by('codigo')
+            
             context = {'cuentas':cuentas, 'matches':mConf, 'cta':cuenta, 'fArray':filterArray, 'msg':None, 'ops':get_ops(request)}
             template = "matcher/pd_matchesConfirmados.html"
             return render(request, template, context)
 
         if actn == 'romper':
             matchArray = request.POST.getlist('matchArray[]')
+            codcta = request.POST.get('codcta')
 
             for cod in matchArray:
                 mco = Matchconfirmado.objects.filter(codigomatch=cod).select_related('tc_corres','tc_conta')
@@ -1027,7 +1049,7 @@ def pd_matchesConfirmados(request,cuenta):
                         TransabiertaContabilidad.objects.create(estado_cuenta_idedocuenta = tc.estado_cuenta_idedocuenta, codigo_transaccion=tc.codigo_transaccion, pagina=tc.pagina, fecha_valor=tc.fecha, descripcion = tc.descripcion, monto=tc.monto,credito_debito=tc.credito_debito, referencianostro = tc.referencianostro, referenciacorresponsal = tc.referenciacorresponsal, campo86_940 = tc.campo86_940, codigocuenta=tc.codigocuenta, numtransaccion=tc.numtransaccion, seguimiento=tc.seguimiento)
 
                         tc2 = mc.tc_corres
-                        TransabiertaCorresponsal.objects.create(estado_cuenta_idedocuenta = tc2.estado_cuenta_idedocuenta, codigo_transaccion=tc2.codigo_transaccion, pagina=tc2.pagina, fecha_valor=tc2.fecha, descripcion = tc2.descripcion, monto=tc2.monto,credito_debito=tc2.credito_debito, referencianostro = tc2.referencianostro, referenciacorresponsal = tc2.referenciacorresponsal, campo86_940 = tc2.campo86_940, codigocuenta=tc2.codigocuenta, numtransaccion=tc2.numtransaccion, seguimiento=tc2.seguimiento)
+                        TransabiertaCorresponsal.objects.create(estado_cuenta_idedocuenta = tc2.estado_cuenta_idedocuenta, codigo_transaccion=tc2.codigo_transaccion, pagina=tc2.pagina, fecha_valor=tc2.fecha_valor, descripcion = tc2.descripcion, monto=tc2.monto,credito_debito=tc2.credito_debito, referencianostro = tc2.referencianostro, referenciacorresponsal = tc2.referenciacorresponsal, campo86_940 = tc2.campo86_940, codigocuenta=tc2.codigocuenta, numtransaccion=tc2.numtransaccion, seguimiento=tc2.seguimiento)
                         
                         tc.delete()
                         tc2.delete()
@@ -1039,11 +1061,14 @@ def pd_matchesConfirmados(request,cuenta):
 
                     elif mc.tc_corres is not None and mc.tc_conta is None:
                         tc = mc.tc_corres
-                        TransabiertaCorresponsal.objects.create(estado_cuenta_idedocuenta = tc.estado_cuenta_idedocuenta, codigo_transaccion=tc.codigo_transaccion, pagina=tc.pagina, fecha_valor=tc.fecha, descripcion = tc.descripcion, monto=tc.monto,credito_debito=tc.credito_debito, referencianostro = tc.referencianostro, referenciacorresponsal = tc.referenciacorresponsal, campo86_940 = tc.campo86_940, codigocuenta=tc.codigocuenta, numtransaccion=tc.numtransaccion, seguimiento=tc.seguimiento)
+                        TransabiertaCorresponsal.objects.create(estado_cuenta_idedocuenta = tc.estado_cuenta_idedocuenta, codigo_transaccion=tc.codigo_transaccion, pagina=tc.pagina, fecha_valor=tc.fecha_valor, descripcion = tc.descripcion, monto=tc.monto,credito_debito=tc.credito_debito, referencianostro = tc.referencianostro, referenciacorresponsal = tc.referenciacorresponsal, campo86_940 = tc.campo86_940, codigocuenta=tc.codigocuenta, numtransaccion=tc.numtransaccion, seguimiento=tc.seguimiento)
                         tc.delete()
 
                     #Se borra de la tabla de match confirmado
                     mc.delete()
+                    
+            if matchArray:
+                setConsolidado(codcta,request)
 
             msg = 'Matches rotos con éxito'
             return JsonResponse({'msg': msg, 'elim': True})
@@ -2665,6 +2690,35 @@ def admin_crit_reglas(request):
         context = {'criterios':criterios, 'ops':get_ops(request)}
         return render(request, template, context)
 
+@login_required(login_url='/login')
+def manual_usuario(request):
+    try:
+        with open('static/Manuales/Manual del Usuario/Manual del Usuario.pdf', 'rb') as pdf:
+            response = HttpResponse(pdf.read(),content_type='application/pdf')
+            response['Content-Disposition'] = 'filename=Manual del Usuario.pdf'
+            return response
+    except:
+        return HttpResponseNotFound('<h1>Report Not Found</h1>')
+
+@login_required(login_url='/login')
+def manual_sistema(request):
+    try:
+        with open('static/Manuales/Manual del Sistema/Manual del Sistema.pdf', 'rb') as pdf:
+            response = HttpResponse(pdf.read(),content_type='application/pdf')
+            response['Content-Disposition'] = 'filename=Manual del Sistema.pdf'
+            return response
+    except:
+        return HttpResponseNotFound('<h1>Report Not Found</h1>')
+
+@login_required(login_url='/login')
+def sobre_matcher(request):
+    try:
+        with open('static/Manuales/Manual del Sistema/Manual del Sistema.pdf', 'rb') as pdf:
+            response = HttpResponse(pdf.read(),content_type='application/pdf')
+            response['Content-Disposition'] = 'filename=Manual del Sistema.pdf'
+            return response
+    except:
+        return HttpResponseNotFound('<h1>Report Not Found</h1>')
 
 #################################################################################################
 ## Otras funciones

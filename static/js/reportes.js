@@ -58,7 +58,7 @@ $.fn.extend({
     }
 });
 
-//Initialization of treeviews
+//Initializacion del arbol
 $('#treerep').treed({openedClass:'glyphicon-folder-open', closedClass:'glyphicon-folder-close'});
 
 

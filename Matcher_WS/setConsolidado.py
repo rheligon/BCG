@@ -24,7 +24,7 @@ def setConsolidado(codCta,request):
 
         if (ultFC != None and idEcCont != None and idEcCorr != None):
             # Obtengo creditos Trans_Abiertas Contabilidad hasta la fecha indicada
-            totalCredCont = TransabiertaContabilidad.objects.filter(fecha_valor__lte=ultFC,credito_debito__in=['C','RD']).aggregate(Sum('monto'))
+            totalCredCont = TransabiertaContabilidad.objects.filter(codigocuenta=codCta, fecha_valor__lte=ultFC,credito_debito__in=['C','RD']).aggregate(Sum('monto'))
             
             #Se devuelve un diccionario por lo que accedo al valor del primer (unico) elemento
             totalCredCont = next(iter(totalCredCont.values()))
@@ -35,7 +35,7 @@ def setConsolidado(codCta,request):
             print('credcont ' + str(totalCredCont))
 
             # Obtengo debitos Trans_Abiertas Contabilidad hasta la fecha indicada
-            totalDebCont = TransabiertaContabilidad.objects.filter(fecha_valor__lte=ultFC,credito_debito__in=['D','RC']).aggregate(Sum('monto'))
+            totalDebCont = TransabiertaContabilidad.objects.filter(codigocuenta=codCta, fecha_valor__lte=ultFC,credito_debito__in=['D','RC']).aggregate(Sum('monto'))
             totalDebCont = next(iter(totalDebCont.values()))
             
             if totalDebCont is None:
@@ -44,7 +44,7 @@ def setConsolidado(codCta,request):
             print('debcont ' + str(totalDebCont))
 
             # Obtengo creditos Trans_Abiertas Corresponsal hasta la fecha indicada
-            totalCredCorr = TransabiertaCorresponsal.objects.filter(fecha_valor__lte=ultFC,credito_debito__in=['C','RD']).aggregate(Sum('monto'))
+            totalCredCorr = TransabiertaCorresponsal.objects.filter(codigocuenta=codCta, fecha_valor__lte=ultFC,credito_debito__in=['C','RD']).aggregate(Sum('monto'))
             totalCredCorr = next(iter(totalCredCorr.values()))
             
             if totalCredCorr is None:
@@ -52,8 +52,8 @@ def setConsolidado(codCta,request):
             
             print('credcorr ' + str(totalCredCorr))
 
-            # Obtengo debitos Trans_Abiertas Contabilidad hasta la fecha indicada
-            totalDebCorr = TransabiertaCorresponsal.objects.filter(fecha_valor__lte=ultFC,credito_debito__in=['D','RC']).aggregate(Sum('monto'))
+            # Obtengo debitos Trans_Abiertas Corresponsal hasta la fecha indicada
+            totalDebCorr = TransabiertaCorresponsal.objects.filter(codigocuenta=codCta, fecha_valor__lte=ultFC,credito_debito__in=['D','RC']).aggregate(Sum('monto'))
             totalDebCorr = next(iter(totalDebCorr.values()))
 
             if totalDebCorr is None:

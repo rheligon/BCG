@@ -108,7 +108,7 @@ function iniciar_tabla(idioma,origen){
                 { "width": "25%" },
                 { "width": "25%" }
               ],
-            "order": [[ 2, "desc" ]]
+            "order": [[ 4, "desc" ]]
             })
 
     }else if (idioma==="en"){
@@ -125,7 +125,7 @@ function iniciar_tabla(idioma,origen){
                 { "width": "25%" },
                 { "width": "25%" }
               ],
-            "order": [[ 2, "desc" ]]
+            "order": [[ 4, "desc" ]]
         })
     };
 };
@@ -171,22 +171,19 @@ function est_cuenta(cuentaId){
 
 
 
-                    if (json_data[carg][i].fields.origen == "L"){
+                    if (json_data[carg][i].fields.origen === "L"){
                         $('#table-conta > tbody').append('<tr id ="tr-con-'+cod+'"></tr>');
                         var jRow = $("#tr-con-"+cod).append(td1,td2,td3,td4,td5,td6);
                         t_conta.row.add(jRow);
                         
                         if (!ult_conc_existe){
-                            ult_edc_corc = i;
+                            ult_edc_conc = i;
                             ult_conc_existe = true;
                         }
                         
                         if (json_data[carg][ult_edc_conp].fields.codigo < json_data[carg][i].fields.codigo){
                             ult_edc_conc = i;
                         }
-
-                        
-
                     }else{
                         $('#table-corr > tbody').append('<tr id ="tr-cor-'+cod+'"></tr>');
                         var jRow = $("#tr-cor-"+cod).append(td1,td2,td3,td4,td5,td6);
@@ -196,6 +193,7 @@ function est_cuenta(cuentaId){
                             ult_edc_corc = i;
                             ult_corc_existe = true;
                         }
+
                         if (json_data[carg][ult_edc_corp].fields.codigo < json_data[carg][i].fields.codigo){
                             ult_edc_corc = i;
                         }
@@ -223,7 +221,7 @@ function est_cuenta(cuentaId){
 
 
 
-                    if (json_data[proc][i].fields.origen == "L"){
+                    if (json_data[proc][i].fields.origen === "L"){
                         $('#table-conta > tbody').append('<tr id ="tr-con-'+cod+'"></tr>');
                         var jRow = $("#tr-con-"+cod).append(td1,td2,td3,td4,td5,td6);
                         t_conta.row.add(jRow);

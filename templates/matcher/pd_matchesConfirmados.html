@@ -301,7 +301,7 @@ table {
               <td>Id:</td>
               <td>{{match.codigomatch}}</td>
               <td></td>
-              <td>{{match.justificacion}}</td>
+              <td>{{match.justificacion|default:""}}</td>
               <td></td>
               <td></td>
               <td></td>
@@ -311,8 +311,8 @@ table {
             </tr>
             {% endif %}
 
+            {% if match.tc_conta %}
             <tr class="{{match.codigomatch}}">
-              {% if match.tc_conta %}
               <td>{{match.tc_conta.estado_cuenta_idedocuenta.codigo}}</td>
               <td>{{match.tc_conta.pagina}}</td>
               <td>{{match.tc_conta.fecha_valor|date:"d/m/Y"|default:""}}</td>
@@ -324,7 +324,11 @@ table {
               <td>{{match.tc_conta.monto|intcomma}}</td>
               <td>L</td>
               <td></td>
-              {% elif match.tc_corres %}
+            </tr>
+            {%endif%}
+
+            {% if match.tc_corres %}
+            <tr class="{{match.codigomatch}}">
               <td>{{match.tc_corres.estado_cuenta_idedocuenta.codigo}}</td>
               <td>{{match.tc_corres.pagina}}</td>
               <td>{{match.tc_corres.fecha_valor|date:"d/m/Y"|default:""}}</td>
@@ -336,8 +340,9 @@ table {
               <td>{{match.tc_corres.monto|intcomma}}</td>
               <td>S</td>
               <td></td>
-              {% endif %}
             </tr>
+            {% endif %}
+            
           {% assign prevcod match.codigomatch %}
           {% endfor %}
         </tbody>

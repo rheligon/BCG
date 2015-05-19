@@ -302,7 +302,7 @@ function romper_match(matchArray,ctaid){
     $.ajax({
         type:"POST",
         url: "/procd/mConfirmados/"+ctaid+"\/",
-        data: {'matchArray':matchArray, 'action':'romper'},
+        data: {'matchArray':matchArray, 'codcta':ctaid ,'action':'romper'},
         success: function(data){
             $('#processing-modal').modal('toggle');
             console.log(matchArray);

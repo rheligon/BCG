@@ -9,6 +9,9 @@ urlpatterns = patterns('',
     # Admin:
     url(r'^admin/', include(admin.site.urls)),
 
+    # Index o pagina de inicio
+    url(r'^$', 'Matcher_WS.views.index', name='index'),
+
     # Login, Logout
     url(r'^login/$', 'Matcher_WS.views.usr_login', name='login'),
     url(r'^logout/$', 'Matcher_WS.views.usr_logout', name='logout'),
@@ -49,8 +52,9 @@ urlpatterns = patterns('',
     url(r'^admin/criterios_reglas/$', 'Matcher_WS.views.admin_crit_reglas', name='admin_crit_reglas'),
     url(r'^admin/reglas_transf/$', 'Matcher_WS.views.admin_reglas_transf', name='admin_reglas_transf'),
 
-    
-
-    url(r'^$', 'Matcher_WS.views.index', name='index'),
+    #Ayudas
+    url(r'^ayuda/usuario/$', 'Matcher_WS.views.manual_usuario', name='manual_usuario'),
+    url(r'^ayuda/sistema/$', 'Matcher_WS.views.manual_sistema', name='manual_sistema'),
+    url(r'^sobre/matcher$', 'Matcher_WS.views.sobre_matcher', name='sobre_matcher'),
 
 )
