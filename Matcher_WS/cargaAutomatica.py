@@ -132,7 +132,7 @@ def leer_linea_corr(line):
         elif (result.group(1)=="61"):
             # Es una transaccion
             aux = result.group(2)
-            res = re.search('(?P<fecha>^\d{6})(?P<fentrada>\d{4})?(?P<DoC>R?[CD]{1})[A-Z]?(?P<monto>\d+\,\d{0,2})(?P<tipo>.{4})(?P<refNostro>.+(?=//))/?/?(?P<refVostro>.+)?', aux)
+            res = re.search('(?P<fecha>^\d{6})(?P<fentrada>\d{4})?(?P<DoC>R?[CD]{1})[A-Z]?(?P<monto>\d+\,\d{0,2})(?P<tipo>.{4})(?P<refNostro>.+?(?=(//|$)))/?/?(?P<refVostro>.+)?', aux)
             return ("61", res)
 
         elif (result.group(1)=="62M"):

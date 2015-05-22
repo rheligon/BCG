@@ -309,8 +309,26 @@ $('.xls').on('click', function(){
 });
 
 //Al hacer click en autorizar conciliacion
-$('.autcon').on('click', function(){
+$('.autcon').on('click', function(e){
+  e.preventDefault();
   $('#tipoArch').val('autcon');
+
+  ufc = $('select option:selected').attr('ufc');
+  ufh = $('select option:selected').attr('ufh');
+
+  if (ufc === ufh){
+      swal("Ups!","La fecha del último histórico y de la ultima conciliacion son iguales.","error");
+  }else{
+      swal({   title: "",
+               text: "Seguro que desea autorizar la conciliacion al "+ ufc +" ?",
+               type: "warning",
+               showCancelButton: true,
+               confirmButtonText: "Ok"},
+               function(){
+                    $('#pd_concform').submit();
+                  }
+          );
+  }
 });
 
 

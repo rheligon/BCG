@@ -29,6 +29,7 @@ urlpatterns = patterns('',
     url(r'^procd/mPropuestos/((?P<cuenta>\w+)/)?$', 'Matcher_WS.views.pd_matchesPropuestos', name='matchesPropuestos'),
     url(r'^procd/pAbiertas/$', 'Matcher_WS.views.pd_partidasAbiertas', name='partidasAbiertas'),
     url(r'^procd/mConfirmados/((?P<cuenta>\w+)/)?$', 'Matcher_WS.views.pd_matchesConfirmados', name='matchesConfirmados'),
+    url(r'^procd/rep_conc/$', 'Matcher_WS.views.pd_conciliacion', name='pd_conciliacion'),
     
     # Reportes
     url(r'^reportes/$', 'Matcher_WS.views.reportes', name='reportes'),

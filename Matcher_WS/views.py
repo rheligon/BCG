@@ -372,141 +372,143 @@ def pd_cargaAutomatica(request):
             return JsonResponse({'exito':True, 'res':res_json, 'msg':msg, 'cod':cod_json}, safe=False)
 
         if actn == 'prevcorr':
+            try:
+                filename = request.POST.get('archivo_nom')
+                path = Configuracion.objects.all()[0].archswiftcarg+'\\'
+                archivo = path+filename
+                msg=""
+                msgpc = ""
+                msgcta = ""
+                incorrecto = False
 
-            filename = request.POST.get('archivo_nom')
-            path = Configuracion.objects.all()[0].archswiftcarg+'\\'
-            archivo = path+filename
-            msg=""
-            msgpc = ""
-            msgcta = ""
-            incorrecto = False
+                edc_l = edc_list()
 
-            edc_l = edc_list()
+                with open(archivo,'r') as f:
 
-            with open(archivo,'r') as f:
+                    ncta = next(f).replace("\n","")
+                    result = re.match("[$,{]",ncta)
 
-                ncta = next(f).replace("\n","")
-                result = re.match("[$,{]",ncta)
+                    if result is not None:
 
-                if result is not None:
+                        prevLine = ""  # Linea anterior
+                        ult_edc = None # Edo de cuenta actual
+                        ult_pag = (-1) # Pagina actual
+                        
+                        for line in f:
+                            # Se parsea una linea del archivo en "cod" queda el codigo entre :: 
+                            # y en "group" los grupos de campos en el resto de la linea
+                            cod, group = leer_linea_corr(line)
 
-                    prevLine = ""  # Linea anterior
-                    ult_edc = None # Edo de cuenta actual
-                    ult_pag = (-1) # Pagina actual
-                    
-                    for line in f:
-                        # Se parsea una linea del archivo en "cod" queda el codigo entre :: 
-                        # y en "group" los grupos de campos en el resto de la linea
-                        cod, group = leer_linea_corr(line)
-
-                        if cod == "25":
-                            try:
-                                # Se busca la cuenta a ver si se encuentra registrada
-                                cta = Cuenta.objects.filter(ref_vostro=group)[0]
-                            except:
-                                # No existe la cuenta
-                                cta = None
-
-                            if cta is not None:
-                                formato = cta.tipo_carga_corr
-                                if formato != 0:
+                            if cod == "25":
+                                try:
+                                    # Se busca la cuenta a ver si se encuentra registrada
+                                    cta = Cuenta.objects.filter(ref_vostro=group)[0]
+                                except:
+                                    # No existe la cuenta
                                     cta = None
-                                    incorrecto = True
-                                    msgcta = '$La cuenta posee como formato el ; pero se esta tratando de leer un archivo MT950'
 
-                            if cta is not None and not incorrecto:
-                                esta, ult_edc = edc_l.esta(cta.ref_vostro)
-                                if not esta:
-                                    # No se encontraba en la lista
-                                    edo = edoCta(cta.ref_vostro)
-                                    edo.R = cta.codigo
-                                    edc_l.add_edc(edo)
-                                    ult_edc = edo
+                                if cta is not None:
+                                    formato = cta.tipo_carga_corr
+                                    if formato != 0:
+                                        cta = None
+                                        incorrecto = True
+                                        msgcta = '$La cuenta posee como formato el ; pero se esta tratando de leer un archivo MT950'
 
-                            elif not incorrecto:
-                                # La cuenta no esta registrada, informar al usuario
-                                # Cuenta no existe
-                                esta, ult_edc = edc_l.esta(group)
-                                if not esta:
-                                    # No se encontraba en la lista
-                                    edo = edoCta(group)
-                                    edo.R = "---------"
-                                    edc_l.add_edc(edo)
-                                    ult_edc = edo
+                                if cta is not None and not incorrecto:
+                                    esta, ult_edc = edc_l.esta(cta.ref_vostro)
+                                    if not esta:
+                                        # No se encontraba en la lista
+                                        edo = edoCta(cta.ref_vostro)
+                                        edo.R = cta.codigo
+                                        edc_l.add_edc(edo)
+                                        ult_edc = edo
 
-                            else:
-                                ult_edc = None
+                                elif not incorrecto:
+                                    # La cuenta no esta registrada, informar al usuario
+                                    # Cuenta no existe
+                                    esta, ult_edc = edc_l.esta(group)
+                                    if not esta:
+                                        # No se encontraba en la lista
+                                        edo = edoCta(group)
+                                        edo.R = "---------"
+                                        edc_l.add_edc(edo)
+                                        ult_edc = edo
 
-                        elif cod == "28C":
-                            if ult_edc is not None:
-                                dic = group.groupdict()
-
-                                if dic["pag"] is not None:
-                                    ult_pag = int(dic["pag"])-1
                                 else:
-                                    ult_pag = edc_l.sinpag(ult_edc,dic["nroedc"])
+                                    ult_edc = None
 
-                                # Si existia la cuenta en la base de datos
-                                ult_edc = edc_l.add_28c(ult_edc,dic["nroedc"])
-                                
-                        elif cod == "60F" or cod == "60M":
-                            if ult_edc is not None:
-                                # Si existia la cuenta en la base de datos
-                                bal = Bal(group, None)
-                                edc_l.add_bal_ini(ult_edc,bal,ult_pag,cod[2:])
+                            elif cod == "28C":
+                                if ult_edc is not None:
+                                    dic = group.groupdict()
 
-                        elif cod == "62M" or cod == "62F":
-                            if ult_edc is not None:
-                                # Si existia la cuenta en la base de datos
-                                bal = Bal(None, group)
-                                edc_l.add_bal_fin(ult_edc,bal,ult_pag,cod[2:])
+                                    if dic["pag"] is not None:
+                                        ult_pag = int(dic["pag"])-1
+                                    else:
+                                        ult_pag = edc_l.sinpag(ult_edc,dic["nroedc"])
 
-                        elif cod == "61":
-                            if ult_edc is not None:
-                                trans = Trans(group)
-                                edc_l.add_trans(ult_edc,trans,ult_pag)
+                                    # Si existia la cuenta en la base de datos
+                                    ult_edc = edc_l.add_28c(ult_edc,dic["nroedc"])
+                                    
+                            elif cod == "60F" or cod == "60M":
+                                if ult_edc is not None:
+                                    # Si existia la cuenta en la base de datos
+                                    bal = Bal(group, None)
+                                    edc_l.add_bal_ini(ult_edc,bal,ult_pag,cod[2:])
 
-                        elif cod == "$":
-                            # Era una linea de descripcion o de bloque
-                            if ult_edc is not None:
-                                # Chequear si la linea anterior era un codigo 61 u 86
-                                result = re.search('^:([^:]{2,3})\:(.+)', prevLine)
-                                
-                                if result is not None:
-                                    #La linea anterior contenia un codigo
-                                    if (result.group(1)=="61"):
+                            elif cod == "62M" or cod == "62F":
+                                if ult_edc is not None:
+                                    # Si existia la cuenta en la base de datos
+                                    bal = Bal(None, group)
+                                    edc_l.add_bal_fin(ult_edc,bal,ult_pag,cod[2:])
+
+                            elif cod == "61":
+                                if ult_edc is not None:
+                                    trans = Trans(group)
+                                    edc_l.add_trans(ult_edc,trans,ult_pag)
+
+                            elif cod == "$":
+                                # Era una linea de descripcion o de bloque
+                                if ult_edc is not None:
+                                    # Chequear si la linea anterior era un codigo 61 u 86
+                                    result = re.search('^:([^:]{2,3})\:(.+)', prevLine)
+                                    
+                                    if result is not None:
+                                        #La linea anterior contenia un codigo
+                                        if (result.group(1)=="61"):
+                                            # Es la descripcion de una transaccion existente
+                                            # Se vuelve a parsear la linea anterior para sacar la transaccion y poder comparar
+                                            res = re.search('(?P<fecha>^\d{6})(?P<fentrada>\d{4})?(?P<DoC>R?[CD]{1})[A-Z]?(?P<monto>\d+\,\d{0,2})(?P<tipo>.{4})(?P<refNostro>.+?(?=(//|$)))/?/?(?P<refVostro>.+)?', result.group(2))
+                                            # Se crea una tupla transaccion
+                                            trans = Trans(res,group)
+                                            # Se agrega a la lista
+                                            edc_l.add_trans_existe(ult_edc,trans)
+
+                                        if (result.group(1)=="86"):
                                         # Es la descripcion de una transaccion existente
-                                        # Se vuelve a parsear la linea anterior para sacar la transaccion y poder comparar
-                                        res = re.search('(?P<fecha>\d{6})(?P<fentrada>\d{4}?)(?P<DoC>R?[CD]{1})[A-Z]?(?P<monto>\d+\,\d{0,2})(?P<tipo>.{4})(?P<refNostro>.+(?=//))/?/?(?P<refVostro>.+)?', result.group(2))
-                                        # Se crea una tupla transaccion
-                                        trans = Trans(res,group)
-                                        # Se agrega a la lista
-                                        edc_l.add_trans_existe(ult_edc,trans)
+                                            print("era 86: "+ line)
 
-                                    if (result.group(1)=="86"):
-                                    # Es la descripcion de una transaccion existente
-                                        print("era 86: "+ line)
+                            # Se guarda la linea anterior en caso de conseguir parentesis
+                            prevLine = line
+                    else:
+                        # Es un archivo punto y coma
+                        edc_l,msgpc = leer_punto_coma(ncta,'corr',f)
 
-                        # Se guarda la linea anterior en caso de conseguir parentesis
-                        prevLine = line
-                else:
-                    # Es un archivo punto y coma
-                    edc_l,msgpc = leer_punto_coma(ncta,'corr',f)
+                # En esta identacion ya se termino de leer el archivo
+                msg,cod = validar_archivo(edc_l,'corr')
 
-            # En esta identacion ya se termino de leer el archivo
-            msg,cod = validar_archivo(edc_l,'corr')
+                if msgpc!="":
+                    msg = msgpc+msg
+                    cod.append('1')
 
-            if msgpc!="":
-                msg = msgpc+msg
-                cod.append('1')
+                if incorrecto:
+                    msg = msgcta+msg
+                    cod.append('1')
 
-            if incorrecto:
-                msg = msgcta+msg
-                cod.append('1')
-
-            res_json = jsonpickle.encode(edc_l)
-            cod_json = jsonpickle.encode(cod)
-            return JsonResponse({'exito':True, 'res':res_json, 'msg':msg, 'cod':cod_json}, safe=False)
+                res_json = jsonpickle.encode(edc_l)
+                cod_json = jsonpickle.encode(cod)
+                return JsonResponse({'exito':True, 'res':res_json, 'msg':msg, 'cod':cod_json}, safe=False)
+            except Exception as e:
+                print (e)
 
         if actn == 'cargconta':
             msg = "Archivo cargado con exito"
@@ -1086,10 +1088,17 @@ def pd_matchesConfirmados(request,cuenta):
         return render(request, template, context)
 
 @login_required(login_url='/login')
+def pd_conciliacion(request):
+    template = "matcher/pd_conciliacion.html"
+    fecha_hoy = ("/").join(str(timenow().date()).split("-")[::-1])
+
+    context = {'cuentas':get_cuentas(request), 'fecha_hoy':fecha_hoy, 'ops':get_ops(request)}
+    return render(request, template, context)
+
+@login_required(login_url='/login')
 def reportes(request):
 
     if request.method == 'POST':
-        print(request.POST)
         reporte = request.POST.get('rep')
         tipoarch = request.POST.get('tipoArch')
         respuesta = reporte+'*'+tipoarch+'*'
@@ -1107,9 +1116,23 @@ def reportes(request):
             codCP = request.POST.get('pd_conc_codcp')
 
             if tipoarch == 'autcon':
-                #Pasar conciliacion a historico
-                print('hola')
-                return HttpResponseRedirect('/reportes/')
+                # Pasar conciliacion a historico
+                pagina = request.POST.get('pagina')
+                
+                cuenta = Cuenta.objects.get(codigo=codCta)
+                fecha = cuenta.ultimafechaconciliacion
+                print(request.POST)
+                
+                cursor = connection.cursor()
+                try:
+                    cursor.execute('EXEC [dbo].[autorizarConciliacion] %s, %s', (codCta,fecha))
+                finally:
+                    cursor.close()
+
+                if pagina == 'reportes':
+                    return HttpResponseRedirect('/reportes/')
+                else:
+                    return HttpResponseRedirect('/procd/rep_conc/')
 
                 # Para el log
                 #log(request,10)
@@ -1455,6 +1478,7 @@ def reportes(request):
             usuario = get_ci(request)
             
             respuesta += tipoCta+','+codCta+','+fdesde+','+fhasta+','+usuario
+
 
         nombreRep = generarReporte(respuesta)
 

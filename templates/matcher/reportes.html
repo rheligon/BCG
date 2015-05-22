@@ -109,9 +109,9 @@
                   <label class="col-md-4 control-label" for="pd_conc_codcta">Codigo Cuenta:</label>
                   <div class="col-md-7">
                     <select id="pd_conc_codcta" name="pd_conc_codcta" class="form-control">
-                        <option value="-1">------------</option>
+                        <option value="-1" ufc="" ufh="">------------</option>
                       {% for cuenta in cuentas %}
-                        <option value="{{cuenta.codigo}}">{{cuenta.codigo}}</option>
+                        <option value="{{cuenta.codigo}}" ufc="{{cuenta.ultimafechaconciliacion|date:'d/m/Y'}}" ufh="{{cuenta.ultimafechahistorico|date:'d/m/Y'}}">{{cuenta.codigo}}</option>
                       {% endfor %}
                     </select>
                   </div>
@@ -148,6 +148,7 @@
                 </div>
 
                 <input name="tipo" value="0" hidden>
+                <input name="pagina" value="reportes" hidden>
                 <input name="rep" value="reporteconciliacion" hidden>
                 
                 {% if 20 in ops %}
