@@ -272,7 +272,7 @@ $('body').on('click', '.list-group[type=camposr] .list-group-item', function () 
 });
 
 //Flechas
-$('.list-arrows button').click(function () {
+$('.list-arrows button').click(function(event) {
     event.preventDefault();
     var $button = $(this), actives = '';
     //Izquierda funciones
@@ -383,7 +383,7 @@ $('[name="SearchDualList"]').keyup(function (e) {
 
 
 //Elegir el archivo
-$('#table-perfiles').on('click','a[type=perfil]', function () {
+$('#table-perfiles').on('click','a[type=perfil]', function(event) {
     event.preventDefault();
     var a_idaux = $("#Id_perfil").val();
     //Estilo de elemento elegido

@@ -68,8 +68,8 @@ function clean_cta_form(){
 };
 
 //Flechas dual-list
-$('.list-arrows button').click(function () {
-    event.preventDefault();
+$('.list-arrows button').click(function (e) {
+    e.preventDefault();
     var $button = $(this), actives = '';
     //Izquierda
     if ($button.hasClass('move-left')) {
@@ -273,7 +273,7 @@ function cerrar_usr(sessId){
 };
 
 //Cambiar Contraseña
-$('#contrRstButton').on('click', function () {
+$('#contrRstButton').on('click', function(event) {
     event.preventDefault();
     var $btn;
    

@@ -483,7 +483,7 @@ function encaje_add(cuentaId,monto,fecha){
 };
 
 //Agregar Encaje button
-$('#acptencajeButton').on('click', function () {
+$('#acptencajeButton').on('click', function (event) {
     event.preventDefault();
     $('#add-encaje-modal').modal('toggle');
     var cuentaid = $('#Id_cuenta').val();

@@ -416,6 +416,7 @@ def pd_cargaAutomatica(request):
 
                                 if cta is not None and not incorrecto:
                                     esta, ult_edc = edc_l.esta(cta.ref_vostro)
+
                                     if not esta:
                                         # No se encontraba en la lista
                                         edo = edoCta(cta.ref_vostro)
@@ -2355,8 +2356,12 @@ def admin_cuentas(request):
                 msg = "No se encontro la moneda especificada."
                 return JsonResponse({'msg': msg, 'add': False})
 
-            cuenta =  Cuenta.objects.create(criterios_match_idcriterio = criterio, banco_corresponsal_idbanco = banco, codigo=codigo, moneda_idmoneda=moneda, ref_nostro=ref_nostro, ref_vostro=ref_vostro, descripcion=desc, estado=estado, tiempo_retension=tretencion, num_saltos=nsaltos, transaccion_giro=tgiro, intraday=intraday, correo_alertas=mailalertas, tipo_cta=tipo_cta, tipo_cargacont=tcargcont, tipo_carga_corr=tcargcorr, tipo_proceso=tproc)
-                       
+            cuenta, creado = Cuenta.objects.get_or_create(codigo=codigo, defaults={'criterios_match_idcriterio':criterio, 'banco_corresponsal_idbanco': banco, 'moneda_idmoneda':moneda, 'ref_nostro':ref_nostro, 'ref_vostro':ref_vostro, 'descripcion':desc, 'estado':estado, 'tiempo_retension':tretencion, 'num_saltos':nsaltos, 'transaccion_giro':tgiro, 'intraday':intraday, 'correo_alertas':mailalertas, 'tipo_cta':tipo_cta, 'tipo_cargacont':tcargcont, 'tipo_carga_corr':tcargcorr, 'tipo_proceso':tproc})
+            
+            if not creado:
+                msg = "Ya existe un banco con ese codigo en la base de datos."
+                return JsonResponse({'msg': msg, 'add': False}) 
+
             #Se crean las alertas seleccionadas
             if alertas:
                 for elem in alertas:

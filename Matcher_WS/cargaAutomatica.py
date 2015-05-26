@@ -337,7 +337,10 @@ def leer_punto_coma(ncta,origen,f):
 def validar_archivo(edc_l,origen):
     msg = ''
     cod = []
+    auxedcl = edc_list()
+
     for edc in edc_l:
+
         # Validacion cuenta registrada
         try:
             # Se busca la cuenta a ver si se encuentra registrada
@@ -372,9 +375,26 @@ def validar_archivo(edc_l,origen):
 
             if ultedc is not None:
 
+                #Chequear en edc_l sino hay otros edc que sean de la misma cuenta
+                esta, auxedc = auxedcl.esta(edc.cod25)
+
+                if esta:
+                    # Si existen edc para la misma cuenta
+
+                    #Obtener indice del estado de cuenta y restarle 1, obteniendo el anterior
+                    index = edc_l.index(edc)-1
+                    auxedc = edc_l.edcl[index]
+
+                    # Ultedc es el anterior al que se esta viendo, no el guardado en BD
+                    ultedc.balance_final = float(auxedc.pagsBal[len(auxedc.pagsBal)-1].final["monto"].replace(',','.'))
+                    ultedc.codigo = auxedc.cod28c
+
+                #################################################
+
                 # Validacion balance inicial igual al ult cargado
                 num1 = ultedc.balance_final
                 num2 = float(edc.pagsBal[0].inicial["monto"].replace(',','.'))
+
                 if num1 != num2:
                     aux = "$El balance inicial del estado de cuenta no coincide con el ultimo cargado"
                     msg = msg + aux
@@ -415,5 +435,8 @@ def validar_archivo(edc_l,origen):
             if ("%.2f" % abs(balini)) != ("%.2f" % balfin):
                 msg = msg + "$Hay un error en los balances pag: "+str(i+1)
                 cod.append('4')
+
+        #Guardar el edc anterior
+        auxedcl.add_edc(edc)
 
     return msg,cod

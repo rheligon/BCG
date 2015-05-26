@@ -339,7 +339,7 @@ $('#matchButton').on('click', function () {
 });
 
 //Cuando se llena la justificacion, se llama a hacer match
-$('#just-submit').on('click', function(){
+$('#just-submit').on('click', function(event){
     event.preventDefault();
 
     var justificacion = $('#justificacion').val();

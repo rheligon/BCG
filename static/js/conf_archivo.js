@@ -179,7 +179,7 @@ $(function () {
 
 
 //Agregar Formato
-$('#addfa-submit').on('click', function () {
+$('#addfa-submit').on('click', function (event) {
     event.preventDefault();
     var $btn;
    

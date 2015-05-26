@@ -141,7 +141,7 @@ function busqueda(desde,hasta,horas,usr,evento){
     return false;
 };
 
-$('#SearchButton').on('click', function () {
+$('#SearchButton').on('click', function(event) {
     event.preventDefault();
 
     var hd = $('#h-desde').val();

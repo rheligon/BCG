@@ -107,8 +107,7 @@ function iniciar_tabla(idioma,origen){
                 { "width": "10%" },
                 { "width": "25%" },
                 { "width": "25%" }
-              ],
-            "order": [[ 4, "desc" ]]
+              ]
             })
 
     }else if (idioma==="en"){
@@ -124,8 +123,7 @@ function iniciar_tabla(idioma,origen){
                 { "width": "10%" },
                 { "width": "25%" },
                 { "width": "25%" }
-              ],
-            "order": [[ 4, "desc" ]]
+              ]
         })
     };
 };
@@ -148,6 +146,8 @@ function est_cuenta(cuentaId){
             var ult_conp_existe = false;
             var ult_corp_existe = false;
             var json_data = jQuery.parseJSON(data)
+
+            console.log(json_data);
 
             $('#processing-modal').modal('toggle');
 
@@ -180,10 +180,7 @@ function est_cuenta(cuentaId){
                             ult_edc_conc = i;
                             ult_conc_existe = true;
                         }
-                        
-                        if (json_data[carg][ult_edc_conp].fields.codigo < json_data[carg][i].fields.codigo){
-                            ult_edc_conc = i;
-                        }
+
                     }else{
                         $('#table-corr > tbody').append('<tr id ="tr-cor-'+cod+'"></tr>');
                         var jRow = $("#tr-cor-"+cod).append(td1,td2,td3,td4,td5,td6);
@@ -192,10 +189,6 @@ function est_cuenta(cuentaId){
                         if (!ult_corc_existe){
                             ult_edc_corc = i;
                             ult_corc_existe = true;
-                        }
-
-                        if (json_data[carg][ult_edc_corp].fields.codigo < json_data[carg][i].fields.codigo){
-                            ult_edc_corc = i;
                         }
                     }
                 }
@@ -230,10 +223,6 @@ function est_cuenta(cuentaId){
                             ult_edc_conp = i;
                             ult_conp_existe = true;
                         }
-                        
-                        if (json_data[proc][ult_edc_conp].fields.codigo < json_data[proc][i].fields.codigo){
-                            ult_edc_conp = i;
-                        }
 
                     }else{
                         $('#table-corr > tbody').append('<tr id ="tr-cor-'+cod+'"></tr>');
@@ -243,10 +232,6 @@ function est_cuenta(cuentaId){
                         if (!ult_corp_existe){
                             ult_edc_corp = i;
                             ult_corp_existe = true;
-                        }
-
-                        if (json_data[proc][ult_edc_corp].fields.codigo < json_data[proc][i].fields.codigo){
-                            ult_edc_corp = i;
                         }
                     }
                 }
@@ -340,7 +325,7 @@ function est_cuenta(cuentaId){
 }
 
 //Eliminar Estado de Cuenta
-$('#delButton').on('click', function () {
+$('#delButton').on('click', function (event) {
     event.preventDefault();
     var $btn;
    

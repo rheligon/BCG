@@ -63,14 +63,26 @@ class edc_list:
                     elem.cod28c = nro
                     return elem
         else:
+            i = 0
+            index = 0
+
             for elem in self.edcl:
+                #Se busca el elemento
                 if elem.cod25 == edc.cod25 and elem.cod28c == nro:
                     return elem
+
+                #Buscar ultimo indice para agregar ordenado en caso de no encontrar
+                i = i+1
+                if elem.cod25 == edc.cod25:
+                    index = i
+                    if int(elem.cod28c) > int(nro):
+                        index = index-1                       
+
             # No encontro un edc con el mismo num estado de cuenta y misma ref, entonces se agrega
             edo = edoCta(edc.cod25)
             edo.R = edc.R
             edo.cod28c = nro
-            self.add_edc(edo)
+            self.edcl.insert(index,edo)
             return edo
 
     def sinpag(self,edc,nro):
@@ -107,6 +119,12 @@ class edc_list:
             if elem.cod25 == ref:
                 return (True, elem)
         return (False, None)
+
+    def index(self,edc):
+        for i,elem in enumerate(self.edcl):
+            if elem.cod25 == edc.cod25 and elem.cod28c == edc.cod28c:
+                return i
+                
 
     def __str__(self):
         return str(self.edcl)
