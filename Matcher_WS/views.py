@@ -1536,18 +1536,15 @@ def mtx99(request):
         
         return render(request, template, context)
 
-    if request.method == 'POST':
-        if action == 'buscar':
-            banco = request.POST.get('bancomtx99')
-            tipo = request.POST.get('tipomtx99')
-            
+    if request.method == "POST":
+        action = request.POST.get('action')
+        banco = request.POST.get('banco99')
+        tipo = request.POST.get('tipo99')
+        if action == "buscar":
             #buscar los mensajes mtx99 del tipo y banco seleccionados
             mensajes = Mt99.objects.filter(bic = banco).filter(tipo_mt = tipo)
-
-            template = "matcher/mtx99.html"
-            context = {'ops':get_ops(request), 'bancos':get_bancos()}
-        
-            return render(request, template, context)        
+            res_json = serializers.serialize('json', mensajes)
+            return JsonResponse({'mens':res_json})         
 
 @login_required(login_url='/login')
 def configuracion(request, tipo):
