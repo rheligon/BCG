@@ -10,6 +10,11 @@ def get_ops(request):
     opciones = [opcion.opcion_idopcion.idopcion for opcion in PerfilOpcion.objects.filter(perfil_idperfil=perfilid).select_related('opcion_idopcion')]
     return opciones
 
+def get_bancos():
+    #Buscar todos los bancos corresponsales 
+    bancos = BancoCorresponsal.objects.all().order_by('codigo')
+    return bancos
+
 def get_cuentas(request):
     #Busco la sesion que esta conectada
     login = request.user.username 

@@ -23,7 +23,7 @@ from Matcher_WS.edo_cuenta import edoCta, edc_list, Trans, Bal
 from Matcher_WS.mailConf import enviar_mail
 from Matcher_WS.cargaAutomatica import leer_linea_conta, leer_linea_corr, leer_punto_coma, validar_archivo
 from Matcher_WS.Matcher_call import matcher, dma_millis
-from Matcher_WS.funciones_get import get_ops, get_cuentas, get_ci, get_idioma
+from Matcher_WS.funciones_get import get_ops, get_cuentas, get_ci, get_idioma, get_bancos
 from Matcher_WS.generar_reporte import generarReporte, pdfView, xlsView
 from Matcher_WS.setConsolidado import setConsolidado
 
@@ -1509,6 +1509,36 @@ def mensajesSWIFT(request):
     return render(request, template, context)
 
 @login_required(login_url='/login')
+def mtx96(request):
+
+    template = "matcher/mtx96.html"
+    context = {'ops':get_ops(request)}
+    
+    return render(request, template, context)
+
+@login_required(login_url='/login')
+def mtx99(request):
+
+    if request.method == 'GET':
+        template = "matcher/mtx99.html"
+        context = {'ops':get_ops(request), 'bancos':get_bancos()}
+        
+        return render(request, template, context)
+
+    if request.method == 'POST':
+        if action == 'buscar':
+            banco = request.POST.get('bancomtx99')
+            tipo = request.POST.get('tipomtx99')
+            
+            #buscar los mensajes mtx99 del tipo y banco seleccionados
+            mensajes = Mt99.objects.filter(bic = banco).filter(tipo_mt = tipo)
+
+            template = "matcher/mtx99.html"
+            context = {'ops':get_ops(request), 'bancos':get_bancos()}
+        
+            return render(request, template, context)        
+
+@login_required(login_url='/login')
 def configuracion(request, tipo):
     if request.method == 'POST':
 
@@ -2552,7 +2582,7 @@ def admin_reglas_transf(request):
                 cuenta = Cuenta.objects.get(pk=cuentaid)
             except Cuenta.DoesNotExist:
                 msg = "No se encontro la cuenta especificada."
-                return JsonResponse({'msg': msg, 'reglaid': reglaid, 'add': False})
+                return JsonResponse({'msg': msg, 'add': False})
 
             regla =  ReglaTransformacion.objects.create(nombre = nombre, cuenta_idcuenta = cuenta, transaccion_corresponsal = transcorr, ref_corresponsal = selrefcorr, mascara_corresponsal = masccorr, transaccion_contabilidad = transconta, ref_contabilidad = selrefconta, mascara_contabilidad = mascconta, tipo = tipo)
             
