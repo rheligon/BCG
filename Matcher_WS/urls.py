@@ -25,6 +25,7 @@ urlpatterns = patterns('',
 
     # Procesamiento diario
     url(r'^procd/cargAut/$', 'Matcher_WS.views.pd_cargaAutomatica', name='cargaAutomatica'),
+    url(r'^procd/cargMan/$', 'Matcher_WS.views.pd_cargaManual', name='cargaManual'),
     url(r'^procd/match/$', 'Matcher_WS.views.pd_match', name='match'),
     url(r'^procd/mPropuestos/((?P<cuenta>\w+)/)?$', 'Matcher_WS.views.pd_matchesPropuestos', name='matchesPropuestos'),
     url(r'^procd/pAbiertas/$', 'Matcher_WS.views.pd_partidasAbiertas', name='partidasAbiertas'),
