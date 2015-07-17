@@ -55,6 +55,7 @@ function iniciar_tabla_detalle(idioma){
 $('#confButton').on('click', function () {
     var banco = $('#mtx99_banco').val()
     var tipo = $('#mtx99_tipo').val()
+    $('#processing-modal').modal('toggle');
     buscarmtx99(banco,tipo);
 });
 
@@ -84,11 +85,13 @@ function buscarmtx99(banco,tipo){
 
             }
             tabla_det.draw();
+            $('#processing-modal').modal('toggle');
         },
         error: function(jqXHR, error){ 
             console.log("esta dando error")
             alert(jqXHR.responseText) //debug
-            //$('#processing-modal').modal('toggle');
+            $('#processing-modal').modal('toggle');
+            swal("Ups!", "Hubo un error procesando el archivo especificado.", "error");
         },
         dataType:'json',
         headers:{
