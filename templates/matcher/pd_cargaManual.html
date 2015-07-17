@@ -49,6 +49,7 @@
         </div>
       </div>
     </div>
+    <br>
     <div class="row clearfix">
       <div class="form-group col-md-3">
         <label class="control-label" for="banco">Banco: </label>  
@@ -56,83 +57,59 @@
         <input id="banco" name="banco" type="text" placeholder="" class="form-control input-md" style="width:80%" readonly>
         </div>
       </div>
+      <br>
+      <div id="selector_cuenta">
+        <div class="form-group col-md-2"> 
+          <label class="radio-inline">
+            <input type="radio" name="radiocuenta" id="cont-radio" value="C">
+            Contabilidad
+          </label> 
+        </div>
+        <div class="form-group col-md-2"> 
+          <label class="radio-inline">
+            <input type="radio" name="radiocuenta" id="corr-radio" value="S">
+            Corresponsal
+          </label>
+        </div>
+      </div>
     </div>
 </fieldset>
 </form>
 
 <!-- Form Final -->
-<form class="form-horizontal">
+<form class="form-inline">
 <fieldset>
 
 <!-- Form Name -->
 <legend>Último Edo. Cuenta</legend>
-<div class="row">
-  <div class="col-md-6">
-    <h3>Contabilidad</h3>
+<div class="row clearfix">
+  <div class="col-md-12">
 
     <!-- Text input-->
-    <div class="form-group">
-      <label class="col-md-3 control-label" for="edc-ccon">Edo. Cuenta:</label>  
-      <div class="col-md-3">
-      <input id="edc-ccon" name="edc-ccon" type="text" placeholder="" class="form-control input-md">
-        
+    <div class="form-group col-md-3">
+      <label class="control-label" for="edc-ccon">Edo. Cuenta:</label>  
+      <div>
+        <input id="edc-ccon" name="edc-ccon" type="text" placeholder="" class="form-control input-md" readonly>
       </div>
     </div>
 
     <!-- Text input-->
-    <div class="form-group">
-      <label class="col-md-3 control-label" for="f-ccon">Fecha: </label>  
-      <div class="col-md-3">
-      <input id="f-ccon" name="f-ccon" type="text" placeholder="" class="form-control input-md">
-        
+    <div class="form-group col-md-3">
+      <label class="control-label" for="f-ccon">Fecha: </label>  
+      <div>
+      <input id="f-ccon" name="f-ccon" type="text" placeholder="" class="form-control input-md" readonly>
       </div>
     </div>
 
     <!-- Prepended text-->
-    <div class="form-group">
-      <label class="col-md-3 control-label" for="sf-ccon">Saldo Final: </label>
-      <div class="col-md-6">
+    <div class="form-group col-md-3">
+      <label class="control-label" for="sf-ccon">Saldo Final: </label>
+      <div>
         <div class="input-group">
           <span id="sf-ccon-cd" class="input-group-addon"></span>
           <span id="sf-ccon-mon" class="input-group-addon"></span>
-          <input id="sf-ccon" name="sf-ccon" class="form-control" placeholder="" type="text">
+          <input id="sf-ccon" name="sf-ccon" class="form-control" placeholder="" type="text" readonly>
         </div>
-        
-      </div>
-    </div>
-  </div>
-
-  <div class="col-md-6">
-  <h3>Corresponsal</h3>
-
-    <!-- Text input-->
-    <div class="form-group">
-      <label class="col-md-3 control-label" for="edc-ccor">Edo. Cuenta:</label>  
-      <div class="col-md-3">
-      <input id="edc-ccor" name="edc-ccor" type="text" placeholder="" class="form-control input-md">
-        
-      </div>
-    </div>
-
-    <!-- Text input-->
-    <div class="form-group">
-      <label class="col-md-3 control-label" for="f-ccor">Fecha: </label>  
-      <div class="col-md-3">
-      <input id="f-ccor" name="f-ccor" type="text" placeholder="" class="form-control input-md">
-        
-      </div>
-    </div>
-
-    <!-- Prepended text-->
-    <div class="form-group">
-      <label class="col-md-3 control-label" for="sf-ccor">Saldo Final: </label>
-      <div class="col-md-6">
-        <div class="input-group">
-          <span id="sf-ccor-cd" class="input-group-addon"></span>
-          <span id="sf-ccor-mon" class="input-group-addon"></span>
-          <input id="sf-ccor" name="sf-ccor" class="form-control" placeholder="" type="text">
-        </div>
-        
       </div>
     </div>
   </div>
@@ -142,7 +119,7 @@
 </fieldset>
 </form>
 
-<!-- Tabla -->
+<!-- Tabla 
 <legend>Estados de Cuenta</legend>
 
 <div ="row">
@@ -195,7 +172,7 @@
         </div>
     </div>
 </div>
-
+-->
 <!-- Static Modal para procesando -->
 <div class="modal modal-static fade" id="processing-modal" role="dialog" aria-hidden="true">
     <div class="modal-dialog">
