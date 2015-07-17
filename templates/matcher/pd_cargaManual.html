@@ -1,0 +1,226 @@
+{% extends "matcher/base.html" %}
+
+{% load staticfiles %}
+
+{% block title %}Carga Manual{% endblock %}
+
+{%block head%}
+<!-- No hace falta cargar dataTables.css original si se incluye el de bootstrap -->
+<link rel="stylesheet" href="{% static 'css/dataTables/dataTables.bootstrap.css' %}">
+<link rel="stylesheet" href="{% static 'css/jquery-form-validation/jquery.validation.css' %}">
+<link rel="stylesheet" href="{% static 'css/sweet-alert.css' %}">
+<link rel="stylesheet" href="{% static 'css/procesando.css' %}">
+{%endblock%}
+
+{% block content %}
+<style> form {padding-bottom: 1%;} #table-div-conta, #table-div-corr {padding-top: 1%;}</style>
+
+<h2>Carga Manual</h2>
+
+<form class="form-inline">
+<fieldset>
+    <div class="row clearfix">
+      <!-- Select Basic -->
+      <div class="form-group col-md-3 ">
+        <label class="control-label" for="Cuenta-sel">Código Cuenta: </label>
+        <div>
+          <select id="Cuenta-sel" name="Cuenta-sel" class="form-control">
+            <option value="-1">----------</option>
+            {% for cuenta in cuentas %}
+            <option id="opt-{{cuenta.idcuenta}}" value="{{cuenta.idcuenta}}" moneda="{{cuenta.moneda_idmoneda.codigo}}" banco= "{{cuenta.banco_corresponsal_idbanco.codigo}}" cv="{{cuenta.ref_vostro}}" cn="{{cuenta.ref_nostro}}">{{cuenta.codigo}}</option>
+            {% endfor %}
+          </select>
+        </div>
+      </div>
+      <!-- Text input-->
+      <div class="form-group col-md-4">
+        <label class="control-label" for="cta_nostro">No. Cta. Nostro: </label>  
+        <div>
+        <input id="cta_nostro" name="cta_nostro" type="text" placeholder="" class="form-control input-md" style="width:80%" readonly>
+        </div>
+      </div>
+
+      <!-- Text input-->
+      <div class="form-group col-md-4">
+        <label class="control-label" for="cta_vostro">No. Cta Vostro:</label>  
+        <div>
+        <input id="cta_vostro" name="cta_vostro" type="text" placeholder="" class="form-control input-md" style="width:80%" readonly>
+
+        </div>
+      </div>
+    </div>
+    <div class="row clearfix">
+      <div class="form-group col-md-3">
+        <label class="control-label" for="banco">Banco: </label>  
+        <div>
+        <input id="banco" name="banco" type="text" placeholder="" class="form-control input-md" style="width:80%" readonly>
+        </div>
+      </div>
+    </div>
+</fieldset>
+</form>
+
+<!-- Form Final -->
+<form class="form-horizontal">
+<fieldset>
+
+<!-- Form Name -->
+<legend>Último Edo. Cuenta</legend>
+<div class="row">
+  <div class="col-md-6">
+    <h3>Contabilidad</h3>
+
+    <!-- Text input-->
+    <div class="form-group">
+      <label class="col-md-3 control-label" for="edc-ccon">Edo. Cuenta:</label>  
+      <div class="col-md-3">
+      <input id="edc-ccon" name="edc-ccon" type="text" placeholder="" class="form-control input-md">
+        
+      </div>
+    </div>
+
+    <!-- Text input-->
+    <div class="form-group">
+      <label class="col-md-3 control-label" for="f-ccon">Fecha: </label>  
+      <div class="col-md-3">
+      <input id="f-ccon" name="f-ccon" type="text" placeholder="" class="form-control input-md">
+        
+      </div>
+    </div>
+
+    <!-- Prepended text-->
+    <div class="form-group">
+      <label class="col-md-3 control-label" for="sf-ccon">Saldo Final: </label>
+      <div class="col-md-6">
+        <div class="input-group">
+          <span id="sf-ccon-cd" class="input-group-addon"></span>
+          <span id="sf-ccon-mon" class="input-group-addon"></span>
+          <input id="sf-ccon" name="sf-ccon" class="form-control" placeholder="" type="text">
+        </div>
+        
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-6">
+  <h3>Corresponsal</h3>
+
+    <!-- Text input-->
+    <div class="form-group">
+      <label class="col-md-3 control-label" for="edc-ccor">Edo. Cuenta:</label>  
+      <div class="col-md-3">
+      <input id="edc-ccor" name="edc-ccor" type="text" placeholder="" class="form-control input-md">
+        
+      </div>
+    </div>
+
+    <!-- Text input-->
+    <div class="form-group">
+      <label class="col-md-3 control-label" for="f-ccor">Fecha: </label>  
+      <div class="col-md-3">
+      <input id="f-ccor" name="f-ccor" type="text" placeholder="" class="form-control input-md">
+        
+      </div>
+    </div>
+
+    <!-- Prepended text-->
+    <div class="form-group">
+      <label class="col-md-3 control-label" for="sf-ccor">Saldo Final: </label>
+      <div class="col-md-6">
+        <div class="input-group">
+          <span id="sf-ccor-cd" class="input-group-addon"></span>
+          <span id="sf-ccor-mon" class="input-group-addon"></span>
+          <input id="sf-ccor" name="sf-ccor" class="form-control" placeholder="" type="text">
+        </div>
+        
+      </div>
+    </div>
+  </div>
+</div>
+
+
+</fieldset>
+</form>
+
+<!-- Tabla -->
+<legend>Estados de Cuenta</legend>
+
+<div ="row">
+  <div style="padding-bottom:1%;" class="col-md-3 pull-right">
+      <button type="button" id="delButton" data-loading-text="Cargando..." class="btn btn-danger" autocomplete="off">
+          Eliminar
+      </button>
+  </div>
+<ul class="nav nav-tabs" id="edo-cuenta-tab">
+    <li class="active"><a href="#conta-tab" data-toggle="tab">Contabilidad <i class="fa"></i></a></li>
+    <li><a href="#corr-tab" data-toggle="tab">Corresponsal <i class="fa"></i></a></li>
+</ul>
+</div>
+<div class="tab-content">
+    <div class="tab-pane active" id="conta-tab">
+        <div id="table-div-conta" class="table-responsive col-md-12">
+            <table id="table-conta" class="table table-bordered table-striped tabla">
+                <thead>
+                    <tr>
+                        <th>Código Cuenta</th>
+                        <th>Estado</th>
+                        <th>Edo. Cuenta</th>
+                        <th>Páginas</th>
+                        <th>Saldo Inicial</th>
+                        <th>Saldo Final</th>
+                    </tr>
+                </thead>
+                <tbody id="tb-conta">
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="tab-pane" id="corr-tab">
+        <div id="table-div-corr" class="table-responsive col-md-12">
+            <table id="table-corr" class="table table-bordered table-striped tabla">
+                <thead>
+                    <tr>
+                        <th>Código Cuenta</th>
+                        <th>Estado</th>
+                        <th>Edo. Cuenta</th>
+                        <th>Páginas</th>
+                        <th>Saldo Inicial</th>
+                        <th>Saldo Final</th>
+                    </tr>
+                </thead>
+                <tbody id="tb-corr">
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Static Modal para procesando -->
+<div class="modal modal-static fade" id="processing-modal" role="dialog" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-body">
+                <div class="text-center">
+                    <img src="{% static 'images/procesando.gif' %}" class="icon" />
+                    <h4>Procesando, por favor espere.</h4>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<input id="elim-data" modo="" cod="-1" eid="-1" hidden>
+{% endblock %}
+
+{% block script%}
+<script> 
+    //define el idioma de la tabla (es/en)
+    idioma_tr = "es"
+</script>
+<script src="{% static 'js/jquery.dataTables.min.js' %}" type="text/javascript"></script>
+<script src="{% static 'js/dataTables.bootstrap.js' %}" type="text/javascript"></script>
+<script src="{% static 'js/jquery-form-validation/jquery.validation.min.js' %}"></script>
+<script src="{% static 'js/sweet-alert.min.js' %}"></script>
+<script src="{% static 'js/pd_cargaManual.js' %}" type="text/javascript"></script>
+{% endblock %}

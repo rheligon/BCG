@@ -633,6 +633,17 @@ def pd_cargaAutomatica(request):
         return render(request, template, context)
 
 @login_required(login_url='/login')
+def pd_cargaManual(request):
+
+    if request.method == 'POST':
+        a=True
+    if request.method == 'GET':
+        context = {'cuentas': get_cuentas(request), 'ops':get_ops(request)}
+        template = "matcher/pd_cargaManual.html"
+        return render(request, template, context)
+
+
+@login_required(login_url='/login')
 def pd_match(request):
     if request.method == 'POST':
         actn = request.POST.get('action')
