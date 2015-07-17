@@ -4,7 +4,6 @@
 
 from django.contrib.auth import get_backends, get_user_model
 from django.contrib.auth.backends import ModelBackend
-from django_python3_ldap import ldap
 from django.contrib.auth.hashers import *
 from Matcher.models import Sesion
 from ldap3 import  Server, Connection, SEARCH_SCOPE_WHOLE_SUBTREE, GET_SCHEMA_INFO, STRATEGY_SYNC, AUTH_SIMPLE
