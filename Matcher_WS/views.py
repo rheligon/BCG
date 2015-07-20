@@ -1537,14 +1537,35 @@ def mtx99(request):
         return render(request, template, context)
 
     if request.method == "POST":
+
         action = request.POST.get('action')
         banco = request.POST.get('banco99')
         tipo = request.POST.get('tipo99')
+        desde = request.POST.get('fechaDesde99')
+        hasta = request.POST.get('fechaHasta99')
+
         if action == "buscar":
-            #buscar los mensajes mtx99 del tipo y banco seleccionados
-            mensajes = Mt99.objects.filter(bic = banco).filter(tipo_mt = tipo)
-            res_json = serializers.serialize('json', mensajes)
-            return JsonResponse({'mens':res_json})         
+            if desde == "" and hasta == "":
+                
+                #buscar los mensajes mtx99 del tipo y banco seleccionados
+                mensajes = Mt99.objects.filter(bic = banco).filter(tipo_mt = tipo)
+                res_json = serializers.serialize('json', mensajes)
+                return JsonResponse({'mens':res_json})
+
+            else:
+
+                fechad = datetime.strptime(desde, '%d/%m/%Y')
+                fechah = datetime.strptime(hasta, '%d/%m/%Y')
+
+                #buscar los mensajes mtx99 del tipo y banco seleccionados, en el rango de fechas suministrado
+                mensajes = Mt99.objects.filter(bic = banco).filter(tipo_mt = tipo)
+
+                if fechad is not None and fechah is not None:
+                    mensajes = mensajes.filter(fecha__gte=fechad).filter(fecha__lte=fechah)
+                    
+                res_json = serializers.serialize('json', mensajes)
+                return JsonResponse({'mens':res_json})
+
 
 @login_required(login_url='/login')
 def configuracion(request, tipo):
