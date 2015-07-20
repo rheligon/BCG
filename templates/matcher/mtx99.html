@@ -7,16 +7,19 @@
 {%block head%}
 <!-- No hace falta cargar dataTables.css original si se incluye el de bootstrap -->
 <link rel="stylesheet" href="{% static 'css/dataTables/dataTables.bootstrap.css' %}">
+<link rel="stylesheet" href="{% static 'css/picker.css' %}">
+<link rel="stylesheet" href="{% static 'css/picker.date.css' %}">
 {%endblock%}
 
 {% block content %}
+
 <div class="table-responsive col-md-10">
     <br>
-        <h2> Mensajes MTX99 </h2>
+        <h2> Mensajes MTn99 </h2>
         <legend>Búsqueda</legend>
         <table>
             <tr>
-                <td class="col-md-7">
+                <td class="col-md-7 ">
                     <div class="col-md-7 form-group">
                         <label class="col-md-4 control-label" >Banco:</label>
                         <div class="col-md-8">
@@ -41,23 +44,41 @@
                         </div>
                     </div>
                 </td>
-                <td class "col-md-5">
-                        <button type="button" id="conf22Button" class="col-md-7 btn btn-primary">
-                            FECHAS
-                        </button>
-                </td>
-
                 <td class "col-md-4">
-                        <button type="button" id="confButton" class="col-md-7 btn btn-primary">
+                        <button type="button" id="confButton" class="col-md-4 btn btn-primary">
                             Buscar
                         </button>
-                </td>            
-                
+                </td>           
+            </tr>
+            <tr>
+                <td class "col-md-3">
+                    <div class="checkbox col-md-4">
+                        <label>
+                        <input type="checkbox" class="cbfilter" id="fecha-cb" value="3">
+                            Buscar por fecha
+                        </label>
+                    </div>
+                </td>
+                <td class "col-md-7">
+                    <div id="filter-div" class="col-md-12 well" hidden>
+                        <div id="filter-fecha" hidden>
+                            <div class="form-group">
+                                <label class="col-md-2 control-label">Desde:</label>
+                                <div class="col-md-4"><input id="f-desde" class="form-control"></div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="col-md-2 control-label">Hasta:</label>
+                                <div class="col-md-4"><input id="f-hasta" class="form-control"></div>
+                            </div>
+                        </div>
+                    </div>
+                </td>
             </tr>
         </table>
-
+        <br>
         <div class="well table-responsive col-md-12">
-          <legend>Detalle Mensajes MTx99:</legend>
+          <legend>Detalle Mensajes MTn99:</legend>
             <table id="table-detalle" class="table table-bordered table-striped tabla">
                 <thead>
                     <tr>
@@ -96,6 +117,11 @@
 </script>
 <script src="{% static 'js/jquery.dataTables.min.js' %}" type="text/javascript"></script>
 <script src="{% static 'js/dataTables.bootstrap.js' %}" type="text/javascript"></script>
+<script type="text/javascript" src="{% static 'js/jshashtable.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/numberformatter.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/picker.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/picker.date.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/pickerlegacy.js' %}"></script>
 <script type="text/javascript" src="{% static 'js/mtx99.js' %}"></script>
 
 <script type="text/javascript">
@@ -122,5 +148,6 @@ function iniciar_tabla(idioma){
         })
     };
 };
+
 </script>
 {% endblock %}
