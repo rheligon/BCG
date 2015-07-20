@@ -9,6 +9,9 @@ function commas (num) {
 }
 
 $('#Cuenta-sel').change(function() {
+
+    $('#processing-modal').modal('toggle');
+  
   var cuentaId = $('#Cuenta-sel').val();
 
   if (cuentaId>=0){
@@ -19,16 +22,9 @@ $('#Cuenta-sel').change(function() {
     $('#cta_vostro').val(sel.attr('cv'));
     $('#banco').val(sel.attr('banco'));
     
-    
-    $('#sf-ccon-mon').html(moneda);
-    $('#sf-ccor-mon').html(moneda);
-    $('#sf-pcon-mon').html(moneda);
-    $('#sf-pcor-mon').html(moneda);
-
     t_conta.clear().draw();
     t_corr.clear().draw();
     $('#processing-modal').modal('toggle');
-    est_cuenta(cuentaId);
   }else{
 
     t_conta.clear().draw();
@@ -64,8 +60,10 @@ $('#Cuenta-sel').change(function() {
     $('#f-pcor').val("");
     $('#sf-pcor-cd').html("");
     $('#sf-pcor').val("");
+    $('#processing-modal').modal('toggle');
   }
 });
+
 
 //Mostrar Detalle al hacer click en código de banco
 $('.table').on('click','a[type=edc]', function(event) {
@@ -87,6 +85,56 @@ $('.table').on('click','a[type=edc]', function(event) {
     $("#elim-data").attr("cod", a_cod);
 });
 
+$('input[name=radiocuenta]').change(function(){
+    $('#processing-modal').modal('toggle');
+        
+    var tipo = $(this).attr('id');
+    console.log(tipo+" idaux")
+
+    var cuentaId = $('#Cuenta-sel').val();
+
+    if (cuentaId>=0){
+        var sel = $('#opt-'+cuentaId);
+        var moneda = sel.attr('moneda');
+        
+        $('#sf-ccon-mon').html(moneda);
+        $('#sf-ccor-mon').html(moneda);
+        $('#sf-pcon-mon').html(moneda);
+        $('#sf-pcor-mon').html(moneda);
+
+        }else{
+
+        $('#elim-data').attr('cod', "");
+
+        $('#sf-ccon-mon').html("");
+        $('#sf-ccor-mon').html("");
+        $('#sf-pcon-mon').html("");
+        $('#sf-pcor-mon').html("");
+
+        $('#edc-ccon').val("");
+        $('#f-ccon').val("");
+        $('#sf-ccon-cd').html("");
+        $('#sf-ccon').val("");
+
+        $('#edc-pcon').val("");
+        $('#f-pcon').val("");
+        $('#sf-pcon-cd').html("");
+        $('#sf-pcon').val("");
+        $('#edc-ccor').val("");
+        $('#f-ccor').val("");
+        $('#sf-ccor-cd').html("");
+        $('#sf-ccor').val("");
+
+        $('#edc-pcor').val("");
+        $('#f-pcor').val("");
+        $('#sf-pcor-cd').html("");
+        $('#sf-pcor').val("");
+        
+    }
+
+    buscarEstado(tipo,cuentaId)
+     
+});
 
 function reiniciar_tablas(){
     t_conta.clear().draw();
@@ -132,12 +180,12 @@ function iniciar_tabla(idioma,origen){
     };
 };
 
-//Rellenar pagina de acuerdo a la seleccion
-function est_cuenta(cuentaId){
+//Buscar partidas de acuerdo a la seleccion
+function buscarEstado(tipo,cuentaid){
     $.ajax({
         type:"POST",
-        url: "/cuentas/estado",
-        data: {"cuentaid": cuentaId},
+        url: "/procd/cargMan/",
+        data: {'tipo':tipo,'cuentaid':cuentaid ,'action':'buscar'},
         success: function(data){
             var carg = 0;
             var proc = 1;
@@ -149,47 +197,25 @@ function est_cuenta(cuentaId){
             var ult_corc_existe = false;
             var ult_conp_existe = false;
             var ult_corp_existe = false;
-            var json_data = jQuery.parseJSON(data)
-
-            console.log(json_data);
-
-            $('#processing-modal').modal('toggle');
+            var tipo = data.tipo;
+            console.log(data.tipo)
+            var json_data = jQuery.parseJSON(data.query)
+            console.log(json_data)
 
             if (json_data[carg].length>=1){
-
-                var bank = json_data[carg][0].fields.cuenta_idcuenta;
-                var bankcod = $('#opt-'+bank).html();
-
+            console.log("entre")
+                  
                 for (var i = 0; i < json_data[carg].length; i++) {
 
-                    var date_ini = new Date(json_data[carg][i].fields.fecha_inicial)
-                    var date_fin = new Date(json_data[carg][i].fields.fecha_final)
-                    var cod = json_data[carg][i].pk
-
-                    var td1 = '<td>'+ '<a id="c-'+ cod +'" type="edc" cod="'+json_data[carg][i].fields.codigo+'" modo="carg">' + bankcod + '</a></td>';
-                    var td2 = '<td> cargado </td>';
-                    var td3 = '<td>' + json_data[carg][i].fields.codigo + '</td>';
-                    var td4 = '<td>' + json_data[carg][i].fields.pagina + '</td>';
-                    var td5 = '<td>' + json_data[carg][i].fields.m_finicial + ' '+ json_data[carg][i].fields.c_dinicial + ' '+ date_ini.toLocaleDateString() + ' ' + json_data[carg][i].fields.balance_inicial +'</td>';
-                    var td6 = '<td>' + json_data[carg][i].fields.m_ffinal + ' '+ json_data[carg][i].fields.c_dfinal + ' '+ date_fin.toLocaleDateString() + ' ' + json_data[carg][i].fields.balance_final +'</td>';
-
-
-
                     if (json_data[carg][i].fields.origen === "L"){
-                        $('#table-conta > tbody').append('<tr id ="tr-con-'+cod+'"></tr>');
-                        var jRow = $("#tr-con-"+cod).append(td1,td2,td3,td4,td5,td6);
-                        t_conta.row.add(jRow);
-                        
+   
                         if (!ult_conc_existe){
                             ult_edc_conc = i;
                             ult_conc_existe = true;
                         }
 
                     }else{
-                        $('#table-corr > tbody').append('<tr id ="tr-cor-'+cod+'"></tr>');
-                        var jRow = $("#tr-cor-"+cod).append(td1,td2,td3,td4,td5,td6);
-                        t_corr.row.add(jRow);
-
+   
                         if (!ult_corc_existe){
                             ult_edc_corc = i;
                             ult_corc_existe = true;
@@ -199,29 +225,11 @@ function est_cuenta(cuentaId){
             }
 
             if (json_data[proc].length>=1){
-
-                var bank = json_data[proc][0].fields.cuenta_idcuenta;
-                var bankcod = $('#opt-'+bank).html();
-
+                console.log("entre")
+            
                 for (var i = 0; i < json_data[proc].length; i++) {
 
-                    var date_ini = new Date(json_data[proc][i].fields.fecha_inicial)
-                    var date_fin = new Date(json_data[proc][i].fields.fecha_final)
-                    var cod = json_data[proc][i].pk
-
-                    var td1 = '<td>'+ '<a id="p-'+ cod +'" type="edc" cod="'+json_data[proc][i].fields.codigo+'" modo="proc">' + bankcod + '</a></td>';
-                    var td2 = '<td> procesado </td>';
-                    var td3 = '<td>' + json_data[proc][i].fields.codigo + '</td>';
-                    var td4 = '<td>' + json_data[proc][i].fields.pagina + '</td>';
-                    var td5 = '<td>' + json_data[proc][i].fields.m_finicial + ' '+ json_data[proc][i].fields.c_dinicial + ' '+ date_ini.toLocaleDateString() + ' ' + commas(json_data[proc][i].fields.balance_inicial) +'</td>';
-                    var td6 = '<td>' + json_data[proc][i].fields.m_ffinal + ' '+ json_data[proc][i].fields.c_dfinal + ' '+ date_fin.toLocaleDateString() + ' ' + commas(json_data[proc][i].fields.balance_final) +'</td>';
-
-
-
                     if (json_data[proc][i].fields.origen === "L"){
-                        $('#table-conta > tbody').append('<tr id ="tr-con-'+cod+'"></tr>');
-                        var jRow = $("#tr-con-"+cod).append(td1,td2,td3,td4,td5,td6);
-                        t_conta.row.add(jRow);
                         
                         if (!ult_conp_existe){
                             ult_edc_conp = i;
@@ -229,9 +237,6 @@ function est_cuenta(cuentaId){
                         }
 
                     }else{
-                        $('#table-corr > tbody').append('<tr id ="tr-cor-'+cod+'"></tr>');
-                        var jRow = $("#tr-cor-"+cod).append(td1,td2,td3,td4,td5,td6);
-                        t_corr.row.add(jRow);
 
                         if (!ult_corp_existe){
                             ult_edc_corp = i;
@@ -240,9 +245,10 @@ function est_cuenta(cuentaId){
                     }
                 }
             }
-
-
-            if (ult_conc_existe){
+            
+            if (ult_conc_existe && tipo =="cont-radio"){
+                console.log("entre3"+tipo+" "+json_data[carg][ult_edc_conc].fields.codigo)
+            
                 var fecha_conc = new Date(json_data[carg][ult_edc_conc].fields.fecha_final)
                 $('#edc-ccon').val(json_data[carg][ult_edc_conc].fields.codigo);
                 $('#f-ccon').val(fecha_conc.toLocaleDateString());
@@ -255,70 +261,72 @@ function est_cuenta(cuentaId){
                 $('#sf-ccon').val("");
             }
 
-            if (ult_conp_existe){
+            if (ult_conp_existe && !ult_conc_existe && tipo =="cont-radio"){
+                console.log("entre4"+tipo+" "+json_data[proc][ult_edc_conp].fields.codigo)
+            
                 var fecha_conp = new Date(json_data[proc][ult_edc_conp].fields.fecha_final)
-                $('#edc-pcon').val(json_data[proc][ult_edc_conp].fields.codigo);
-                $('#f-pcon').val(fecha_conp.toLocaleDateString());
-                $('#sf-pcon-cd').html(json_data[proc][ult_edc_conp].fields.c_dfinal);
-                $('#sf-pcon').val(commas(json_data[proc][ult_edc_conp].fields.balance_final));
+                $('#edc-ccon').val(json_data[proc][ult_edc_conp].fields.codigo);
+                $('#f-ccon').val(fecha_conp.toLocaleDateString());
+                $('#sf-ccon-cd').html(json_data[proc][ult_edc_conp].fields.c_dfinal);
+                $('#sf-ccon').val(commas(json_data[proc][ult_edc_conp].fields.balance_final));
             
-                if (!ult_conc_existe){
-                    $('#edc-ccon').val(json_data[proc][ult_edc_conp].fields.codigo);
-                    $('#f-ccon').val(fecha_conp.toLocaleDateString());
-                    $('#sf-ccon-cd').html(json_data[proc][ult_edc_conp].fields.c_dfinal);
-                    $('#sf-ccon').val(commas(json_data[proc][ult_edc_conp].fields.balance_final));
-                }
-
-
             }else{
-                $('#edc-pcon').val("");
-                $('#f-pcon').val("");
-                $('#sf-pcon-cd').html("");
-                $('#sf-pcon').val("");
+                $('#edc-ccon').val("");
+                $('#f-ccon').val("");
+                $('#sf-ccon-cd').html("");
+                $('#sf-ccon').val("");
             }
 
-            if (ult_corc_existe){
+            if (ult_corc_existe && tipo =="corr-radio"){
+                console.log("entre5"+tipo+" "+json_data[carg][ult_edc_corc].fields.codigo)
+            
                 var fecha_corc = new Date(json_data[carg][ult_edc_corc].fields.fecha_final)
-                $('#edc-ccor').val(json_data[carg][ult_edc_corc].fields.codigo);
-                $('#f-ccor').val(fecha_corc.toLocaleDateString());
-                $('#sf-ccor-cd').html(json_data[carg][ult_edc_corc].fields.c_dfinal);
-                $('#sf-ccor').val(commas(json_data[carg][ult_edc_corc].fields.balance_final));
+                $('#edc-ccon').val(json_data[carg][ult_edc_corc].fields.codigo);
+                $('#f-ccon').val(fecha_corc.toLocaleDateString());
+                $('#sf-ccon-cd').html(json_data[carg][ult_edc_corc].fields.c_dfinal);
+                $('#sf-ccon').val(commas(json_data[carg][ult_edc_corc].fields.balance_final));
             }else{
-                $('#edc-ccor').val("");
-                $('#f-ccor').val("");
-                $('#sf-ccor-cd').html("");
-                $('#sf-ccor').val("");
+                $('#edc-ccon').val("");
+                $('#f-ccon').val("");
+                $('#sf-ccon-cd').html("");
+                $('#sf-ccon').val("");
             }
 
-            if (ult_corp_existe){
-                var fecha_corp = new Date(json_data[proc][ult_edc_corp].fields.fecha_final)
-                $('#edc-pcor').val(json_data[proc][ult_edc_corp].fields.codigo);
-                $('#f-pcor').val(fecha_corp.toLocaleDateString());
-                $('#sf-pcor-cd').html(json_data[proc][ult_edc_corp].fields.c_dfinal);
-                $('#sf-pcor').val(commas(json_data[proc][ult_edc_corp].fields.balance_final));
+            if (ult_corp_existe && !ult_corc_existe && tipo =="corr-radio"){
+                console.log("entre6"+tipo+" "+json_data[proc][ult_edc_corp].fields.codigo)
             
-                if (!ult_corc_existe){
-                    $('#edc-ccor').val(json_data[proc][ult_edc_corp].fields.codigo);
-                    $('#f-ccor').val(fecha_corp.toLocaleDateString());
-                    $('#sf-ccor-cd').html(json_data[proc][ult_edc_corp].fields.c_dfinal);
-                    $('#sf-ccor').val(commas(json_data[proc][ult_edc_corp].fields.balance_final));
-                }
-
+                var fecha_corp = new Date(json_data[proc][ult_edc_corp].fields.fecha_final)
+                $('#edc-ccon').val(json_data[proc][ult_edc_corp].fields.codigo);
+                $('#f-ccon').val(fecha_corp.toLocaleDateString());
+                $('#sf-ccon-cd').html(json_data[proc][ult_edc_corp].fields.c_dfinal);
+                $('#sf-ccon').val(commas(json_data[proc][ult_edc_corp].fields.balance_final));
+            
             }else{
-                $('#edc-pcor').val("");
-                $('#f-pcor').val("");
-                $('#sf-pcor-cd').html("");
-                $('#sf-pcor').val("");
+                $('#edc-ccon').val("");
+                $('#f-ccon').val("");
+                $('#sf-ccon-cd').html("");
+                $('#sf-ccon').val("");
             }
 
+            /*edcArray = data.r_edcn;
 
-            t_conta.draw();
-            t_corr.draw();
+            $('#pbardiv').prop('hidden', false);
+            $('#pbar').attr('max', json_corr.length+json_conta.length);
 
-        },
-        error: function(error){
+            // Initalize and start iterating
+            var contaIter = new heavyLifter(json_conta,'conta');
+            contaIter.startCalculation();
+
+            // Initalize and start iterating
+            var corrIter = new heavyLifter(json_corr,'corr');
+            corrIter.startCalculation();*/
+
             $('#processing-modal').modal('toggle');
-            swal("Ups!", "Hubo un error buscando la cuenta especificada.", "error");
+        },
+        error: function(q,error){
+            alert(q.responseText) //debug
+            $('#processing-modal').modal('toggle');
+            swal("Ups!", "Hubo un error buscando las partidas para la cuenta especificada.", "error");
         },
         dataType:'json',
         headers:{
@@ -326,7 +334,7 @@ function est_cuenta(cuentaId){
         }
     });
     return false;
-}
+};
 
 //Eliminar Estado de Cuenta
 $('#delButton').on('click', function (event) {

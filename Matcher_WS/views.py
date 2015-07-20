@@ -636,7 +636,22 @@ def pd_cargaAutomatica(request):
 def pd_cargaManual(request):
 
     if request.method == 'POST':
-        a=True
+        actn = request.POST.get('action')
+        cuentaid =int(request.POST.get('cuentaid'))
+        cargados = Cargado.objects.all().order_by('-estado_cuenta_idedocuenta__fecha_final')
+        procesados = Procesado.objects.all().order_by('-estado_cuenta_idedocuenta__fecha_final')
+
+        cargado_l = [cargado.estado_cuenta_idedocuenta for cargado in cargados if cargado.estado_cuenta_idedocuenta.cuenta_idcuenta.idcuenta == cuentaid]
+        procesado_l = [procesado.estado_cuenta_idedocuenta for procesado in procesados if procesado.estado_cuenta_idedocuenta.cuenta_idcuenta.idcuenta == cuentaid]
+
+        res_json2 = '[' + serializers.serialize('json', cargado_l) + ',' 
+        res_json2 += serializers.serialize('json', procesado_l)+']'
+        if actn == 'buscar':
+            tipo = request.POST.get('tipo')
+            print (tipo)
+        return JsonResponse({'query':res_json2, 'tipo':tipo})
+
+
     if request.method == 'GET':
         context = {'cuentas': get_cuentas(request), 'ops':get_ops(request)}
         template = "matcher/pd_cargaManual.html"
