@@ -637,19 +637,22 @@ def pd_cargaManual(request):
 
     if request.method == 'POST':
         actn = request.POST.get('action')
-        cuentaid =int(request.POST.get('cuentaid'))
-        cargados = Cargado.objects.all().order_by('-estado_cuenta_idedocuenta__fecha_final')
-        procesados = Procesado.objects.all().order_by('-estado_cuenta_idedocuenta__fecha_final')
-
-        cargado_l = [cargado.estado_cuenta_idedocuenta for cargado in cargados if cargado.estado_cuenta_idedocuenta.cuenta_idcuenta.idcuenta == cuentaid]
-        procesado_l = [procesado.estado_cuenta_idedocuenta for procesado in procesados if procesado.estado_cuenta_idedocuenta.cuenta_idcuenta.idcuenta == cuentaid]
-
-        res_json2 = '[' + serializers.serialize('json', cargado_l) + ',' 
-        res_json2 += serializers.serialize('json', procesado_l)+']'
         if actn == 'buscar':
+            
+            cuentaid =int(request.POST.get('cuentaid'))
+            moneda = request.POST.get('moneda')
             tipo = request.POST.get('tipo')
-            print (tipo)
-        return JsonResponse({'query':res_json2, 'tipo':tipo})
+            
+            cargados = Cargado.objects.all().order_by('-estado_cuenta_idedocuenta__fecha_final')
+            procesados = Procesado.objects.all().order_by('-estado_cuenta_idedocuenta__fecha_final')
+
+            cargado_l = [cargado.estado_cuenta_idedocuenta for cargado in cargados if cargado.estado_cuenta_idedocuenta.cuenta_idcuenta.idcuenta == cuentaid]
+            procesado_l = [procesado.estado_cuenta_idedocuenta for procesado in procesados if procesado.estado_cuenta_idedocuenta.cuenta_idcuenta.idcuenta == cuentaid]
+
+            res_json2 = '[' + serializers.serialize('json', cargado_l) + ',' 
+            res_json2 += serializers.serialize('json', procesado_l)+']'
+        
+        return JsonResponse({'query':res_json2, 'tipo':tipo,'moneda':moneda})
 
 
     if request.method == 'GET':

@@ -72,7 +72,12 @@
           </label>
         </div>
       </div>
+      <div class="form-group col-md-3">
+      <button type="button" id="boton-nuevo" data-loading-text="Cargando..." class="col-md-5 btn btn-primary" autocomplete="off">
+        Nuevo
+      </button>
     </div>
+  </div>
 </fieldset>
 </form>
 
@@ -87,28 +92,108 @@
 
     <!-- Text input-->
     <div class="form-group col-md-3">
-      <label class="control-label" for="edc-ccon">Edo. Cuenta:</label>  
+      <label class="control-label" for="edo-cuenta">Edo. Cuenta:</label>  
       <div>
-        <input id="edc-ccon" name="edc-ccon" type="text" placeholder="" class="form-control input-md" readonly>
+        <input id="edo-cuenta" name="edo-cuenta" type="text" placeholder="" class="form-control input-md" readonly>
       </div>
     </div>
 
     <!-- Text input-->
     <div class="form-group col-md-3">
-      <label class="control-label" for="f-ccon">Fecha: </label>  
+      <label class="control-label" for="fecha-manual">Fecha: </label>  
       <div>
-      <input id="f-ccon" name="f-ccon" type="text" placeholder="" class="form-control input-md" readonly>
+      <input id="fecha-manual" name="fecha-manual" type="text" placeholder="" class="form-control input-md" readonly>
       </div>
     </div>
 
     <!-- Prepended text-->
     <div class="form-group col-md-3">
-      <label class="control-label" for="sf-ccon">Saldo Final: </label>
+      <label class="control-label" for="saldo-manual">Saldo Final: </label>
       <div>
         <div class="input-group">
-          <span id="sf-ccon-cd" class="input-group-addon"></span>
-          <span id="sf-ccon-mon" class="input-group-addon"></span>
-          <input id="sf-ccon" name="sf-ccon" class="form-control" placeholder="" type="text" readonly>
+          <span id="saldo-manual-cd" class="input-group-addon"></span>
+          <span id="saldo-manual-moneda" class="input-group-addon"></span>
+          <input id="saldo-manual" name="saldo-manual" class="form-control" placeholder="" type="text" readonly>
+          <span id="ffinal" class="input-group-addon hidden"></span>
+         
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+</fieldset>
+</form>
+
+<!-- Form Final -->
+<form class="form-inline">
+<fieldset>
+
+<!-- Form Name -->
+<legend>Nuevo Edo. Cuenta</legend>
+<div class="row clearfix">
+  <div class="col-md-12">
+
+    <!-- Text input-->
+    <div class="form-group col-md-3">
+      <label class="control-label" for="edo-cuenta-nuevo">Edo. Cuenta:</label>   
+        <div class="input-group">
+          <input id="edo-cuenta-nuevo" name="edo-cuenta-nuevo" type="text" placeholder="" class="form-control input-md" readonly>
+          <span class="input-group-addon">/</span>
+          <span id="paginas-nuevo" class="input-group-addon"></span>
+      </div>
+    </div>
+
+    <!-- Text input-->
+    <div class="form-group col-md-3">
+      <label class="control-label" for="fecha-manual-nuevo1">Fecha Inicial: </label>  
+      <div>
+      <input id="fecha-manual-nuevo1" name="fecha-manual-nuevo1" type="text" placeholder="" class="form-control input-md" readonly>
+      </div>
+    </div>
+
+    <!-- Prepended text-->
+    <div class="form-group col-md-3">
+      <label class="control-label" for="saldo-manual-nuevo1">Saldo Inicial: </label>
+      <div>
+        <div class="input-group">
+          <span id="saldo-manual-cd-nuevo1" class="input-group-addon"></span>
+          <span id="saldo-manual-moneda-nuevo1" class="input-group-addon"></span>
+          <input id="saldo-manual-nuevo1" name="saldo-manual-nuevo1" class="form-control" placeholder="" type="text" readonly>
+          <span id="f-nuevo-ini" class="input-group-addon"></span>
+          
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="row clearfix">
+  <div class="col-md-12">
+
+    <!-- Text input-->
+    <div class="form-group col-md-3">
+    </div>
+
+    <!-- Text input-->
+    <div class="form-group col-md-3">
+      <label class="control-label" for="fecha-manual-nuevo2">Fecha Final: </label>  
+      <div>
+      <input id="fecha-manual-nuevo2" name="fecha-manual-nuevo2" type="text" placeholder="" class="form-control input-md" readonly>
+      </div>
+    </div>
+
+    <!-- Prepended text-->
+    <div class="form-group col-md-3">
+      <label class="control-label" for="saldo-manual-nuevo2">Saldo Final: </label>
+      <div>
+        <div class="input-group">
+          <span id="saldo-manual-cd-nuevo2" class="input-group-addon"></span>
+          <span id="saldo-manual-moneda-nuevo2" class="input-group-addon"></span>
+          <input id="saldo-manual-nuevo2" name="saldo-manual-nuevo1" class="form-control" placeholder="" type="text" readonly>
+          <span id="f-nuevo-fin" class="input-group-addon"></span>
+          
         </div>
       </div>
     </div>

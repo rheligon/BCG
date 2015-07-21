@@ -24,42 +24,43 @@ $('#Cuenta-sel').change(function() {
     
     t_conta.clear().draw();
     t_corr.clear().draw();
-    $('#processing-modal').modal('toggle');
+    document.getElementById('cont-radio').checked = true;
+
+    $('#edo-cuenta-nuevo').val("");
+    $('#paginas-nuevo').html("");
+    
+    $('#fecha-manual-nuevo1').val("");
+    $('#fecha-manual-nuevo2').val("");
+    
+    $('#saldo-manual-cd-nuevo1').html("");
+    $('#saldo-manual-cd-nuevo2').html("");
+    
+    $('#saldo-manual-moneda-nuevo1').html("");
+    $('#saldo-manual-moneda-nuevo2').html("");
+    
+    $('#saldo-manual-nuevo1').val("");
+    $('#saldo-manual-nuevo2').val("");
+    
+    $('#f-nuevo-ini').html("");
+    $('#f-nuevo-fin').html("");
+
+    buscarEstado('cont-radio',cuentaId,moneda);
   }else{
 
     t_conta.clear().draw();
     t_corr.clear().draw();
 
     $('#elim-data').attr('cod', "");
-
     $('#cta_nostro').val("");
     $('#cta_vostro').val("");
     $('#banco').val("");
     
     
-    $('#sf-ccon-mon').html("");
-    $('#sf-ccor-mon').html("");
-    $('#sf-pcon-mon').html("");
-    $('#sf-pcor-mon').html("");
-
-    $('#edc-ccon').val("");
-    $('#f-ccon').val("");
-    $('#sf-ccon-cd').html("");
-    $('#sf-ccon').val("");
-
-    $('#edc-pcon').val("");
-    $('#f-pcon').val("");
-    $('#sf-pcon-cd').html("");
-    $('#sf-pcon').val("");
-    $('#edc-ccor').val("");
-    $('#f-ccor').val("");
-    $('#sf-ccor-cd').html("");
-    $('#sf-ccor').val("");
-
-    $('#edc-pcor').val("");
-    $('#f-pcor').val("");
-    $('#sf-pcor-cd').html("");
-    $('#sf-pcor').val("");
+    $('#saldo-manual-moneda').html("");
+    $('#edo-cuenta').val("");
+    $('#fecha-manual').val("");
+    $('#saldo-manual-cd').html("");
+    $('#saldo-manual').val("");
     $('#processing-modal').modal('toggle');
   }
 });
@@ -85,6 +86,7 @@ $('.table').on('click','a[type=edc]', function(event) {
     $("#elim-data").attr("cod", a_cod);
 });
 
+//Monstar ultimo estado de cuenta filtrando si viene de contabilidad o corresponsal
 $('input[name=radiocuenta]').change(function(){
     $('#processing-modal').modal('toggle');
         
@@ -96,50 +98,113 @@ $('input[name=radiocuenta]').change(function(){
     if (cuentaId>=0){
         var sel = $('#opt-'+cuentaId);
         var moneda = sel.attr('moneda');
-        
-        $('#sf-ccon-mon').html(moneda);
-        $('#sf-ccor-mon').html(moneda);
-        $('#sf-pcon-mon').html(moneda);
-        $('#sf-pcor-mon').html(moneda);
 
+        $('#edo-cuenta-nuevo').val("");
+        $('#paginas-nuevo').html("");
+        
+        $('#fecha-manual-nuevo1').val("");
+        $('#fecha-manual-nuevo2').val("");
+        
+        $('#saldo-manual-cd-nuevo1').html("");
+        $('#saldo-manual-cd-nuevo2').html("");
+        
+        $('#saldo-manual-moneda-nuevo1').html("");
+        $('#saldo-manual-moneda-nuevo2').html("");
+        
+        $('#saldo-manual-nuevo1').val("");
+        $('#saldo-manual-nuevo2').val("");
+        
+        $('#f-nuevo-ini').html("");
+        $('#f-nuevo-fin').html("");
         }else{
 
         $('#elim-data').attr('cod', "");
+        $('#saldo-manual-moneda').html("");
+        $('#edo-cuenta').val("");
+        $('#fecha-manual').val("");
+        $('#saldo-manual-cd').html("");
+        $('#saldo-manual').val("");
 
-        $('#sf-ccon-mon').html("");
-        $('#sf-ccor-mon').html("");
-        $('#sf-pcon-mon').html("");
-        $('#sf-pcor-mon').html("");
 
-        $('#edc-ccon').val("");
-        $('#f-ccon').val("");
-        $('#sf-ccon-cd').html("");
-        $('#sf-ccon').val("");
-
-        $('#edc-pcon').val("");
-        $('#f-pcon').val("");
-        $('#sf-pcon-cd').html("");
-        $('#sf-pcon').val("");
-        $('#edc-ccor').val("");
-        $('#f-ccor').val("");
-        $('#sf-ccor-cd').html("");
-        $('#sf-ccor').val("");
-
-        $('#edc-pcor').val("");
-        $('#f-pcor').val("");
-        $('#sf-pcor-cd').html("");
-        $('#sf-pcor').val("");
-        
+       
     }
 
-    buscarEstado(tipo,cuentaId)
+    buscarEstado(tipo,cuentaId,moneda);
      
+});
+
+$('#boton-nuevo').on('click', function () {
+
+    var cuentaId = $('#edo-cuenta').val();
+    cuentaId = parseInt(cuentaId);
+    
+    if (cuentaId>=0){
+        
+
+        var fecha = $('#fecha-manual').val();
+        var cd = $('#saldo-manual-cd').html();
+        var moneda = $('#saldo-manual-moneda').html();
+        var saldo = $('#saldo-manual').val();
+        var ffinal = $('#ffinal').html();
+        cuentaId+=1;
+        fecha = nuevaFecha(fecha);
+
+        $('#edo-cuenta-nuevo').val(cuentaId);
+        $('#paginas-nuevo').html(1);
+        
+        $('#fecha-manual-nuevo1').val(fecha);
+        $('#fecha-manual-nuevo2').val(fecha);
+        
+        $('#saldo-manual-cd-nuevo1').html(cd);
+        $('#saldo-manual-cd-nuevo2').html(cd);
+        
+        $('#saldo-manual-moneda-nuevo1').html(moneda);
+        $('#saldo-manual-moneda-nuevo2').html(moneda);
+        
+        $('#saldo-manual-nuevo1').val(saldo);
+        $('#saldo-manual-nuevo2').val(saldo);
+        
+        $('#f-nuevo-ini').html(ffinal);
+        $('#f-nuevo-fin').html(ffinal);
+
+    }
+    
 });
 
 function reiniciar_tablas(){
     t_conta.clear().draw();
     t_corr.clear().draw();
     return true;
+}
+
+//Dar formato a un Date dd/mm/yyyy
+function formatearFecha(fecha){
+    dia = fecha.getUTCDate();
+    
+    if (dia < 10){
+        dia = "0"+ dia
+    }
+
+    mes = fecha.getUTCMonth()+1;
+    
+    if (mes < 10){
+        mes = "0"+ mes
+    }
+
+    anio = fecha.getUTCFullYear();
+    nueva = dia +"/" + mes + "/" +anio
+    return nueva;
+}
+
+function nuevaFecha(fecha){
+    var arreglo= fecha.split("/");
+    dia = parseInt(arreglo[0]);
+    mes = parseInt(arreglo[1])-1;
+    anio = parseInt(arreglo[2]);
+    var nueva = new Date(anio,mes,dia);
+    nueva.setDate(nueva.getDate()+1);
+    nueva = formatearFecha(nueva);
+    return nueva
 }
 
 function iniciar_tabla(idioma,origen){
@@ -181,11 +246,11 @@ function iniciar_tabla(idioma,origen){
 };
 
 //Buscar partidas de acuerdo a la seleccion
-function buscarEstado(tipo,cuentaid){
+function buscarEstado(tipo,cuentaid,moneda){
     $.ajax({
         type:"POST",
         url: "/procd/cargMan/",
-        data: {'tipo':tipo,'cuentaid':cuentaid ,'action':'buscar'},
+        data: {'moneda':moneda,'tipo':tipo,'cuentaid':cuentaid ,'action':'buscar'},
         success: function(data){
             var carg = 0;
             var proc = 1;
@@ -198,12 +263,12 @@ function buscarEstado(tipo,cuentaid){
             var ult_conp_existe = false;
             var ult_corp_existe = false;
             var tipo = data.tipo;
-            console.log(data.tipo)
-            var json_data = jQuery.parseJSON(data.query)
-            console.log(json_data)
+            var moneda = data.moneda;
+            var json_data = jQuery.parseJSON(data.query);
+            console.log(json_data);
 
             if (json_data[carg].length>=1){
-            console.log("entre")
+            console.log("entre");
                   
                 for (var i = 0; i < json_data[carg].length; i++) {
 
@@ -225,7 +290,7 @@ function buscarEstado(tipo,cuentaid){
             }
 
             if (json_data[proc].length>=1){
-                console.log("entre")
+                console.log("entre");
             
                 for (var i = 0; i < json_data[proc].length; i++) {
 
@@ -247,79 +312,65 @@ function buscarEstado(tipo,cuentaid){
             }
             
             if (ult_conc_existe && tipo =="cont-radio"){
-                console.log("entre3"+tipo+" "+json_data[carg][ult_edc_conc].fields.codigo)
+                console.log("entre3"+tipo+" "+json_data[carg][ult_edc_conc].fields.codigo);
             
-                var fecha_conc = new Date(json_data[carg][ult_edc_conc].fields.fecha_final)
-                $('#edc-ccon').val(json_data[carg][ult_edc_conc].fields.codigo);
-                $('#f-ccon').val(fecha_conc.toLocaleDateString());
-                $('#sf-ccon-cd').html(json_data[carg][ult_edc_conc].fields.c_dfinal);
-                $('#sf-ccon').val(commas(json_data[carg][ult_edc_conc].fields.balance_final));
-            }else{
-                $('#edc-ccon').val("");
-                $('#f-ccon').val("");
-                $('#sf-ccon-cd').html("");
-                $('#sf-ccon').val("");
+                var fecha_conc = new Date(json_data[carg][ult_edc_conc].fields.fecha_final);
+                fecha_conc = formatearFecha(fecha_conc);
+                $('#edo-cuenta').val(json_data[carg][ult_edc_conc].fields.codigo);
+                $('#fecha-manual').val(fecha_conc);
+                $('#saldo-manual-moneda').html(moneda);
+                $('#saldo-manual-cd').html(json_data[carg][ult_edc_conc].fields.c_dfinal);
+                $('#ffinal').html(json_data[carg][ult_edc_conc].fields.m_ffinal);
+                $('#saldo-manual').val(commas(json_data[carg][ult_edc_conc].fields.balance_final));
             }
 
-            if (ult_conp_existe && !ult_conc_existe && tipo =="cont-radio"){
-                console.log("entre4"+tipo+" "+json_data[proc][ult_edc_conp].fields.codigo)
+            else if (ult_conp_existe && !ult_conc_existe && tipo =="cont-radio"){
+                var fecha_conp = new Date(json_data[proc][ult_edc_conp].fields.fecha_final);
+                fecha_conp = formatearFecha(fecha_conp);
+                
+                $('#edo-cuenta').val(json_data[proc][ult_edc_conp].fields.codigo);
+                $('#fecha-manual').val(fecha_conp);
+                $('#saldo-manual-moneda').html(moneda);
+                $('#saldo-manual-cd').html(json_data[proc][ult_edc_conp].fields.c_dfinal);
+                $('#ffinal').html(json_data[proc][ult_edc_conp].fields.m_ffinal);
+                $('#saldo-manual').val(commas(json_data[proc][ult_edc_conp].fields.balance_final));
             
-                var fecha_conp = new Date(json_data[proc][ult_edc_conp].fields.fecha_final)
-                $('#edc-ccon').val(json_data[proc][ult_edc_conp].fields.codigo);
-                $('#f-ccon').val(fecha_conp.toLocaleDateString());
-                $('#sf-ccon-cd').html(json_data[proc][ult_edc_conp].fields.c_dfinal);
-                $('#sf-ccon').val(commas(json_data[proc][ult_edc_conp].fields.balance_final));
-            
-            }else{
-                $('#edc-ccon').val("");
-                $('#f-ccon').val("");
-                $('#sf-ccon-cd').html("");
-                $('#sf-ccon').val("");
             }
 
-            if (ult_corc_existe && tipo =="corr-radio"){
-                console.log("entre5"+tipo+" "+json_data[carg][ult_edc_corc].fields.codigo)
+            else if (ult_corc_existe && tipo =="corr-radio"){
+                console.log("entre5"+tipo+" "+json_data[carg][ult_edc_corc].fields.codigo);
             
                 var fecha_corc = new Date(json_data[carg][ult_edc_corc].fields.fecha_final)
-                $('#edc-ccon').val(json_data[carg][ult_edc_corc].fields.codigo);
-                $('#f-ccon').val(fecha_corc.toLocaleDateString());
-                $('#sf-ccon-cd').html(json_data[carg][ult_edc_corc].fields.c_dfinal);
-                $('#sf-ccon').val(commas(json_data[carg][ult_edc_corc].fields.balance_final));
-            }else{
-                $('#edc-ccon').val("");
-                $('#f-ccon').val("");
-                $('#sf-ccon-cd').html("");
-                $('#sf-ccon').val("");
+                fecha_corc = formatearFecha(fecha_corc);
+                $('#edo-cuenta').val(json_data[carg][ult_edc_corc].fields.codigo);
+                $('#fecha-manual').val(fecha_corc);
+                $('#saldo-manual-moneda').html(moneda);
+                $('#saldo-manual-cd').html(json_data[carg][ult_edc_corc].fields.c_dfinal);
+                $('#ffinal').html(json_data[carg][ult_edc_corc].fields.m_ffinal);
+                $('#saldo-manual').val(commas(json_data[carg][ult_edc_corc].fields.balance_final));
             }
 
-            if (ult_corp_existe && !ult_corc_existe && tipo =="corr-radio"){
-                console.log("entre6"+tipo+" "+json_data[proc][ult_edc_corp].fields.codigo)
+            else if (ult_corp_existe && !ult_corc_existe && tipo =="corr-radio"){
+                console.log("entre6"+tipo+" "+json_data[proc][ult_edc_corp].fields.codigo);
             
                 var fecha_corp = new Date(json_data[proc][ult_edc_corp].fields.fecha_final)
-                $('#edc-ccon').val(json_data[proc][ult_edc_corp].fields.codigo);
-                $('#f-ccon').val(fecha_corp.toLocaleDateString());
-                $('#sf-ccon-cd').html(json_data[proc][ult_edc_corp].fields.c_dfinal);
-                $('#sf-ccon').val(commas(json_data[proc][ult_edc_corp].fields.balance_final));
+                fecha_corp = formatearFecha(fecha_corp);
+                $('#edo-cuenta').val(json_data[proc][ult_edc_corp].fields.codigo);
+                $('#fecha-manual').val(fecha_corp);
+                $('#saldo-manual-moneda').html(moneda);
+                $('#saldo-manual-cd').html(json_data[proc][ult_edc_corp].fields.c_dfinal);
+                $('#ffinal').html(json_data[proc][ult_edc_corp].fields.m_ffinal);
+                $('#saldo-manual').val(commas(json_data[proc][ult_edc_corp].fields.balance_final));
             
             }else{
-                $('#edc-ccon').val("");
-                $('#f-ccon').val("");
-                $('#sf-ccon-cd').html("");
-                $('#sf-ccon').val("");
+                
+                $('#edo-cuenta').val("");
+                $('#fecha-manual').val("");
+                $('#saldo-manual-moneda').html("");
+                $('#saldo-manual-cd').html("");
+                $('#ffinal').html("");
+                $('#saldo-manual').val("");
             }
-
-            /*edcArray = data.r_edcn;
-
-            $('#pbardiv').prop('hidden', false);
-            $('#pbar').attr('max', json_corr.length+json_conta.length);
-
-            // Initalize and start iterating
-            var contaIter = new heavyLifter(json_conta,'conta');
-            contaIter.startCalculation();
-
-            // Initalize and start iterating
-            var corrIter = new heavyLifter(json_corr,'corr');
-            corrIter.startCalculation();*/
 
             $('#processing-modal').modal('toggle');
         },
