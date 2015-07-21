@@ -1553,9 +1553,13 @@ def mtx99(request):
 
     if request.method == "POST":
 
+        # Variables traidas desde el html
         action = request.POST.get('action')
         banco = request.POST.get('banco99')
         tipo = request.POST.get('tipo99')
+        ref_mensaje = request.POST.get('ref_mensaje99')
+        ref_mensaje_original = request.POST.get('ref_mensaje_original99')
+        narrativa = request.POST.get('narrativa99')
         desde = request.POST.get('fechaDesde99')
         hasta = request.POST.get('fechaHasta99')
 
@@ -1580,6 +1584,18 @@ def mtx99(request):
                     
                 res_json = serializers.serialize('json', mensajes)
                 return JsonResponse({'mens':res_json})
+
+        if action == "crear":
+
+            print("entro en crear")
+            #Se crea el nuevo mensaje
+            nuevomt99 = Mt99.objects.create(codigo=ref_mensaje, ref_relacion=ref_mensaje_original, narrativa=narrativa, bic=banco, fecha=timenow(),tipo_mt=tipo,origen=0 )
+            
+            #Se agrega el evento al log
+            log(request,40)
+
+            return JsonResponse({'mens':"Mensaje MT agregado correctamente"})
+
 
 
 @login_required(login_url='/login')
