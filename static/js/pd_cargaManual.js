@@ -1,7 +1,8 @@
 //idioma_tr es una variable global definida en la pagina
 var t_conta = iniciar_tabla(idioma_tr,'conta');
-var t_corr = iniciar_tabla(idioma_tr, 'corr');
 var csrftoken = $.cookie('csrftoken');
+var num=1;
+var pagina = 1;
 
 function commas (num) {
     var N = parseFloat(num).toFixed(2);
@@ -12,57 +13,84 @@ $('#Cuenta-sel').change(function() {
 
     $('#processing-modal').modal('toggle');
   
-  var cuentaId = $('#Cuenta-sel').val();
+    var cuentaId = $('#Cuenta-sel').val();
 
-  if (cuentaId>=0){
-    var sel = $('#opt-'+cuentaId);
-    var moneda = sel.attr('moneda');
+    //si se selecciona una cuenta mostramos su info
+    if (cuentaId>=0){
+        
+        var sel = $('#opt-'+cuentaId);
+        var moneda = sel.attr('moneda');
 
-    $('#cta_nostro').val(sel.attr('cn'));
-    $('#cta_vostro').val(sel.attr('cv'));
-    $('#banco').val(sel.attr('banco'));
-    
-    t_conta.clear().draw();
-    t_corr.clear().draw();
-    document.getElementById('cont-radio').checked = true;
+        $('#cta_nostro').val(sel.attr('cn'));
+        $('#cta_vostro').val(sel.attr('cv'));
+        $('#banco').val(sel.attr('banco'));
+        
+        document.getElementById('cont-radio').checked = true;
 
-    $('#edo-cuenta-nuevo').val("");
-    $('#paginas-nuevo').html("");
-    
-    $('#fecha-manual-nuevo1').val("");
-    $('#fecha-manual-nuevo2').val("");
-    
-    $('#saldo-manual-cd-nuevo1').html("");
-    $('#saldo-manual-cd-nuevo2').html("");
-    
-    $('#saldo-manual-moneda-nuevo1').html("");
-    $('#saldo-manual-moneda-nuevo2').html("");
-    
-    $('#saldo-manual-nuevo1').val("");
-    $('#saldo-manual-nuevo2').val("");
-    
-    $('#f-nuevo-ini').html("");
-    $('#f-nuevo-fin').html("");
+        $('#edo-cuenta-nuevo').val("");
+        $('#paginas-nuevo').html("");
+        
+        $('#fecha-manual-nuevo1').val("");
+        $('#fecha-manual-nuevo2').val("");
+        
+        $('#saldo-manual-cd-nuevo1').html("");
+        $('#saldo-manual-cd-nuevo2').html("");
+        
+        $('#saldo-manual-moneda-nuevo1').html("");
+        $('#saldo-manual-moneda-nuevo2').html("");
+        
+        $('#saldo-manual-nuevo1').val("");
+        $('#saldo-manual-nuevo2').val("");
+        
+        $('#f-nuevo-ini').html("");
+        $('#f-nuevo-fin').html("");
 
-    buscarEstado('cont-radio',cuentaId,moneda);
-  }else{
+        //Buscamos el ultimo estado de cuenta contable(primera vez)
+        buscarEstado('cont-radio',cuentaId,moneda);
+    }else{
 
-    t_conta.clear().draw();
-    t_corr.clear().draw();
+        //borramos los campos
 
-    $('#elim-data').attr('cod', "");
-    $('#cta_nostro').val("");
-    $('#cta_vostro').val("");
-    $('#banco').val("");
-    
-    
-    $('#saldo-manual-moneda').html("");
-    $('#edo-cuenta').val("");
-    $('#fecha-manual').val("");
-    $('#saldo-manual-cd').html("");
-    $('#saldo-manual').val("");
-    $('#processing-modal').modal('toggle');
-  }
+        $('#elim-data').attr('cod', "");
+        $('#cta_nostro').val("");
+        $('#cta_vostro').val("");
+        $('#banco').val("");
+        
+        
+        $('#saldo-manual-moneda').html("");
+        $('#edo-cuenta').val("");
+        $('#fecha-manual').val("");
+        $('#saldo-manual-cd').html("");
+        $('#saldo-manual').val("");
+        $('#processing-modal').modal('toggle');
+
+        $('#edo-cuenta-nuevo').val("");
+        $('#paginas-nuevo').html("");
+        
+        $('#fecha-manual-nuevo1').val("");
+        $('#fecha-manual-nuevo2').val("");
+        
+        $('#saldo-manual-cd-nuevo1').html("");
+        $('#saldo-manual-cd-nuevo2').html("");
+        
+        $('#saldo-manual-moneda-nuevo1').html("");
+        $('#saldo-manual-moneda-nuevo2').html("");
+        
+        $('#saldo-manual-nuevo1').val("");
+        $('#saldo-manual-nuevo2').val("");
+        
+        $('#f-nuevo-ini').html("");
+        $('#f-nuevo-fin').html("");
+
+        $('#fecha-valor').val("");
+        $('#fecha-entrada').val("");
+        $('#selector-cd').val("C");            
+        $('#monto-tran').val("");
+        $('#tipo-tran').val("");
+        $('#nostro-tran').val("");
+        $('#vostro-tran').val("");
+        $('#detalle-tran').val("");
+    }
 });
 
 
@@ -91,8 +119,6 @@ $('input[name=radiocuenta]').change(function(){
     $('#processing-modal').modal('toggle');
         
     var tipo = $(this).attr('id');
-    console.log(tipo+" idaux")
-
     var cuentaId = $('#Cuenta-sel').val();
 
     if (cuentaId>=0){
@@ -124,15 +150,13 @@ $('input[name=radiocuenta]').change(function(){
         $('#fecha-manual').val("");
         $('#saldo-manual-cd').html("");
         $('#saldo-manual').val("");
-
-
-       
     }
 
     buscarEstado(tipo,cuentaId,moneda);
      
 });
 
+//Mostramos como seria el nuevo estado de cuenta
 $('#boton-nuevo').on('click', function () {
 
     var cuentaId = $('#edo-cuenta').val();
@@ -154,6 +178,18 @@ $('#boton-nuevo').on('click', function () {
         
         $('#fecha-manual-nuevo1').val(fecha);
         $('#fecha-manual-nuevo2').val(fecha);
+
+        var minimaFecha = fechaStringtoDate(fecha);
+
+        //inicializamos el DatePicker para Fecha Final
+        $('#fecha-manual-nuevo2').pickadate({
+            format: 'dd/mm/yyyy',
+            formatSubmit:'dd/mm/yyyy',
+            selectYears: true,
+            selectMonths: true,
+            min: minimaFecha,
+            max: true,
+        });
         
         $('#saldo-manual-cd-nuevo1').html(cd);
         $('#saldo-manual-cd-nuevo2').html(cd);
@@ -171,31 +207,149 @@ $('#boton-nuevo').on('click', function () {
     
 });
 
+//agregamos las nuevas transacciones en la tabla
+$('#boton-agregar').on('click', function () {
+
+    var cuentaId = $('#edo-cuenta-nuevo').val();
+    cuentaId = parseInt(cuentaId);
+
+    //si ya se habia seleccionado el nuevo edo de cuenta
+    if (cuentaId>=0){
+        var fechaValor = $('#fecha-valor').val();
+        var cdCuenta = $('#saldo-manual-cd-nuevo2').html();
+        var cdTrans = $('#selector-cd').val();
+        var monto = $('#monto-tran').val();
+        montoFloatPuro = parseFloat(monto)
+        montoFloatPuroFixed = montoFloatPuro.toFixed(2);
+        montoFloat = commas(montoFloatPuroFixed);
+        console.log(montoFloat);
+        var tipo = $('#tipo-tran').val();
+        var nostro = $('#nostro-tran').val();
+        var vostro = $('#vostro-tran').val();
+        var detalle = $('#detalle-tran').val();
+
+        //validaciones de campos obligatorios
+        if(fechaValor.length<1){
+            swal("Ups!", "Debe introducir la Fecha Valor de la Transacción", "error");
+        }
+        else if(monto.length<1){
+            swal("Ups!", "Debe introducir el Monto de la Transacción", "error");
+        }else if(tipo.length<1){
+            swal("Ups!", "Debe introducir el Tipo de la Transacción", "error");
+        }else{
+
+            //creamos los elementos de cada fila
+            var td1 = '<td>'+cuentaId+'</td>';
+            var td2 = '<td>'+num+'</td>';
+            var td3 = '<td>'+fechaValor+'</td>';
+            var td4 = '<td>'+cdTrans+'</td>';
+            var td5 = '<td>'+montoFloat+'</td>';
+            var td6 = '<td>'+tipo+'</td>';
+            var td7 = '<td>'+nostro+'</td>';
+            var td8 = '<td>'+vostro+'</td>';
+            var td9 = '<td>'+detalle+'</td>';
+
+            //creamos la fila con los elementos y la mostramos
+            $('#table-conta > tbody').append('<tr id ="tr-con-'+num+'"></tr>');
+            var jRow = $("#tr-con-"+num).append(td1,td2,td3,td4,td5,td6,td7,td8,td9);
+            t_conta.row.add(jRow);
+
+            //por cada 15 transacciones creadas aumentamos el numero de paginas
+            if(num % 16 == 0){
+                pagina=(num/16)+1;
+                $('#paginas-nuevo').html(pagina);
+            }
+            
+            t_conta.draw();
+
+            if(num > 10){
+                for(var i =0; i < parseInt(num / 10);i++){
+                    t_conta.page( 'next' ).draw( false );    
+                }
+                
+            }
+
+            num++;
+
+            if(cdCuenta==cdTrans){
+                var saldo = $('#saldo-manual-nuevo2').val();
+                saldo = parseFloat(monto_Float(saldo));
+                console.log(saldo+"saldo");
+                total = saldo + montoFloatPuro;
+                console.log(total+"suma");
+                total = commas(total); 
+                console.log(total+"final");
+                $('#saldo-manual-nuevo2').val(total);    
+            }
+
+            $('#fecha-valor').val("");
+            $('#fecha-entrada').val("");
+            $('#selector-cd').val("C");            
+            $('#monto-tran').val("");
+            $('#tipo-tran').val("");
+            $('#nostro-tran').val("");
+            $('#vostro-tran').val("");
+            $('#detalle-tran').val("");
+
+        }
+    }
+    
+});
+
+//Inicializar el DatePicker
+$('#fecha-valor').pickadate({
+  format: 'dd/mm/yyyy',
+  formatSubmit:'dd/mm/yyyy',
+  selectYears: true,
+  selectMonths: true,
+  max: true,
+});
+
+//Inicializar el DatePicker
+$('#fecha-entrada').pickadate({
+  format: 'dd/mm/yyyy',
+  formatSubmit:'dd/mm/yyyy',
+  selectYears: true,
+  selectMonths: true,
+  max: true,
+});
+
 function reiniciar_tablas(){
     t_conta.clear().draw();
     t_corr.clear().draw();
     return true;
-}
+};
 
-//Dar formato a un Date dd/mm/yyyy
+// funcion para aceptar solo numeros
+function numero(e) {
+    var codigo;
+    codigo = (document.all) ? e.keyCode : e.which;
+    if (codigo > 31 && ((codigo < 48 && codigo != 46) || codigo > 57) ) {
+    return false;
+    }
+    return true;
+};
+
+//Dar formato a un Date a string dd/mm/yyyy
 function formatearFecha(fecha){
     dia = fecha.getUTCDate();
     
     if (dia < 10){
-        dia = "0"+ dia
+        dia = "0"+ dia;
     }
 
     mes = fecha.getUTCMonth()+1;
     
     if (mes < 10){
-        mes = "0"+ mes
+        mes = "0"+ mes;
     }
 
     anio = fecha.getUTCFullYear();
-    nueva = dia +"/" + mes + "/" +anio
+    nueva = dia +"/" + mes + "/" +anio;
     return nueva;
 }
 
+//dado un fecha en string la convierte en un objeto Date +1 y luego a string
 function nuevaFecha(fecha){
     var arreglo= fecha.split("/");
     dia = parseInt(arreglo[0]);
@@ -204,8 +358,28 @@ function nuevaFecha(fecha){
     var nueva = new Date(anio,mes,dia);
     nueva.setDate(nueva.getDate()+1);
     nueva = formatearFecha(nueva);
-    return nueva
+    return nueva;
 }
+
+//dado un fecha en string la convierte en un objeto Date
+function fechaStringtoDate(fecha){
+    var arreglo= fecha.split("/");
+    dia = parseInt(arreglo[0]);
+    mes = parseInt(arreglo[1])-1;
+    anio = parseInt(arreglo[2]);
+    var nueva = new Date(anio,mes,dia);
+    return nueva;
+}
+
+//dado un monto en string la convierte en un float
+function monto_Float(monto){
+    var arreglo= monto.split(",");
+    var flattened = arreglo.reduce(function(a, b) {
+        return a.concat(b);
+    });
+    return flattened;
+}
+
 
 function iniciar_tabla(idioma,origen){
 
@@ -218,12 +392,15 @@ function iniciar_tabla(idioma,origen){
             },
             "autoWidth": false,
             "columns": [
-                { "width": "16%" },
-                { "width": "11%" },
-                { "width": "13%" },
-                { "width": "10%" },
-                { "width": "25%" },
-                { "width": "25%" }
+                { "width": "11%" },//Edo. Cuenta
+                { "width": "11%" },//Num. Trans
+                { "width": "11%" },//Fecha Valor
+                { "width": "5%" },//C/D
+                { "width": "11%" },//Monto
+                { "width": "11%" },//Tipo
+                { "width": "13%" },//Ref Nostro
+                { "width": "13%" },//Ref Vostro
+                { "width": "14%" }//Detalle
               ]
             })
 
@@ -234,12 +411,15 @@ function iniciar_tabla(idioma,origen){
                 url: '/static/json/English-tables.json'
             },
             "columns": [
-                { "width": "16%" },
-                { "width": "11%" },
-                { "width": "13%" },
-                { "width": "10%" },
-                { "width": "25%" },
-                { "width": "25%" }
+                { "width": "11%" },//Edo. Cuenta
+                { "width": "11%" },//Num. Trans
+                { "width": "11%" },//Fecha Valor
+                { "width": "5%" },//C/D
+                { "width": "11%" },//Monto
+                { "width": "11%" },//Tipo
+                { "width": "13%" },//Ref Nostro
+                { "width": "13%" },//Ref Vostro
+                { "width": "14%" }//Detalle
               ]
         })
     };
@@ -268,7 +448,6 @@ function buscarEstado(tipo,cuentaid,moneda){
             console.log(json_data);
 
             if (json_data[carg].length>=1){
-            console.log("entre");
                   
                 for (var i = 0; i < json_data[carg].length; i++) {
 
@@ -290,7 +469,6 @@ function buscarEstado(tipo,cuentaid,moneda){
             }
 
             if (json_data[proc].length>=1){
-                console.log("entre");
             
                 for (var i = 0; i < json_data[proc].length; i++) {
 
@@ -312,8 +490,7 @@ function buscarEstado(tipo,cuentaid,moneda){
             }
             
             if (ult_conc_existe && tipo =="cont-radio"){
-                console.log("entre3"+tipo+" "+json_data[carg][ult_edc_conc].fields.codigo);
-            
+               
                 var fecha_conc = new Date(json_data[carg][ult_edc_conc].fields.fecha_final);
                 fecha_conc = formatearFecha(fecha_conc);
                 $('#edo-cuenta').val(json_data[carg][ult_edc_conc].fields.codigo);
@@ -338,8 +515,7 @@ function buscarEstado(tipo,cuentaid,moneda){
             }
 
             else if (ult_corc_existe && tipo =="corr-radio"){
-                console.log("entre5"+tipo+" "+json_data[carg][ult_edc_corc].fields.codigo);
-            
+               
                 var fecha_corc = new Date(json_data[carg][ult_edc_corc].fields.fecha_final)
                 fecha_corc = formatearFecha(fecha_corc);
                 $('#edo-cuenta').val(json_data[carg][ult_edc_corc].fields.codigo);
@@ -351,8 +527,7 @@ function buscarEstado(tipo,cuentaid,moneda){
             }
 
             else if (ult_corp_existe && !ult_corc_existe && tipo =="corr-radio"){
-                console.log("entre6"+tipo+" "+json_data[proc][ult_edc_corp].fields.codigo);
-            
+               
                 var fecha_corp = new Date(json_data[proc][ult_edc_corp].fields.fecha_final)
                 fecha_corp = formatearFecha(fecha_corp);
                 $('#edo-cuenta').val(json_data[proc][ult_edc_corp].fields.codigo);
