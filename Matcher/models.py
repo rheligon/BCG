@@ -538,9 +538,9 @@ class Mt96(models.Model):
 
 class Mt99(models.Model):
     idmt99 = sqlserver_ado.fields.BigAutoField(db_column='idMT99', primary_key=True)  
-    codigo = models.CharField(db_column='Codigo', max_length=20)  
-    ref_relacion = models.CharField(db_column='Ref_Relacion', max_length=20)  
-    narrativa = models.CharField(db_column='Narrativa', max_length=45)  
+    codigo = models.CharField(db_column='Codigo', max_length=16)  
+    ref_relacion = models.CharField(db_column='Ref_Relacion', max_length=16)  
+    narrativa = models.CharField(db_column='Narrativa', max_length=1784)  
     bic = models.CharField(db_column='BIC', max_length=10)  
     fecha = models.DateTimeField(db_column='Fecha')  
     tipo_mt = models.IntegerField(db_column='Tipo_MT')  

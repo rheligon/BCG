@@ -23,7 +23,7 @@ from Matcher_WS.edo_cuenta import edoCta, edc_list, Trans, Bal
 from Matcher_WS.mailConf import enviar_mail
 from Matcher_WS.cargaAutomatica import leer_linea_conta, leer_linea_corr, leer_punto_coma, validar_archivo
 from Matcher_WS.Matcher_call import matcher, dma_millis
-from Matcher_WS.funciones_get import get_ops, get_cuentas, get_ci, get_idioma, get_bancos
+from Matcher_WS.funciones_get import get_ops, get_cuentas, get_ci, get_idioma, get_bancos, get_archivosMT99
 from Matcher_WS.generar_reporte import generarReporte, pdfView, xlsView
 from Matcher_WS.setConsolidado import setConsolidado
 
@@ -1538,19 +1538,19 @@ def mensajesSWIFT(request):
     return render(request, template, context)
 
 @login_required(login_url='/login')
-def mtx96(request):
+def mtn96(request):
 
-    template = "matcher/mtx96.html"
+    template = "matcher/mtn96.html"
     context = {'ops':get_ops(request)}
     
     return render(request, template, context)
 
 @login_required(login_url='/login')
-def mtx99(request):
+def mtn99(request):
 
     if request.method == 'GET':
-        template = "matcher/mtx99.html"
-        context = {'ops':get_ops(request), 'bancos':get_bancos()}
+        template = "matcher/mtn99.html"
+        context = {'ops':get_ops(request), 'bancos':get_bancos(), 'archivos':get_archivosMT99()}
         
         return render(request, template, context)
 
@@ -1569,7 +1569,7 @@ def mtx99(request):
         if action == "buscar":
             if desde == "" and hasta == "":
                 
-                #buscar los mensajes mtx99 del tipo y banco seleccionados
+                #buscar los mensajes mtn99 del tipo y banco seleccionados
                 mensajes = Mt99.objects.filter(bic = banco).filter(tipo_mt = tipo)
                 res_json = serializers.serialize('json', mensajes)
                 return JsonResponse({'mens':res_json})
@@ -1590,10 +1590,41 @@ def mtx99(request):
 
         if action == "crear":
 
-            print("entro en crear")
-            #Se crea el nuevo mensaje
+            #Se crea el nuevo mensaje en base da datos
             nuevomt99 = Mt99.objects.create(codigo=ref_mensaje, ref_relacion=ref_mensaje_original, narrativa=narrativa, bic=banco, fecha=timenow(),tipo_mt=tipo,origen=0 )
             
+            #Se crea el archivo de texto con la copia del mensaje en el formato SWIFT
+            tn = str(timenow())
+            hora = tn[11:]
+            auxhora = hora.split(':')
+            hora = auxhora[0]+auxhora[1]+auxhora[2]
+            aux = tn[:10]
+            aux2 = aux.split('-')
+            aux = aux2[2]+aux2[1]+aux2[0]
+            fechaNombre = aux + "_" + hora
+
+            #Buscar directorio de salida de los mensajes MT99
+            obj = Configuracion.objects.all()[0]
+            sender = obj.bic
+            directorio = obj.dirsalida99
+            directorio = directorio + "\\"
+
+            #Nombre del archivo a crear
+            archivo = directorio + banco + "_" + fechaNombre + "_" + tipo + ".txt"
+
+            # Open a file
+            fo = open(archivo, 'w')
+            fo.write( "$\n");
+            fo.write( "[M]"+tipo+"\n");
+            fo.write( "[S]"+sender+"\n");
+            fo.write( "[R]"+banco+"\n");
+            fo.write( "[20]"+ref_mensaje+"\n");
+            fo.write( "[21]"+ref_mensaje_original+"\n");
+            fo.write( "[79]"+narrativa+"\n");
+
+            # Close opend file
+            fo.close()
+
             #Se agrega el evento al log
             log(request,40)
 
