@@ -1,4 +1,5 @@
 from Matcher.models import *
+import os
 
 def get_ops(request):
     #Busco la sesion que esta conectada
@@ -14,6 +15,13 @@ def get_bancos():
     #Buscar todos los bancos corresponsales 
     bancos = BancoCorresponsal.objects.all().order_by('codigo')
     return bancos
+
+def get_archivosMT99():
+    #Buscar los archivos de mensajes MT99 dado un directorio
+    obj = Configuracion.objects.all()[0]
+    directorio = obj.dircarga99
+    archivos = os.listdir(directorio)
+    return archivos
 
 def get_cuentas(request):
     #Busco la sesion que esta conectada
