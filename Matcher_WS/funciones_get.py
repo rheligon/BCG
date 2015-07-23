@@ -23,6 +23,13 @@ def get_archivosMT99():
     archivos = os.listdir(directorio)
     return archivos
 
+def get_archivosMT96():
+    #Buscar los archivos de mensajes MT96 dado un directorio
+    obj = Configuracion.objects.all()[0]
+    directorio = obj.dircarga96
+    archivos = os.listdir(directorio)
+    return archivos
+
 def get_cuentas(request):
     #Busco la sesion que esta conectada
     login = request.user.username 
