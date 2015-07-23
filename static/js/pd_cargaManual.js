@@ -3,6 +3,14 @@ var t_conta = iniciar_tabla(idioma_tr,'conta');
 var csrftoken = $.cookie('csrftoken');
 var num=1;
 var pagina = 1;
+var dp1;
+var dp2;
+var inputIni = $('#fecha-manual-nuevo1').detach();
+$('#fmn1').html(inputIni);
+var inputIni2 = $('#fecha-manual-nuevo2').detach();
+$('#fmn2').html(inputIni2);
+
+
 
 function commas (num) {
     var N = parseFloat(num).toFixed(2);
@@ -45,6 +53,42 @@ $('#Cuenta-sel').change(function() {
         $('#f-nuevo-ini').html("");
         $('#f-nuevo-fin').html("");
 
+        $('#fecha-valor').val("");
+        $('#fecha-entrada').val("");
+        $('#selector-cd').val("C");            
+        $('#monto-tran').val("");
+        $('#tipo-tran').val("");
+        $('#nostro-tran').val("");
+        $('#vostro-tran').val("");
+        $('#detalle-tran').val("");
+
+        $("#fecha-manual-nuevo1").prop('readonly', true);
+        $("#fecha-manual-nuevo1").css('background-color', '#eee');
+        $("#fecha-manual-nuevo2").prop('readonly', true);
+        $("#fecha-manual-nuevo2").css('background-color', '#eee');
+        $("#saldo-manual-cd-nuevo1").prop('readonly', true);
+        $("#saldo-manual-cd-nuevo1").css('background-color', '#eee');
+        $("#saldo-manual-cd-nuevo2").prop('readonly', true);
+        $("#saldo-manual-cd-nuevo2").css('background-color', '#eee');
+        $("#saldo-manual-moneda-nuevo1").prop('readonly', true);
+        $("#saldo-manual-moneda-nuevo1").css('background-color', '#eee');
+        $("#saldo-manual-moneda-nuevo2").prop('readonly', true);
+        $("#saldo-manual-moneda-nuevo2").css('background-color', '#eee');
+        $("#saldo-manual-nuevo1").prop('readonly', true);
+        $("#saldo-manual-nuevo1").css('background-color', '#eee');
+        $("#saldo-manual-nuevo2").prop('readonly', true);
+        $("#saldo-manual-nuevo2").css('background-color', '#eee');
+        $("#edo-cuenta-nuevo").prop('readonly', true);
+        $("#edo-cuenta-nuevo").css('background-color', '#eee');
+        
+        $('#fmn1').html(inputIni);
+        $('#fmn2').html(inputIni2);
+
+
+        //si cambiamos de cuenta borramos la tabla e inicializamos num
+        t_conta.clear().draw();
+        num=1;
+
         //Buscamos el ultimo estado de cuenta contable(primera vez)
         buscarEstado('cont-radio',cuentaId,moneda);
     }else{
@@ -56,6 +100,8 @@ $('#Cuenta-sel').change(function() {
         $('#cta_vostro').val("");
         $('#banco').val("");
         
+        document.getElementById('cont-radio').checked = false;
+        document.getElementById('corr-radio').checked = false;
         
         $('#saldo-manual-moneda').html("");
         $('#edo-cuenta').val("");
@@ -90,6 +136,32 @@ $('#Cuenta-sel').change(function() {
         $('#nostro-tran').val("");
         $('#vostro-tran').val("");
         $('#detalle-tran').val("");
+
+        $("#fecha-manual-nuevo1").prop('readonly', true);
+        $("#fecha-manual-nuevo1").css('background-color', '#eee');
+        $("#fecha-manual-nuevo2").prop('readonly', true);
+        $("#fecha-manual-nuevo2").css('background-color', '#eee');
+        $("#saldo-manual-cd-nuevo1").prop('readonly', true);
+        $("#saldo-manual-cd-nuevo1").css('background-color', '#eee');
+        $("#saldo-manual-cd-nuevo2").prop('readonly', true);
+        $("#saldo-manual-cd-nuevo2").css('background-color', '#eee');
+        $("#saldo-manual-moneda-nuevo1").prop('readonly', true);
+        $("#saldo-manual-moneda-nuevo1").css('background-color', '#eee');
+        $("#saldo-manual-moneda-nuevo2").prop('readonly', true);
+        $("#saldo-manual-moneda-nuevo2").css('background-color', '#eee');
+        $("#saldo-manual-nuevo1").prop('readonly', true);
+        $("#saldo-manual-nuevo1").css('background-color', '#eee');
+        $("#saldo-manual-nuevo2").prop('readonly', true);
+        $("#saldo-manual-nuevo2").css('background-color', '#eee');
+        $("#edo-cuenta-nuevo").prop('readonly', true);
+        $("#edo-cuenta-nuevo").css('background-color', '#eee');
+        
+        $('#fmn1').html(inputIni);
+        $('#fmn2').html(inputIni2);
+         //si cambiamos de cuenta borramos la tabla e inicializamos num
+        t_conta.clear().draw();
+        num=1;
+
     }
 });
 
@@ -160,6 +232,7 @@ $('input[name=radiocuenta]').change(function(){
 $('#boton-nuevo').on('click', function () {
 
     var cuentaId = $('#edo-cuenta').val();
+    var cuentaVacia = $('#Cuenta-sel').val();
     cuentaId = parseInt(cuentaId);
     
     if (cuentaId>=0){
@@ -180,6 +253,10 @@ $('#boton-nuevo').on('click', function () {
         $('#fecha-manual-nuevo2').val(fecha);
 
         var minimaFecha = fechaStringtoDate(fecha);
+        $("#fecha-manual-nuevo2").prop('readonly', false);
+        $("#fecha-manual-nuevo2").css('background-color', 'white');
+
+        $('#fmn1').html(inputIni);
 
         //inicializamos el DatePicker para Fecha Final
         $('#fecha-manual-nuevo2').pickadate({
@@ -190,7 +267,7 @@ $('#boton-nuevo').on('click', function () {
             min: minimaFecha,
             max: true,
         });
-        
+
         $('#saldo-manual-cd-nuevo1').html(cd);
         $('#saldo-manual-cd-nuevo2').html(cd);
         
@@ -203,6 +280,54 @@ $('#boton-nuevo').on('click', function () {
         $('#f-nuevo-ini').html(ffinal);
         $('#f-nuevo-fin').html(ffinal);
 
+    }else{
+        $("#edo-cuenta-nuevo").prop('readonly', false);
+        $("#edo-cuenta-nuevo").css('background-color', 'white');
+
+        $('#paginas-nuevo').html(1);
+        
+        $("#fecha-manual-nuevo1").prop('readonly', false);
+        $("#fecha-manual-nuevo1").css('background-color', 'white');
+
+
+        //inicializamos el DatePicker para Fecha Final
+        dp1=$('#fecha-manual-nuevo1').pickadate({
+            format: 'dd/mm/yyyy',
+            formatSubmit:'dd/mm/yyyy',
+            selectYears: true,
+            selectMonths: true,
+            max: true,
+        });
+
+        $("#fecha-manual-nuevo2").prop('readonly', false);
+        $("#fecha-manual-nuevo2").css('background-color', 'white');
+
+        dp2=$('#fecha-manual-nuevo2').pickadate({
+            format: 'dd/mm/yyyy',
+            formatSubmit:'dd/mm/yyyy',
+            selectYears: true,
+            selectMonths: true,
+            max: true,
+        });
+
+        $("#saldo-manual-cd-nuevo1").prop('readonly', false);
+        $("#saldo-manual-cd-nuevo1").css('background-color', 'white');
+        $("#saldo-manual-cd-nuevo2").prop('readonly', false);
+        $("#saldo-manual-cd-nuevo2").css('background-color', 'white');
+        $("#saldo-manual-moneda-nuevo1").prop('readonly', false);
+        $("#saldo-manual-moneda-nuevo1").css('background-color', 'white');
+        $("#saldo-manual-moneda-nuevo2").prop('readonly', false);
+        $("#saldo-manual-moneda-nuevo2").css('background-color', 'white');
+        $("#saldo-manual-nuevo1").prop('readonly', false);
+        $("#saldo-manual-nuevo1").css('background-color', 'white');
+        $("#saldo-manual-nuevo2").prop('readonly', false);
+        $("#saldo-manual-nuevo2").css('background-color', 'white');
+        $('#f-nuevo-ini').html("F");
+        $('#f-nuevo-fin').html("F");
+        
+    }
+    if(cuentaVacia<0){
+        swal("Ups!", "Debe Seleccionar el Código de la Cuenta", "error");
     }
     
 });
@@ -239,15 +364,15 @@ $('#boton-agregar').on('click', function () {
         }else{
 
             //creamos los elementos de cada fila
-            var td1 = '<td>'+cuentaId+'</td>';
-            var td2 = '<td>'+num+'</td>';
-            var td3 = '<td>'+fechaValor+'</td>';
-            var td4 = '<td>'+cdTrans+'</td>';
-            var td5 = '<td>'+montoFloat+'</td>';
-            var td6 = '<td>'+tipo+'</td>';
-            var td7 = '<td>'+nostro+'</td>';
-            var td8 = '<td>'+vostro+'</td>';
-            var td9 = '<td>'+detalle+'</td>';
+            var td1 = '<td id ="tran-'+num+'">'+cuentaId+'</td>';
+            var td2 = '<td id ="tranNum-'+num+'">'+num+'</td>';
+            var td3 = '<td id ="fecha-'+num+'">'+fechaValor+'</td>';
+            var td4 = '<td id ="cd-'+num+'">'+cdTrans+'</td>';
+            var td5 = '<td id ="monto-'+num+'">'+montoFloat+'</td>';
+            var td6 = '<td id ="tipo-'+num+'">'+tipo+'</td>';
+            var td7 = '<td id ="nos-'+num+'">'+nostro+'</td>';
+            var td8 = '<td id ="vos-'+num+'">'+vostro+'</td>';
+            var td9 = '<td id ="det-'+num+'">'+detalle+'</td>';
 
             //creamos la fila con los elementos y la mostramos
             $('#table-conta > tbody').append('<tr id ="tr-con-'+num+'"></tr>');
@@ -271,15 +396,34 @@ $('#boton-agregar').on('click', function () {
 
             num++;
 
+            if(cdTrans=="RC"){
+                cdTrans="D";
+            }
+            else if(cdTrans=="RD"){
+                cdTrans="C";
+            }
+
             if(cdCuenta==cdTrans){
                 var saldo = $('#saldo-manual-nuevo2').val();
                 saldo = parseFloat(monto_Float(saldo));
-                console.log(saldo+"saldo");
                 total = saldo + montoFloatPuro;
-                console.log(total+"suma");
-                total = commas(total); 
-                console.log(total+"final");
+                total = commas(total);
                 $('#saldo-manual-nuevo2').val(total);    
+            }else{
+                var saldo = $('#saldo-manual-nuevo2').val();
+                saldo = parseFloat(monto_Float(saldo));
+                total = saldo - montoFloatPuro;
+                if(total<=0){
+                    total= Math.abs(total);
+                    total = commas(total);
+                    $('#saldo-manual-nuevo2').val(total);
+                    $('#saldo-manual-cd-nuevo2').html(cdTrans);
+                }else{
+                    total = commas(total);
+                    $('#saldo-manual-nuevo2').val(total);
+                }
+                
+                        
             }
 
             $('#fecha-valor').val("");
@@ -292,8 +436,33 @@ $('#boton-agregar').on('click', function () {
             $('#detalle-tran').val("");
 
         }
+    }else{
+       swal("Ups!", "Debe tener el Numero del Nuevo Estado de Cuenta a Crear", "error"); 
     }
     
+
+});
+
+//Procesamos todas las transacciones
+$('#boton-procesar').on('click', function () {
+    var $btn;
+    var existe = $('#tran-1').html();
+    existe = parseInt(existe);
+    if(existe>0){
+        swal({
+            title: "",
+            text: "Seguro que desea crear el Estado de Cuenta ?",
+            type: "warning",
+            showCancelButton: true,
+            confirmButtonText: "Ok"},
+            function(){
+                $btn = $(this).button('loading')
+                $('#processing-modal').modal('toggle');
+            }
+        );
+    }else{
+        swal("Ups!", "No existen transacciones para ser procesadas", "error"); 
+    }
 });
 
 //Inicializar el DatePicker
@@ -320,11 +489,21 @@ function reiniciar_tablas(){
     return true;
 };
 
-// funcion para aceptar solo numeros
+// funcion para aceptar solo numerosy puntos (.)
 function numero(e) {
     var codigo;
     codigo = (document.all) ? e.keyCode : e.which;
     if (codigo > 31 && ((codigo < 48 && codigo != 46) || codigo > 57) ) {
+    return false;
+    }
+    return true;
+};
+
+// funcion para aceptar solo numeros
+function solonumero(e) {
+    var codigo;
+    codigo = (document.all) ? e.keyCode : e.which;
+    if (codigo > 31 && (codigo < 48 || codigo > 57) ) {
     return false;
     }
     return true;
@@ -388,7 +567,7 @@ function iniciar_tabla(idioma,origen){
         return $('#table-'+ origen).DataTable({
             //poner if con idioma, el ingles es predeterminado
             language: {
-                url: '/static/json/Spanish-tables.json'
+                url: '/static/json/No-Filter-Tables-Spanish.json'
             },
             "autoWidth": false,
             "columns": [
@@ -408,7 +587,7 @@ function iniciar_tabla(idioma,origen){
 
         return $('#table-'+ origen).DataTable({
             language: {
-                url: '/static/json/English-tables.json'
+                url: '/static/json/No-Filter-Tables-English.json'
             },
             "columns": [
                 { "width": "11%" },//Edo. Cuenta

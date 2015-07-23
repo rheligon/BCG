@@ -142,7 +142,7 @@
     <div class="form-group col-md-3">
       <label class="control-label" for="edo-cuenta-nuevo">Edo. Cuenta:</label>   
         <div class="input-group">
-          <input id="edo-cuenta-nuevo" name="edo-cuenta-nuevo" type="text" placeholder="" class="form-control input-md" readonly>
+          <input id="edo-cuenta-nuevo" name="edo-cuenta-nuevo" type="text" placeholder="" class="form-control input-md" maxlength="18" onkeypress='return solonumero(event)' onkeyup='return solonumero(event)' readonly>
           <span class="input-group-addon">/</span>
           <span id="paginas-nuevo" class="input-group-addon"></span>
       </div>
@@ -151,19 +151,19 @@
     <!-- Text input-->
     <div class="form-group col-md-3">
       <label class="control-label" for="fecha-manual-nuevo1">Fecha Inicial: </label>  
-      <div>
+      <div id ="fmn1">
       <input id="fecha-manual-nuevo1" name="fecha-manual-nuevo1" type="text" placeholder="" class="form-control input-md" readonly>
       </div>
     </div>
 
     <!-- Prepended text-->
-    <div class="form-group col-md-3">
-      <label class="control-label" for="saldo-manual-nuevo1">Saldo Inicial: </label>
+    <div class="form-group col-md-4">
+      <label class="datepicker" for="saldo-manual-nuevo1">Saldo Inicial: </label>
       <div>
         <div class="input-group">
           <span id="saldo-manual-cd-nuevo1" class="input-group-addon"></span>
           <span id="saldo-manual-moneda-nuevo1" class="input-group-addon"></span>
-          <input id="saldo-manual-nuevo1" name="saldo-manual-nuevo1" class="form-control" placeholder="" type="text" readonly>
+          <input id="saldo-manual-nuevo1" name="saldo-manual-nuevo1" class="form-control" placeholder="" type="text" onkeypress='return numero(event)' onkeyup='return numero(event)' readonly>
           <span id="f-nuevo-ini" class="input-group-addon"></span>
           
         </div>
@@ -182,19 +182,19 @@
     <!-- Text input-->
     <div class="form-group col-md-3">
       <label class="control-label" for="fecha-manual-nuevo2">Fecha Final: </label>  
-      <div>
-      <input style="background-color:white"id="fecha-manual-nuevo2" name="fecha-manual-nuevo2" type="text" placeholder="" class="form-control input-md">
+      <div id ="fmn2">
+      <input id="fecha-manual-nuevo2" name="fecha-manual-nuevo2" type="text" placeholder="" class="form-control input-md" readonly>
       </div>
     </div>
 
     <!-- Prepended text-->
-    <div class="form-group col-md-3">
+    <div class="form-group col-md-4">
       <label class="control-label" for="saldo-manual-nuevo2">Saldo Final: </label>
       <div>
         <div class="input-group">
           <span id="saldo-manual-cd-nuevo2" class="input-group-addon"></span>
           <span id="saldo-manual-moneda-nuevo2" class="input-group-addon"></span>
-          <input id="saldo-manual-nuevo2" name="saldo-manual-nuevo1" class="form-control" placeholder="" type="text" readonly>
+          <input id="saldo-manual-nuevo2" name="saldo-manual-nuevo1" class="form-control" placeholder="" type="text" onkeypress='return numero(event)' onkeyup='return numero(event)' readonly>
           <span id="f-nuevo-fin" class="input-group-addon"></span>
           
         </div>
@@ -247,7 +247,7 @@
     </div>
 
     <div class="form-group col-md-2">
-      <label class="control-label">Monto:</label>
+      <label class="control-label">Monto:<span></span></label>
       <div>
         <input onkeypress='return numero(event)' onkeyup='return numero(event)' id="monto-tran" class="form-control" style="width:90%">
       </div>
@@ -294,13 +294,14 @@
     </div>
   </div>
 </div>
+<br>
 
 
 </fieldset>
 </form >
 
 <!--Tabla--> 
-<legend style="color:#337ab7">Detalle Transacciones</legend>
+<legend style="color:#2e6da4">Detalle Transacciones</legend>
 
 <div ="row" id="tabla-detalle">
   <div style="padding-bottom:1%;" class="col-md-3 pull-right">
@@ -330,6 +331,12 @@
     </div>
 
 </div>
+
+<div class="form-group col-md-3">
+      <a href="#tabla-detalle"><button type="button" id="boton-procesar" data-loading-text="Cargando..." class="col-md-5 btn btn-success" autocomplete="off" >
+        Procesar
+      </button></a>
+    </div>
 
 <!-- Static Modal para procesando -->
 <div class="modal modal-static fade" id="processing-modal" role="dialog" aria-hidden="true">
