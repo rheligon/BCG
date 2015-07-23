@@ -1,8 +1,10 @@
 var csrftoken = $.cookie('csrftoken');
 var tabla_det = iniciar_tabla_detalle(idioma_tr);
-var tabla_det_cargar = iniciar_tabla_detalle_cargar(idioma_tr);
 var fechaDesde = "";
 var fechaHasta = "";
+var narrativas = []; //Para almacenar las narrativas
+var largo = 0; //Para almacenar el largo de los mensajes filtrados
+var botonNarrativa = "" //Para almacenar el id de cada boton de ver narrativa
 
 //inicializar la tabla de destalles
 function iniciar_tabla_detalle(idioma){
@@ -58,64 +60,15 @@ function iniciar_tabla_detalle(idioma){
     };
 }
 
-//inicializar la tabla de destalle de parte de carga
-function iniciar_tabla_detalle_cargar(idioma){
 
-    if (idioma==="es"){
-
-        return $('#table-detalle-cargar').DataTable({
-            //poner if con idioma, el ingles es predeterminado
-            language: {
-                url: '/static/json/Spanish-tables.json'
-            },
-            //"scrollY": "200px",
-            //"dom": "frtiS",
-            //"scrollCollapse": true,
-            "pageLength": 5,
-            "lengthMenu": [5, 10, 25, 50, 75, 100 ],
-            "paging": true,
-            "autoWidth": false,
-            "columns": [
-                { "width": "5%" },
-                { "width": "10%" },
-                { "width": "25%" },
-                { "width": "5%" },
-                { "width": "23%" },
-                { "width": "23%" },
-                { "width": "9%" },
-              ],
-        })
-
-    }else if (idioma==="en"){
-
-        return $('#table-detalle-cargar').DataTable({
-            language: {
-                url: '/static/json/English-tables.json'
-            },
-            //"scrollY": "200px",
-            //"dom": "frtiS",
-            //"scrollCollapse": true,
-            "lengthMenu": [5, 10, 25, 50, 75, 100 ],
-            "paging": true,
-            "autoWidth": false,
-            "columns": [
-                 { "width": "5%" },
-                { "width": "10%" },
-                { "width": "25%" },
-                { "width": "5%" },
-                { "width": "23%" },
-                { "width": "23%" },
-                { "width": "9%" },
-              ],
-        })
-    };
-}
 
 // Para esconder los div de crear y cargar la primera vez que se entra a la vista
 if($('#buscar-cb:checked')){
-    document.getElementById("MT99-buscar").style.display = "block";
     document.getElementById("MT99-crear").style.display = "none";
     document.getElementById("MT99-cargar").style.display = "none";
+    document.getElementById("MT99-cargar").style.display = "none";
+    document.getElementById("MT99-verDetalle").style.display = "none";
+    document.getElementById("MT99-buscar").style.display = "block";
 }
 
 //Mostrar div de opciones dependiendo del filtro (buscar, crear o cargar MT)
@@ -125,21 +78,26 @@ $('.cbfilter1').on('click', function(){
     var id = '#MT99-'+idaux;
 
     if (idaux==='buscar'){
-        document.getElementById("MT99-buscar").style.display = "block";
+
         document.getElementById("MT99-crear").style.display = "none";
         document.getElementById("MT99-cargar").style.display = "none";
+        document.getElementById("MT99-verDetalle").style.display = "none";
+        document.getElementById("MT99-buscar").style.display = "block";
     }
 
     if (idaux==='crear'){
-        document.getElementById("MT99-crear").style.display = "block";
         document.getElementById("MT99-buscar").style.display = "none";
         document.getElementById("MT99-cargar").style.display = "none";
+        document.getElementById("MT99-verDetalle").style.display = "none";
+        document.getElementById("MT99-crear").style.display = "block";
     }
 
     if (idaux==='cargar'){
-        document.getElementById("MT99-cargar").style.display = "block";
+        
         document.getElementById("MT99-buscar").style.display = "none";
         document.getElementById("MT99-crear").style.display = "none";
+        document.getElementById("MT99-verDetalle").style.display = "none";
+        document.getElementById("MT99-cargar").style.display = "block";
     }
 
 });
@@ -229,9 +187,11 @@ function buscarmtx99(banco,tipo,fechaArray){
         url: "/mtn99/",
         data: {"banco99":banco, "tipo99":tipo, "action":"buscar", "fechaDesde99":fechaDesde, "fechaHasta99":fechaHasta},
         success: function(data){
+            narrativas = []; //Cada vez que se busque hay que inicializar el arreglo en vacio
             tabla_det.clear().draw();
             var json_data = jQuery.parseJSON(data.mens);
-            console.log(json_data)
+            largo = json_data.length;
+            console.log(json_data);
             for (var i=0; i<json_data.length; i++){
 
                 var aux = json_data[i].fields.fecha.substring(0,10);
@@ -239,26 +199,32 @@ function buscarmtx99(banco,tipo,fechaArray){
                 var fin = res[2].concat("/").concat(res[1]).concat("/").concat(res[0]);
                 var org="";
 
-                if (json_data[i].fields.origen ==="0"){
+                //Para ver si son mensajes enviados o recibidos
+                if (json_data[i].fields.origen === 0 || json_data[i].fields.origen === "0" ){
                     org = "E"
                 } else {
                     org = "R"
                 };
-    
+                
+                //Se construyen las filas de la tabla con la información pertinente
                 var td1 = '<td>' + org + '</td>';
                 var td2 = '<td>' + json_data[i].fields.bic + '</td>';
                 var td3 = '<td>' + fin + '</td>';
                 var td4 = '<td>' + json_data[i].fields.tipo_mt + '</td>';
                 var td5 = '<td>' + json_data[i].fields.codigo + '</td>';
                 var td6 = '<td>' + json_data[i].fields.ref_relacion + '</td>';
-                var td7 = '<td>' + json_data[i].fields.narrativa + '</td>';
+                var td7 = '<td>' + '<a class="btn btn-default btn-xs"  role="button" id="verNarrativa-'+i+'"><span class="glyphicon glyphicon-search" aria-hidden="true"></span>Ver</a>' + '</td>';
+                narrativas.push(json_data[i].fields.narrativa);
+                
 
                 $('#table-detalle > tbody').append('<tr class="text-center" id ="tr-'+json_data[i].pk+"-"+i+'"></tr>');
                 var jRow = $("#tr-"+json_data[i].pk+"-"+i).append(td1,td2,td3,td4,td5,td6,td7);
                 tabla_det.row.add(jRow);
 
             }
+            console.log(narrativas);
             tabla_det.draw();
+            verDetalle();
             $('#processing-modal').modal('toggle');
         },
         error: function(jqXHR, error){ 
@@ -274,6 +240,38 @@ function buscarmtx99(banco,tipo,fechaArray){
     });
     return false;
 }
+
+//Para mostrar la narrativa
+function verDetalle(){
+    
+    for (var i=0; i<largo; i++){
+
+        botonNarrativa = '#'+'verNarrativa-'+i
+        var aux = i;
+        $(botonNarrativa).on('click', function () {
+
+            document.getElementById("MT99-buscar").style.display = "none";
+            document.getElementById("MT99-crear").style.display = "none";
+            document.getElementById("MT99-cargar").style.display = "none";
+
+            $(".content .value").html(narrativas[aux]);
+            document.getElementById("MT99-verDetalle").style.display = "block";
+
+            //$('.results').html(narrativas[i]);
+        });    
+
+    }
+}
+
+//Para regresar desde la vista de las narrativas
+$('#regresarMTButton').on('click', function () {
+
+    document.getElementById("MT99-verDetalle").style.display = "none";
+    document.getElementById("MT99-crear").style.display = "none";
+    document.getElementById("MT99-cargar").style.display = "none";
+    document.getElementById("MT99-buscar").style.display = "block";
+
+});    
 
 //Cambiar el idioma del date picker a español si este es el seleccionado
 if (idioma_tr==="es"){
@@ -383,17 +381,51 @@ function agregarmtx99(banco,tipo,ref_mensaje,ref_mensaje_original, narrativa){
 }
 
 //Boton para cargar MTx99
-/*$('#cargarMTButton').on('click', function () {
-    var archivo = $('#mtx99crear_archivo').val()
+$('#cargarMTButton').on('click', function () {
+    var archivo = $('#mtx99_archivo').val()
 
     if (archivo===("-1")){
         swal("Ups!","Debe seleccionar un archivo para cargar datos.","error");        
-    }
+    } else {
         
         $('#processing-modal').modal('toggle');
     
         //Llamar funcion de cargar del mensaje
-        crearmtx99(archivo);
+        cargarmtx99(archivo);
+    }
 
 });
-*/ 
+
+//Cargar mensajes desde archivo
+function cargarmtx99(archivo){
+    $.ajax({
+        type:"POST",
+        url: "/mtn99/",
+        data: {"action":"cargar", "archivo99":archivo},
+        success: function(data){
+            var mensaje = data.mens;
+            if (mensaje === "Caracter inesperado en archivo"){
+
+                $('#processing-modal').modal('toggle');
+                swal("Ups", "Caracter inesperado en archivo", "error");
+
+            } else {
+                $('#processing-modal').modal('toggle');
+                swal("OK", "Archivo cargado exitosamente", "success");
+            }
+        },
+        error: function(jqXHR, error){ 
+            console.log("esta dando error")
+            alert(jqXHR.responseText) //debug
+            $('#processing-modal').modal('toggle');
+            swal("Ups!", "Hubo un error al cargar el archivo", "error");
+        },
+        dataType:'json',
+        headers:{
+            'X-CSRFToken':csrftoken
+        }
+    });
+    return false;
+}
+
+ 

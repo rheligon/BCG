@@ -23,7 +23,7 @@ from Matcher_WS.edo_cuenta import edoCta, edc_list, Trans, Bal
 from Matcher_WS.mailConf import enviar_mail
 from Matcher_WS.cargaAutomatica import leer_linea_conta, leer_linea_corr, leer_punto_coma, validar_archivo
 from Matcher_WS.Matcher_call import matcher, dma_millis
-from Matcher_WS.funciones_get import get_ops, get_cuentas, get_ci, get_idioma, get_bancos, get_archivosMT99
+from Matcher_WS.funciones_get import get_ops, get_cuentas, get_ci, get_idioma, get_bancos, get_archivosMT99, get_archivosMT96
 from Matcher_WS.generar_reporte import generarReporte, pdfView, xlsView
 from Matcher_WS.setConsolidado import setConsolidado
 
@@ -1540,8 +1540,11 @@ def mensajesSWIFT(request):
 @login_required(login_url='/login')
 def mtn96(request):
 
-    template = "matcher/mtn96.html"
-    context = {'ops':get_ops(request)}
+    if request.method == 'GET':
+        template = "matcher/mtn96.html"
+        context = {'ops':get_ops(request), 'archivos':get_archivosMT96()}
+        
+        return render(request, template, context)
     
     return render(request, template, context)
 
@@ -1565,6 +1568,8 @@ def mtn99(request):
         narrativa = request.POST.get('narrativa99')
         desde = request.POST.get('fechaDesde99')
         hasta = request.POST.get('fechaHasta99')
+        archivoCarga = request.POST.get('archivo99')
+        mensaje = "Esta entrando en cargar"
 
         if action == "buscar":
             if desde == "" and hasta == "":
@@ -1591,7 +1596,7 @@ def mtn99(request):
         if action == "crear":
 
             #Se crea el nuevo mensaje en base da datos
-            nuevomt99 = Mt99.objects.create(codigo=ref_mensaje, ref_relacion=ref_mensaje_original, narrativa=narrativa, bic=banco, fecha=timenow(),tipo_mt=tipo,origen=0 )
+            nuevomt99 = Mt99.objects.create(codigo=ref_mensaje, ref_relacion=ref_mensaje_original, narrativa=narrativa, bic=banco, fecha=timenow(),tipo_mt=tipo,origen="0" )
             
             #Se crea el archivo de texto con la copia del mensaje en el formato SWIFT
             tn = str(timenow())
@@ -1612,7 +1617,7 @@ def mtn99(request):
             #Nombre del archivo a crear
             archivo = directorio + banco + "_" + fechaNombre + "_" + tipo + ".txt"
 
-            # Open a file
+            #abrir archivo
             fo = open(archivo, 'w')
             fo.write( "$\n");
             fo.write( "[M]"+tipo+"\n");
@@ -1622,13 +1627,103 @@ def mtn99(request):
             fo.write( "[21]"+ref_mensaje_original+"\n");
             fo.write( "[79]"+narrativa+"\n");
 
-            # Close opend file
+            #cerrar archivo
             fo.close()
 
             #Se agrega el evento al log
             log(request,40)
 
             return JsonResponse({'mens':"Mensaje MT agregado correctamente"})
+
+        if action == "cargar":
+
+            tipoCargar = ""
+            bancoCargar = ""
+            refCargar = ""
+            refOrgCargar = ""
+            narrativaCargar = ""
+            origenCargar = "1"
+            #Buscar directorio de carga de los mensajes MT99
+            obj = Configuracion.objects.all()[0]
+            reciver = obj.bic
+            directorio = obj.dircarga99
+            directorio = directorio + "\\"
+
+            #ruta del archivo a cargar
+            ruta = directorio + archivoCarga
+
+            #ruta de archivos procesados
+            rutaProcesados = "C:\Matcher\PROCESADO99" 
+
+            #abrir archivo
+            fo = open(ruta, 'r')
+
+            auxCuenta = 0
+            lines = fo.readlines()
+            i = 0
+            while i < len(lines):
+                for j in range(0,7):
+                    line = lines[i+auxCuenta]
+                    if j%7 == 1:
+                        opcion = line[:3]
+                        if opcion != "[M]":
+                            mensaje = "Caracter inesperado en archivo1"
+                            break
+                        tipoCargar = line[3:]
+                        tipoCargar = tipoCargar[:3]
+                    if j%7 == 2:
+                        opcion = line[:3]
+                        if opcion != "[S]":
+                            mensaje = "Caracter inesperado en archivo2"
+                            break
+                        bancoCargar = line[3:]
+                        largoaux = len(bancoCargar)-1
+                        bancoCargar = bancoCargar[:largoaux]
+                    if j%7 == 4:
+                        opcion = line[:4]
+                        if opcion != "[20]":
+                            mensaje = "Caracter inesperado en archivo3"
+                            break
+                        refCargar = line[4:]
+                    if j%7 == 5:
+                        opcion = line[:4]
+                        if opcion != "[21]":
+                            mensaje = "Caracter inesperado en archivo4"
+                            break
+                        refOrgCargar = line[4:]
+                    if j%7 == 6:
+                        opcion = line[:4]
+                        if opcion != "[79]":
+                            mensaje = "Caracter inesperado en archivo5"
+                            break
+                        narrativaCargar = line[4:]
+                        line = lines [i+j+1]
+                        cuenta = i+j+1
+                        while line[:2] != "@@":
+                            narrativaCargar = narrativaCargar + line
+                            cuenta+=1
+                            auxCuenta+=1
+                            line = lines[cuenta]
+                    auxCuenta+=1
+                auxCuenta+=1
+                i = i + auxCuenta
+                auxCuenta = 0
+                Mt99.objects.create(codigo=refCargar, ref_relacion=refOrgCargar, narrativa=narrativaCargar, bic=bancoCargar, fecha=timenow(),tipo_mt=tipoCargar,origen=origenCargar)
+                
+                #Se agrega el evento al log
+                log(request,40)
+
+
+
+            #cerrar archivo
+            fo.close()
+
+            #Se mueve el archivo de directorio
+            shutil.move(ruta,rutaProcesados)
+
+            return JsonResponse({'mens':mensaje})
+
+
 
 
 

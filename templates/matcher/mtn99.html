@@ -153,7 +153,7 @@
                         <div class="col-md-7 form-group">
                             <label class="col-md-4 control-label" >Narrativa:</label>
                                 <div class="col-md-8">
-                                    <textarea class="form-control input-sm" name="narrativaMT" id="narrativa" type="text" maxlength="1784" placeholder="Ingrese la Narrativa" required autofocus/></textarea>
+                                    <textarea class="form-control input-sm" name="narrativaMT" id="narrativa" type="text" maxlength="45" placeholder="Ingrese la Narrativa" required autofocus/></textarea>
                                 </div>
                         </div>
                     </td>
@@ -177,7 +177,7 @@
                         <div class="col-md-7 form-group">
                             <label class="col-md-4 control-label" >Archivo de Carga:</label>
                             <div class="col-md-8">
-                                <select id="mtx99_archivo" name="mtx99_archivo" class="form-control">
+                                <select id="mtx99_archivo" name="mtx99_archivoN" class="form-control">
                                     <option value="-1">--------------</option>
                                     {% for archivo in archivos %}
                                     <option value="{{archivo}}">{{archivo}}</option>
@@ -193,24 +193,19 @@
                     </td>           
                 </tr>
                 <br>
-                <div class="well table-responsive col-md-12">
-                    <legend>Detalle Mensajes MTn99:</legend>
-                    <table id="table-detalle-cargar" class="table table-bordered table-striped tabla">
-                        <thead>
-                            <tr>
-                                <th>Origen</th>
-                                <th>Banco</th>
-                                <th>Fecha</th>
-                                <th>Tipo</th>
-                                <th>Ref. Mensaje</th>
-                                <th>Ref. Msj. Original</th>
-                                <th>Narrativa</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                        </tbody>
-                    </table>
-                </div>
+        </div>
+        <div id="MT99-verDetalle">
+            <legend>Ver Narrativa</legend>
+            <div class="col-md-8">
+                <div class="content"><span class='value'></span></div>
+            </div>
+            <br>
+            <br>
+            <div class="col-md-7" align="rigth">
+                <button type="button" id="regresarMTButton" style="align:right" class="col-md-3 btn btn-warning">
+                     <-- Regresar
+                </button>
+            </div>
         </div>  
 </div>
 <!-- Static Modal para procesando -->
