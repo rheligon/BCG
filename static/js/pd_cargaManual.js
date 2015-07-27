@@ -5,6 +5,7 @@ var num=1;
 var pagina = 1;
 var dp1;
 var dp2;
+var tipo;
 var inputIni = $('#fecha-manual-nuevo1').detach();
 $('#fmn1').html(inputIni);
 var inputIni2 = $('#fecha-manual-nuevo2').detach();
@@ -34,6 +35,7 @@ $('#Cuenta-sel').change(function() {
         $('#banco').val(sel.attr('banco'));
         
         document.getElementById('cont-radio').checked = true;
+        tipo = "cont-radio";
 
         $('#edo-cuenta-nuevo').val("");
         $('#paginas-nuevo').html("");
@@ -190,7 +192,7 @@ $('.table').on('click','a[type=edc]', function(event) {
 $('input[name=radiocuenta]').change(function(){
     $('#processing-modal').modal('toggle');
         
-    var tipo = $(this).attr('id');
+    tipo = $(this).attr('id');
     var cuentaId = $('#Cuenta-sel').val();
 
     if (cuentaId>=0){
@@ -214,6 +216,9 @@ $('input[name=radiocuenta]').change(function(){
         
         $('#f-nuevo-ini').html("");
         $('#f-nuevo-fin').html("");
+        t_conta.clear().draw();
+        num=1;
+        
         }else{
 
         $('#elim-data').attr('cod', "");
@@ -222,6 +227,9 @@ $('input[name=radiocuenta]').change(function(){
         $('#fecha-manual').val("");
         $('#saldo-manual-cd').html("");
         $('#saldo-manual').val("");
+        t_conta.clear().draw();
+        num=1;
+        
     }
 
     buscarEstado(tipo,cuentaId,moneda);
@@ -347,7 +355,6 @@ $('#boton-agregar').on('click', function () {
         montoFloatPuro = parseFloat(monto)
         montoFloatPuroFixed = montoFloatPuro.toFixed(2);
         montoFloat = commas(montoFloatPuroFixed);
-        console.log(montoFloat);
         var tipo = $('#tipo-tran').val();
         var nostro = $('#nostro-tran').val();
         var vostro = $('#vostro-tran').val();
@@ -442,10 +449,12 @@ $('#boton-agregar').on('click', function () {
     
 
 });
-
+//window.location.reload()
 //Procesamos todas las transacciones
 $('#boton-procesar').on('click', function () {
     var $btn;
+    var listaTrans = [];
+    var listaCuenta = [];
     var existe = $('#tran-1').html();
     existe = parseInt(existe);
     if(existe>0){
@@ -458,6 +467,41 @@ $('#boton-procesar').on('click', function () {
             function(){
                 $btn = $(this).button('loading')
                 $('#processing-modal').modal('toggle');
+                for(var i=1;i<num;i++){
+                    var elem = [$("#tran-"+i).html(),$("#tranNum-"+i).html(),$("#fecha-"+i).html(),$("#cd-"+i).html(),$("#monto-"+i).html(),$("#tipo-"+i).html(),$("#nos-"+i).html(),$("#vos-"+i).html(),$("#det-"+i).html()];
+                    listaTrans.push(elem);
+                }
+                var numTrans = num-1;
+                var nroCuenta = $('#Cuenta-sel').val();
+                var codigo = $('#edo-cuenta-nuevo').val();
+                var pag = $('#paginas-nuevo').html();
+                var fechaIni = $('#fecha-manual-nuevo1').val();
+                var fechaFin = $('#fecha-manual-nuevo2').val();
+                var balIni = $('#saldo-manual-nuevo1').val();
+                var balFin = $('#saldo-manual-nuevo2').val();
+                var mIni = $('#f-nuevo-ini').html();
+                var mFin = $('#f-nuevo-fin').html();
+                var cdIni = $('#saldo-manual-cd-nuevo1').html();
+                var cdFin = $('#saldo-manual-cd-nuevo2').html();
+                var origen;
+                if (tipo =="corr-radio"){
+                    origen = "S";
+                }else if (tipo =="cont-radio"){
+                    origen = "L";
+                }
+                listaCuenta.push(nroCuenta);
+                listaCuenta.push(codigo);
+                listaCuenta.push(origen);
+                listaCuenta.push(pag);
+                listaCuenta.push(balIni);
+                listaCuenta.push(balFin);
+                listaCuenta.push(mIni);
+                listaCuenta.push(mFin);
+                listaCuenta.push(fechaIni);
+                listaCuenta.push(fechaFin);
+                listaCuenta.push(cdIni);
+                listaCuenta.push(cdFin);
+                cargar(listaCuenta,listaTrans,numTrans);
             }
         );
     }else{
@@ -624,8 +668,7 @@ function buscarEstado(tipo,cuentaid,moneda){
             var tipo = data.tipo;
             var moneda = data.moneda;
             var json_data = jQuery.parseJSON(data.query);
-            console.log(json_data);
-
+           
             if (json_data[carg].length>=1){
                   
                 for (var i = 0; i < json_data[carg].length; i++) {
@@ -741,62 +784,38 @@ function buscarEstado(tipo,cuentaid,moneda){
     return false;
 };
 
-//Eliminar Estado de Cuenta
-$('#delButton').on('click', function (event) {
-    event.preventDefault();
-    var $btn;
-   
-    function del_edc(edcId, cop){
+function cargar(listaCuenta,listaTrans,numTrans){
+        listaTrans = JSON.stringify(listaTrans);
+        listaCuenta = JSON.stringify(listaCuenta);
         $.ajax({
             type:"POST",
-            url: "/cuentas/estado",
-            data: {"cuentaid": -1, "edcid": edcId, "cop": cop},
+            url: "/procd/cargMan/",
+            data: {"listaCuenta":listaCuenta, "listaTrans":listaTrans, "numTrans":numTrans, "action": "cargar"},
             success: function(data){
-                swal({   title: "",
-                         text: data.msg,
-                         type: "success",
-                         confirmButtonText: "Ok" });
+
+                if (data.exito){
+                    swal({   title: "",
+                             text: data.msg,
+                             type: "success",
+                             confirmButtonText: "Ok" });
+                }else{
+                    swal({   title: "",
+                             text: data.msg,
+                             type: "error",
+                             confirmButtonText: "Ok" });
+                }
                 $('#processing-modal').modal('toggle');
-
-                $btn.button('reset');
-                var origen, tabla;
-                
-                if (data.conocor === "L"){
-                    origen = "con"
-                    tabla = t_conta
-                }else if (data.conocor === "S"){
-                    origen = "cor"
-                    tabla = t_corr
-                }
-
-                if (data.elim){
-                    tabla.row($('#tr-'+ origen+'-'+data.codigo)).remove().draw();
-                    $('#elim-data').attr("cod","-1");
-                }
             },
+            error: function(q,error){
+                alert(q.responseText) //debug
+                $('#processing-modal').modal('toggle');
+                swal("Ups!", "Hubo un error con la Carga Manual, intente de Nuevo.", "error");
+        },
             dataType:'json',
             headers:{
                 'X-CSRFToken':csrftoken
             }
         });
         return false;
-    }
+};
 
-    var codEdc = $('#elim-data').attr('cod');
-    var idEdc = $('#elim-data').attr('eid');
-
-    if (codEdc!="-1"){
-        swal({   title: "",
-         text: "Seguro que desea eliminar el estado de cuenta "+codEdc+" ?",
-         type: "warning",
-         showCancelButton: true,
-         confirmButtonText: "Ok"},
-         function(){
-            $btn = $(this).button('loading')
-            $('#processing-modal').modal('toggle');
-            del_edc(idEdc,$('#elim-data').attr('modo'));
-         });
-    }else{
-        swal("Ups!","Por favor seleccionar un estado de cuenta a eliminar previamente.","error");
-    }
-})
