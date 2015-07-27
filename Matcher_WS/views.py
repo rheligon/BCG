@@ -1643,6 +1643,10 @@ def mtn99(request):
             refOrgCargar = ""
             narrativaCargar = ""
             origenCargar = "1"
+            codigos=[]
+            relaciones=[]
+            narrativas=[]
+            bics=[]
             #Buscar directorio de carga de los mensajes MT99
             obj = Configuracion.objects.all()[0]
             reciver = obj.bic
@@ -1667,35 +1671,60 @@ def mtn99(request):
                     if j%7 == 1:
                         opcion = line[:3]
                         if opcion != "[M]":
-                            mensaje = "Caracter inesperado en archivo1"
-                            break
+                            mensaje = "Caracter inesperado en campo tipo, en la línea número " +str(i+auxCuenta+1)+ " del archivo"
+                            #cerrar archivo
+                            fo.close()
+                            return JsonResponse({'mens':mensaje})
                         tipoCargar = line[3:]
                         tipoCargar = tipoCargar[:3]
                     if j%7 == 2:
                         opcion = line[:3]
                         if opcion != "[S]":
-                            mensaje = "Caracter inesperado en archivo2"
-                            break
+                            mensaje = "Caracter inesperado en campo bic del banco emisor, en la línea número " +str(i+auxCuenta+1)+ " del archivo"
+                            #cerrar archivo
+                            fo.close()
+                            return JsonResponse({'mens':mensaje})
                         bancoCargar = line[3:]
                         largoaux = len(bancoCargar)-1
                         bancoCargar = bancoCargar[:largoaux]
+                    if j%7 == 3:
+                        opcion = line[:3]
+                        if opcion != "[R]":
+                            mensaje = "Caracter inesperado en campo bic del banco receptor, en la línea número " +str(i+auxCuenta+1)+ " del archivo"
+                            #cerrar archivo
+                            fo.close()
+                            return JsonResponse({'mens':mensaje})
+                        bancoR = line[3:]
+                        largoaux = len(bancoR)-1
+                        bancoR = bancoR[:largoaux]
+                        if bancoR != reciver :
+                            mensaje = "Caracter inesperado en campo bic del banco receptor, en la línea número " +str(i+auxCuenta+1)+ " del archivo"
+                            #cerrar archivo
+                            fo.close()
+                            return JsonResponse({'mens':mensaje})
                     if j%7 == 4:
                         opcion = line[:4]
                         if opcion != "[20]":
-                            mensaje = "Caracter inesperado en archivo3"
-                            break
+                            mensaje = "Caracter inesperado en campo referencia del mensaje,  en la línea número " +str(i+auxCuenta+1)+ " del archivo"
+                            #cerrar archivo
+                            fo.close()
+                            return JsonResponse({'mens':mensaje})
                         refCargar = line[4:]
                     if j%7 == 5:
                         opcion = line[:4]
                         if opcion != "[21]":
-                            mensaje = "Caracter inesperado en archivo4"
-                            break
+                            mensaje = "Caracter inesperado en campo referencia del mensaje original,  en la línea número " +str(i+auxCuenta+1)+ " del archivo"
+                            #cerrar archivo
+                            fo.close()
+                            return JsonResponse({'mens':mensaje})
                         refOrgCargar = line[4:]
                     if j%7 == 6:
                         opcion = line[:4]
                         if opcion != "[79]":
-                            mensaje = "Caracter inesperado en archivo5"
-                            break
+                            mensaje = "Caracter inesperado en la narrativa del mensaje,  en la linea numero " +str(i+auxCuenta+1)+ " del archivo"
+                            #cerrar archivo
+                            fo.close()
+                            return JsonResponse({'mens':mensaje})
                         narrativaCargar = line[4:]
                         line = lines [i+j+1]
                         cuenta = i+j+1
@@ -1708,15 +1737,29 @@ def mtn99(request):
                 auxCuenta+=1
                 i = i + auxCuenta
                 auxCuenta = 0
-                Mt99.objects.create(codigo=refCargar, ref_relacion=refOrgCargar, narrativa=narrativaCargar, bic=bancoCargar, fecha=timenow(),tipo_mt=tipoCargar,origen=origenCargar)
-                
-                #Se agrega el evento al log
-                log(request,40)
-
-
+        
+                # Se agregan los campos a las estructuras auxiliares para al finalarizar el recorrido del archivo 
+                # y ver que no haya errores, agregar los datos a la base de datos
+                codigos.append(refCargar)
+                relaciones.append(refOrgCargar)
+                narrativas.append(narrativaCargar)
+                bics.append(bancoCargar)
 
             #cerrar archivo
             fo.close()
+
+            # Se hacen los creates en la base de datos
+            k=0
+            for codigo in codigos:
+                Mt99.objects.create(codigo=codigo, ref_relacion=relaciones[k], narrativa=narrativas[k], bic=bics[k], fecha=timenow(),tipo_mt=tipoCargar,origen=origenCargar)
+                k+=1        
+
+            #Se agrega el evento al log
+            log(request,40)
+
+
+
+            
 
             #Se mueve el archivo de directorio
             shutil.move(ruta,rutaProcesados)
