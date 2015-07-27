@@ -16,13 +16,13 @@ function iniciar_tabla_detalle(idioma){
             language: {
                 url: '/static/json/Spanish-tables.json'
             },
-            //"scrollY": "200px",
-            //"dom": "frtiS",
-            //"scrollCollapse": true,
-            "pageLength": 5,
-            "lengthMenu": [5, 10, 25, 50, 75, 100 ],
-            "paging": true,
-            "autoWidth": false,
+            "scrollY": "190px",
+            "dom": "frtiS",
+            "scrollCollapse": true,
+            //"pageLength": 5,
+            //"lengthMenu": [5, 10, 25, 50, 75, 100 ],
+            //"paging": true,
+            "autoWidth": true,
             "columns": [
                 { "width": "5%" },
                 { "width": "10%" },
@@ -40,15 +40,15 @@ function iniciar_tabla_detalle(idioma){
             language: {
                 url: '/static/json/English-tables.json'
             },
-            //"scrollY": "200px",
-            //"dom": "frtiS",
-            //"scrollCollapse": true,
-            "pageLength": 5,
-            "lengthMenu": [5, 10, 25, 50, 75, 100 ],
-            "paging": true,
+            "scrollY": "190px",
+            "dom": "frtiS",
+            "scrollCollapse": true,
+            //"pageLength": 5,
+            //"lengthMenu": [5, 10, 25, 50, 75, 100 ],
+            //"paging": true,
             "autoWidth": false,
             "columns": [
-                 { "width": "5%" },
+                { "width": "5%" },
                 { "width": "10%" },
                 { "width": "25%" },
                 { "width": "5%" },
@@ -213,8 +213,8 @@ function buscarmtx99(banco,tipo,fechaArray){
                 var td4 = '<td>' + json_data[i].fields.tipo_mt + '</td>';
                 var td5 = '<td>' + json_data[i].fields.codigo + '</td>';
                 var td6 = '<td>' + json_data[i].fields.ref_relacion + '</td>';
-                var td7 = '<td>' + '<a class="btn btn-default btn-xs"  role="button" id="verNarrativa-'+i+'"><span class="glyphicon glyphicon-search" aria-hidden="true"></span>Ver</a>' + '</td>';
                 narrativas.push(json_data[i].fields.narrativa);
+                var td7 = '<td>' + '<input type="radio" name="verN" class="cbfilter2" id='+i+'-verN">'
                 
 
                 $('#table-detalle > tbody').append('<tr class="text-center" id ="tr-'+json_data[i].pk+"-"+i+'"></tr>');
@@ -222,7 +222,7 @@ function buscarmtx99(banco,tipo,fechaArray){
                 tabla_det.row.add(jRow);
 
             }
-            console.log(narrativas);
+            //console.log(narrativas);
             tabla_det.draw();
             verDetalle();
             $('#processing-modal').modal('toggle');
@@ -241,26 +241,30 @@ function buscarmtx99(banco,tipo,fechaArray){
     return false;
 }
 
-//Para mostrar la narrativa
+//Mostrar div de opciones dependiendo del filtro (buscar, crear o cargar MT)
 function verDetalle(){
-    
-    for (var i=0; i<largo; i++){
+    $('.cbfilter2').on('click', function(){
 
-        botonNarrativa = '#'+'verNarrativa-'+i
-        var aux = i;
-        $(botonNarrativa).on('click', function () {
+        var idaux = $(this).attr('id').split('-')[0];
+        for (var i=0; i<largo; i++){
+            j = i.toString();
+                
+            if (idaux===j){
 
-            document.getElementById("MT99-buscar").style.display = "none";
-            document.getElementById("MT99-crear").style.display = "none";
-            document.getElementById("MT99-cargar").style.display = "none";
+               
+                document.getElementById("MT99-buscar").style.display = "none";
+                document.getElementById("MT99-crear").style.display = "none";
+                document.getElementById("MT99-cargar").style.display = "none";
 
-            $(".content .value").html(narrativas[aux]);
-            document.getElementById("MT99-verDetalle").style.display = "block";
+                $("#narrativaValue").empty();
+                $( ".value" ).html(narrativas[i]);
 
-            //$('.results').html(narrativas[i]);
-        });    
+                document.getElementById("MT99-verDetalle").style.display = "block";
 
-    }
+            }
+        }
+
+    });
 }
 
 //Para regresar desde la vista de las narrativas
@@ -270,6 +274,7 @@ $('#regresarMTButton').on('click', function () {
     document.getElementById("MT99-crear").style.display = "none";
     document.getElementById("MT99-cargar").style.display = "none";
     document.getElementById("MT99-buscar").style.display = "block";
+    $("input:radio").attr("checked", false);
 
 });    
 
@@ -403,15 +408,17 @@ function cargarmtx99(archivo){
         url: "/mtn99/",
         data: {"action":"cargar", "archivo99":archivo},
         success: function(data){
+            var errorMensaje = data.mens.substring(0,8);
             var mensaje = data.mens;
-            if (mensaje === "Caracter inesperado en archivo"){
+            if (errorMensaje === "Caracter"){
 
                 $('#processing-modal').modal('toggle');
-                swal("Ups", "Caracter inesperado en archivo", "error");
+                swal("Ups", mensaje, "error");
 
             } else {
                 $('#processing-modal').modal('toggle');
                 swal("OK", "Archivo cargado exitosamente", "success");
+                window.location.reload();
             }
         },
         error: function(jqXHR, error){ 
