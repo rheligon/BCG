@@ -148,24 +148,32 @@ $('#confButton').on('click', function () {
 
                 //si se escogió una fecha limite superior
                 if ($('#f-hasta').val() != ""){
-                    fh = $('#f-hasta').val();    
+                    fh = $('#f-hasta').val();
+                    var aux = fh.substring(0,2);
+                    aux = parseInt(aux);
+                    aux = aux + 1;
+                    aux = aux.toString();
+                    var fechaAux = fh.split("/")
+                    // Para que la consulta se haga hasta el dia que el usuario ingreso
+                    // como fecha tope inclusive
+                    fh = aux + '/' + fechaAux[1] + '/' + fechaAux[2];
                 }
                 // en caso contrario se toma la fecha actual 
                 else {
                     var today = new Date();
-                    var dd = today.getDate()+1;
-                    var mm = today.getMonth()+1; //January is 0!
-                    var yyyy = today.getFullYear();
+                    var dd1 = today.getDate()+1;
+                    var mm1 = today.getMonth()+1; //January is 0!
+                    var yyyy1 = today.getFullYear();
 
-                    if(dd<10) {
-                        dd='0'+dd
+                    if(dd1<10) {
+                        dd1='0'+dd1
                     } 
 
-                    if(mm<10) {
-                        mm='0'+mm
+                    if(mm1<10) {
+                        mm1='0'+mm1
                     } 
 
-                    today = dd+'/'+mm+'/'+yyyy;
+                    today = dd1+'/'+mm1+'/'+yyyy1;
                     fh = today;    
                 }
 
@@ -173,9 +181,13 @@ $('#confButton').on('click', function () {
                 fechaHasta = fh;
             }
 
+            if (fechaDesde > fechaHasta){
+                swal("Ups!","Error en las fechas.","error");        
+            }
+
         });
 
-          //Llamar funcion de busqueda
+        //Llamar funcion de busqueda
         buscarmtx99(banco,tipo,fechaDesde,fechaHasta);
     };
 });
