@@ -1067,7 +1067,11 @@ def pd_partidasAbiertas(request):
             res_json_conta = serializers.serialize('json', ta_conta)
             res_json_corr = serializers.serialize('json', ta_corr) #, use_natural_foreign_keys=True
 
-            return JsonResponse({'r_conta':res_json_conta, 'r_corr':res_json_corr, 'r_edcn':edcN}, safe=False)
+            # Buscar los mensajes MT95
+            mt95 = Mt95.objects.all()
+            res_json_mt95 = serializers.serialize('json',mt95) 
+
+            return JsonResponse({'r_conta':res_json_conta, 'r_corr':res_json_corr, 'r_edcn':edcN, 'r_95':res_json_mt95}, safe=False)
 
 
     if request.method == 'GET':
@@ -1654,7 +1658,6 @@ def mtn96(request):
         
         return render(request, template, context)
     
-    return render(request, template, context)
 
 @login_required(login_url='/login')
 def mtn99(request):
