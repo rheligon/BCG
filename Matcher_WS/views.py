@@ -14,6 +14,7 @@ from django.contrib.auth.hashers import *
 from django.contrib.auth import update_session_auth_hash
 from django.contrib.sessions.models import Session
 from datetime import datetime, date, time, timedelta
+from decimal import Decimal
 
 from Matcher.models import *
 
@@ -652,7 +653,55 @@ def pd_cargaManual(request):
             res_json2 = '[' + serializers.serialize('json', cargado_l) + ',' 
             res_json2 += serializers.serialize('json', procesado_l)+']'
         
-        return JsonResponse({'query':res_json2, 'tipo':tipo,'moneda':moneda})
+            return JsonResponse({'query':res_json2, 'tipo':tipo,'moneda':moneda})
+
+        if actn == 'cargar':
+            msg = "El Edo. de Cuenta se ha cargado con exito"
+            numTrans = int(request.POST.get('numTrans'))
+
+            listaCuenta = request.POST.getlist('listaCuenta')[0]
+            listaCuenta = jsonpickle.decode(listaCuenta)
+
+            nroCuenta = listaCuenta[0]
+            codigo = listaCuenta[1]
+            origen = listaCuenta[2]
+            pag = int(listaCuenta[3])
+            balIni = listaCuenta[4]
+            balIni = float(balIni.replace(",",""))
+            balFin = listaCuenta[5]
+            balFin = float(balFin.replace(",",""))
+            mIni = listaCuenta[6]
+            mFin = listaCuenta[7]
+            fechaIni = listaCuenta[8]
+            arreglo = fechaIni.split('/')
+            fechaIni= datetime(int(arreglo[2]), int(arreglo[1]), int(arreglo[0]))
+            fechaFin = listaCuenta[9]
+            arreglo2 = fechaFin.split('/')
+            fechaFin= datetime(int(arreglo2[2]), int(arreglo2[1]), int(arreglo2[0]))
+            cdIni = listaCuenta[10]
+            cdFin = listaCuenta[11]
+            
+            listaTrans = request.POST.getlist('listaTrans')[0]
+            listaTrans = jsonpickle.decode(listaTrans)
+
+            #Corresponsal
+            if(origen=="S"):
+
+                try:
+                    cta = Cuenta.objects.filter(idcuenta=nroCuenta)[0]
+                except:
+                    cta = None
+
+                if cta is not None:
+                    # Se crea la instancia de Estado de Cuenta en la base de datos
+                    #edocta = EstadoCuenta.objects.create(cuenta_idcuenta=cta, codigo=codigo, origen=origen,pagina=pag, balance_inicial=balIni, balance_final=balFin, m_finicial=mIni, m_ffinal=mFin, fecha_inicial=fechaIni , fecha_final=fechaFin, c_dinicial=cdIni, c_dfinal=cdFin)
+                    
+                    # Se crea la instancia en la tabla Cargado
+                    # Cargado.objects.create(estado_cuenta_idedocuenta=edocta)
+                    for i in range(0,numTrans):
+                        print ("hola")
+
+            return JsonResponse({'exito':True, 'msg':msg})
 
 
     if request.method == 'GET':
