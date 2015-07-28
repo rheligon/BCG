@@ -666,18 +666,24 @@ def pd_cargaManual(request):
             codigo = listaCuenta[1]
             origen = listaCuenta[2]
             pag = int(listaCuenta[3])
+            
             balIni = listaCuenta[4]
             balIni = float(balIni.replace(",",""))
+            
             balFin = listaCuenta[5]
             balFin = float(balFin.replace(",",""))
+            
             mIni = listaCuenta[6]
             mFin = listaCuenta[7]
+            
             fechaIni = listaCuenta[8]
             arreglo = fechaIni.split('/')
             fechaIni= datetime(int(arreglo[2]), int(arreglo[1]), int(arreglo[0]))
+            
             fechaFin = listaCuenta[9]
             arreglo2 = fechaFin.split('/')
             fechaFin= datetime(int(arreglo2[2]), int(arreglo2[1]), int(arreglo2[0]))
+            
             cdIni = listaCuenta[10]
             cdFin = listaCuenta[11]
             
@@ -694,13 +700,66 @@ def pd_cargaManual(request):
 
                 if cta is not None:
                     # Se crea la instancia de Estado de Cuenta en la base de datos
-                    #edocta = EstadoCuenta.objects.create(cuenta_idcuenta=cta, codigo=codigo, origen=origen,pagina=pag, balance_inicial=balIni, balance_final=balFin, m_finicial=mIni, m_ffinal=mFin, fecha_inicial=fechaIni , fecha_final=fechaFin, c_dinicial=cdIni, c_dfinal=cdFin)
+                    edocta = EstadoCuenta.objects.create(cuenta_idcuenta=cta, codigo=codigo, origen=origen,pagina=pag, balance_inicial=balIni, balance_final=balFin, m_finicial=mIni, m_ffinal=mFin, fecha_inicial=fechaIni , fecha_final=fechaFin, c_dinicial=cdIni, c_dfinal=cdFin)
                     
                     # Se crea la instancia en la tabla Cargado
-                    # Cargado.objects.create(estado_cuenta_idedocuenta=edocta)
-                    for i in range(0,numTrans):
-                        print ("hola")
+                    Cargado.objects.create(estado_cuenta_idedocuenta=edocta)
 
+                    #Por cada transaccion la insertamos a la tabla de transaccion abierta Corresponsal
+                    for i in range(0,numTrans):
+                        pagina = (i // 15)+1
+                        
+                        fechaS = listaTrans[i][2]
+                        arregloTrans = fechaS.split('/')
+                        fechaT = datetime(int(arregloTrans[2]), int(arregloTrans[1]), int(arregloTrans[0]))
+                        
+                        monto = listaTrans[i][4]
+                        monto = float(monto.replace(",",""))
+                        
+                        TransabiertaCorresponsal.objects.create(estado_cuenta_idedocuenta=edocta,codigo_transaccion=listaTrans[i][5], pagina=pagina, fecha_valor=fechaT, descripcion=listaTrans[i][8], monto=monto, credito_debito=listaTrans[i][3], referencianostro=listaTrans[i][6], referenciacorresponsal=listaTrans[i][7], codigocuenta=cta.codigo, numtransaccion=int(listaTrans[i][1]), campo86_940=None, seguimiento=None)
+                    
+                    cta.ultimoedocuentacargs = edocta.idedocuenta
+                    cta.save()
+
+                    #Para el Log
+                    detalle = cta.codigo+' - No. '+codigo +' - S'
+                    log(request,4,detalle)
+
+            #Contabilidad
+            if(origen=="L"):
+
+                try:
+                    cta = Cuenta.objects.filter(idcuenta=nroCuenta)[0]
+                except:
+                    cta = None
+
+                if cta is not None:
+                    # Se crea la instancia de Estado de Cuenta en la base de datos
+                    edocta = EstadoCuenta.objects.create(cuenta_idcuenta=cta, codigo=codigo, origen=origen,pagina=pag, balance_inicial=balIni, balance_final=balFin, m_finicial=mIni, m_ffinal=mFin, fecha_inicial=fechaIni , fecha_final=fechaFin, c_dinicial=cdIni, c_dfinal=cdFin)
+                    
+                    # Se crea la instancia en la tabla Cargado
+                    Cargado.objects.create(estado_cuenta_idedocuenta=edocta)
+
+                    #Por cada transaccion la insertamos a la tabla de transaccion abierta Corresponsal
+                    for i in range(0,numTrans):
+                        pagina = (i // 15)+1
+                        
+                        fechaS = listaTrans[i][2]
+                        arregloTrans = fechaS.split('/')
+                        fechaT = datetime(int(arregloTrans[2]), int(arregloTrans[1]), int(arregloTrans[0]))
+                        
+                        monto = listaTrans[i][4]
+                        monto = float(monto.replace(",",""))
+                        
+                        TransabiertaContabilidad.objects.create(estado_cuenta_idedocuenta=edocta,codigo_transaccion=listaTrans[i][5], pagina=pagina, fecha_valor=fechaT, descripcion=listaTrans[i][8], monto=monto, credito_debito=listaTrans[i][3], referencianostro=listaTrans[i][6], referenciacorresponsal=listaTrans[i][7], codigocuenta=cta.codigo, numtransaccion=int(listaTrans[i][1]), campo86_940=None, seguimiento=None)
+                    
+                    cta.ultimoedocuentacargc = edocta.idedocuenta
+                    cta.save()
+
+                    #Para el Log
+                    detalle = cta.codigo+' - No. '+codigo +' - L'
+                    log(request,4,detalle)
+                            
             return JsonResponse({'exito':True, 'msg':msg})
 
 
