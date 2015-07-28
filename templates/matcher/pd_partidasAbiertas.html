@@ -239,6 +239,8 @@ table {
                 <th>Monto</th>
                 <th>S/L</th>
                 <th>Sel</th>
+                <th>MT</th>
+                <th>MT Ver</th>
             </tr>
         </thead>
         <tbody id="tb-pa">
@@ -246,15 +248,32 @@ table {
     </table>
 </div>
 
+<div class="row">
+</div>
+
 {% if 26 in ops %}
 <div class="row">
-  <div class="col-md-3 col-md-push-7">
+<br>
+  {% if 25 in ops %}
+  <div class="col-md-3 col-md-push-1">
+    <button type="button" id="crearMTButton" class="col-md-6 btn btn-primary">
+        Crear MT
+    </button>
+  </div>
+  <div class="col-md-3 col-md-push-1">
+    <button type="button" id="verMTButton" class="col-md-6 btn btn-primary">
+        Ver MT
+    </button>
+  </div>
+  {%endif%}
+
+  <div class="col-md-3 col-md-push-1">
     <button type="button" id="checkAllButton" data-loading-text="Cargando..." class="col-md-6 btn btn-primary" selec="0">
         Selecc. Todas
     </button>
   </div>
 
-  <div class="col-md-3 col-md-push-6">
+  <div class="col-md-3 col-md-push-1">
 
     <button type="button" id="matchButton" data-loading-text="Cargando..." class="col-md-6 btn btn-success" autocomplete="off">
         Match

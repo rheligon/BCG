@@ -234,13 +234,11 @@ function buscarmtx99(banco,tipo,fechaArray){
                 tabla_det.row.add(jRow);
 
             }
-            //console.log(narrativas);
             tabla_det.draw();
             verDetalle();
             $('#processing-modal').modal('toggle');
         },
         error: function(jqXHR, error){ 
-            console.log("esta dando error")
             alert(jqXHR.responseText) //debug
             $('#processing-modal').modal('toggle');
             swal("Ups!", "Hubo un error procesando la búsqueda", "error");
@@ -384,7 +382,6 @@ function agregarmtx99(banco,tipo,ref_mensaje,ref_mensaje_original, narrativa){
 
         },
         error: function(jqXHR, error){ 
-            console.log("esta dando error")
             alert(jqXHR.responseText) //debug
             $('#processing-modal').modal('toggle');
             swal("Ups!", "Hubo un error al intertar crear el mensaje", "error");
@@ -434,7 +431,6 @@ function cargarmtx99(archivo){
             }
         },
         error: function(jqXHR, error){ 
-            console.log("esta dando error")
             alert(jqXHR.responseText) //debug
             $('#processing-modal').modal('toggle');
             swal("Ups!", "Hubo un error al cargar el archivo", "error");

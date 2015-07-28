@@ -5,6 +5,8 @@ var faltacorr = false;
 var matchArray = [];
 var filterArray = [[],[],[],[],[],[]];
 var edcArray = [[],[]];
+var mt95Array=[];
+var mt95Aux=[];
 
 function dateFormat(fecha){
     var date = new Date(Date.parse(fecha));
@@ -383,6 +385,9 @@ function busqueda(ctaid,filterArray){
             var json_conta = jQuery.parseJSON(data.r_conta);
             var json_corr = jQuery.parseJSON(data.r_corr);
             edcArray = data.r_edcn;
+            var json_mt99 = jQuery.parseJSON(data.r_95);
+            mt95Array = json_mt99;
+            console.log(mt95Array);   
 
             $('#pbardiv').prop('hidden', false);
             $('#pbar').attr('max', json_corr.length+json_conta.length);
@@ -539,10 +544,34 @@ function calcularfila(elem,tipo,edc){
         var td10 = '<td>S</td>';
     }
     var td11 = '<td style="text-align:center; width: 24px;"><input class="chkSelection" type="checkbox" id="cb-'+tipo+'-'+a_id+'"></td>';
+    var td12 = '<td style="text-align:center; width: 24px;"><input class="chkSelection2" type="checkbox" id="cb-'+tipo+'-'+a_id+'"></td>';
+    var td13 = '<td style="text-align:center; width: 24px;"><input class="chkSelection3" type="checkbox" id="cb-'+tipo+'-'+a_id+'"></td>';
+
+    var copia = mt95Array;
+    /*for (var i = 0 ; i < copia.length; i++) {
+
+        if (copia[i].fileds.ta_conta === vacio(elem.fields.referencianostro) || copia[i].fileds.ta_corres === vacio(elem.fields.referencianostro)){
+
+
+            findAndRemove(mt95Array, 'id', 'AF');
+
+        }
+
+    }*/
 
     $('#table-pa > tbody').append('<tr id ="tr-'+tipo+'-'+a_id+'"></tr>');
 
-    var jRow = $("#tr-"+tipo+"-"+a_id).append(td1,td2,td3,td4,td5,td6,td7,td8,td9,td10,td11);
+    var jRow = $("#tr-"+tipo+"-"+a_id).append(td1,td2,td3,td4,td5,td6,td7,td8,td9,td10,td11,td12,td13);
     //tabla.row.add(jRow);
     tabla.fnAddData(jRow,false);
+}
+
+//para quitar una entrada de un arreglo de json
+function findAndRemove(array, property, value) {
+   $.each(array, function(index, result) {
+      if(result[property] == value) {
+          //Remove from array
+          array.splice(index, 1);
+      }    
+   });
 }
