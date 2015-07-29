@@ -11,8 +11,6 @@ $('#fmn1').html(inputIni);
 var inputIni2 = $('#fecha-manual-nuevo2').detach();
 $('#fmn2').html(inputIni2);
 
-
-
 function commas (num) {
     var N = parseFloat(num).toFixed(2);
     return N.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,")
@@ -86,6 +84,8 @@ $('#Cuenta-sel').change(function() {
         $('#fmn1').html(inputIni);
         $('#fmn2').html(inputIni2);
 
+        $('#saldo-manual-cd-nuevo1').remove();
+        $('#after').prepend('<span id="saldo-manual-cd-nuevo1" class="input-group-addon"></span>');
 
         //si cambiamos de cuenta borramos la tabla e inicializamos num
         t_conta.clear().draw();
@@ -157,6 +157,10 @@ $('#Cuenta-sel').change(function() {
         $("#saldo-manual-nuevo2").css('background-color', '#eee');
         $("#edo-cuenta-nuevo").prop('readonly', true);
         $("#edo-cuenta-nuevo").css('background-color', '#eee');
+
+        $('#saldo-manual-cd-nuevo1').remove();
+        $('#after').prepend('<span id="saldo-manual-cd-nuevo1" class="input-group-addon"></span>');
+
         
         $('#fmn1').html(inputIni);
         $('#fmn2').html(inputIni2);
@@ -216,6 +220,31 @@ $('input[name=radiocuenta]').change(function(){
         
         $('#f-nuevo-ini').html("");
         $('#f-nuevo-fin').html("");
+
+        $("#fecha-manual-nuevo1").prop('readonly', true);
+        $("#fecha-manual-nuevo1").css('background-color', '#eee');
+        $("#fecha-manual-nuevo2").prop('readonly', true);
+        $("#fecha-manual-nuevo2").css('background-color', '#eee');
+        $("#saldo-manual-cd-nuevo1").prop('readonly', true);
+        $("#saldo-manual-cd-nuevo1").css('background-color', '#eee');
+        $("#saldo-manual-cd-nuevo2").prop('readonly', true);
+        $("#saldo-manual-cd-nuevo2").css('background-color', '#eee');
+        $("#saldo-manual-moneda-nuevo1").prop('readonly', true);
+        $("#saldo-manual-moneda-nuevo1").css('background-color', '#eee');
+        $("#saldo-manual-moneda-nuevo2").prop('readonly', true);
+        $("#saldo-manual-moneda-nuevo2").css('background-color', '#eee');
+        $("#saldo-manual-nuevo1").prop('readonly', true);
+        $("#saldo-manual-nuevo1").css('background-color', '#eee');
+        $("#saldo-manual-nuevo2").prop('readonly', true);
+        $("#saldo-manual-nuevo2").css('background-color', '#eee');
+        $("#edo-cuenta-nuevo").prop('readonly', true);
+        $("#edo-cuenta-nuevo").css('background-color', '#eee');
+
+        $('#saldo-manual-cd-nuevo1').remove();
+        $('#after').prepend('<span id="saldo-manual-cd-nuevo1" class="input-group-addon"></span>');
+
+
+
         t_conta.clear().draw();
         num=1;
         
@@ -318,8 +347,9 @@ $('#boton-nuevo').on('click', function () {
             max: true,
         });
 
-        $("#saldo-manual-cd-nuevo1").prop('readonly', false);
-        $("#saldo-manual-cd-nuevo1").css('background-color', 'white');
+        $('#saldo-manual-cd-nuevo1').remove();
+        $('#after').prepend('<select id="saldo-manual-cd-nuevo1" name="saldo-manual-nuevo1" class="form-control"><option value="C">C</option><option value="D">D</option></select>');
+
         
         var selec = $('#opt-'+cuentaVacia);
         var monedaM = selec.attr('moneda');
@@ -344,6 +374,8 @@ $('#boton-nuevo').on('click', function () {
 $('#boton-agregar').on('click', function () {
 
     var cuentaId = $('#edo-cuenta-nuevo').val();
+    var dataP = t_conta.rows().data();
+    console.log(dataP.length);
     cuentaId = parseInt(cuentaId);
 
     //si ya se habia seleccionado el nuevo edo de cuenta
@@ -361,7 +393,13 @@ $('#boton-agregar').on('click', function () {
             swal("Ups!", "Debe introducir el Saldo Inicial para Nuevo Estado de Cuenta", "error");
         }else{
             var fechaValor = $('#fecha-valor').val();
-            var cdCuenta = $('#saldo-manual-cd-nuevo2').html();
+            console.log(dataP.length)            
+            if(dataP.length==0){
+                var cdCuenta = $('#saldo-manual-cd-nuevo1').val();    
+            }else{
+                var cdCuenta = $('#saldo-manual-cd-nuevo2').html();
+            }
+            console.log(cdCuenta)
             var cdTrans = $('#selector-cd').val();
             var monto = $('#monto-tran').val();
             montoFloatPuro = parseFloat(monto)
@@ -415,6 +453,15 @@ $('#boton-agregar').on('click', function () {
 
                 num++;
 
+                var data2 = t_conta.rows().data();
+                console.log(data2.length)
+    
+                if (data2.length==1){
+                    $('#saldo-manual-cd-nuevo1').remove();
+                    $('#after').prepend('<span id="saldo-manual-cd-nuevo1" class="input-group-addon"></span>');
+                    $('#saldo-manual-cd-nuevo1').html(cdCuenta);
+                }
+
                 if(cdTrans=="RC"){
                     cdTrans="D";
                 }
@@ -423,26 +470,63 @@ $('#boton-agregar').on('click', function () {
                 }
 
                 if(cdCuenta==cdTrans){
-                    var saldo = $('#saldo-manual-nuevo2').val();
-                    saldo = parseFloat(monto_Float(saldo));
-                    total = saldo + montoFloatPuro;
-                    total = commas(total);
-                    $('#saldo-manual-nuevo2').val(total);    
-                }else{
-                    var saldo = $('#saldo-manual-nuevo2').val();
-                    saldo = parseFloat(monto_Float(saldo));
-                    total = saldo - montoFloatPuro;
-                    if(total<=0){
-                        total= Math.abs(total);
-                        total = commas(total);
+                    if(dataP.length<1){
+                        var saldo = $('#saldo-manual-nuevo1').val();
+                        saldoFloatPuro = parseFloat(saldo);
+                        primeroFixed = saldoFloatPuro.toFixed(2);
+                        primero = commas(primeroFixed);
+                        $('#saldo-manual-nuevo1').val(primero); 
+                        $("#saldo-manual-nuevo1").prop('readonly', true);
+                        $("#saldo-manual-nuevo1").css('background-color', '#eee');
+        
+                        total1 = saldoFloatPuro + montoFloatPuro;
+                        totalFixed = total1.toFixed(2);
+                        total = commas(totalFixed);
                         $('#saldo-manual-nuevo2').val(total);
                         $('#saldo-manual-cd-nuevo2').html(cdTrans);
                     }else{
+                        var saldo = $('#saldo-manual-nuevo2').val();
+                        saldo = parseFloat(monto_Float(saldo));
+                        total = saldo + montoFloatPuro;
                         total = commas(total);
-                        $('#saldo-manual-nuevo2').val(total);
+                        $('#saldo-manual-nuevo2').val(total);    
                     }
-                    
-                            
+                        
+                }else{
+                    if(dataP.length<1){
+                        var saldo = $('#saldo-manual-nuevo1').val();
+                        saldoFloatPuro = parseFloat(saldo);
+                        primeroFixed = saldoFloatPuro.toFixed(2);
+                        primero = commas(primeroFixed);
+                        $('#saldo-manual-nuevo1').val(primero); 
+                        $("#saldo-manual-nuevo1").prop('readonly', true);
+                        $("#saldo-manual-nuevo1").css('background-color', '#eee');
+        
+                        total1 = saldoFloatPuro - montoFloatPuro;
+                        if(total1<=0){
+                            total= Math.abs(total1);
+                            total = commas(total);
+                            $('#saldo-manual-nuevo2').val(total);
+                            $('#saldo-manual-cd-nuevo2').html(cdTrans);
+                        }else{
+                            total = commas(total1);
+                            $('#saldo-manual-nuevo2').val(total);
+                            $('#saldo-manual-cd-nuevo2').html(cdTrans);
+                        }   
+                    }else{
+                        var saldo = $('#saldo-manual-nuevo2').val();
+                        saldo = parseFloat(monto_Float(saldo));
+                        total = saldo - montoFloatPuro;
+                        if(total<=0){
+                            total= Math.abs(total);
+                            total = commas(total);
+                            $('#saldo-manual-nuevo2').val(total);
+                            $('#saldo-manual-cd-nuevo2').html(cdTrans);
+                        }else{
+                            total = commas(total);
+                            $('#saldo-manual-nuevo2').val(total);
+                        }               
+                    } 
                 }
 
                 $('#fecha-valor').val("");
