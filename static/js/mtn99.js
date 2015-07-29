@@ -193,7 +193,7 @@ $('#confButton').on('click', function () {
 });
 
 //Buscar todos los MTx99 del banco y tipo seleccionados
-function buscarmtx99(banco,tipo,fechaArray){
+function buscarmtx99(banco,tipo,fechaDesde,fechaHasta){
     $.ajax({
         type:"POST",
         url: "/mtn99/",

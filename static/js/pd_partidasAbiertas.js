@@ -7,6 +7,9 @@ var filterArray = [[],[],[],[],[],[]];
 var edcArray = [[],[]];
 var mt95Array=[];
 var mt95Aux=[];
+var copiaAux = [];
+var copia = [];
+var opcionChequeada = "";
 
 function dateFormat(fecha){
     var date = new Date(Date.parse(fecha));
@@ -385,9 +388,10 @@ function busqueda(ctaid,filterArray){
             var json_conta = jQuery.parseJSON(data.r_conta);
             var json_corr = jQuery.parseJSON(data.r_corr);
             edcArray = data.r_edcn;
-            var json_mt99 = jQuery.parseJSON(data.r_95);
-            mt95Array = json_mt99;
-            console.log(mt95Array);   
+            var json_mt95 = jQuery.parseJSON(data.r_95);
+            mt95Array = json_mt95;
+            copiaAux = mt95Array;
+            console.log(json_mt95);   
 
             $('#pbardiv').prop('hidden', false);
             $('#pbar').attr('max', json_corr.length+json_conta.length);
@@ -495,7 +499,7 @@ function heavyLifter(jsonArr,tipo) {
             // Add to counter
             this.currentPosition++;
             current++;
-
+            copia = mt95Array;
             if (this.tipo==='conta'){
                 calcularfila(this.array[i],this.tipo,edcArray[0][i]);
             }else{
@@ -544,20 +548,36 @@ function calcularfila(elem,tipo,edc){
         var td10 = '<td>S</td>';
     }
     var td11 = '<td style="text-align:center; width: 24px;"><input class="chkSelection" type="checkbox" id="cb-'+tipo+'-'+a_id+'"></td>';
-    var td12 = '<td style="text-align:center; width: 24px;"><input class="chkSelection2" type="checkbox" id="cb-'+tipo+'-'+a_id+'"></td>';
-    var td13 = '<td style="text-align:center; width: 24px;"><input class="chkSelection3" type="checkbox" id="cb-'+tipo+'-'+a_id+'"></td>';
+    var td12 = '<td style="text-align:center; width: 24px;"></td>';
+    var td13 = '<td style="text-align:center; width: 24px;"><input class="chkSelection3" name="mtopc" type="radio" id="cb-'+elem.pk+"-"+tipo+'" onclick="habilitar(this)"></td>';
 
-    var copia = mt95Array;
-    /*for (var i = 0 ; i < copia.length; i++) {
+    
+    var cuentaVeces = 0;
+    var key = 0;
+    for (var i = 0 ; i < copia.length; i++) {
 
-        if (copia[i].fileds.ta_conta === vacio(elem.fields.referencianostro) || copia[i].fileds.ta_corres === vacio(elem.fields.referencianostro)){
+        
+        if (copia[i].fields.ta_conta === elem.pk || copia[i].fields.ta_corres === elem.pk){
 
-
-            findAndRemove(mt95Array, 'id', 'AF');
-
+            cuentaVeces = cuentaVeces + 1;
+            key = copia[i].pk;
+            td12 = '<td style="text-align:center; width: 24px;"><span class="fa fa-envelope" id="cb-'+elem.pk+'"></span></td>';
+    
         }
 
-    }*/
+    }
+
+    if (key!=0){
+        findAndRemove(mt95Array, 'pk', key);
+    }
+
+    if (cuentaVeces > 0){
+        var obj = {"codigo":elem.pk,"veces":cuentaVeces};
+        mt95Aux.push(obj);
+        //console.log(mt95Aux);
+    }
+
+    
 
     $('#table-pa > tbody').append('<tr id ="tr-'+tipo+'-'+a_id+'"></tr>');
 
@@ -569,9 +589,143 @@ function calcularfila(elem,tipo,edc){
 //para quitar una entrada de un arreglo de json
 function findAndRemove(array, property, value) {
    $.each(array, function(index, result) {
-      if(result[property] == value) {
-          //Remove from array
-          array.splice(index, 1);
+        if (result != undefined) {
+          if(result[property] == value) {
+              //Remove from array
+              array.splice(index, 1);
+          }
       }    
    });
+}
+
+//Habilitar los botones de crear y ver MT
+function habilitar(element){
+    $('#verMTButton').removeAttr('disabled');
+    $('#crearMTButton').removeAttr('disabled');
+    este = $(element).attr('id');
+}
+
+//Mostrar el Div de Detalles cuando se hace click sobre el boton
+$('#verMTButton').on('click', function () {
+    
+    document.getElementById("MT95-verTabla").style.display = "none";
+    document.getElementById("MT95-crear").style.display = "none";
+    document.getElementById("MT95-verDetalle").style.display = "block";
+
+
+});
+
+//Mostrar el Div por defecto cuando se hace click sobre el boton regresar
+$('#regresarMT95Button').on('click', function () {
+    
+
+    document.getElementById("MT95-verDetalle").style.display = "none";
+    document.getElementById("MT95-crear").style.display = "none";
+    document.getElementById("MT95-verTabla").style.display = "block";
+
+});
+
+//Crear un mensaje MTn95
+$('#crearMTButton').on('click', function () {
+    
+    document.getElementById("MT95-verTabla").style.display = "none";
+    document.getElementById("MT95-verDetalle").style.display = "none";
+    document.getElementById("MT95-crear").style.display = "block";
+
+});
+
+//Inicializar el DatePicker
+$('#f-desdeMT').pickadate({
+  format: 'd/m/yyyy',
+  formatSubmit:'d/m/yyyy',
+  selectYears: true,
+  selectMonths: true,
+})
+
+//Boton para crear MTx99
+$('#crearMT95Button').on('click', function () {
+    var ref_mensaje = $('#refmensaje').val();
+    var ref_mensaje_original = $('#refmensajeoriginal').val();
+    var tipo = $('#tipo').val();
+    var fecha = $('#tipo').val();
+    var codigo = $('#mt95cod').val();
+    var narrativa = $('#narrativa').val();
+    var original = $('#original').val();
+    var pregunta = $('#pregunta').val();
+    var transaccion = este.split('-')[1];
+    var cuenta = $('#Cuenta-sel').val();
+    console.log("estew: " + este);
+    var clase = este.split('-')[2];
+    console.log("trans: " + transaccion);
+    console.log("clase: " + clase);
+    
+    if (ref_mensaje.length===0){
+        swal("Ups!","Debe colocar la referencia del mensaje.","error");
+    }else if(ref_mensaje_original.length===0){
+        swal("Ups!","Debe colocar la referencia del mensaje original","error");
+    }else if (tipo ===("-1")){
+        swal("Ups!","Debe seleccionar un tipo de MT.","error");        
+    }else if (codigo ===("-1")){
+        swal("Ups!","Debe seleccionar un codigo de Mensaje MT.","error");        
+    }else if (pregunta.length===0){
+        swal("Ups!","Debe colocar la especificación de la pregunta.","error");
+    }else if(narrativa.length===0){
+        swal("Ups!","Debe colocar la narrativa","error");
+    }else if(original.length===0 ){
+        swal("Ups!","Debe colocar la referencia del mensaje original","error");
+    }else{
+
+        $('#processing-modal').modal('toggle');
+        //si se escogió una fecha limite inferior
+        if ($('#f-desdeMT').val() != ""){
+            fecha = $('#f-desdeMT').val();    
+        } else {
+            var today = new Date();
+            var dd1 = today.getDate();
+            var mm1 = today.getMonth()+1; //January is 0!
+            var yyyy1 = today.getFullYear();
+
+            if(dd1<10) {
+                dd1='0'+dd1
+            } 
+
+            if(mm1<10) {
+                mm1='0'+mm1
+            } 
+
+            today = dd1+'/'+mm1+'/'+yyyy1;
+            fecha = today;    
+        }
+
+        console.log(fecha);
+    
+        //Llamar funcion de creación del mensaje
+        crearmt95(ref_mensaje,ref_mensaje_original,tipo,fecha,codigo,pregunta,narrativa,original,transaccion,clase,cuenta);
+    };
+});
+
+//Crear mensajes MT95
+function crearmt95(ref_mensaje,ref_mensaje_original,tipo,fecha,codigo,pregunta,narrativa,original,transaccion,clase,cuenta){
+    $.ajax({
+        type:"POST",
+        url: "/procd/pAbiertas/",
+        data: {"ref95":ref_mensaje, "refOrg95":ref_mensaje_original, "tipo95":tipo, "fecha95":fecha, "cod95":codigo, "preg95":pregunta, "narrativa95":narrativa, "original95":original, "transaccion":transaccion, "action":"crearMT95", "clase":clase, "cuenta":cuenta},
+        success: function(data){
+            $('#processing-modal').modal('toggle');
+            swal("OK", "Mensaje creado exitosamente", "success");
+            window.location.reload();
+            
+
+        },
+        error: function(jqXHR, error){ 
+            alert(jqXHR.responseText) //debug
+            $('#processing-modal').modal('toggle');
+            swal("Ups!", "Hubo un error al intertar crear el mensaje", "error");
+        },
+        dataType:'json',
+        headers:{
+            'X-CSRFToken':csrftoken
+        }
+    });
+    return false;
 }

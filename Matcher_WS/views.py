@@ -24,7 +24,7 @@ from Matcher_WS.edo_cuenta import edoCta, edc_list, Trans, Bal
 from Matcher_WS.mailConf import enviar_mail
 from Matcher_WS.cargaAutomatica import leer_linea_conta, leer_linea_corr, leer_punto_coma, validar_archivo
 from Matcher_WS.Matcher_call import matcher, dma_millis
-from Matcher_WS.funciones_get import get_ops, get_cuentas, get_ci, get_idioma, get_bancos, get_archivosMT99, get_archivosMT96
+from Matcher_WS.funciones_get import get_ops, get_cuentas, get_ci, get_idioma, get_bancos, get_archivosMT99, get_archivosMT96, get_codigos95
 from Matcher_WS.generar_reporte import generarReporte, pdfView, xlsView
 from Matcher_WS.setConsolidado import setConsolidado
 
@@ -1013,12 +1013,75 @@ def pd_partidasAbiertas(request):
             res_json_mt95 = serializers.serialize('json',mt95) 
 
             return JsonResponse({'r_conta':res_json_conta, 'r_corr':res_json_corr, 'r_edcn':edcN, 'r_95':res_json_mt95}, safe=False)
+        
+        if actn =="crearMT95":
+            ref95 = request.POST.get('ref95')
+            refOrg95 = request.POST.get('refOrg95')
+            tipo95 = request.POST.get('tipo95')
+            fecha95 = request.POST.get('fecha95')
+            cod95 = request.POST.get('cod95')
+            preg95 = request.POST.get('preg95')
+            narra95 = request.POST.get('narrativa95')
+            original95 = request.POST.get('original95')
+            trans95 = request.POST.get('transaccion')
+            clase95 = request.POST.get('clase')
+            cuenta = request.POST.get('cuenta')
 
+            codAux = Codigo95.objects.filter(idcodigo95=cod95)[0]
+            fechad = datetime.strptime(fecha95, '%d/%m/%Y')
+
+            if clase95 == "conta":
+                tra = TransabiertaContabilidad.objects.filter(idtransaccion=trans95)[0]
+                Mt95.objects.create(ta_conta=tra,codigo=ref95,codigo95_idcodigo95=codAux,ref_relacion=refOrg95,query=preg95,narrativa=narra95,num_mt=tipo95,fecha_msg_original=fechad,campo79=original95)
+                
+                tn = str(timenow())
+                hora = tn[11:]
+                auxhora = hora.split(':')
+                hora = auxhora[0]+auxhora[1]+auxhora[2]
+                aux = tn[:10]
+                aux2 = aux.split('-')
+                aux = aux2[2]+aux2[1]+aux2[0]
+                fechaNombre = aux + "_" + hora
+
+                #Buscar directorio de salida de los mensajes MT99
+                obj = Configuracion.objects.all()[0]
+                sender = obj.bic
+                directorio = obj.dirsalida95
+                directorio = directorio + "\\"
+
+                #Nombre del archivo a crear
+                archivo = directorio + sender + "_" + fechaNombre + ".txt"
+
+                #abrir archivo
+                fo = open(archivo, 'w')
+                fo.write( "$\n");
+                fo.write( "[M]"+tipo95+"\n");
+                fo.write( "[S]"+sender+"\n");
+                fo.write( "[R]"+cuenta+"\n");
+                fo.write( "[20]"+ref95+"\n");
+                fo.write( "[21]"+refOrg95+"\n");
+                fo.write( "[75]"+refOrg95+"\n");
+                fo.write( "[77A]"+refOrg95+"\n");
+                fo.write( "[11a]"+refOrg95+"\n");
+                fo.write( "[79]"+narrativa+"\n");
+                fo.write( "$\@\@");
+
+                #cerrar archivo
+                fo.close()
+
+                #Se agrega el evento al log
+                log(request,40)
+                return JsonResponse({'mens':"Exito"})
+
+            tra = TransabiertaCorresponsal.objects.filter(idtransaccion=trans95)[0]
+            Mt95.objects.create(ta_corres=tra,codigo=ref95,codigo95_idcodigo95=codAux,ref_relacion=refOrg95,query=preg95,narrativa=narra95,num_mt=tipo95,fecha_msg_original=fechad,campo79=original95) 
+
+            return JsonResponse({'mens':"Exito"})
 
     if request.method == 'GET':
 
         template = "matcher/pd_partidasAbiertas.html"
-        context = {'cuentas':get_cuentas(request), 'ops':get_ops(request)}
+        context = {'cuentas':get_cuentas(request), 'ops':get_ops(request), 'codigos':get_codigos95()}
         return render(request, template, context)
 
 @login_required(login_url='/login')

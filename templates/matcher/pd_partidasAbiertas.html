@@ -29,258 +29,364 @@ table {
 </style>
 
 
+<div id="MT95-verTabla">
+<legend>Partidas Abiertas</legend>
+  <!-- Select Basic -->
+  <div class="form-group col-md-12">
+    <label class="col-md-3" for="Cuenta-sel">Seleccione una cuenta: </label>
+    <div class="col-md-3">
+      <select id="Cuenta-sel" name="Cuenta-sel" class="form-control">
+        <option value="-1">----------</option>
+        {% for cuenta in cuentas %}
+        <option id="opt-{{cuenta.idcuenta}}" value="{{cuenta.idcuenta}}">{{cuenta.codigo}}</option>
+        {% endfor %}
+      </select>
+    </div>
 
-<!-- Select Basic -->
-<div class="form-group col-md-12">
-  <label class="col-md-3" for="Cuenta-sel">Seleccione una cuenta: </label>
-  <div class="col-md-3">
-    <select id="Cuenta-sel" name="Cuenta-sel" class="form-control">
-      <option value="-1">----------</option>
-      {% for cuenta in cuentas %}
-      <option id="opt-{{cuenta.idcuenta}}" value="{{cuenta.idcuenta}}">{{cuenta.codigo}}</option>
-      {% endfor %}
-    </select>
-  </div>
+    <div class="col-md-3 col-md-push-1">
+      <button type="button" id="srchButton" data-loading-text="Cargando..." class="col-md-6 btn btn-primary" autocomplete="off">
+          Buscar
+      </button>
+    </div>
 
-  <div class="col-md-3 col-md-push-1">
-    <button type="button" id="srchButton" data-loading-text="Cargando..." class="col-md-6 btn btn-primary" autocomplete="off">
-        Buscar
-    </button>
-  </div>
-
-  <div class="col-md-3">
-    <button type="button" id="cancelButton" data-loading-text="Cargando..." class="col-md-6 btn btn-default" autocomplete="off">
-        Cancelar
-    </button>
-  </div>
+    <div class="col-md-3">
+      <button type="button" id="cancelButton" data-loading-text="Cargando..." class="col-md-6 btn btn-default" autocomplete="off">
+          Cancelar
+      </button>
+    </div>
 
 
-  <div class="col-md-12 checkboxes">
-    <div class="col-md-6 well" id="wcb">
+    <div class="col-md-12 checkboxes">
+      <div class="col-md-6 well" id="wcb">
 
-      <div class="row">
-        <div class="checkbox col-md-4">
-          <label>
-            <input type="checkbox" class="cbfilter" id="monto-cb" value="0">
-            Monto
-          </label>
+        <div class="row">
+          <div class="checkbox col-md-4">
+            <label>
+              <input type="checkbox" class="cbfilter" id="monto-cb" value="0">
+              Monto
+            </label>
+          </div>
+
+          <div class="checkbox col-md-4" style="margin-top: 10px;">
+            <label>
+              <input type="checkbox" class="cbfilter" id="ref-cb" value="1">
+              Referencias
+            </label>
+          </div>
+
+          <div class="checkbox col-md-4" style="margin-top: 10px;">
+            <label>
+              <input type="checkbox" class="cbfilter" id="cod-cb" value="2">
+              Crédito/Débito
+            </label>
+          </div>
         </div>
 
-        <div class="checkbox col-md-4" style="margin-top: 10px;">
-          <label>
-            <input type="checkbox" class="cbfilter" id="ref-cb" value="1">
-            Referencias
-          </label>
+        <div class="row">
+          <div class="checkbox col-md-4">
+            <label>
+              <input type="checkbox" class="cbfilter" id="fecha-cb" value="3">
+              Fecha
+            </label>
+          </div>
+
+          <div class="checkbox col-md-4" style="margin-top: 10px;">
+            <label>
+              <input type="checkbox" class="cbfilter" id="tipo-cb" value="4">
+              Tipo Trans.
+            </label>
+          </div>
+
+          <div class="checkbox col-md-4" style="margin-top: 10px;">
+            <label>
+              <input type="checkbox" class="cbfilter" id="origen-cb" value="5">
+              Origen
+            </label>
+          </div>
         </div>
 
-        <div class="checkbox col-md-4" style="margin-top: 10px;">
-          <label>
-            <input type="checkbox" class="cbfilter" id="cod-cb" value="2">
-            Crédito/Débito
-          </label>
-        </div>
       </div>
 
-      <div class="row">
-        <div class="checkbox col-md-4">
-          <label>
-            <input type="checkbox" class="cbfilter" id="fecha-cb" value="3">
-            Fecha
-          </label>
-        </div>
 
-        <div class="checkbox col-md-4" style="margin-top: 10px;">
-          <label>
-            <input type="checkbox" class="cbfilter" id="tipo-cb" value="4">
-            Tipo Trans.
-          </label>
-        </div>
+      <div id="filter-div" class="col-md-6 well" hidden>
+        
+          <div id="filter-monto" hidden>
+            <!-- Text input-->
+            <div class="form-group col-md-6">
+              <label class="control-label">Desde: </label>  
+              <div>
+              <input id="monto-desde" type="text" placeholder="" class="form-control input-md">
+              </div>
+            </div>
 
-        <div class="checkbox col-md-4" style="margin-top: 10px;">
-          <label>
-            <input type="checkbox" class="cbfilter" id="origen-cb" value="5">
-            Origen
-          </label>
-        </div>
+            <!-- Text input-->
+            <div class="form-group col-md-6">
+              <label class="control-label">Hasta: </label>  
+              <div>
+              <input id="monto-hasta" type="text" placeholder="" class="form-control input-md">
+              </div>
+            </div>
+          </div>
+
+          <div id="filter-ref" hidden>
+            <div class="col-md-4"> 
+              <label class="radio-inline">
+                <input type="radio" name="radioref" id="nostro-radio" value="N">
+                Nostro
+              </label> 
+            </div>
+
+            <div class="col-md-4"> 
+              <label class="radio-inline">
+                <input type="radio" name="radioref" id="vostro-radio" value="V">
+                Vostro
+              </label>
+            </div>
+
+            <div class="col-md-4"> 
+              <label class="radio-inline">
+                <input type="radio" name="radioref" id="det-radio" value="D">
+                Detalles
+              </label>
+            </div>
+
+            <!-- Text input-->
+            <div class="form-group col-md-10"> 
+              <div>
+              <input id="ref-txt" type="text" placeholder="" class="form-control input-md">
+              </div>
+            </div>
+          </div>
+
+          <div id="filter-cod" hidden>
+            <div class="col-md-6"> 
+              <label class="radio-inline">
+                <input type="radio" name="radiocod" id="cred-radio" value="C">
+                Crédito
+              </label> 
+            </div>
+            <div class="col-md-6"> 
+              <label class="radio-inline">
+                <input type="radio" name="radiocod" id="deb-radio" value="D">
+                Débito
+              </label>
+            </div>
+          </div>
+
+          <div id="filter-fecha" hidden>
+            <div class="form-group">
+              <label class="col-md-2 control-label">Desde:</label>
+              <div class="col-md-4"><input id="f-desde" class="form-control"></div>
+            </div>
+
+            <div class="form-group">
+              <label class="col-md-2 control-label">Hasta:</label>
+              <div class="col-md-4"><input id="f-hasta" class="form-control"></div>
+            </div>
+          </div>
+
+          <div id="filter-tipo" hidden>
+            <!-- Text input-->
+            <div class="form-group col-md-10">
+              <label class="control-label">Tipo Trans.: </label>  
+              <div>
+              <input id="tipo-trans" type="text" placeholder="" class="form-control input-md">
+              </div>
+            </div>
+          </div>
+
+          <div id="filter-origen" hidden>
+            <div class="col-md-6"> 
+              <label class="radio-inline">
+                <input type="radio" name="radioorig" id="conta-radio" value="L">
+                Libro (L)
+              </label> 
+            </div>
+            <div class="col-md-6"> 
+              <label class="radio-inline">
+                <input type="radio" name="radioorig" id="corr-radio" value="S">
+                Corresponsal (S)
+              </label>
+            </div>
+          </div>
+
       </div>
 
     </div>
 
 
-    <div id="filter-div" class="col-md-6 well" hidden>
-      
-        <div id="filter-monto" hidden>
-          <!-- Text input-->
-          <div class="form-group col-md-6">
-            <label class="control-label">Desde: </label>  
-            <div>
-            <input id="monto-desde" type="text" placeholder="" class="form-control input-md">
-            </div>
-          </div>
-
-          <!-- Text input-->
-          <div class="form-group col-md-6">
-            <label class="control-label">Hasta: </label>  
-            <div>
-            <input id="monto-hasta" type="text" placeholder="" class="form-control input-md">
-            </div>
-          </div>
-        </div>
-
-        <div id="filter-ref" hidden>
-          <div class="col-md-4"> 
-            <label class="radio-inline">
-              <input type="radio" name="radioref" id="nostro-radio" value="N">
-              Nostro
-            </label> 
-          </div>
-
-          <div class="col-md-4"> 
-            <label class="radio-inline">
-              <input type="radio" name="radioref" id="vostro-radio" value="V">
-              Vostro
-            </label>
-          </div>
-
-          <div class="col-md-4"> 
-            <label class="radio-inline">
-              <input type="radio" name="radioref" id="det-radio" value="D">
-              Detalles
-            </label>
-          </div>
-
-          <!-- Text input-->
-          <div class="form-group col-md-10"> 
-            <div>
-            <input id="ref-txt" type="text" placeholder="" class="form-control input-md">
-            </div>
-          </div>
-        </div>
-
-        <div id="filter-cod" hidden>
-          <div class="col-md-6"> 
-            <label class="radio-inline">
-              <input type="radio" name="radiocod" id="cred-radio" value="C">
-              Crédito
-            </label> 
-          </div>
-          <div class="col-md-6"> 
-            <label class="radio-inline">
-              <input type="radio" name="radiocod" id="deb-radio" value="D">
-              Débito
-            </label>
-          </div>
-        </div>
-
-        <div id="filter-fecha" hidden>
-          <div class="form-group">
-            <label class="col-md-2 control-label">Desde:</label>
-            <div class="col-md-4"><input id="f-desde" class="form-control"></div>
-          </div>
-
-          <div class="form-group">
-            <label class="col-md-2 control-label">Hasta:</label>
-            <div class="col-md-4"><input id="f-hasta" class="form-control"></div>
-          </div>
-        </div>
-
-        <div id="filter-tipo" hidden>
-          <!-- Text input-->
-          <div class="form-group col-md-10">
-            <label class="control-label">Tipo Trans.: </label>  
-            <div>
-            <input id="tipo-trans" type="text" placeholder="" class="form-control input-md">
-            </div>
-          </div>
-        </div>
-
-        <div id="filter-origen" hidden>
-          <div class="col-md-6"> 
-            <label class="radio-inline">
-              <input type="radio" name="radioorig" id="conta-radio" value="L">
-              Libro (L)
-            </label> 
-          </div>
-          <div class="col-md-6"> 
-            <label class="radio-inline">
-              <input type="radio" name="radioorig" id="corr-radio" value="S">
-              Corresponsal (S)
-            </label>
-          </div>
-        </div>
-
-    </div>
-
   </div>
 
-
-</div>
-
-<div id="pbardiv" class="col-md-8 col-md-push-2" hidden>
-  <div class="progress" >
-    <div id="pbar" class="progress-bar" role="progressbar" max="0" current="0" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="min-width: 2em;">
-      <p id="pbartxt">0%</p>
+  <div id="pbardiv" class="col-md-8 col-md-push-2" hidden>
+    <div class="progress" >
+      <div id="pbar" class="progress-bar" role="progressbar" max="0" current="0" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="min-width: 2em;">
+        <p id="pbartxt">0%</p>
+      </div>
     </div>
   </div>
-</div>
 
-<div class="table-responsive col-md-12 dataTables_wrapper">
-    <table id="table-pa" style="width:100%;" class="table table-bordered table-striped tabla">
-        <thead>
-            <tr>
-                <th>E/C</th>
-                <th>Pág</th>
-                <th>Fecha</th>
-                <th>Tipo</th>
-                <th>Ref Nostro</th>
-                <th>Ref Vostro</th>
-                <th>Detalles</th>
-                <th>C/D</th>
-                <th>Monto</th>
-                <th>S/L</th>
-                <th>Sel</th>
-                <th>MT</th>
-                <th>MT Ver</th>
-            </tr>
-        </thead>
-        <tbody id="tb-pa">
-        </tbody>
-    </table>
-</div>
-
-<div class="row">
-</div>
-
-{% if 26 in ops %}
-<div class="row">
-<br>
-  {% if 25 in ops %}
-  <div class="col-md-3 col-md-push-1">
-    <button type="button" id="crearMTButton" class="col-md-6 btn btn-primary">
-        Crear MT
-    </button>
+  <div class="table-responsive col-md-12 dataTables_wrapper">
+      <table id="table-pa" style="width:100%;" class="table table-bordered table-striped tabla">
+          <thead>
+              <tr>
+                  <th>E/C</th>
+                  <th>Pág</th>
+                  <th>Fecha</th>
+                  <th>Tipo</th>
+                  <th>Ref Nostro</th>
+                  <th>Ref Vostro</th>
+                  <th>Detalles</th>
+                  <th>C/D</th>
+                  <th>Monto</th>
+                  <th>S/L</th>
+                  <th>Sel</th>
+                  <th>MT</th>
+                  <th>MT Acción</th>
+              </tr>
+          </thead>
+          <tbody id="tb-pa">
+          </tbody>
+      </table>
   </div>
-  <div class="col-md-3 col-md-push-1">
-    <button type="button" id="verMTButton" class="col-md-6 btn btn-primary">
-        Ver MT
-    </button>
+
+  <div class="row">
+  </div>
+
+  {% if 26 in ops %}
+  <div class="row">
+  <br>
+    {% if 25 in ops %}
+    <div class="col-md-3 col-md-push-1">
+      <button type="button" id="crearMTButton" class="col-md-6 btn btn-primary" disabled>
+          Crear MT
+      </button>
+    </div>
+    <div class="col-md-3 col-md-push-1">
+      <button type="button" id="verMTButton" class="col-md-6 btn btn-primary" disabled>
+          Ver MT
+      </button>
+    </div>
+    {%endif%}
+
+    <div class="col-md-3 col-md-push-1">
+      <button type="button" id="checkAllButton" data-loading-text="Cargando..." class="col-md-6 btn btn-primary" selec="0">
+          Selecc. Todas
+      </button>
+    </div>
+
+    <div class="col-md-3 col-md-push-1">
+
+      <button type="button" id="matchButton" data-loading-text="Cargando..." class="col-md-6 btn btn-success" autocomplete="off">
+          Match
+      </button>
+    </div>
   </div>
   {%endif%}
-
-  <div class="col-md-3 col-md-push-1">
-    <button type="button" id="checkAllButton" data-loading-text="Cargando..." class="col-md-6 btn btn-primary" selec="0">
-        Selecc. Todas
-    </button>
+</div>
+<div id="MT95-verDetalle" style="display: none;">
+  <legend>Ver MTn95/MTn96</legend>
+  <div class="col-md-8">
+    <div id="mensajesDesc" class="content">
+      <div id="mensajesValue" class='value'>
+      <p>No hay mensajes para mostrar</p>
+      </div>
+    </div>
   </div>
-
-  <div class="col-md-3 col-md-push-1">
-
-    <button type="button" id="matchButton" data-loading-text="Cargando..." class="col-md-6 btn btn-success" autocomplete="off">
-        Match
+  <br>
+  <br>
+  <div class="col-md-7" align="rigth">
+    <button type="button" id="regresarMT95Button" style="align:right" class="col-md-3 btn btn-warning">
+      <-- Regresar
     </button>
   </div>
 </div>
-{%endif%}
+
+<div id="MT95-crear" style="display: none;">
+  <legend>Crear MTn95</legend>
+    <td class="col-md-6 ">
+      <div class="col-md-7 form-group">
+        <label class="col-md-4 control-label" >Ref. Mensaje:</label>
+        <div class="col-md-8">
+          <input class="form-control input-sm" name="refmensajeMT" id="refmensaje" type="text" maxlength="16" placeholder="" required>
+        </div>
+      </div>
+    </td>
+    <td class="col-md-6 ">
+      <div class="col-md-7 form-group">
+        <label class="col-md-4 control-label" >Ref. Mensaje Original:</label>
+        <div class="col-md-8">
+          <input class="form-control input-sm" name="refmensajeoriginalMT" id="refmensajeoriginal" type="text" maxlength="16" placeholder="" required>
+        </div>
+      </div>
+    </td>
+    <td class="col-md-5 ">
+      <div class="col-md-7 form-group">
+        <label class="col-md-4 control-label" >Tipo:</label>
+        <div class="col-md-4">
+          <select id="tipo" name="tipoN" class="form-control">
+            <option value="-1">---</option>
+            <option value="103">103</option>
+            <option value="202">202</option>
+          </select>
+        </div>
+      </div>
+    <td class="col-md-5">
+      <div class="col-md-7 form-group">
+        <label class="col-md-2 control-label">Fecha:</label>
+          <div class="col-md-4"><input id="f-desdeMT" class="form-control"></div>
+      </div>
+    </td>
+    <td class="col-md-6 ">
+      <div class="col-md-7 form-group">
+          <label class="col-md-4 control-label" >Código:</label>
+          <div class="col-md-8">
+            <select id="mt95cod" name="mtx95codN" class="form-control">
+              <option value="-1">--------------</option>
+              {% for cod in codigos %}
+              <option value="{{cod.idcodigo95}}">{{cod.codigo}}- {{cod.help}}</option>
+              {% endfor %}
+            </select>
+          </div>
+      </div>
+    </td>
+    </td>
+    <td class="col-md-6 ">
+      <div class="col-md-7 form-group">
+        <label class="col-md-4 control-label" >Pregunta:</label>
+        <div class="col-md-8">
+          <textarea class="form-control input-sm" name="pregumtaMT" id="pregunta" type="text" maxlength="45" placeholder="Ingrese la Pregunta" required autofocus/></textarea>
+        </div>
+      </div>
+    </td>
+    <td class="col-md-6 ">
+      <div class="col-md-7 form-group">
+        <label class="col-md-4 control-label" >Narrativa:</label>
+        <div class="col-md-8">
+          <textarea class="form-control input-sm" name="narrativaMT" id="narrativa" type="text" maxlength="45" placeholder="Ingrese la Narrativa" required autofocus/></textarea>
+        </div>
+      </div>
+    </td>
+    <td class="col-md-6 ">
+      <div class="col-md-7 form-group">
+        <label class="col-md-4 control-label" >Descripción Mesj. Original:</label>
+        <div class="col-md-8">
+          <textarea class="form-control input-sm" name="originalMT" id="original" type="text" maxlength="45" placeholder="Ingrese la Descripción del mensaje original" required autofocus/></textarea>
+        </div>
+      </div>
+    </td>
+    <td>
+      <tr>
+        <td>
+          <div class="col-md-7" align="rigth">
+            <button type="button" id="crearMT95Button" style="align:right" class="col-md-3 btn btn-primary">
+              Aceptar
+            </button>
+          </div>
+        </td>
+      </tr>
+    </td>   
+</div>
+
 
 <div class="modal fade" id="justificacion-modal" role="dialog">
   <div class="modal-dialog">

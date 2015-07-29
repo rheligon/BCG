@@ -16,6 +16,11 @@ def get_bancos():
     bancos = BancoCorresponsal.objects.all().order_by('codigo')
     return bancos
 
+def get_codigos95():
+    #Buscar todos los codigos de los mensajes mtn95 
+    codigos = Codigo95.objects.all()
+    return codigos
+
 def get_archivosMT99():
     #Buscar los archivos de mensajes MT99 dado un directorio
     obj = Configuracion.objects.all()[0]
