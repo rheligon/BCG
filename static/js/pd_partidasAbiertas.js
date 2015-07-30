@@ -648,7 +648,8 @@ $('#crearMT95Button').on('click', function () {
     var ref_mensaje_original = $('#refmensajeoriginal').val();
     var tipo = $('#tipo').val();
     var fecha = $('#f-desdeMT').val();
-    var codigo = $('#mt95cod').val();
+    var codigo = $('#mt95cod').val().split("-")[0];
+    var codigo2 = $('#mt95cod').val().split("-")[1];
     var narrativa = $('#narrativa').val();
     var original = $('#original').val();
     var pregunta = $('#pregunta').val();
@@ -679,16 +680,16 @@ $('#crearMT95Button').on('click', function () {
         $('#processing-modal').modal('toggle');
     
         //Llamar funcion de creación del mensaje
-        crearmt95(ref_mensaje,ref_mensaje_original,tipo,fecha,codigo,pregunta,narrativa,original,transaccion,clase,cuenta);
+        crearmt95(ref_mensaje,ref_mensaje_original,tipo,fecha,codigo,pregunta,narrativa,original,transaccion,clase,cuenta,codigo2);
     };
 });
 
 //Crear mensajes MT95
-function crearmt95(ref_mensaje,ref_mensaje_original,tipo,fecha,codigo,pregunta,narrativa,original,transaccion,clase,cuenta){
+function crearmt95(ref_mensaje,ref_mensaje_original,tipo,fecha,codigo,pregunta,narrativa,original,transaccion,clase,cuenta,codigo2){
     $.ajax({
         type:"POST",
         url: "/procd/pAbiertas/",
-        data: {"ref95":ref_mensaje, "refOrg95":ref_mensaje_original, "tipo95":tipo, "fecha95":fecha, "cod95":codigo, "preg95":pregunta, "narrativa95":narrativa, "original95":original, "transaccion":transaccion, "action":"crearMT95", "clase":clase, "cuenta":cuenta},
+        data: {"ref95":ref_mensaje, "refOrg95":ref_mensaje_original, "tipo95":tipo, "fecha95":fecha, "cod95":codigo, "preg95":pregunta, "narrativa95":narrativa, "original95":original, "transaccion":transaccion, "action":"crearMT95", "clase":clase, "cuenta":cuenta, "codigo2":codigo2},
         success: function(data){
             $('#processing-modal').modal('toggle');
             swal("OK", "Mensaje creado exitosamente", "success");

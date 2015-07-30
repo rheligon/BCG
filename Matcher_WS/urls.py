@@ -36,7 +36,6 @@ urlpatterns = patterns('',
     url(r'^reportes/$', 'Matcher_WS.views.reportes', name='reportes'),
 
     # Mensajes SWIFT (MT96-MT99)
-    #url(r'^MT/(?P<tipo>\d\d)/$', 'Matcher_WS.views.mensajesMTX', name='mensajesMTX'),
     url(r'^mtn96/$','Matcher_WS.views.mtn96', name='mtn96'),
     url(r'^mtn99/$','Matcher_WS.views.mtn99', name='mtn99'),
     

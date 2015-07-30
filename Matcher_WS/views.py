@@ -1081,6 +1081,7 @@ def pd_partidasAbiertas(request):
             fecha952 = request.POST.get('fecha95')
             fecha953 = request.POST.get('fecha95')
             cod95 = request.POST.get('cod95')
+            cod2 = request.POST.get('codigo2')
             preg95 = request.POST.get('preg95')
             narra95 = request.POST.get('narrativa95')
             original95 = request.POST.get('original95')
@@ -1090,21 +1091,26 @@ def pd_partidasAbiertas(request):
             mensajeMT = ""
 
             codAux = Codigo95.objects.filter(idcodigo95=cod95)[0]
-            fechad = datetime.strptime(fecha95, '%d/%m/%Y')
+            if fecha95 != "":
+                fechad = datetime.strptime(fecha95, '%d/%m/%Y')
 
-            #if clase95 == "conta":
+            if tipo95 == "":
+                tipo95 = None
 
-             #   tra = TransabiertaContabilidad.objects.filter(idtransaccion=trans95)[0]
-              #  Mt95.objects.create(ta_conta=tra,codigo=ref95,codigo95_idcodigo95=codAux,ref_relacion=refOrg95,query=preg95,narrativa=narra95,num_mt=tipo95,fecha_msg_original=fechad,campo79=original95)
-               # mensajeMT = "exito"
+            fechad = None   
 
-            #if clase95 == "corres":
+            if clase95 == "conta":
+
+                tra = TransabiertaContabilidad.objects.filter(idtransaccion=trans95)[0]
+                Mt95.objects.create(ta_conta=tra,codigo=ref95,codigo95_idcodigo95=codAux,ref_relacion=refOrg95,query=preg95,narrativa=narra95,num_mt=tipo95,fecha_msg_original=fechad,campo79=original95)
+                mensajeMT = "exito"
+
+            if clase95 == "corres":
                 
-             #   tra = TransabiertaCorresponsal.objects.filter(idtransaccion=trans95)[0]
-              #  Mt95.objects.create(ta_corres=tra,codigo=ref95,codigo95_idcodigo95=codAux,ref_relacion=refOrg95,query=preg95,narrativa=narra95,num_mt=tipo95,fecha_msg_original=fechad,campo79=original95) 
-               # mensajeMT = "exito"
+                tra = TransabiertaCorresponsal.objects.filter(idtransaccion=trans95)[0]
+                Mt95.objects.create(ta_corres=tra,codigo=ref95,codigo95_idcodigo95=codAux,ref_relacion=refOrg95,query=preg95,narrativa=narra95,num_mt=tipo95,fecha_msg_original=fechad,campo79=original95) 
+                mensajeMT = "exito"
 
-            print("salio de los crear")
             tn = str(timenow())
             hora = tn[11:]
             auxhora = hora.split(':')
@@ -1129,34 +1135,32 @@ def pd_partidasAbiertas(request):
                 auxd = fecha95[:2]
                 auxm = (fecha952[3:])[:2]
                 auxy = (fecha953)[6:]
-                #auxf = fecha95[2:]
-                #aux2 = auxf[:3]
-                #auxm = aux2[1:]
-                #auxy = fecha95[6:]
-                print("fecha: " + auxd + " " + auxm +" " + auxy)
-                return JsonResponse({'mens':mensajeMT})
+                auxy = auxy[2:]
                 fechaArchivo = auxy + auxm + auxd
 
 
-            cod95 = int(cod95)
+            cod2 = int(cod2)
             #abrir archivo
             fo = open(archivo, 'w')
             fo.write( "$\n")
-            fo.write( "[M]"+tipo95+"\n")
+            if tipo95!="-1":
+                fo.write( "[M]"+tipo95+"\n")
+            else:
+                fo.write( "[M]\n")
             fo.write( "[S]"+sender+"\n")
             fo.write( "[R]"+cuenta95+"\n")
             fo.write( "[20]"+ref95+"\n")
             fo.write( "[21]"+refOrg95+"\n")
-            if cod95 == 7 or cod95 == 11 or cod95 == 12 or cod95 == 13 or cod95 == 17 or cod95 == 19 or cod95 == 20 or cod95 == 22 or (23<=cod95<=29) or (30<=cod95<=35) or cod95 == 38 or (40 <= cod95 <=45) or (48 <= cod95 <= 52): 
-                cod95 = str(cod95)
-                fo.write( "[75]"+cod95+"/"+narra95+"\n")
+            if cod2 == 7 or cod2 == 11 or cod2 == 12 or cod2 == 13 or cod2 == 17 or cod2 == 19 or cod2 == 20 or cod2 == 22 or (23<=cod2<=29) or (30<=cod2<=35) or cod2 == 38 or (40 <= cod2 <=45) or (48 <= cod2 <= 52): 
+                cod2 = str(cod2)
+                fo.write( "[75]"+cod2+"/"+narra95+"\n")
             else:
-                cod95 = str(cod95)
-                fo.write("[75]"+cod95+"\n")
+                cod2 = str(cod2)
+                fo.write("[75]"+cod2+"\n")
             if narra95 != "":
                 fo.write( "[77A]"+narra95+"\n")
-            if tipo95!="":
-                fo.write( "[11a]"+tipo95+"S/"+fechaArchivo+"\n")
+            if tipo95!="-1":
+                fo.write( "[11a]"+tipo95+fechaArchivo+"\n")
             if original95!="":
                 fo.write( "[79]"+original95+"\n");
             fo.write( "@@")
@@ -1752,7 +1756,181 @@ def mtn96(request):
         context = {'ops':get_ops(request), 'archivos':get_archivosMT96()}
         
         return render(request, template, context)
-    
+
+    if request.method == "POST":
+
+        if action == "cargar":
+
+            archivoCarga = request.POST.get('archivo96')
+            referencia95 = []
+            codigos=[]
+            codigos96=[]
+            refRelaciones=[]
+            respuestas = []
+            narrativas = []
+            numerosMT = []
+            fechas = []
+            campos79 = []
+
+            #Buscar directorio de carga de los mensajes MT96
+            obj = Configuracion.objects.all()[0]
+            reciver = obj.bic
+            directorio = obj.dircarga96
+            directorio = directorio + "\\"
+
+            #ruta del archivo a cargar
+            ruta = directorio + archivoCarga
+
+            #ruta de archivos procesados
+            rutaProcesados = "C:\Matcher\PROCESADO96" 
+
+            #abrir archivo
+            fo = open(ruta, 'r')
+
+            auxCuenta = 0
+            lines = fo.readlines()
+            i = 0
+            while i < len(lines):
+                for j in range(0,6):
+                    line = lines[i+auxCuenta]
+                    if j%7 == 1:
+                        opcion = line[:3]
+                        if opcion != "[M]":
+                            mensaje = "Caracter inesperado en campo tipo, en la línea número " +str(i+auxCuenta+1)+ " del archivo"
+                            #cerrar archivo
+                            fo.close()
+                            return JsonResponse({'mens':mensaje})
+                        tipoCargar = line[3:]
+                        tipoCargar = tipoCargar[:3]
+                    if j%7 == 2:
+                        opcion = line[:3]
+                        if opcion != "[S]":
+                            mensaje = "Caracter inesperado en campo bic del banco emisor, en la línea número " +str(i+auxCuenta+1)+ " del archivo"
+                            #cerrar archivo
+                            fo.close()
+                            return JsonResponse({'mens':mensaje})
+                        bancoCargar = line[3:]
+                        largoaux = len(bancoCargar)-1
+                        bancoCargar = bancoCargar[:largoaux]
+                    if j%7 == 3:
+                        opcion = line[:3]
+                        if opcion != "[R]":
+                            mensaje = "Caracter inesperado en campo bic del banco receptor, en la línea número " +str(i+auxCuenta+1)+ " del archivo"
+                            #cerrar archivo
+                            fo.close()
+                            return JsonResponse({'mens':mensaje})
+                        bancoR = line[3:]
+                        largoaux = len(bancoR)-1
+                        bancoR = bancoR[:largoaux]
+                        if bancoR != reciver :
+                            mensaje = "Caracter inesperado en campo bic del banco receptor, en la línea número " +str(i+auxCuenta+1)+ " del archivo"
+                            #cerrar archivo
+                            fo.close()
+                            return JsonResponse({'mens':mensaje})
+                    if j%7 == 4:
+                        opcion = line[:4]
+                        if opcion != "[20]":
+                            mensaje = "Caracter inesperado en campo referencia del mensaje,  en la línea número " +str(i+auxCuenta+1)+ " del archivo"
+                            #cerrar archivo
+                            fo.close()
+                            return JsonResponse({'mens':mensaje})
+                        refCargar = line[4:]
+                    if j%7 == 5:
+                        opcion = line[:4]
+                        if opcion != "[21]":
+                            mensaje = "Caracter inesperado en campo referencia del mensaje original,  en la línea número " +str(i+auxCuenta+1)+ " del archivo"
+                            #cerrar archivo
+                            fo.close()
+                            return JsonResponse({'mens':mensaje})
+                        refOrgCargar = line[4:]
+                        consulta = Mt95.objects.filter(ref_relacion=refCargar).filter(codigo=refOrgCargar)[0]
+                        #no hay mensajes mt95 con esas referencias
+                        if consulta is None:
+                            mensaje = "No se tienen registrados las referencias del mensaje que se encuentra en la línea número " +str(i+auxCuenta+1)+ " del archivo"
+                            #cerrar archivo
+                            fo.close()
+                            return JsonResponse({'mens':mensaje})
+                    if j%7 == 6:
+                        opcion = line[:4]
+                        if opcion != "[76]":
+                            mensaje = "Caracter inesperado en la narrativa del mensaje,  en la linea numero " +str(i+auxCuenta+1)+ " del archivo"
+                            #cerrar archivo
+                            fo.close()
+                            return JsonResponse({'mens':mensaje})
+                        respuestaCargar = line[4:]
+                        rc = int(respuestaCargar)
+                        #codigo no esta entre los validos para swift
+                        if rc < 0 or rc > 33:
+                            mensaje = "El código de respuesta, que se encuentra en la línea número " +str(i+auxCuenta+1)+ " del archivo no es válido"
+                            #cerrar archivo
+                            fo.close()
+                            return JsonResponse({'mens':mensaje})
+                        
+                        line = lines [i+j+1]
+                        cuenta = i+j+1
+                        cargar79=""
+
+                        #if line[:5] == "[77A]":
+                        #    narrativaCargar =  
+
+                        if line[:5] != "[77A]" or line[:5] != "[11a]":
+
+                            if line [:4] != "[79]" or line [:2] != "@@" :
+
+                                mensaje = "Caracter inesperado luego de la respuesta del mensaje,  en la linea numero " +str(i+auxCuenta+1)+ " del archivo"
+                                #cerrar archivo
+                                fo.close()
+                                return JsonResponse({'mens':mensaje})
+
+                            if line [:4] != "[79]" and line [:2] == "@@" :
+
+                                auxCuenta+=1
+
+                            if line[:4] == "[79]":
+                                
+                                cargar79 = line[4:]
+                                cuenta+=1
+                                auxCuenta+=1
+                                line = lines[cuenta]
+
+                                while line[:2] != "@@":
+                                    
+                                    cargar79 = cargar79 + line
+                                    cuenta+=1
+                                    auxCuenta+=1
+                                    line = lines[cuenta]
+                    auxCuenta+=1
+                auxCuenta+=1
+                i = i + auxCuenta
+                auxCuenta = 0
+        
+                # Se agregan los campos a las estructuras auxiliares para al finalarizar el recorrido del archivo 
+                # y ver que no haya errores, agregar los datos a la base de datos
+                codigos.append(refCargar)
+                relaciones.append(refOrgCargar)
+                narrativas.append(narrativaCargar)
+                bics.append(bancoCargar)
+
+            #cerrar archivo
+            fo.close()
+
+            # Se hacen los creates en la base de datos
+            k=0
+            for codigo in codigos:
+                Mt99.objects.create(codigo=codigo, ref_relacion=relaciones[k], narrativa=narrativas[k], bic=bics[k], fecha=timenow(),tipo_mt=tipoCargar,origen=origenCargar)
+                k+=1        
+
+            #Se agrega el evento al log
+            log(request,40)
+
+
+
+            
+
+            #Se mueve el archivo de directorio
+            shutil.move(ruta,rutaProcesados)
+
+            return JsonResponse({'mens':mensaje})
 
 @login_required(login_url='/login')
 def mtn99(request):
