@@ -1078,64 +1078,96 @@ def pd_partidasAbiertas(request):
             refOrg95 = request.POST.get('refOrg95')
             tipo95 = request.POST.get('tipo95')
             fecha95 = request.POST.get('fecha95')
+            fecha952 = request.POST.get('fecha95')
+            fecha953 = request.POST.get('fecha95')
             cod95 = request.POST.get('cod95')
             preg95 = request.POST.get('preg95')
             narra95 = request.POST.get('narrativa95')
             original95 = request.POST.get('original95')
             trans95 = request.POST.get('transaccion')
             clase95 = request.POST.get('clase')
-            cuenta = request.POST.get('cuenta')
+            cuenta95 = request.POST.get('cuenta')
+            mensajeMT = ""
 
             codAux = Codigo95.objects.filter(idcodigo95=cod95)[0]
             fechad = datetime.strptime(fecha95, '%d/%m/%Y')
 
-            if clase95 == "conta":
-                tra = TransabiertaContabilidad.objects.filter(idtransaccion=trans95)[0]
-                Mt95.objects.create(ta_conta=tra,codigo=ref95,codigo95_idcodigo95=codAux,ref_relacion=refOrg95,query=preg95,narrativa=narra95,num_mt=tipo95,fecha_msg_original=fechad,campo79=original95)
+            #if clase95 == "conta":
+
+             #   tra = TransabiertaContabilidad.objects.filter(idtransaccion=trans95)[0]
+              #  Mt95.objects.create(ta_conta=tra,codigo=ref95,codigo95_idcodigo95=codAux,ref_relacion=refOrg95,query=preg95,narrativa=narra95,num_mt=tipo95,fecha_msg_original=fechad,campo79=original95)
+               # mensajeMT = "exito"
+
+            #if clase95 == "corres":
                 
-                tn = str(timenow())
-                hora = tn[11:]
-                auxhora = hora.split(':')
-                hora = auxhora[0]+auxhora[1]+auxhora[2]
-                aux = tn[:10]
-                aux2 = aux.split('-')
-                aux = aux2[2]+aux2[1]+aux2[0]
-                fechaNombre = aux + "_" + hora
+             #   tra = TransabiertaCorresponsal.objects.filter(idtransaccion=trans95)[0]
+              #  Mt95.objects.create(ta_corres=tra,codigo=ref95,codigo95_idcodigo95=codAux,ref_relacion=refOrg95,query=preg95,narrativa=narra95,num_mt=tipo95,fecha_msg_original=fechad,campo79=original95) 
+               # mensajeMT = "exito"
 
-                #Buscar directorio de salida de los mensajes MT99
-                obj = Configuracion.objects.all()[0]
-                sender = obj.bic
-                directorio = obj.dirsalida95
-                directorio = directorio + "\\"
+            print("salio de los crear")
+            tn = str(timenow())
+            hora = tn[11:]
+            auxhora = hora.split(':')
+            hora = auxhora[0]+auxhora[1]+auxhora[2]
+            aux = tn[:10]
+            aux2 = aux.split('-')
+            aux = aux2[2]+aux2[1]+aux2[0]
+            fechaNombre = aux + "_" + hora
 
-                #Nombre del archivo a crear
-                archivo = directorio + sender + "_" + fechaNombre + ".txt"
+            #Buscar directorio de salida de los mensajes MT99
+            obj = Configuracion.objects.all()[0]
+            sender = obj.bic
+            directorio = obj.dirsalida95
+            directorio = directorio + "\\"
 
-                #abrir archivo
-                fo = open(archivo, 'w')
-                fo.write( "$\n");
-                fo.write( "[M]"+tipo95+"\n");
-                fo.write( "[S]"+sender+"\n");
-                fo.write( "[R]"+cuenta+"\n");
-                fo.write( "[20]"+ref95+"\n");
-                fo.write( "[21]"+refOrg95+"\n");
-                fo.write( "[75]"+refOrg95+"\n");
-                fo.write( "[77A]"+refOrg95+"\n");
-                fo.write( "[11a]"+refOrg95+"\n");
-                fo.write( "[79]"+narrativa+"\n");
-                fo.write( "$\@\@");
+            #Nombre del archivo a crear
+            archivo = directorio + sender + "_" + fechaNombre + ".txt"
 
-                #cerrar archivo
-                fo.close()
+            fechaArchivo = ""
+            #Formato de fecha YYMMDD
+            if fecha95 != "":
+                auxd = fecha95[:2]
+                auxm = (fecha952[3:])[:2]
+                auxy = (fecha953)[6:]
+                #auxf = fecha95[2:]
+                #aux2 = auxf[:3]
+                #auxm = aux2[1:]
+                #auxy = fecha95[6:]
+                print("fecha: " + auxd + " " + auxm +" " + auxy)
+                return JsonResponse({'mens':mensajeMT})
+                fechaArchivo = auxy + auxm + auxd
 
-                #Se agrega el evento al log
-                log(request,40)
-                return JsonResponse({'mens':"Exito"})
 
-            tra = TransabiertaCorresponsal.objects.filter(idtransaccion=trans95)[0]
-            Mt95.objects.create(ta_corres=tra,codigo=ref95,codigo95_idcodigo95=codAux,ref_relacion=refOrg95,query=preg95,narrativa=narra95,num_mt=tipo95,fecha_msg_original=fechad,campo79=original95) 
+            cod95 = int(cod95)
+            #abrir archivo
+            fo = open(archivo, 'w')
+            fo.write( "$\n")
+            fo.write( "[M]"+tipo95+"\n")
+            fo.write( "[S]"+sender+"\n")
+            fo.write( "[R]"+cuenta95+"\n")
+            fo.write( "[20]"+ref95+"\n")
+            fo.write( "[21]"+refOrg95+"\n")
+            if cod95 == 7 or cod95 == 11 or cod95 == 12 or cod95 == 13 or cod95 == 17 or cod95 == 19 or cod95 == 20 or cod95 == 22 or (23<=cod95<=29) or (30<=cod95<=35) or cod95 == 38 or (40 <= cod95 <=45) or (48 <= cod95 <= 52): 
+                cod95 = str(cod95)
+                fo.write( "[75]"+cod95+"/"+narra95+"\n")
+            else:
+                cod95 = str(cod95)
+                fo.write("[75]"+cod95+"\n")
+            if narra95 != "":
+                fo.write( "[77A]"+narra95+"\n")
+            if tipo95!="":
+                fo.write( "[11a]"+tipo95+"S/"+fechaArchivo+"\n")
+            if original95!="":
+                fo.write( "[79]"+original95+"\n");
+            fo.write( "@@")
 
-            return JsonResponse({'mens':"Exito"})
+            #cerrar archivo
+            fo.close()
+
+            #Se agrega el evento al log
+            log(request,8)
+
+            return JsonResponse({'mens':mensajeMT})
 
     if request.method == 'GET':
 
@@ -1793,13 +1825,14 @@ def mtn99(request):
 
             #abrir archivo
             fo = open(archivo, 'w')
-            fo.write( "$\n");
-            fo.write( "[M]"+tipo+"\n");
-            fo.write( "[S]"+sender+"\n");
-            fo.write( "[R]"+banco+"\n");
-            fo.write( "[20]"+ref_mensaje+"\n");
-            fo.write( "[21]"+ref_mensaje_original+"\n");
-            fo.write( "[79]"+narrativa+"\n");
+            fo.write( "$\n")
+            fo.write( "[M]"+tipo+"\n")
+            fo.write( "[S]"+sender+"\n")
+            fo.write( "[R]"+banco+"\n")
+            fo.write( "[20]"+ref_mensaje+"\n")
+            fo.write( "[21]"+ref_mensaje_original+"\n")
+            fo.write( "[79]"+narrativa+"\n")
+            fo.write( "@@")
 
             #cerrar archivo
             fo.close()

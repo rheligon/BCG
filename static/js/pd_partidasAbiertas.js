@@ -152,7 +152,7 @@ $('#cancelButton').on('click', function () {
 
 //Buscar partidas con la cuenta y filtros elegidos
 $('#srchButton').on('click', function () {
-    var ctaid = $('#Cuenta-sel').val();
+    var ctaid = $('#Cuenta-sel').val().split("-")[0];
 
     if (ctaid<=0){
       swal("Ups!", "Porfavor elija una cuenta primero.", "error");
@@ -642,62 +642,41 @@ $('#f-desdeMT').pickadate({
   selectMonths: true,
 })
 
-//Boton para crear MTx99
+//Boton para crear MTn95
 $('#crearMT95Button').on('click', function () {
     var ref_mensaje = $('#refmensaje').val();
     var ref_mensaje_original = $('#refmensajeoriginal').val();
     var tipo = $('#tipo').val();
-    var fecha = $('#tipo').val();
+    var fecha = $('#f-desdeMT').val();
     var codigo = $('#mt95cod').val();
     var narrativa = $('#narrativa').val();
     var original = $('#original').val();
     var pregunta = $('#pregunta').val();
     var transaccion = este.split('-')[1];
-    var cuenta = $('#Cuenta-sel').val();
-    console.log("estew: " + este);
+    var cuenta = $('#Cuenta-sel').val().split("-")[1];
     var clase = este.split('-')[2];
-    console.log("trans: " + transaccion);
-    console.log("clase: " + clase);
-    
+    if (fecha !=""){
+        var arregloFecha = fecha.split("/")
+        if (arregloFecha[0].length == 1){
+            arregloFecha[0] = "0" + arregloFecha[0];
+        }
+        if (arregloFecha[1].length == 1){
+
+            arregloFecha[1] = "0" + arregloFecha[1];
+        }
+
+        fecha = arregloFecha[0]+"/"+arregloFecha[1]+"/"+arregloFecha[2];
+
+    }
     if (ref_mensaje.length===0){
         swal("Ups!","Debe colocar la referencia del mensaje.","error");
     }else if(ref_mensaje_original.length===0){
-        swal("Ups!","Debe colocar la referencia del mensaje original","error");
-    }else if (tipo ===("-1")){
-        swal("Ups!","Debe seleccionar un tipo de MT.","error");        
+        swal("Ups!","Debe colocar la referencia del mensaje original","error");       
     }else if (codigo ===("-1")){
         swal("Ups!","Debe seleccionar un codigo de Mensaje MT.","error");        
-    }else if (pregunta.length===0){
-        swal("Ups!","Debe colocar la especificación de la pregunta.","error");
-    }else if(narrativa.length===0){
-        swal("Ups!","Debe colocar la narrativa","error");
-    }else if(original.length===0 ){
-        swal("Ups!","Debe colocar la referencia del mensaje original","error");
     }else{
 
         $('#processing-modal').modal('toggle');
-        //si se escogió una fecha limite inferior
-        if ($('#f-desdeMT').val() != ""){
-            fecha = $('#f-desdeMT').val();    
-        } else {
-            var today = new Date();
-            var dd1 = today.getDate();
-            var mm1 = today.getMonth()+1; //January is 0!
-            var yyyy1 = today.getFullYear();
-
-            if(dd1<10) {
-                dd1='0'+dd1
-            } 
-
-            if(mm1<10) {
-                mm1='0'+mm1
-            } 
-
-            today = dd1+'/'+mm1+'/'+yyyy1;
-            fecha = today;    
-        }
-
-        console.log(fecha);
     
         //Llamar funcion de creación del mensaje
         crearmt95(ref_mensaje,ref_mensaje_original,tipo,fecha,codigo,pregunta,narrativa,original,transaccion,clase,cuenta);

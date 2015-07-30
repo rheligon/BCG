@@ -38,7 +38,7 @@ table {
       <select id="Cuenta-sel" name="Cuenta-sel" class="form-control">
         <option value="-1">----------</option>
         {% for cuenta in cuentas %}
-        <option id="opt-{{cuenta.idcuenta}}" value="{{cuenta.idcuenta}}">{{cuenta.codigo}}</option>
+        <option id="opt-{{cuenta.idcuenta}}" value="{{cuenta.idcuenta}}-{{cuenta.codigo}}">{{cuenta.codigo}}</option>
         {% endfor %}
       </select>
     </div>
@@ -328,12 +328,18 @@ table {
             <option value="103">103</option>
             <option value="202">202</option>
           </select>
+          <p class="help-block">
+            Este campo no es indispensable.
+          </p> 
         </div>
       </div>
     <td class="col-md-5">
       <div class="col-md-7 form-group">
-        <label class="col-md-2 control-label">Fecha:</label>
+        <label class="col-md-4 control-label">Fecha:</label>
           <div class="col-md-4"><input id="f-desdeMT" class="form-control"></div>
+          <p class="help-block">
+            Este campo no es indispensable.
+          </p> 
       </div>
     </td>
     <td class="col-md-6 ">
@@ -355,6 +361,9 @@ table {
         <label class="col-md-4 control-label" >Pregunta:</label>
         <div class="col-md-8">
           <textarea class="form-control input-sm" name="pregumtaMT" id="pregunta" type="text" maxlength="45" placeholder="Ingrese la Pregunta" required autofocus/></textarea>
+          <p class="help-block">
+            Este campo no es indispensable.
+          </p> 
         </div>
       </div>
     </td>
@@ -363,6 +372,9 @@ table {
         <label class="col-md-4 control-label" >Narrativa:</label>
         <div class="col-md-8">
           <textarea class="form-control input-sm" name="narrativaMT" id="narrativa" type="text" maxlength="45" placeholder="Ingrese la Narrativa" required autofocus/></textarea>
+          <p class="help-block">
+            Este campo no es indispensable.
+          </p> 
         </div>
       </div>
     </td>
@@ -371,6 +383,9 @@ table {
         <label class="col-md-4 control-label" >Descripción Mesj. Original:</label>
         <div class="col-md-8">
           <textarea class="form-control input-sm" name="originalMT" id="original" type="text" maxlength="45" placeholder="Ingrese la Descripción del mensaje original" required autofocus/></textarea>
+          <p class="help-block">
+            Este campo no es indispensable.
+          </p> 
         </div>
       </div>
     </td>
