@@ -335,8 +335,10 @@ table {
       </div>
     <td class="col-md-5">
       <div class="col-md-7 form-group">
-        <label class="col-md-4 control-label">Fecha:</label>
-          <div class="col-md-4"><input id="f-desdeMT" class="form-control"></div>
+        <label class="col-md-4 control-label">Fecha: <span class="glyphicon glyphicon-calendar" aria-hidden="true"></span>
+        </label>
+          <div class="col-md-4">
+      <input id="f-desdeMT" class="form-control"></div>
           <p class="help-block">
             Este campo no es indispensable.
           </p> 
@@ -402,6 +404,54 @@ table {
     </td>   
 </div>
 
+<div id="MT95-verMT" style="display: none;">
+  <div class="well table-responsive col-md-12">
+<legend>MTn95</legend>
+    <table id="table-mtn95" class="table table-bordered table-striped tabla">
+        <thead>
+            <tr>
+                <th>Tipo</th>
+                <th>MT</th>
+                <th>Fecha Msj. Original</th>
+                <th>Ref. Mensaje</th>
+                <th>Ref. Msj Original</th>
+                <th>Pregunta</th>
+                <th>Narrativa</th>
+                <th>Desc. Msj. Original</th>
+            </tr>
+        </thead>
+        <tbody>
+        </tbody>
+    </table>
+</div>
+
+<div class="well table-responsive col-md-12">
+  <legend>MTn96</legend>
+    <table id="table-mtn96" class="table table-bordered table-striped tabla">
+        <thead>
+            <tr>
+                <th>Tipo</th>
+                <th>MT</th>
+                <th>Fecha Msj. Original</th>
+                <th>Ref. Mensaje</th>
+                <th>Ref. Msj Original</th>
+                <th>Pregunta</th>
+                <th>Narrativa</th>
+                <th>Desc. Msj. Original</th>
+            </tr>
+        </thead>
+        <tbody>
+        </tbody>
+    </table>
+</div>
+</div>
+<div id="regresarMT" style="display: none;">
+<div class="col-md-7" align="rigth">
+    <button type="button" id="regresarVerMT" style="align:right" class="col-md-3 btn btn-warning">
+      <-- Regresar
+    </button>
+  </div>
+</div>
 
 <div class="modal fade" id="justificacion-modal" role="dialog">
   <div class="modal-dialog">
