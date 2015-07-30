@@ -39,6 +39,9 @@ urlpatterns = patterns('',
     #url(r'^MT/(?P<tipo>\d\d)/$', 'Matcher_WS.views.mensajesMTX', name='mensajesMTX'),
     url(r'^mtn96/$','Matcher_WS.views.mtn96', name='mtn96'),
     url(r'^mtn99/$','Matcher_WS.views.mtn99', name='mtn99'),
+
+    # INTRADAY
+    url(r'^intraday/$', 'Matcher_WS.views.intraday', name='intraday'),
     
     # Configuración (Sistema-Archivo)
     url(r'^conf/(?P<tipo>\w+)/$', 'Matcher_WS.views.configuracion', name='configuracion'),

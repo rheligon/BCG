@@ -1974,7 +1974,12 @@ def mtn99(request):
             return JsonResponse({'mens':mensaje})
 
 
-
+@login_required(login_url='/login')
+def intraday(request):
+    if request.method == 'GET':
+        context = {'ops':get_ops(request)}
+        template = "matcher/intraday.html"
+        return render(request, template, context)
 
 
 @login_required(login_url='/login')
