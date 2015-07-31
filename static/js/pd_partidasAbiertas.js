@@ -1,5 +1,7 @@
 var csrftoken = $.cookie('csrftoken');
 var tabla = iniciar_tabla(idioma_tr);
+var tabla_mtn95 = iniciar_tabla_mtn95(idioma_tr);
+var tabla_mtn96 = iniciar_tabla_mtn96(idioma_tr);
 var faltaconta = false;
 var faltacorr = false;
 var matchArray = [];
@@ -68,6 +70,68 @@ function iniciar_tabla(idioma){
     }else if (idioma==="en"){
 
         return $('#table-pa').dataTable({
+            language: {
+                url: '/static/json/English-tables.json'
+            },
+            "scrollY": "350px",
+            "dom": "frtiS",
+            "scrollCollapse": true,
+            "deferRender": true,
+            "orderClasses": false,
+        })
+    };
+};
+
+function iniciar_tabla_mtn95(idioma){
+
+    if (idioma==="es"){
+
+        return $('#table-mtn95').dataTable({
+            //poner if con idioma, el ingles es predeterminado
+            language: {
+                url: '/static/json/Spanish-tables.json'
+            },
+            "scrollY": "350px",
+            "dom": "frtiS",
+            "scrollCollapse": true,
+            "deferRender": true,
+            "orderClasses": false,
+        })
+
+    }else if (idioma==="en"){
+
+        return $('#table-mtn95').dataTable({
+            language: {
+                url: '/static/json/English-tables.json'
+            },
+            "scrollY": "350px",
+            "dom": "frtiS",
+            "scrollCollapse": true,
+            "deferRender": true,
+            "orderClasses": false,
+        })
+    };
+};
+
+function iniciar_tabla_mtn96(idioma){
+
+    if (idioma==="es"){
+
+        return $('#table-mtn96').dataTable({
+            //poner if con idioma, el ingles es predeterminado
+            language: {
+                url: '/static/json/Spanish-tables.json'
+            },
+            "scrollY": "350px",
+            "dom": "frtiS",
+            "scrollCollapse": true,
+            "deferRender": true,
+            "orderClasses": false,
+        })
+
+    }else if (idioma==="en"){
+
+        return $('#table-mtn96').dataTable({
             language: {
                 url: '/static/json/English-tables.json'
             },
@@ -610,8 +674,8 @@ $('#verMTButton').on('click', function () {
     
     document.getElementById("MT95-verTabla").style.display = "none";
     document.getElementById("MT95-crear").style.display = "none";
-    document.getElementById("MT95-verDetalle").style.display = "block";
-
+    document.getElementById("MT95-verMT").style.display = "block";
+    document.getElementById("regresarMT").style.display = "block";
 
 });
 
@@ -622,6 +686,17 @@ $('#regresarMT95Button').on('click', function () {
     document.getElementById("MT95-verDetalle").style.display = "none";
     document.getElementById("MT95-crear").style.display = "none";
     document.getElementById("MT95-verTabla").style.display = "block";
+
+});
+
+$('#regresarVerMT').on('click', function () {
+    
+
+    document.getElementById("MT95-verDetalle").style.display = "none";
+    document.getElementById("MT95-crear").style.display = "none";
+    document.getElementById("MT95-verTabla").style.display = "block";
+    document.getElementById("MT95-verMT").style.display = "none";
+    document.getElementById("regresarMT").style.display = "none";
 
 });
 
