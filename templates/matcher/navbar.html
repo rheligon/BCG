@@ -9,10 +9,8 @@
     .panel-body .table {margin-bottom: 0px; }
     #nav-id { position: fixed; top: 13%; left: 0;}
 </style>
-
-    
-
 <div class="col-md-2" id="nav-wrap">
+    
     <div id="nav-id" class="col-md-2">
     <div class="panel-group" id="accordion">
         <div class="panel panel-default">
@@ -296,6 +294,47 @@
         </div>
         {%endif%}
 
+        {% if 21 in ops or 28 in ops or 19 in ops or 15 in ops or 23 in ops or 16 in ops or 17 in ops or 6 in ops or 7 in ops or 12 in ops%}
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h4 class="panel-title">
+                    <a data-toggle="collapse" data-parent="#accordion" href="#collapseBCG"><span class="fa fa-group">
+                    </span>BCG</a>
+                </h4>
+            </div>
+            <div id="collapseBCG" class="panel-collapse collapse">
+                <div class="panel-body">
+                    <table class="table">
+                        <tr>
+                            <td>
+                                <span class="fa fa-signal fa-lg text-success"></span><a style="color:gray" href="#">Status</a>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td>
+                                <span class="fa fa-credit-card fa-lg text-info"></span><a style="color:gray" href="#">Licencia</a>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td>
+                                <span class="fa fa-sitemap fa-lg text-danger"></span><a style="color:gray" href="#">Módulos</a>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td>
+                                <span class="fa fa-legal fa-lg text-warning"></span><a style="color:gray" href="#">Versión</a>
+                            </td>
+                        </tr>
+
+                    </table>
+                </div>
+            </div>
+        </div>
+        {%endif%}
+
         <div class="panel panel-default">
             <div class="panel-heading">
                 <h4 class="panel-title">
@@ -334,5 +373,7 @@
             </div>
         </div>
     </div>
+    <img src="static/images/logobcgp.gif" width="182" height="100">
     </div>
+
 </div>
