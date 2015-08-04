@@ -901,6 +901,50 @@ def pd_matchesPropuestos(request, cuenta):
         context = {'cuentas':get_cuentas(request), 'matches':matches, 'cta':cuenta, 'msg':None, 'ops':get_ops(request)}
         return render(request, template, context)
 
+@login_required(login_url='/login')
+def pd_detallesMT(request, mensaje,tipo):
+
+    if request.method == 'GET':
+
+        msj = ""
+        tranMT = mensaje
+        claseMT = tipo
+
+        if claseMT == "conta":
+
+            try:
+                # Buscar los mensajes MT95 de contabilidad para la transaccion dada
+                ta = TransabiertaContabilidad.objects.filter(idtransaccion=tranMT)
+                MTs = Mt95.objects.filter(ta_conta=ta)
+                msj = "MTs listados exitosamente"
+                MT96s = Mt96.objects.filter(mt95_idmt95=MTs)
+                template = "matcher/pd_detallesMT.html"
+                context = {'cuentas':get_cuentas(request), 'msg':msj, 'ops':get_ops(request), 'mensajes95': MTs, 'mensaje':mensaje, 'mensajes96':MT96s}
+                return render(request, template, context)
+            except:
+                msj = "No hay mensajes relacionados a la transacción"
+                MTs = None
+                MT96s = None
+                template = "matcher/pd_detallesMT.html"
+                context = {'cuentas':get_cuentas(request), 'msg':msj, 'ops':get_ops(request), 'mensajes95': MTs, 'mensaje':mensaje, 'mensajes96':MT96s}
+                return render(request, template, context) 
+
+        try:
+            # Buscar los mensajes MT95 de corresponsal para la transaccion dada
+            ta = TransabiertaCorresponsal.objects.filter(idtransaccion=tranMT)
+            MTs = Mt95.objects.filter(ta_corres=ta)
+            msj = "MTs listados exitosamente"
+            MT96s = Mt96.objects.filter(mt95_idmt95=MTs)
+            template = "matcher/pd_detallesMT.html"
+            context = {'cuentas':get_cuentas(request), 'msg':msj, 'ops':get_ops(request), 'mensajes95': MTs, 'mensaje':mensaje, 'mensajes96':MT96s}
+            return render(request, template, context)
+        except:
+            msj = "No hay mensajes relacionados a la transacción"
+            MTs = None
+            MT96s = None
+            template = "matcher/pd_detallesMT.html"
+            context = {'cuentas':get_cuentas(request), 'msg':msj, 'ops':get_ops(request), 'mensajes95': MTs, 'mensaje':mensaje, 'mensajes96':MT96s}
+            return render(request, template, context)
 
 @login_required(login_url='/login')
 def pd_partidasAbiertas(request):
@@ -1139,7 +1183,7 @@ def pd_partidasAbiertas(request):
                 fechaArchivo = auxy + auxm + auxd
 
 
-            cod2 = int(cod2)
+            cod2 = int(preg95)
             #abrir archivo
             fo = open(archivo, 'w')
             fo.write( "$\n")
@@ -1953,10 +1997,8 @@ def mtn96(request):
                 codigos96.append(consultaCodigo96)
                 refRelaciones.append(refOrgCargar)
                 respuestas.append(respuestaCargar)
-                if narrativaCargar != "":
-                    narrativas.append(narrativaCargar)
-                else:
-                    narrativas.append(None)
+                narrativas.append(narrativaCargar)
+                
                 if tipoCargar != "":
                     numerosMT.append(tipoCargar)
                 else:
