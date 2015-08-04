@@ -1,8 +1,5 @@
 var csrftoken = $.cookie('csrftoken');
 var tabla = iniciar_tabla(idioma_tr);
-var tabla_mtn95 = iniciar_tabla_mtn95(idioma_tr);
-var tabla_mtn96 = iniciar_tabla_mtn96(idioma_tr);
-var faltaconta = false;
 var faltacorr = false;
 var matchArray = [];
 var filterArray = [[],[],[],[],[],[]];
@@ -63,8 +60,25 @@ function iniciar_tabla(idioma){
             "scrollY": "350px",
             "dom": "frtiS",
             "scrollCollapse": true,
-            "deferRender": true,
-            "orderClasses": false,
+            "scrollX": true,
+            //"deferRender": true,
+            //"orderClasses": false,
+            "autoWidth": false,
+            "columns": [
+                { "width": "5%" },
+                { "width": "5%" },
+                { "width": "8%" },
+                { "width": "8%" },
+                { "width": "8%" },
+                { "width": "8%" },
+                { "width": "30%" },
+                { "width": "5%" },
+                { "width": "11%" },
+                { "width": "5%" },
+                { "width": "5%" },
+                { "width": "5%" },
+                { "width": "5%" },
+              ],
         })
 
     }else if (idioma==="en"){
@@ -76,72 +90,27 @@ function iniciar_tabla(idioma){
             "scrollY": "350px",
             "dom": "frtiS",
             "scrollCollapse": true,
-            "deferRender": true,
-            "orderClasses": false,
-        })
-    };
-};
-
-function iniciar_tabla_mtn95(idioma){
-
-    if (idioma==="es"){
-
-        return $('#table-mtn95').dataTable({
-            //poner if con idioma, el ingles es predeterminado
-            language: {
-                url: '/static/json/Spanish-tables.json'
-            },
-            "scrollY": "350px",
-            "dom": "frtiS",
-            "scrollCollapse": true,
-            "deferRender": true,
-            "orderClasses": false,
-        })
-
-    }else if (idioma==="en"){
-
-        return $('#table-mtn95').dataTable({
-            language: {
-                url: '/static/json/English-tables.json'
-            },
-            "scrollY": "350px",
-            "dom": "frtiS",
-            "scrollCollapse": true,
-            "deferRender": true,
-            "orderClasses": false,
-        })
-    };
-};
-
-function iniciar_tabla_mtn96(idioma){
-
-    if (idioma==="es"){
-
-        return $('#table-mtn96').dataTable({
-            //poner if con idioma, el ingles es predeterminado
-            language: {
-                url: '/static/json/Spanish-tables.json'
-            },
-            "scrollY": "350px",
-            "dom": "frtiS",
-            "scrollCollapse": true,
-            "deferRender": true,
-            "orderClasses": false,
-        })
-
-    }else if (idioma==="en"){
-
-        return $('#table-mtn96').dataTable({
-            language: {
-                url: '/static/json/English-tables.json'
-            },
-            "scrollY": "350px",
-            "dom": "frtiS",
-            "scrollCollapse": true,
-            "deferRender": true,
-            "orderClasses": false,
-        })
-    };
+            "scrollX": true,
+            //"deferRender": true,
+            //"orderClasses": false,
+            "autoWidth": false,
+            "columns": [
+                { "width": "5%" },
+                { "width": "5%" },
+                { "width": "8%" },
+                { "width": "8%" },
+                { "width": "8%" },
+                { "width": "8%" },
+                { "width": "30%" },
+                { "width": "5%" },
+                { "width": "11%" },
+                { "width": "5%" },
+                { "width": "5%" },
+                { "width": "5%" },
+                { "width": "5%" },
+            ],
+        });
+    }
 };
 
 if (idioma_tr==="es"){
@@ -455,7 +424,6 @@ function busqueda(ctaid,filterArray){
             var json_mt95 = jQuery.parseJSON(data.r_95);
             mt95Array = json_mt95;
             copiaAux = mt95Array;
-            console.log(json_mt95);   
 
             $('#pbardiv').prop('hidden', false);
             $('#pbar').attr('max', json_corr.length+json_conta.length);
@@ -635,14 +603,7 @@ function calcularfila(elem,tipo,edc){
         findAndRemove(mt95Array, 'pk', key);
     }
 
-    if (cuentaVeces > 0){
-        var obj = {"codigo":elem.pk,"veces":cuentaVeces};
-        mt95Aux.push(obj);
-        //console.log(mt95Aux);
-    }
-
     
-
     $('#table-pa > tbody').append('<tr id ="tr-'+tipo+'-'+a_id+'"></tr>');
 
     var jRow = $("#tr-"+tipo+"-"+a_id).append(td1,td2,td3,td4,td5,td6,td7,td8,td9,td10,td11,td12,td13);
@@ -669,16 +630,6 @@ function habilitar(element){
     este = $(element).attr('id');
 }
 
-//Mostrar el Div de Detalles cuando se hace click sobre el boton
-$('#verMTButton').on('click', function () {
-    
-    document.getElementById("MT95-verTabla").style.display = "none";
-    document.getElementById("MT95-crear").style.display = "none";
-    document.getElementById("MT95-verMT").style.display = "block";
-    document.getElementById("regresarMT").style.display = "block";
-
-});
-
 //Mostrar el Div por defecto cuando se hace click sobre el boton regresar
 $('#regresarMT95Button').on('click', function () {
     
@@ -695,8 +646,17 @@ $('#regresarVerMT').on('click', function () {
     document.getElementById("MT95-verDetalle").style.display = "none";
     document.getElementById("MT95-crear").style.display = "none";
     document.getElementById("MT95-verTabla").style.display = "block";
-    document.getElementById("MT95-verMT").style.display = "none";
     document.getElementById("regresarMT").style.display = "none";
+
+});
+
+$('#regresarCMT95Button').on('click', function () {
+    
+
+    document.getElementById("MT95-verDetalle").style.display = "none";
+    document.getElementById("MT95-crear").style.display = "none";
+    document.getElementById("regresarMT").style.display = "none";
+    document.getElementById("MT95-verTabla").style.display = "block";
 
 });
 
@@ -723,10 +683,12 @@ $('#crearMT95Button').on('click', function () {
     var ref_mensaje_original = $('#refmensajeoriginal').val();
     var tipo = $('#tipo').val();
     var fecha = $('#f-desdeMT').val();
-    var codigo = $('#mt95cod').val();
-    var narrativa = $('#narrativa').val();
+    var codigo = $('#mt95cod').val().split("-")[0];
+    var codigo2 = $('#mt95cod').val().split("-")[2];
+    var narrativa = $('#mt95cod').val().split("-")[1];
     var original = $('#original').val();
-    var pregunta = $('#pregunta').val();
+    var pregunta = codigo2;
+    console.log(codigo + codigo2 + narrativa + pregunta);
     var transaccion = este.split('-')[1];
     var cuenta = $('#Cuenta-sel').val().split("-")[1];
     var clase = este.split('-')[2];
@@ -754,16 +716,16 @@ $('#crearMT95Button').on('click', function () {
         $('#processing-modal').modal('toggle');
     
         //Llamar funcion de creación del mensaje
-        crearmt95(ref_mensaje,ref_mensaje_original,tipo,fecha,codigo,pregunta,narrativa,original,transaccion,clase,cuenta);
+        crearmt95(ref_mensaje,ref_mensaje_original,tipo,fecha,codigo,pregunta,narrativa,original,transaccion,clase,cuenta,codigo2);
     };
 });
 
 //Crear mensajes MT95
-function crearmt95(ref_mensaje,ref_mensaje_original,tipo,fecha,codigo,pregunta,narrativa,original,transaccion,clase,cuenta){
+function crearmt95(ref_mensaje,ref_mensaje_original,tipo,fecha,codigo,pregunta,narrativa,original,transaccion,clase,cuenta,codigo2){
     $.ajax({
         type:"POST",
         url: "/procd/pAbiertas/",
-        data: {"ref95":ref_mensaje, "refOrg95":ref_mensaje_original, "tipo95":tipo, "fecha95":fecha, "cod95":codigo, "preg95":pregunta, "narrativa95":narrativa, "original95":original, "transaccion":transaccion, "action":"crearMT95", "clase":clase, "cuenta":cuenta},
+        data: {"ref95":ref_mensaje, "refOrg95":ref_mensaje_original, "tipo95":tipo, "fecha95":fecha, "cod95":codigo, "preg95":pregunta, "narrativa95":narrativa, "original95":original, "transaccion":transaccion, "action":"crearMT95", "clase":clase, "cuenta":cuenta, "codigo2":codigo2},
         success: function(data){
             $('#processing-modal').modal('toggle');
             swal("OK", "Mensaje creado exitosamente", "success");
@@ -783,3 +745,24 @@ function crearmt95(ref_mensaje,ref_mensaje_original,tipo,fecha,codigo,pregunta,n
     });
     return false;
 }
+
+//Boton para ver los MTn95/96 asociados a una transaccion
+$('#verMTButton').on('click', function () {
+
+    var transaccion = este.split('-')[1];
+    var clase = este.split('-')[2];
+    var currenturl = $(location).attr("href");
+    var aux = currenturl.split('/');
+    aux.pop();
+    aux.pop();
+    aux.push("detallesMT");
+    aux.push(transaccion);
+    aux.push(clase);
+    var url = aux.join('/');
+    //Redireccionar
+    console.log(url);
+    $(location).attr("href", url);
+    
+    //$('#processing-modal').modal('toggle');
+    
+});

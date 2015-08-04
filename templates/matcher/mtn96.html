@@ -22,7 +22,7 @@
                         <div class="col-md-7 form-group">
                             <label class="col-md-4 control-label" >Archivo de Carga:</label>
                             <div class="col-md-8">
-                                <select id="mtx99_archivo" name="mtx99_archivoN" class="form-control">
+                                <select id="mtn96_archivo" name="mtn96_archivoN" class="form-control">
                                     <option value="-1">--------------</option>
                                     {% for archivo in archivos %}
                                     <option value="{{archivo}}">{{archivo}}</option>
@@ -67,6 +67,8 @@
 <script type="text/javascript" src="{% static 'js/picker.date.js' %}"></script>
 <script type="text/javascript" src="{% static 'js/pickerlegacy.js' %}"></script>
 <script type="text/javascript" src="{% static 'js/sweet-alert.min.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/mtn96.js' %}"></script>
+
 
 <script type="text/javascript">
 iniciar_tabla("es");
