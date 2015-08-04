@@ -17,7 +17,7 @@
 {% block content %}
 <style> form {padding-bottom: 1%;} #table-div-conta, #table-div-corr {padding-top: 1%;}</style>
 
-<legend><h1>Bienvenido a Intraday</h1></legend>
+<legend align = "center"><h1>Intraday</h1></legend>
 
 <!-- Static Modal para procesando -->
 <div class="modal modal-static fade" id="processing-modal" role="dialog" aria-hidden="true">
@@ -47,5 +47,5 @@
 <script type="text/javascript" src="{% static 'js/picker.js' %}"></script>
 <script type="text/javascript" src="{% static 'js/picker.date.js' %}"></script>
 <script type="text/javascript" src="{% static 'js/pickerlegacy.js' %}"></script>
-<script src="{% static 'js/pd_cargaManual.js' %}" type="text/javascript"></script>
+<script src="{% static 'js/intraday.js' %}" type="text/javascript"></script>
 {% endblock %}
