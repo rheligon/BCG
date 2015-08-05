@@ -1827,7 +1827,8 @@ def mtn96(request):
             ruta = directorio + archivoCarga
 
             #ruta de archivos procesados
-            rutaProcesados = "C:\Matcher\PROCESADO96" 
+            #rutaProcesados = "C:\Matcher\PROCESADO96" 
+            rutaProcesados = obj.dirprocesado96
 
             #abrir archivo
             fo = open(ruta, 'r')
@@ -2029,6 +2030,7 @@ def mtn96(request):
                 k+=1        
 
             #Se agrega el evento al log
+            log(request,42)
 
             #Se mueve el archivo de directorio
             shutil.move(ruta,rutaProcesados)
@@ -2145,7 +2147,8 @@ def mtn99(request):
             ruta = directorio + archivoCarga
 
             #ruta de archivos procesados
-            rutaProcesados = "C:\Matcher\PROCESADO99" 
+            #rutaProcesados = "C:\Matcher\PROCESADO99" 
+            rutaProcesados = obj.dirprocesado99
 
             #abrir archivo
             fo = open(ruta, 'r')
@@ -2243,7 +2246,7 @@ def mtn99(request):
                 k+=1        
 
             #Se agrega el evento al log
-            log(request,40)
+            log(request,41)
 
 
 
@@ -2338,6 +2341,8 @@ def configuracion(request, tipo):
                 dir_c_mt96 = request.POST.get('dir_c_mt96')
                 dir_s_mt99 = request.POST.get('dir_s_mt99')
                 dir_c_mt99 = request.POST.get('dir_c_mt99')
+                dir_p_mt96 = request.POST.get('dir_p_mt96')
+                dir_p_mt99 = request.POST.get('dir_p_mt99')
                 idioma = request.POST.get('Idiom-sel')
 
                 ce = request.POST.get('ce')
@@ -2372,6 +2377,8 @@ def configuracion(request, tipo):
                 conf.dircarga96 = dir_c_mt96
                 conf.dirsalida99 = dir_s_mt99
                 conf.dircarga99 = dir_c_mt99
+                conf.dirprocesado96 = dir_p_mt96
+                conf.dirprocesado99 = dir_p_mt99
                 conf.idioma = int(idioma)
 
                 # Chequeando checkboxes
