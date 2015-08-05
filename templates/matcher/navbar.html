@@ -273,6 +273,14 @@
                         </tr>
                         {%endif%}
 
+                        {% if 28 in ops %}
+                        <tr>
+                            <td>
+                                <span class="fa fa-copy fa-lg text-danger"></span><a style="color:gray" href="{% url 'Matcher_WS.views.admin_archives'%}">Archives</a>
+                            </td>
+                        </tr>
+                        {%endif%}
+
                         {% if 19 in ops %}
                         <tr>
                             <td>
@@ -373,7 +381,7 @@
             </div>
         </div>
     </div>
-    <img src="../static/images/logobcgp.gif" width="182" height="100">
+    <img src="../../static/images/logobcgp.gif" width="182" height="100">
     </div>
 
 </div>
