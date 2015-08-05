@@ -169,7 +169,9 @@ class Configuracion(models.Model):
     bic = models.CharField(db_column='Bic', max_length=200, blank=True)  
     ldap_ip = models.CharField(db_column='LDAP_IP', max_length=20, blank=True)  
     ldap_puerto = models.CharField(db_column='LDAP_Puerto', max_length=15, blank=True)  
-    ldap_dominio = models.CharField(db_column='LDAP_Dominio', max_length=50, blank=True)  
+    ldap_dominio = models.CharField(db_column='LDAP_Dominio', max_length=50, blank=True)
+    dirprocesado96 = models.CharField(db_column='DirProcesado96', max_length=200, blank=True)
+    dirprocesado99 = models.CharField(db_column='DirProcesado99', max_length=200, blank=True)  
 
     class Meta:
         db_table = 'Configuracion'
