@@ -3550,9 +3550,12 @@ def SU_modulos(request):
 
 @login_required(login_url='/login')
 def SU_version(request):
-    template = "matcher/SU_version.html"
-    context = {'ops':get_ops(request)}
-    return render(request, template, context)
+    if request.method == 'GET':
+        template = "matcher/SU_version.html"
+        version = Version.objects.all()[0]
+        context = {'ops':get_ops(request), 'version':version}
+        return render(request, template, context)
+
 #################################################################################################
 ## Otras funciones
 
