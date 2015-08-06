@@ -3286,6 +3286,23 @@ def admin_cuentas(request):
         return render(request, template, context)
 
 @login_required(login_url='/login')
+def admin_archives(request):
+    if request.method == 'GET':
+        template = "matcher/admin_archives.html"
+        context = {'cuentas':get_cuentas(request), 'ops':get_ops(request)}
+        return render(request, template, context)
+    if request.method == 'POST':
+        actn = request.POST.get('action')
+        if actn == 'consultar':
+            cuenta = request.POST.get('cuenta')
+            msg = "La cuenta se ha consultado con exito"
+            transconta = TranscerradaContabilidad.objects.filter(codigocuenta=cuenta)
+            for elem in transconta:
+                print(elem.idtransaccion)
+                
+            return JsonResponse({'exito':True, 'msg':msg})
+        
+@login_required(login_url='/login')
 def admin_reglas_transf(request):
     if request.method == 'POST':
         
