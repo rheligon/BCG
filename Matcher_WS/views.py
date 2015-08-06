@@ -3284,21 +3284,43 @@ def admin_cuentas(request):
         return render(request, template, context)
 
 @login_required(login_url='/login')
-def admin_archives(request):
+def admin_archive(request):
     if request.method == 'GET':
-        template = "matcher/admin_archives.html"
+        template = "matcher/admin_archive.html"
         context = {'cuentas':get_cuentas(request), 'ops':get_ops(request)}
         return render(request, template, context)
     if request.method == 'POST':
         actn = request.POST.get('action')
         if actn == 'consultar':
             cuenta = request.POST.get('cuenta')
-            msg = "La cuenta se ha consultado con exito"
+            fechaMinima = ""
+            msg = ""
+            
             transconta = TranscerradaContabilidad.objects.filter(codigocuenta=cuenta)
-            for elem in transconta:
-                print(elem.idtransaccion)
-                
-            return JsonResponse({'exito':True, 'msg':msg})
+            transcorr = TranscerradaCorresponsal.objects.filter(codigocuenta=cuenta)
+            
+            if (not transconta and not transcorr):
+                exito = False
+                msg = "No existen Matches Confirmados para esta cuenta"
+            elif (not transconta):
+                match = Matchconfirmado.objects.get(tc_corres=transcorr[0])
+                fechaMinima = match.fecha.strftime("%d/%m/%Y")
+                exito = True
+            elif (not transcorr):
+                match = Matchconfirmado.objects.get(tc_conta=transconta[0])
+                fechaMinima = match.fecha.strftime("%d/%m/%Y")
+                exito = True
+            elif (transconta and transcorr):
+                match = Matchconfirmado.objects.get(tc_conta=transconta[0])
+                if (not match):
+                    match = Matchconfirmado.objects.get(tc_corres=transcorr[0])
+                    fechaMinima = match.fecha.strftime("%d/%m/%Y")
+                    exito = True
+                else:
+                    match2 = Matchconfirmado.objects.get(tc_corres=transcorr[0])
+                    fechaMinima = match.fecha.strftime("%d/%m/%Y")
+                    exito = True
+            return JsonResponse({'exito':exito, 'msg':msg, 'fechaMinima':fechaMinima})
         
 @login_required(login_url='/login')
 def admin_reglas_transf(request):
