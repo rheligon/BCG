@@ -1196,3 +1196,10 @@ class VHistoricos(models.Model):
 
     class Meta:
         db_table = 'v_Historicos'
+
+class Version(models.Model):
+    idversion = sqlserver_ado.fields.BigAutoField(db_column='idVersion', primary_key=True)   
+    descripcion = models.CharField(db_column='descripcion', max_length=150, blank=True)  
+
+    class Meta:
+        db_table = 'Version'

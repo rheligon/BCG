@@ -130,6 +130,7 @@ $('#f-desde').pickadate({
   formatSubmit:'d/m/yyyy',
   selectYears: true,
   selectMonths: true,
+  max: true,
 })
 
 //Inicializar el DatePicker
@@ -138,6 +139,7 @@ $('#f-hasta').pickadate({
   formatSubmit:'d/m/yyyy',
   selectYears: true,
   selectMonths: true,
+  max: true,
 })
 
 //Resetear los filtros
@@ -630,32 +632,11 @@ function habilitar(element){
     este = $(element).attr('id');
 }
 
-//Mostrar el Div por defecto cuando se hace click sobre el boton regresar
-$('#regresarMT95Button').on('click', function () {
-    
-
-    document.getElementById("MT95-verDetalle").style.display = "none";
-    document.getElementById("MT95-crear").style.display = "none";
-    document.getElementById("MT95-verTabla").style.display = "block";
-
-});
-
-$('#regresarVerMT').on('click', function () {
-    
-
-    document.getElementById("MT95-verDetalle").style.display = "none";
-    document.getElementById("MT95-crear").style.display = "none";
-    document.getElementById("MT95-verTabla").style.display = "block";
-    document.getElementById("regresarMT").style.display = "none";
-
-});
-
+//para cambiar div
 $('#regresarCMT95Button').on('click', function () {
     
 
-    document.getElementById("MT95-verDetalle").style.display = "none";
     document.getElementById("MT95-crear").style.display = "none";
-    document.getElementById("regresarMT").style.display = "none";
     document.getElementById("MT95-verTabla").style.display = "block";
 
 });
@@ -664,7 +645,6 @@ $('#regresarCMT95Button').on('click', function () {
 $('#crearMTButton').on('click', function () {
     
     document.getElementById("MT95-verTabla").style.display = "none";
-    document.getElementById("MT95-verDetalle").style.display = "none";
     document.getElementById("MT95-crear").style.display = "block";
 
 });
@@ -675,6 +655,7 @@ $('#f-desdeMT').pickadate({
   formatSubmit:'d/m/yyyy',
   selectYears: true,
   selectMonths: true,
+  max: true,
 })
 
 //Boton para crear MTn95

@@ -33,6 +33,7 @@
             </div>
         </div>
 
+        {% if 4 in ops %}
         <div class="panel panel-default">
             <div class="panel-heading">
                 <h4 class="panel-title">
@@ -101,6 +102,7 @@
                 </div>
             </div>
         </div>
+        {%endif%}
 
         {% if 33 in ops or 35 in ops or 36 in ops or 30 in ops or 1 in ops or 3 in ops or 4 in ops%}
         <div class="panel panel-default">
@@ -302,7 +304,7 @@
         </div>
         {%endif%}
 
-        {% if 21 in ops or 28 in ops or 19 in ops or 15 in ops or 23 in ops or 16 in ops or 17 in ops or 6 in ops or 7 in ops or 12 in ops%}
+        {% if 78 in ops%}
         <div class="panel panel-default">
             <div class="panel-heading">
                 <h4 class="panel-title">
@@ -315,25 +317,25 @@
                     <table class="table">
                         <tr>
                             <td>
-                                <span class="fa fa-signal fa-lg text-success"></span><a style="color:gray" href="#">Status</a>
+                                <span class="fa fa-signal fa-lg text-success"></span><a style="color:gray" href="{% url 'Matcher_WS.views.SU_status'%}">Status</a>
                             </td>
                         </tr>
 
                         <tr>
                             <td>
-                                <span class="fa fa-credit-card fa-lg text-info"></span><a style="color:gray" href="#">Licencia</a>
+                                <span class="fa fa-credit-card fa-lg text-info"></span><a style="color:gray" href="{% url 'Matcher_WS.views.SU_licencia'%}">Licencia</a>
                             </td>
                         </tr>
 
                         <tr>
                             <td>
-                                <span class="fa fa-sitemap fa-lg text-danger"></span><a style="color:gray" href="#">Módulos</a>
+                                <span class="fa fa-sitemap fa-lg text-danger"></span><a style="color:gray" href="{% url 'Matcher_WS.views.SU_modulos'%}">Módulos</a>
                             </td>
                         </tr>
 
                         <tr>
                             <td>
-                                <span class="fa fa-legal fa-lg text-warning"></span><a style="color:gray" href="#">Versión</a>
+                                <span class="fa fa-legal fa-lg text-warning"></span><a style="color:gray" href="{% url 'Matcher_WS.views.SU_version'%}">Versión</a>
                             </td>
                         </tr>
 

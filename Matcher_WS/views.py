@@ -2697,8 +2697,10 @@ def seg_Usuarios(request):
             return JsonResponse({'msg': msg, 'sessid':sesion.pk , 'usrid': usuario.idusuario, 'usrnom':usrnom, 'usrapell':usrapell, 'usrci':usrci, 'usrtlf':usrtlf, 'usrmail':usrmail, 'usrdir':usrdir, 'usrperf':usrperf, 'usrobs':usrobs, 'usrlogin':sesion.login, 'usrldap':usrldap, 'usrestado':sesion.estado, 'modif': True})
 
     if request.method == "GET":
-        sesion_list = Sesion.objects.all()
-        perfiles = Perfil.objects.all().order_by('nombre')
+        exlcuir0 = Perfil.objects.filter(nombre="SysAdmin")[0]
+        excluir = Usuario.objects.filter(perfil_idperfil= exlcuir0.idperfil)[0]
+        sesion_list = Sesion.objects.exclude(usuario_idusuario = excluir.idusuario)
+        perfiles = Perfil.objects.exclude(nombre="SysAdmin").order_by('nombre')
         cuentas = Cuenta.objects.all().order_by('codigo')
         # filtrar por usuario
         context = {'sesiones': sesion_list, 'perfiles':perfiles, 'cuentas':cuentas, 'ops':get_ops(request)}
@@ -2714,7 +2716,7 @@ def seg_Perfiles(request):
         if actn == 'sel':
             perfid = int(request.POST.get('perfid'))
             perfil_funcs = PerfilOpcion.objects.all()
-            funciones = [opcion for opcion in perfil_funcs if opcion.perfil_idperfil.idperfil == perfid]
+            funciones = [opcion for opcion in perfil_funcs if opcion.perfil_idperfil.id      == perfid]
             res_json = serializers.serialize('json', funciones)
         
             return JsonResponse(res_json, safe=False)
@@ -2784,8 +2786,8 @@ def seg_Perfiles(request):
             return JsonResponse({'msg': msg, 'perfid': perfil.pk, 'perfnom':perfnom, 'modif': True})
 
     if request.method == "GET":
-        sub_index = [2,3,4,5,10]
-        perfiles = Perfil.objects.all().order_by('nombre')
+        sub_index = [2,3,4,5,10,15]
+        perfiles = Perfil.objects.exclude(nombre="SysAdmin").order_by('nombre')
 
         opciones = Opcion.objects.exclude(funprincipal__in=sub_index).order_by('nombre')
         nosub = [opcion.nombre for opcion in opciones]
@@ -3549,6 +3551,32 @@ def sobre_matcher(request):
             return response
     except:
         return HttpResponseNotFound('<h1>Report Not Found</h1>')
+
+@login_required(login_url='/login')
+def SU_status(request):
+    template = "matcher/SU_status.html"
+    context = {'ops':get_ops(request)}
+    return render(request, template, context)
+
+@login_required(login_url='/login')
+def SU_licencia(request):
+    template = "matcher/SU_licencia.html"
+    context = {'ops':get_ops(request)}
+    return render(request, template, context)
+
+@login_required(login_url='/login')
+def SU_modulos(request):
+    template = "matcher/SU_modulos.html"
+    context = {'ops':get_ops(request)}
+    return render(request, template, context)
+
+@login_required(login_url='/login')
+def SU_version(request):
+    if request.method == 'GET':
+        template = "matcher/SU_version.html"
+        version = Version.objects.all()[0]
+        context = {'ops':get_ops(request), 'version':version}
+        return render(request, template, context)
 
 #################################################################################################
 ## Otras funciones
