@@ -3544,9 +3544,11 @@ def SU_licencia(request):
 
 @login_required(login_url='/login')
 def SU_modulos(request):
-    template = "matcher/SU_modulos.html"
-    context = {'ops':get_ops(request)}
-    return render(request, template, context)
+    if request.method == 'GET':
+        template = "matcher/SU_modulos.html"
+        modulos = Modulos.objects.filter(activo=1)
+        context = {'ops':get_ops(request), 'modulos':modulos}
+        return render(request, template, context)
 
 @login_required(login_url='/login')
 def SU_version(request):

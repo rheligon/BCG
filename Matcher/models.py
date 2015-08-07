@@ -479,6 +479,16 @@ class Idioma(models.Model):
         db_table = 'Idioma'
 
 
+class Modulos(models.Model):
+    idmodulo = sqlserver_ado.fields.BigAutoField(db_column='idModulo', primary_key=True)   
+    opcion = models.IntegerField(db_column='opcion', unique=True)
+    activo = models.IntegerField(db_column='activo')
+    descripcion = models.CharField(db_column='descripcion', max_length=150)  
+
+    class Meta:
+        db_table = 'Modulos'
+
+
 class Mt95(models.Model):
     idmt95 = sqlserver_ado.fields.BigAutoField(db_column='idMT95', primary_key=True)  
     ta_corres = models.ForeignKey('TransabiertaCorresponsal', db_column='TA_Corres_ID', blank=True, null=True)  
@@ -1151,6 +1161,13 @@ class VDistincthistoricos(models.Model):
     class Meta:
         db_table = 'v_DISTINCTHistoricos'
 
+class Version(models.Model):
+    idversion = sqlserver_ado.fields.BigAutoField(db_column='idVersion', primary_key=True)   
+    descripcion = models.CharField(db_column='descripcion', max_length=150, blank=True)  
+
+    class Meta:
+        db_table = 'Version'
+
 
 class VHistoricos(models.Model):
     idhistoricoconsolidado = models.BigIntegerField(db_column='idHistoricoConsolidado')  
@@ -1199,9 +1216,3 @@ class VHistoricos(models.Model):
     class Meta:
         db_table = 'v_Historicos'
 
-class Version(models.Model):
-    idversion = sqlserver_ado.fields.BigAutoField(db_column='idVersion', primary_key=True)   
-    descripcion = models.CharField(db_column='descripcion', max_length=150, blank=True)  
-
-    class Meta:
-        db_table = 'Version'
