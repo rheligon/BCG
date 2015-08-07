@@ -44,16 +44,16 @@ function iniciar_tabla(idioma,origen){
             "autoWidth": false,
             "scrollCollapse": true,
             "columns": [
-                { "width": "11%" },//Edo. Cuenta
-                { "width": "11%" },//Num. Trans
-                { "width": "11%" },//Fecha Valor
-                { "width": "5%" },//C/D
-                { "width": "11%" },//Monto
-                { "width": "11%" },//Tipo
-                { "width": "13%" },//Ref Nostro
-                { "width": "5%" },//Ref Vostro
-                { "width": "14%" },//Detalle
-                { "width": "8%" }//
+                { "width": "11%" },//E/C
+                { "width": "4%" },//Pagina
+                { "width": "11%" },//Fecha 
+                { "width": "5%" },//Tipo
+                { "width": "14%" },//Ref Nostro
+                { "width": "14%" },//Ref Vostro
+                { "width": "19%" },//Detalles
+                { "width": "4%" },//C/D
+                { "width": "14%" },//Monto
+                { "width": "4%" }//S/L
               ]
         })
     };
@@ -104,11 +104,12 @@ $('#Cuenta-sel').change(function() {
 
     //si se selecciona una cuenta mostramos su info
     if (cuentaId>=0){
-        
+        var codigoCuenta = $('#opt-'+cuentaId).attr("codigo");
         $('#minima_fecha').val("");
         $('#fecha-ejecutar').val("");
         $('#fecha-desde').val("");
         $('#fecha-hasta').val("");
+        buscarArchivos(codigoCuenta);
     }else{
 
         //borramos los campos
@@ -146,6 +147,35 @@ function consultar(cuenta){
             url: "/admin/archive/",
             data: {"cuenta":cuenta, "action": "consultar"},
             success: function(data){
+                if (data.exito){
+                    $('#minima_fecha').val(data.fechaMinima);
+                }else{
+                    swal({   title: "",
+                             text: data.msg,
+                             type: "error"
+                         });
+                }
+                
+                
+            },
+            error: function(q,error){
+                alert(q.responseText) //debug
+                swal("Ups!", "Hubo un error consultando los Archivos, intente de Nuevo.", "error");
+        },
+            dataType:'json',
+            headers:{
+                'X-CSRFToken':csrftoken
+            }
+        });
+        return false;
+};
+
+function consultar(cuenta){
+        $.ajax({
+            type:"POST",
+            url: "/admin/archive/",
+            data: {"cuenta":cuenta, "action": "buscarArchivos"},
+            success: function(data){
                 $('#processing-modal').modal('toggle')
                 if (data.exito){
                     $('#minima_fecha').val(data.fechaMinima);
@@ -170,6 +200,7 @@ function consultar(cuenta){
         });
         return false;
 };
+
 
 //Dar formato a un Date a string dd/mm/yyyy
 function formatearFecha(fecha){

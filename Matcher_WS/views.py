@@ -3323,7 +3323,16 @@ def admin_archive(request):
                     fechaMinima = match.fecha.strftime("%d/%m/%Y")
                     exito = True
             return JsonResponse({'exito':exito, 'msg':msg, 'fechaMinima':fechaMinima})
-        
+        if actn == 'buscarArchivos':
+            cuenta = request.POST.get('cuenta')
+            
+
+            return JsonResponse({'mens':mensaje,'archivos':archivos})
+
+
+
+
+
 @login_required(login_url='/login')
 def admin_reglas_transf(request):
     if request.method == 'POST':
