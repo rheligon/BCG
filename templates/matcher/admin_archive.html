@@ -98,7 +98,9 @@
       <div>
           <select style="width:70%"id="mtn96_archivo" name="mtn96_archivoN" class="form-control">
               <option align="center"value="-1">---------------------------</option>
-              
+              {% for archivo in archivos %}
+                <option value="{{archivo}}">{{archivo}}</option>
+                {% endfor %}
           </select>
       </div>
     </div>
