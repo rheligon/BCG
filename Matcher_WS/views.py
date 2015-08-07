@@ -3577,9 +3577,28 @@ def SU_licencia(request):
 def SU_modulos(request):
     if request.method == 'GET':
         template = "matcher/SU_modulos.html"
-        modulos = Modulos.objects.filter(activo=1)
+        modulos = Modulos.objects.exclude(opcion=15)
         context = {'ops':get_ops(request), 'modulos':modulos}
         return render(request, template, context)
+
+    if request.method == 'POST':
+        action = request.POST.get('action')
+
+        if action == 'quitarModulos':
+            Array = request.POST.getlist('arrayQuitar[]')
+            for i in Array:
+                busqueda = Modulos.objects.filter(pk=i)[0]
+                busqueda.activo = 0
+                busqueda.save()
+            return JsonResponse({'mensa':"mensaje"})  
+
+        if action == 'agregarModulos':
+            Array = request.POST.getlist('arrayAgregar[]')
+            for i in Array:
+                busqueda = Modulos.objects.filter(pk=i)[0]
+                busqueda.activo = 1
+                busqueda.save()
+            return JsonResponse({'mensa':"mensaje"})   
 
 @login_required(login_url='/login')
 def SU_version(request):
