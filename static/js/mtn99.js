@@ -305,6 +305,7 @@ $('#f-desde').pickadate({
   formatSubmit:'d/m/yyyy',
   selectYears: true,
   selectMonths: true,
+  max:true
 })
 
 //Inicializar el DatePicker
@@ -313,6 +314,7 @@ $('#f-hasta').pickadate({
   formatSubmit:'d/m/yyyy',
   selectYears: true,
   selectMonths: true,
+  max:true
 })
 
 //Mostrar o esconder filtros elegidos

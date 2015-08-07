@@ -11,6 +11,16 @@ $('#fmn1').html(inputIni);
 var inputIni2 = $('#fecha-manual-nuevo2').detach();
 $('#fmn2').html(inputIni2);
 
+if (idioma_tr==="es"){
+    $.extend($.fn.pickadate.defaults, {
+      monthsFull: ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'],
+      weekdaysShort: ['Dom', 'Lun', 'Mar', 'Mie', 'Jue', 'Vie', 'Sab'],
+      today: 'Hoy',
+      clear: 'Limpiar',
+      close: 'Cerrar',
+    });
+}
+
 function commas (num) {
     var N = parseFloat(num).toFixed(2);
     return N.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,")

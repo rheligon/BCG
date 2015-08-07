@@ -1,0 +1,191 @@
+{% extends "matcher/base.html" %}
+
+{% load staticfiles %}
+
+{% block title %}Archive{% endblock %}
+
+{%block head%}
+<!-- No hace falta cargar dataTables.css original si se incluye el de bootstrap -->
+<link rel="stylesheet" href="{% static 'css/dataTables/dataTables.bootstrap.css' %}">
+<link rel="stylesheet" href="{% static 'css/jquery-form-validation/jquery.validation.css' %}">
+<link rel="stylesheet" href="{% static 'css/sweet-alert.css' %}">
+<link rel="stylesheet" href="{% static 'css/procesando.css' %}">
+<link rel="stylesheet" href="{% static 'css/picker.css' %}">
+<link rel="stylesheet" href="{% static 'css/picker.date.css' %}">
+{%endblock%}
+
+{% block content %}
+<style> form {padding-bottom: 1%;} #table-div-conta, #table-div-corr {padding-top: 1%;}</style>
+
+<legend ><h1>Archive</h1></legend>
+
+<form class="form-inline">
+<fieldset>
+    <div class="row clearfix">
+      <!-- Select Basic -->
+      <div class="form-group col-md-3 ">
+        <label class="control-label" for="Cuenta-sel">Código Cuenta: </label>
+        <div>
+          <select id="Cuenta-sel" name="Cuenta-sel" class="form-control">
+            <option value="-1">----------</option>
+            {% for cuenta in cuentas %}
+            <option id="opt-{{cuenta.idcuenta}}" value="{{cuenta.idcuenta}}" codigo="{{cuenta.codigo}}" moneda="{{cuenta.moneda_idmoneda.codigo}}" banco= "{{cuenta.banco_corresponsal_idbanco.codigo}}" cv="{{cuenta.ref_vostro}}" cn="{{cuenta.ref_nostro}}">{{cuenta.codigo}}</option>
+            {% endfor %}
+          </select>
+        </div>
+      </div>
+    
+
+  <div class="form-group col-md-3">
+      <label class="control-label" for="boton-consulta">  </label>
+      <div> 
+        <button type="button" id="boton-consulta" data-loading-text="Cargando..." class="col-md-5 btn btn-primary" autocomplete="off">
+          Consulta
+        </button>
+    </div>
+  </div>
+    <div class="form-group col-md-4">
+        <label class="control-label" for="cta_nostro">Minima Fecha de Match: </label>  
+        <div>
+        <input id="minima_fecha" name="minima_fecha" type="text" placeholder="" class="form-control input-md" style="width:80%" readonly>
+        </div>
+      </div>
+    </div>  
+</fieldset>
+</form>
+
+<form class="form-inline">
+  <fieldset>
+    <div class="row clearfix">
+<!-- Text input-->
+    <div class="form-group col-md-3">
+      <label class="control-label">Fecha:</label>
+      <div>
+        <input id="fecha-ejecutar" class="form-control" style="width:65%;background-color:white">
+      </div>
+    </div>
+
+    <div class="form-group col-md-3">
+      <label class="control-label" for="boton-ejecutar">  </label>
+      <div> 
+        <button type="button" id="boton-ejecutar" data-loading-text="Cargando..." class="col-md-5 btn btn-success" autocomplete="off">
+          Ejecutar
+        </button>
+    </div>
+  </div>
+</div>
+  </fieldset>
+</form>
+
+<br>
+
+<legend style="color:#2e6da4">Matches Confirmados</legend>
+
+<form class="form-inline">
+  <fieldset>
+    <div class="row clearfix">
+      <!-- Text input-->
+    <div class="form-group col-md-3">
+      <label class="control-label">Fecha Inicial:</label>
+      <div>
+        <input id="fecha-desde" class="form-control" style="width:65%;background-color:white">
+      </div>
+    </div>
+    
+
+    <div class="col-md-4 form-group">
+      <label class="control-label" >Archivo:</label>
+      <div>
+          <select style="width:70%"id="mtn96_archivo" name="mtn96_archivoN" class="form-control">
+              <option align="center"value="-1">---------------------------</option>
+              
+          </select>
+      </div>
+    </div>
+
+    <div class="form-group col-md-3">
+      <label class="control-label" for="boton-buscar">  </label>
+      <div> 
+        <button type="button" id="boton-buscar" data-loading-text="Cargando..." class="col-md-5 btn btn-primary" autocomplete="off">
+          Buscar
+        </button>
+    </div>
+  </div>
+    </div>
+  </fieldset>
+</form>
+
+<form class="form-inline">
+  <fieldset>
+    <div class="row clearfix">
+      <!-- Text input-->
+    <div class="form-group col-md-3">
+      <label class="control-label">Fecha Final:</label>
+      <div>
+        <input id="fecha-hasta" class="form-control" style="width:65%;background-color:white">
+      </div>
+    </div>
+    </div>
+  </fieldset>
+</form>
+
+<div ="row" id="tabla-detalle">
+  <div style="padding-bottom:1%;" class="col-md-3 pull-right">
+  </div>
+</div>
+<div class="tab-content">
+    <div class="tab-pane active" id="conta-tab">
+        <div id="table-div-conta" class="table-responsive col-md-12">
+            <table id="table-conta" class="table table-bordered table-striped tabla">
+                <thead>
+                    <tr>
+                        <th>E/C</th>
+                        <th>Pagina</th>
+                        <th>Fecha</th>
+                        <th>Tipo</th>
+                        <th>Ref Nostro</th>
+                        <th>Ref Vostro</th>
+                        <th>Detalles</th>
+                        <th>C/D</th>
+                        <th>Monto</th>
+                        <th>S/L</th>
+                    </tr>
+                </thead>
+                <tbody id="tb-conta">
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</div>
+
+<!-- Static Modal para procesando -->
+<div class="modal modal-static fade" id="processing-modal" role="dialog" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-body">
+                <div class="text-center">
+                    <img src="{% static 'images/procesando.gif' %}" class="icon" />
+                    <h4>Procesando, por favor espere.</h4>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block script%}
+<script> 
+    //define el idioma de la tabla (es/en)
+    idioma_tr = "es"
+</script>
+<script src="{% static 'js/jquery.dataTables.min.js' %}" type="text/javascript"></script>
+<script src="{% static 'js/dataTables.bootstrap.js' %}" type="text/javascript"></script>
+<script src="{% static 'js/jquery-form-validation/jquery.validation.min.js' %}"></script>
+<script src="{% static 'js/sweet-alert.min.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/picker.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/picker.date.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/pickerlegacy.js' %}"></script>
+<script src="{% static 'js/admin_archive.js' %}" type="text/javascript"></script>
+{% endblock %}
