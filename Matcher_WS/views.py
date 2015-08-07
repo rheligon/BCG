@@ -2337,6 +2337,7 @@ def configuracion(request, tipo):
                 rec_ult = request.POST.get('rec_ult')
                 t_ret_log = request.POST.get('t_ret_log')
                 arch = request.POST.get('arch')
+                archconfirm = request.POST.get('archconfirm')
                 dir_s_mt95 = request.POST.get('dir_s_mt95')
                 dir_c_mt96 = request.POST.get('dir_c_mt96')
                 dir_s_mt99 = request.POST.get('dir_s_mt99')
@@ -2373,6 +2374,7 @@ def configuracion(request, tipo):
                 conf.num_passrecordar = rec_ult
                 conf.tiemporetentrazas = t_ret_log
                 conf.dirarchive = arch
+                conf.dirarchiveconfirmados = archconfirm
                 conf.dirsalida95 = dir_s_mt95
                 conf.dircarga96 = dir_c_mt96
                 conf.dirsalida99 = dir_s_mt99
@@ -3325,11 +3327,25 @@ def admin_archive(request):
             return JsonResponse({'exito':exito, 'msg':msg, 'fechaMinima':fechaMinima})
         if actn == 'buscarArchivos':
             cuenta = request.POST.get('cuenta')
+            obj = Configuracion.objects.all()[0]
+            directorio = obj.dirarchiveconfirmados +"\\"+ cuenta
+            archivos = os.listdir(directorio)
+            print (archivos)
+            exito = True
+            return JsonResponse({'exito':exito,'archivos':archivos})
+        if actn == 'buscarEnArchivo':
+            cuenta = request.POST.get('cuenta')
+            archivo = request.POST.get('archivo')
+            obj = Configuracion.objects.all()[0]
+            directorio = obj.dirarchiveconfirmados +"\\"+ cuenta +"\\"
+            dirArch = directorio + archivo
+            #abrir archivo
+            info = open(dirArch, 'r')
+
+            lines = info.readlines()
+            numLineas = len(lines)
             
-
-            return JsonResponse({'mens':mensaje,'archivos':archivos})
-
-
+            return JsonResponse({'exito':exito})
 
 
 
@@ -3575,11 +3591,9 @@ def SU_licencia(request):
 
 @login_required(login_url='/login')
 def SU_modulos(request):
-    if request.method == 'GET':
-        template = "matcher/SU_modulos.html"
-        modulos = Modulos.objects.filter(activo=1)
-        context = {'ops':get_ops(request), 'modulos':modulos}
-        return render(request, template, context)
+    template = "matcher/SU_modulos.html"
+    context = {'ops':get_ops(request)}
+    return render(request, template, context)
 
 @login_required(login_url='/login')
 def SU_version(request):
