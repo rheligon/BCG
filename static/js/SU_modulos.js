@@ -138,7 +138,9 @@ function quitarModulos(array){
         success: function(data){
             $('#processing-modal').modal('toggle');
             swal("OK", "Modulos eliminados", "success");
-            window.location.reload();
+            setTimeout(function(){
+                window.location.reload();
+            },1500);
             
 
         },
@@ -181,7 +183,9 @@ function agregarModulos(array){
         success: function(data){
             $('#processing-modal').modal('toggle');
             swal("OK", "Modulos agregados", "success");
-            window.location.reload();
+            setTimeout(function(){
+                window.location.reload();
+            },1500);
             
 
         },

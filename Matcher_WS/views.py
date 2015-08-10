@@ -2788,14 +2788,17 @@ def seg_Perfiles(request):
             return JsonResponse({'msg': msg, 'perfid': perfil.pk, 'perfnom':perfnom, 'modif': True})
 
     if request.method == "GET":
+        modExc = Modulos.objects.filter(activo=0)
+        sub_index2 = [mod.opcion for mod in modExc]
         sub_index = [2,3,4,5,10,15]
+
         perfiles = Perfil.objects.exclude(nombre="SysAdmin").order_by('nombre')
 
-        opciones = Opcion.objects.exclude(funprincipal__in=sub_index).order_by('nombre')
+        opciones = Opcion.objects.exclude(funprincipal__in=sub_index2).order_by('nombre')
         nosub = [opcion.nombre for opcion in opciones]
         nosubid = [str(opcion.idopcion) for opcion in opciones]
 
-        context = {'perfiles': perfiles, 'opciones':opciones, 'nosub':nosub, 'nosubid':nosubid, 'ops':get_ops(request)}
+        context = {'perfiles': perfiles, 'opciones':opciones, 'nosub':nosub, 'nosubid':nosubid, 'ops':get_ops(request), 'subindex':sub_index2}
         template = "matcher/seg_Perfiles.html"
 
         return render(request, template, context)

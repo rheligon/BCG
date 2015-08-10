@@ -114,11 +114,21 @@
             </div>
             <div class="scrollDiv">
                 <ul class="list-group" type="camposl">
-                    <li class="list-group-item subindex" sub="1" name="rep">Reportes</li>
-                    <li class="list-group-item subindex" sub="1" name="MT">Mensajes SWIFT</li>
-                    <li class="list-group-item subindex" sub="1" name="conf">Configuración</li>
+                    {%if 2 not in subindex%}
+                        <li class="list-group-item subindex" sub="1" name="rep">Reportes</li>
+                    {%endif%}
+                    {%if 3 not in subindex%}
+                        <li class="list-group-item subindex" sub="1" name="MT">Mensajes SWIFT</li>
+                    {%endif%}
+                    {%if 4 not in subindex%}
+                        <li class="list-group-item subindex" sub="1" name="conf">Configuración</li>
+                    {%endif%}
+                    {%if 5 not in subindex%}
                     <li class="list-group-item subindex" sub="1" name="musr">Manejo de Usuarios</li>
+                    {%endif%}
+                    {%if 10 not in subindex%}
                     <li class="list-group-item subindex" sub="1" name="mcta">Manejo de Cuentas</li>
+                    {%endif%}
                     {% for opcion in opciones %}
                         <li class="list-group-item" sub="0" id="op-{{opcion.idopcion}}">{{opcion.nombre}}</li>
                     {% endfor %}
