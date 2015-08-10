@@ -102,6 +102,16 @@ $('#fecha-hasta').pickadate({
     max: true,
 });
 
+//dado un fecha en string la convierte en un objeto Date
+function fechaStringtoDate(fecha){
+    var arreglo= fecha.split("/");
+    dia = parseInt(arreglo[0]);
+    mes = parseInt(arreglo[1])-1;
+    anio = parseInt(arreglo[2]);
+    var nueva = new Date(anio,mes,dia);
+    return nueva;
+}
+
 //Boton Buscar
 $('#boton-buscar').on('click', function () {
 
@@ -120,7 +130,15 @@ $('#boton-buscar').on('click', function () {
         }else if(archivo=="-1"){ 
             swal("Ups!", "Debe Seleccionar el Archivo en el que se realizara la Busqueda", "error");
         }else{
-            buscarEnArchivo(archivo,codigoCuenta);
+            fecha1 = fechaStringtoDate(fecha1);
+            fecha2 = fechaStringtoDate(fecha2);
+            if(fecha1 > fecha2){
+                swal("Ups!", "La fecha Final no puede ser menor a la Fecha Inicial", "error");
+            }else{
+                buscarEnArchivo(archivo,codigoCuenta);
+            }
+            
+            
         }
     }else{
         swal("Ups!", "Debe Seleccionar el Código de la Cuenta", "error");
@@ -245,6 +263,29 @@ function buscarEnArchivo(archivo,cuenta){
             data: {"cuenta":cuenta,"archivo":archivo, "action": "buscarEnArchivo"},
             success: function(data){
                 if (data.exito){
+
+                    fechaIni = $('#fecha-desde').val();
+                    fechaFin = $('#fecha-hasta').val(); 
+
+                    console.log(fechaIni + " " +fechaFin );   
+
+                    var automaticas = data.transacciones['auto']
+
+                    for (var i = 0 ; i < automaticas.length ; i++){
+                        var fechaMatch = automaticas[i][0][0][0];
+                        var idMatch = automaticas[i][0][0][1];
+                        console.log(automaticas[i][0][0][0]);
+                        console.log(automaticas[i][0][0][1]);
+                        
+                    }
+                        
+
+                    
+                }else{
+                    swal({   title: "",
+                             text: data.msg,
+                             type: "error"
+                         });
                 }    
                 
             },

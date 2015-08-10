@@ -24,7 +24,7 @@ from Matcher_WS.edo_cuenta import edoCta, edc_list, Trans, Bal
 from Matcher_WS.mailConf import enviar_mail
 from Matcher_WS.cargaAutomatica import leer_linea_conta, leer_linea_corr, leer_punto_coma, validar_archivo
 from Matcher_WS.Matcher_call import matcher, dma_millis
-from Matcher_WS.funciones_get import get_ops, get_cuentas, get_ci, get_idioma, get_bancos, get_archivosMT99, get_archivosMT96, get_codigos95
+from Matcher_WS.funciones_get import get_ops, get_cuentas, get_ci, get_idioma, get_bancos, get_archivosMT99, get_archivosMT96, get_codigos95,elimina_tildes
 from Matcher_WS.generar_reporte import generarReporte, pdfView, xlsView
 from Matcher_WS.setConsolidado import setConsolidado
 
@@ -35,6 +35,7 @@ import jsonpickle
 import sys
 import traceback
 import shutil
+
 
 def test(request):
     
@@ -3290,12 +3291,17 @@ def admin_cuentas(request):
 @login_required(login_url='/login')
 def admin_archive(request):
     if request.method == 'GET':
+        
         template = "matcher/admin_archive.html"
         context = {'cuentas':get_cuentas(request), 'ops':get_ops(request)}
+        
         return render(request, template, context)
+    
     if request.method == 'POST':
         actn = request.POST.get('action')
+        
         if actn == 'consultar':
+            
             cuenta = request.POST.get('cuenta')
             fechaMinima = ""
             msg = ""
@@ -3304,48 +3310,253 @@ def admin_archive(request):
             transcorr = TranscerradaCorresponsal.objects.filter(codigocuenta=cuenta)
             
             if (not transconta and not transcorr):
+                
                 exito = False
                 msg = "No existen Matches Confirmados para esta cuenta"
+
             elif (not transconta):
+               
                 match = Matchconfirmado.objects.get(tc_corres=transcorr[0])
                 fechaMinima = match.fecha.strftime("%d/%m/%Y")
                 exito = True
+
             elif (not transcorr):
+               
                 match = Matchconfirmado.objects.get(tc_conta=transconta[0])
                 fechaMinima = match.fecha.strftime("%d/%m/%Y")
                 exito = True
+
             elif (transconta and transcorr):
+                
                 match = Matchconfirmado.objects.get(tc_conta=transconta[0])
+               
                 if (not match):
+                   
                     match = Matchconfirmado.objects.get(tc_corres=transcorr[0])
                     fechaMinima = match.fecha.strftime("%d/%m/%Y")
                     exito = True
+
                 else:
+                    
                     match2 = Matchconfirmado.objects.get(tc_corres=transcorr[0])
                     fechaMinima = match.fecha.strftime("%d/%m/%Y")
                     exito = True
+
             return JsonResponse({'exito':exito, 'msg':msg, 'fechaMinima':fechaMinima})
+
         if actn == 'buscarArchivos':
+
             cuenta = request.POST.get('cuenta')
+            
             obj = Configuracion.objects.all()[0]
             directorio = obj.dirarchiveconfirmados +"\\"+ cuenta
             archivos = os.listdir(directorio)
-            print (archivos)
             exito = True
+
             return JsonResponse({'exito':exito,'archivos':archivos})
+
         if actn == 'buscarEnArchivo':
+           
             cuenta = request.POST.get('cuenta')
             archivo = request.POST.get('archivo')
+            
             obj = Configuracion.objects.all()[0]
             directorio = obj.dirarchiveconfirmados +"\\"+ cuenta +"\\"
             dirArch = directorio + archivo
+            
             #abrir archivo
             info = open(dirArch, 'r')
 
             lines = info.readlines()
             numLineas = len(lines)
+            for i in range(0,numLineas):
+                lines[i]=lines[i].strip()
             
-            return JsonResponse({'exito':exito})
+            contador = 0
+            numTrans = 0
+            lineaError = 0
+            arregloAux = []
+            arregloTrans = []
+            arregloCabecera = []
+            arregloTotal = []
+            transacciones = dict()
+            transacciones['auto'] = [] 
+            transacciones['manual'] = [] 
+            transacciones['contabilidad'] = [] 
+            transacciones['corresponsal'] = [] 
+            automatico = False
+            manual = False
+            contabilidad = False
+            corresponsal = False
+            msg = ""
+            exito = False
+            
+            infoLinea =lines[contador]
+            print(infoLinea,str(contador) + " 0")
+
+            if ( infoLinea == "***** Match Automatico *****"):
+                contador += 1
+                infoLinea =lines[contador]
+                print(infoLinea,str(contador) + " 1")
+
+                while(infoLinea != "***** Match Manual *****"):
+                    
+                    if (infoLinea == "@@"):
+                        contador += 1
+                        infoLinea= lines[contador]
+                        print(infoLinea,str(contador) + " 2")
+
+                    else:
+                        arregloAux = infoLinea.split(";")
+                        arregloCabecera.append(arregloAux)
+                        contador += 1
+                        infoLinea =lines[contador]
+                        print(infoLinea,str(contador) + " 3")
+
+                        
+                        while (infoLinea != "@@" and infoLinea != "***** Match Manual *****"):
+                            arregloAux = infoLinea.split(";")
+                            arregloTrans.append(arregloAux)
+                            contador += 1
+                            infoLinea =lines[contador]
+                            print(infoLinea,str(contador) + " 4")
+
+                        arregloTotal.append([arregloCabecera,arregloTrans])
+                        arregloTrans = []
+                        arregloCabecera = []
+
+
+                transacciones['auto'] = arregloTotal
+                arregloAux = []
+                arregloTrans = []
+                arregloCabecera = [] 
+                arregloTotal = []
+                contador += 1
+                infoLinea =lines[contador]
+                print(infoLinea,str(contador) + " 5")
+
+
+                while(infoLinea != "***** Reversos Contabilidad *****"):
+                    
+                    if (infoLinea == "@@"):
+                        contador += 1
+                        infoLinea= lines[contador]
+                        print(infoLinea,str(contador) + " 6")
+
+                    else:
+                        arregloAux = infoLinea.split(";")
+                        arregloCabecera.append(arregloAux)
+                        contador += 1
+                        infoLinea =lines[contador]
+                        print(infoLinea,str(contador) + " 7")
+
+                        
+                        while (infoLinea != "@@" and infoLinea != "***** Reversos Contabilidad *****"):
+                            arregloAux = infoLinea.split(";")
+                            arregloTrans.append(arregloAux)
+                            contador += 1
+                            infoLinea =lines[contador]
+                            print(infoLinea,str(contador) + " 8")
+
+                        arregloTotal.append([arregloCabecera,arregloTrans])
+                        arregloTrans = []
+                        arregloCabecera = []
+
+
+                transacciones['manual'] = arregloTotal
+                arregloAux = []
+                arregloTrans = []
+                arregloCabecera = [] 
+                arregloTotal = []
+                contador += 1
+                infoLinea =lines[contador]
+                print(infoLinea,str(contador) + " 9")
+
+
+                
+                while(infoLinea != "***** Reversos Corresponsal *****"):
+                   
+                    if (infoLinea == "@@"):
+                        contador += 1
+                        infoLinea= lines[contador]
+                        print(infoLinea,str(contador) + " 11")
+
+                    else:
+                        arregloAux = infoLinea.split(";")
+                        arregloCabecera.append(arregloAux)
+                        contador += 1
+                        infoLinea =lines[contador]
+                        print(infoLinea,str(contador) + " 12")
+
+                        
+                        while (infoLinea != "@@" and infoLinea != "***** Reversos Corresponsal *****"):
+                            arregloAux = infoLinea.split(";")
+                            arregloTrans.append(arregloAux)
+                            contador += 1
+                            infoLinea =lines[contador]
+                            print(infoLinea,str(contador) + " 13")
+
+                        arregloTotal.append([arregloCabecera,arregloTrans])
+                        arregloTrans = []
+                        arregloCabecera = []
+
+
+                transacciones['contabilidad'] = arregloTotal
+                arregloAux = []
+                arregloTrans = []
+                arregloCabecera = [] 
+                arregloTotal = []
+                if (contador < numLineas-1):
+                    contador += 1
+                    infoLinea =lines[contador]
+                else: 
+                    exito = True
+                    return JsonResponse({'exito':exito,'msg':msg,'transacciones':transacciones})
+                
+                print(infoLinea,str(contador) + " 14")
+
+
+                
+                while(contador < numLineas-1):
+                    
+                    if (infoLinea == "@@"):
+                        contador += 1
+                        infoLinea= lines[contador]
+                        print(infoLinea,str(contador) + " 15")
+
+                    else:
+                        arregloAux = infoLinea.split(";")
+                        arregloCabecera.append(arregloAux)
+                        contador += 1
+                        infoLinea =lines[contador]
+                        print(infoLinea,str(contador) + " 16")
+
+                        
+                        while (infoLinea != "@@" and contador < numLineas-1):
+                            arregloAux = infoLinea.split(";")
+                            arregloTrans.append(arregloAux)
+                            contador += 1
+                            infoLinea =lines[contador]
+                            print(infoLinea,str(contador) + " 17")
+
+                        arregloTotal.append([arregloCabecera,arregloTrans])
+                        arregloTrans = []
+                        arregloCabecera = []
+
+
+                transacciones['corresponsal'] = arregloTotal
+                arregloAux = []
+                arregloTrans = []
+                arregloCabecera = [] 
+                arregloTotal = []
+                exito = True
+
+                return JsonResponse({'exito':exito,'msg':msg,'transacciones':transacciones})
+
+            else:
+                exito = False
+                msg = "Caracter inesperado, en la línea número " +str(contador+1)+ " del archivo " + archivo
+                return JsonResponse({'exito':exito,'msg':msg})
 
 
 
