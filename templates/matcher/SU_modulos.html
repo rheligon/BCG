@@ -4,6 +4,7 @@
 
 {% block head %}
 <link rel="stylesheet" href="{% static 'css/dataTables/dataTables.bootstrap.css' %}">
+<link rel="stylesheet" href="{% static 'css/dataTables/dataTables.scroller.css' %}">
 <link rel="stylesheet" href="{% static 'css/sweet-alert.css' %}">
 <link rel="stylesheet" href="{% static 'css/dual_list.css' %}">
 {% endblock%}
@@ -20,7 +21,7 @@
     <div class="tab-pane active" id="Adquiridos-tab">
         <div class="well table-responsive col-md-12">
           <legend>Lista de Módulos Adquiridos:</legend>
-            <table id="table-detalle" class="table table-bordered table-striped tabla">
+            <table id="table-Adq" class="table table-bordered table-striped tabla">
                 <thead>
                     <tr>
                         <th>Descripción</th>
@@ -28,7 +29,7 @@
                         <th>Seleccionar</th>
                     </tr>
                 </thead>
-                <tbody >
+                <tbody id="tb-Adq" >
                     {% for modulo in modulos %}
                         {% if modulo.activo == 1 %}
                             <tr>
@@ -51,7 +52,7 @@
     <div class="tab-pane" id="NoAdquiridos-tab">
         <div class="well table-responsive col-md-12">
           <legend>Lista de Módulos sin Adquirir:</legend>
-            <table id="table2" class="table table-bordered table-striped tabla">
+            <table id="table-NoAdq" class="table table-bordered table-striped tabla">
                 <thead>
                     <tr>
                         <th>Descripción</th>
@@ -59,7 +60,7 @@
                         <th>Seleccionar</th>
                     </tr>
                 </thead>
-                <tbody >
+                <tbody id="tb-NoAdq">
                     {% for modulo in modulos %}
                         {% if modulo.activo == 0 %}
                             <tr>
@@ -102,6 +103,7 @@ idioma_tr = "es"
 </script>
 <script src="{% static 'js/jquery.dataTables.min.js' %}" type="text/javascript"></script>
 <script src="{% static 'js/dataTables.bootstrap.js' %}" type="text/javascript"></script>
+<script src="{% static 'js/dataTables.scroller.js' %}" type="text/javascript"></script>
 <script type="text/javascript" src="{% static 'js/sweet-alert.min.js' %}"></script>
 <script type="text/javascript" src="{% static 'js/SU_modulos.js' %}"></script>
 <script src="{% static 'js/validator.js' %}" type="text/javascript"></script>

@@ -1,21 +1,23 @@
 var csrftoken = $.cookie('csrftoken');
-var tabla_det = iniciar_tabla_detalle(idioma_tr);
-var t2 = iniciardetalle2(idioma_tr);
+var tabla_AD = iniciar_tabla_AD(idioma_tr);
+var tabla_NAD = iniciar_tabla_NAD(idioma_tr);
 var arregloQuitar = [];
 var arregloAgregar = [];
 
 //inicializar la tabla de destalles
-function iniciar_tabla_detalle(idioma){
+function iniciar_tabla_AD(idioma){
 
     if (idioma==="es"){
 
-        return $('#table-detalle').DataTable({
+        return $('#table-Adq').DataTable({
             //poner if con idioma, el ingles es predeterminado
             language: {
                 url: '/static/json/Spanish-tables.json'
             },
             "scrollY": "350px",
-            "dom": "frtiS",
+            "pageLength": 15,
+            "lengthMenu": [5, 10, 25, 50, 75, 100 ],
+            "paging": true,
             "scrollCollapse": true,
             "autoWidth": false,
             "columns": [
@@ -27,12 +29,14 @@ function iniciar_tabla_detalle(idioma){
 
     }else if (idioma==="en"){
 
-        return $('#table-detalle').DataTable({
+        return $('#table-Adq').DataTable({
             language: {
                 url: '/static/json/English-tables.json'
             },
             "scrollY": "350px",
-            "dom": "frtiS",
+            "pageLength": 15,
+            "lengthMenu": [5, 10, 25, 50, 75, 100 ],
+            "paging": true,
             "scrollCollapse": true,
             "autoWidth": false,
             "columns": [
@@ -45,17 +49,19 @@ function iniciar_tabla_detalle(idioma){
 }
 
 //inicializar la tabla de destalles
-function iniciardetalle2(idioma){
+function iniciar_tabla_NAD(idioma){
 
     if (idioma==="es"){
 
-        return $('#table2').DataTable({
+        return $('#table-NoAdq').DataTable({
             //poner if con idioma, el ingles es predeterminado
             language: {
                 url: '/static/json/Spanish-tables.json'
             },
             "scrollY": "350px",
-            "dom": "frtiS",
+            "pageLength": 15,
+            "lengthMenu": [5, 10, 25, 50, 75, 100 ],
+            "paging": true,
             "scrollCollapse": true,
             "autoWidth": false,
             "columns": [
@@ -67,12 +73,14 @@ function iniciardetalle2(idioma){
 
     }else if (idioma==="en"){
 
-        return $('#table2').DataTable({
+        return $('#table-NoAdq').DataTable({
             language: {
                 url: '/static/json/English-tables.json'
             },
             "scrollY": "350px",
-            "dom": "frtiS",
+            "pageLength": 15,
+            "lengthMenu": [5, 10, 25, 50, 75, 100 ],
+            "paging": true,
             "scrollCollapse": true,
             "autoWidth": false,
             "columns": [
@@ -164,7 +172,7 @@ $('#agregarModButton').on('click', function () {
     
 });
 
-//Quitar Modulos
+//Agregar Modulos
 function agregarModulos(array){
     $.ajax({
         type:"POST",
