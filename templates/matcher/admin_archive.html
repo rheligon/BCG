@@ -95,12 +95,9 @@
 
     <div class="col-md-4 form-group">
       <label class="control-label" >Archivo:</label>
-      <div>
-          <select style="width:70%"id="mtn96_archivo" name="mtn96_archivoN" class="form-control">
+      <div id="divselec_archivo">
+          <select style="width:70%" id="selec_archivo" name="selec_archivo" class="form-control">
               <option align="center"value="-1">---------------------------</option>
-              {% for archivo in archivos %}
-                <option value="{{archivo}}">{{archivo}}</option>
-                {% endfor %}
           </select>
       </div>
     </div>
