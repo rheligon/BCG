@@ -7,6 +7,7 @@
 {%block head%}
 <!-- No hace falta cargar dataTables.css original si se incluye el de bootstrap -->
 <link rel="stylesheet" href="{% static 'css/dataTables/dataTables.bootstrap.css' %}">
+<link rel="stylesheet" href="{% static 'css/dataTables/dataTables.scroller.css' %}">
 <link rel="stylesheet" href="{% static 'css/picker.css' %}">
 <link rel="stylesheet" href="{% static 'css/picker.date.css' %}">
 <link rel="stylesheet" href="{% static 'css/sweet-alert.css' %}">
@@ -233,6 +234,7 @@
 </script>
 <script src="{% static 'js/jquery.dataTables.min.js' %}" type="text/javascript"></script>
 <script src="{% static 'js/dataTables.bootstrap.js' %}" type="text/javascript"></script>
+<script src="{% static 'js/dataTables.scroller.js' %}" type="text/javascript"></script>
 <script type="text/javascript" src="{% static 'js/jshashtable.js' %}"></script>
 <script type="text/javascript" src="{% static 'js/numberformatter.js' %}"></script>
 <script type="text/javascript" src="{% static 'js/picker.js' %}"></script>

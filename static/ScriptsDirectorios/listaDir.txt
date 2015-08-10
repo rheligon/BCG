@@ -1,0 +1,6 @@
+C:\Matcher\CARGA96
+C:\Matcher\CARGA99
+C:\Matcher\SALIDA95
+C:\Matcher\SALIDA99
+C:\Matcher\PROCESADO96
+C:\Matcher\PROCESADO99
