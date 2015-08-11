@@ -1,5 +1,5 @@
 var csrftoken = $.cookie('csrftoken');
-var t_conta = iniciar_tabla(idioma_tr,'conta');
+var t_conta = iniciar_tabla(idioma_tr);
 
 /*
 $( document ).ready(function() {
@@ -10,31 +10,30 @@ $( document ).ready(function() {
 });*/
 
 //inicializamos la tabla
-function iniciar_tabla(idioma,origen){
+function iniciar_tabla(idioma){
 
     if (idioma==="es"){
 
-        return $('#table-'+ origen).DataTable({
+        return $('#table-pa').DataTable({
             //poner if con idioma, el ingles es predeterminado
             language: {
-                url: '/static/json/No-Filter-Tables-Spanish.json'
+                url: '/static/json/Spanish-tables.json'
             },
-            "autoWidth": false,
-            "scrollCollapse": true,
             "scrollY": "350px",
-            "dom": "frtiS",
+            "scrollCollapse": true,
             "deferRender": true,
             "orderClasses": false,
             "ordering":  false,
+            paging: false,
             
             "columns": [
                 { "width": "11%" },//E/C
-                { "width": "4%" },//Pagina
+                { "width": "2%" },//Pagina
                 { "width": "11%" },//Fecha 
                 { "width": "5%" },//Tipo
                 { "width": "14%" },//Ref Nostro
                 { "width": "14%" },//Ref Vostro
-                { "width": "19%" },//Detalles
+                { "width": "21%" },//Detalles
                 { "width": "4%" },//C/D
                 { "width": "14%" },//Monto
                 { "width": "4%" }//S/L
@@ -43,12 +42,16 @@ function iniciar_tabla(idioma,origen){
 
     }else if (idioma==="en"){
 
-        return $('#table-'+ origen).DataTable({
+        return $('#table-pa').DataTable({
             language: {
                 url: '/static/json/No-Filter-Tables-English.json'
             },
             "autoWidth": false,
             "scrollCollapse": true,
+            "scrollY": "350px",
+            "orderClasses": false,
+            "ordering":  false,
+            
             "columns": [
                 { "width": "11%" },//E/C
                 { "width": "4%" },//Pagina
@@ -135,7 +138,9 @@ $('#boton-buscar').on('click', function () {
             if(fecha1 > fecha2){
                 swal("Ups!", "La fecha Final no puede ser menor a la Fecha Inicial", "error");
             }else{
+                $('#processing-modal').modal('toggle');
                 buscarEnArchivo(archivo,codigoCuenta);
+
             }
             
             
@@ -269,28 +274,85 @@ function buscarEnArchivo(archivo,cuenta){
 
                     console.log(fechaIni + " " +fechaFin );   
 
+
+                    
+                    
+
                     var automaticas = data.transacciones['auto']
+
+                    t_conta.clear().draw();
 
                     for (var i = 0 ; i < automaticas.length ; i++){
                         var fechaMatch = automaticas[i][0][0][0];
                         var idMatch = automaticas[i][0][0][1];
-                        console.log(automaticas[i][0][0][0]);
-                        console.log(automaticas[i][0][0][1]);
-                        
-                    }
-                        
+                        //creamos los elementos de cada fila
+                        var td1 = '<td>Match</td>';
+                        var td2 = '<td>Id:</td>';
+                        var td3 = '<td>'+idMatch+'</td>';
+                        var td4 = '<td> </td>';
+                        var td5 = '<td> </td>';
+                        var td6 = '<td> </td>';
+                        var td7 = '<td></td>';
+                        var td8 = '<td></td>';
+                        var td9 = '<td></td>';
+                        var td10 = '<td></td>';
 
+                        //creamos la fila con los elementos y la mostramos
+                        $('#table-pa > tbody').append('<tr class = "primerafila" id ="tr-con-'+i+'"></tr>');
+                        var jRow = $("#tr-con-"+i).append(td1,td2,td3,td4,td5,td6,td7,td8,td9,td10);
+                        t_conta.row.add(jRow);
+            
+                        
+                        for(var j = 0; j < automaticas[i][1].length ; j++){
+                            var edoCta = automaticas[i][1][j][0];
+                            var pagina = automaticas[i][1][j][1];
+                            var fecha = automaticas[i][1][j][2];
+                            var tipo = automaticas[i][1][j][3];
+                            var rNostro = automaticas[i][1][j][4];
+                            var rVostro = automaticas[i][1][j][5];
+                            var detalles = automaticas[i][1][j][6];
+                            var credDeb = automaticas[i][1][j][7];
+                            var monto = automaticas[i][1][j][8];
+                            var contaCorr = automaticas[i][1][j][9];
+
+                            //creamos los elementos de cada fila
+                            var td1 = '<td>'+edoCta+'</td>';
+                            var td2 = '<td>'+pagina+'</td>';
+                            var td3 = '<td>'+fecha+'</td>';
+                            var td4 = '<td>'+tipo+'</td>';
+                            var td5 = '<td>'+rNostro+'</td>';
+                            var td6 = '<td>'+rVostro+'</td>';
+                            var td7 = '<td>'+detalles+'</td>';
+                            var td8 = '<td>'+credDeb+'</td>';
+                            var td9 = '<td>'+monto+'</td>';
+                            var td10 = '<td>'+contaCorr+'</td>';
+
+                            //creamos la fila con los elementos y la mostramos
+                            $('#table-pa > tbody').append('<tr id ="tr-con-'+i+j+'"></tr>');
+                            var jRow = $("#tr-con-"+i+j).append(td1,td2,td3,td4,td5,td6,td7,td8,td9,td10);
+                            t_conta.row.add(jRow);
+                            
+                        }
+                        
+                       
+                    }
+                    $('#processing-modal').modal('toggle')
+                    t_conta.draw()
+                    
                     
                 }else{
+                    $('#processing-modal').modal('toggle')
                     swal({   title: "",
                              text: data.msg,
                              type: "error"
                          });
+
                 }    
                 
             },
             error: function(q,error){
                 alert(q.responseText) //debug
+                $('#processing-modal').modal('toggle')
                swal("Ups!", "Hubo un error consultando los Archivos, intente de Nuevo.", "error");
         },
             dataType:'json',

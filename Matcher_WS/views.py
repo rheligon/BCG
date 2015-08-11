@@ -3395,35 +3395,30 @@ def admin_archive(request):
             exito = False
             
             infoLinea =lines[contador]
-            print(infoLinea,str(contador) + " 0")
-
+            
             if ( infoLinea == "***** Match Automatico *****"):
                 contador += 1
                 infoLinea =lines[contador]
-                print(infoLinea,str(contador) + " 1")
-
+                
                 while(infoLinea != "***** Match Manual *****"):
                     
                     if (infoLinea == "@@"):
                         contador += 1
                         infoLinea= lines[contador]
-                        print(infoLinea,str(contador) + " 2")
-
+                       
                     else:
                         arregloAux = infoLinea.split(";")
                         arregloCabecera.append(arregloAux)
                         contador += 1
                         infoLinea =lines[contador]
-                        print(infoLinea,str(contador) + " 3")
-
+                        
                         
                         while (infoLinea != "@@" and infoLinea != "***** Match Manual *****"):
                             arregloAux = infoLinea.split(";")
                             arregloTrans.append(arregloAux)
                             contador += 1
                             infoLinea =lines[contador]
-                            print(infoLinea,str(contador) + " 4")
-
+                            
                         arregloTotal.append([arregloCabecera,arregloTrans])
                         arregloTrans = []
                         arregloCabecera = []
@@ -3436,31 +3431,27 @@ def admin_archive(request):
                 arregloTotal = []
                 contador += 1
                 infoLinea =lines[contador]
-                print(infoLinea,str(contador) + " 5")
-
+                
 
                 while(infoLinea != "***** Reversos Contabilidad *****"):
                     
                     if (infoLinea == "@@"):
                         contador += 1
                         infoLinea= lines[contador]
-                        print(infoLinea,str(contador) + " 6")
-
+                        
                     else:
                         arregloAux = infoLinea.split(";")
                         arregloCabecera.append(arregloAux)
                         contador += 1
                         infoLinea =lines[contador]
-                        print(infoLinea,str(contador) + " 7")
-
+                        
                         
                         while (infoLinea != "@@" and infoLinea != "***** Reversos Contabilidad *****"):
                             arregloAux = infoLinea.split(";")
                             arregloTrans.append(arregloAux)
                             contador += 1
                             infoLinea =lines[contador]
-                            print(infoLinea,str(contador) + " 8")
-
+                           
                         arregloTotal.append([arregloCabecera,arregloTrans])
                         arregloTrans = []
                         arregloCabecera = []
@@ -3473,8 +3464,7 @@ def admin_archive(request):
                 arregloTotal = []
                 contador += 1
                 infoLinea =lines[contador]
-                print(infoLinea,str(contador) + " 9")
-
+                
 
                 
                 while(infoLinea != "***** Reversos Corresponsal *****"):
@@ -3482,23 +3472,20 @@ def admin_archive(request):
                     if (infoLinea == "@@"):
                         contador += 1
                         infoLinea= lines[contador]
-                        print(infoLinea,str(contador) + " 11")
-
+                        
                     else:
                         arregloAux = infoLinea.split(";")
                         arregloCabecera.append(arregloAux)
                         contador += 1
                         infoLinea =lines[contador]
-                        print(infoLinea,str(contador) + " 12")
-
+                       
                         
                         while (infoLinea != "@@" and infoLinea != "***** Reversos Corresponsal *****"):
                             arregloAux = infoLinea.split(";")
                             arregloTrans.append(arregloAux)
                             contador += 1
                             infoLinea =lines[contador]
-                            print(infoLinea,str(contador) + " 13")
-
+                            
                         arregloTotal.append([arregloCabecera,arregloTrans])
                         arregloTrans = []
                         arregloCabecera = []
@@ -3516,8 +3503,7 @@ def admin_archive(request):
                     exito = True
                     return JsonResponse({'exito':exito,'msg':msg,'transacciones':transacciones})
                 
-                print(infoLinea,str(contador) + " 14")
-
+                
 
                 
                 while(contador < numLineas-1):
@@ -3525,23 +3511,20 @@ def admin_archive(request):
                     if (infoLinea == "@@"):
                         contador += 1
                         infoLinea= lines[contador]
-                        print(infoLinea,str(contador) + " 15")
-
+                        
                     else:
                         arregloAux = infoLinea.split(";")
                         arregloCabecera.append(arregloAux)
                         contador += 1
                         infoLinea =lines[contador]
-                        print(infoLinea,str(contador) + " 16")
-
+                        
                         
                         while (infoLinea != "@@" and contador < numLineas-1):
                             arregloAux = infoLinea.split(";")
                             arregloTrans.append(arregloAux)
                             contador += 1
                             infoLinea =lines[contador]
-                            print(infoLinea,str(contador) + " 17")
-
+                            
                         arregloTotal.append([arregloCabecera,arregloTrans])
                         arregloTrans = []
                         arregloCabecera = []
