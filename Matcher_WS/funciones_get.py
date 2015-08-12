@@ -1,5 +1,6 @@
 from Matcher.models import *
 import os
+import unicodedata
 
 def get_ops(request):
     #Busco la sesion que esta conectada
@@ -63,3 +64,7 @@ def get_idioma():
         return "es"
     else:
         return "en"
+
+def elimina_tildes(s):
+    return ''.join((c for c in unicodedata.normalize('NFD', s) if unicodedata.category(c) != 'Mn'))
+ 
