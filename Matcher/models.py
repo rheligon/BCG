@@ -173,6 +173,7 @@ class Configuracion(models.Model):
     ldap_dominio = models.CharField(db_column='LDAP_Dominio', max_length=50, blank=True)
     dirprocesado96 = models.CharField(db_column='DirProcesado96', max_length=200, blank=True)  
     dirprocesado99 = models.CharField(db_column='DirProcesado99', max_length=200, blank=True)  
+    dirlicencia = models.CharField(db_column='DirLicencia', max_length=200, blank=True)  
 
     class Meta:
         db_table = 'Configuracion'

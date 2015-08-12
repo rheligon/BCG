@@ -15,6 +15,7 @@ from django.contrib.auth import update_session_auth_hash
 from django.contrib.sessions.models import Session
 from datetime import datetime, date, time, timedelta
 from decimal import Decimal
+from itertools import chain
 
 from Matcher.models import *
 
@@ -1310,11 +1311,11 @@ def pd_matchesConfirmados(request,cuenta):
                     fechah = datetime.strptime(filtrofecha[1], '%d/%m/%Y')
 
                 if fechad is not None and fechah is not None:
-                    mConf = mConf.filter(Q(tc_conta__fecha__gte=fechad,tc_conta__fecha__lte=fechah)|Q(tc_corres__fecha__gte=fechad,tc_corres__fecha__lte=fechah))
+                    mConf = mConf.filter(Q(tc_conta__fecha__gte=fechad,tc_conta__fecha__lte=fechah)|Q(tc_corres__fecha_valor__gte=fechad,tc_corres__fecha_valor__lte=fechah))
                 elif fechad is not None:
-                    mConf = mConf.filter(Q(tc_conta__fecha__gte=fechad)|Q(tc_corres__fecha__gte=fechad))
+                    mConf = mConf.filter(Q(tc_conta__fecha__gte=fechad)|Q(tc_corres__fecha_valor__gte=fechad))
                 elif fechah is not None:
-                    mConf = mConf.filter(Q(tc_conta__fecha__lte=fechah)|Q(tc_corres__fecha__lte=fechah))
+                    mConf = mConf.filter(Q(tc_conta__fecha__lte=fechah)|Q(tc_corres__fecha_valor__lte=fechah))
             
             cuentas = Cuenta.objects.all().order_by('codigo')
             
@@ -2345,6 +2346,7 @@ def configuracion(request, tipo):
                 dir_c_mt99 = request.POST.get('dir_c_mt99')
                 dir_p_mt96 = request.POST.get('dir_p_mt96')
                 dir_p_mt99 = request.POST.get('dir_p_mt99')
+                dirlicencia = request.POST.get('dirlicencia')
                 idioma = request.POST.get('Idiom-sel')
 
                 ce = request.POST.get('ce')
@@ -2382,6 +2384,7 @@ def configuracion(request, tipo):
                 conf.dircarga99 = dir_c_mt99
                 conf.dirprocesado96 = dir_p_mt96
                 conf.dirprocesado99 = dir_p_mt99
+                conf.dirlicencia = dirlicencia
                 conf.idioma = int(idioma)
 
                 # Chequeando checkboxes
@@ -3742,6 +3745,14 @@ def admin_crit_reglas(request):
         template = "matcher/admin_criteriosReglas.html"
         criterios = CriteriosMatch.objects.all()
         context = {'criterios':criterios, 'ops':get_ops(request)}
+        return render(request, template, context)
+
+@login_required(login_url='/login')
+def admin_licencia(request):
+    if request.method == 'GET':
+        template = "matcher/admin_licencia.html"
+        criterios = CriteriosMatch.objects.all()
+        context = {'ops':get_ops(request)}
         return render(request, template, context)
 
 @login_required(login_url='/login')

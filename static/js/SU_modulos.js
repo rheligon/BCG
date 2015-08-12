@@ -15,7 +15,7 @@ function iniciar_tabla_AD(idioma){
                 url: '/static/json/Spanish-tables.json'
             },
             "scrollY": "350px",
-            "pageLength": 15,
+            "pageLength": 5,
             "lengthMenu": [5, 10, 25, 50, 75, 100 ],
             "paging": true,
             "scrollCollapse": true,
@@ -34,7 +34,7 @@ function iniciar_tabla_AD(idioma){
                 url: '/static/json/English-tables.json'
             },
             "scrollY": "350px",
-            "pageLength": 15,
+            "pageLength": 5,
             "lengthMenu": [5, 10, 25, 50, 75, 100 ],
             "paging": true,
             "scrollCollapse": true,
