@@ -23,17 +23,53 @@
 {% block content %}
 
 <style> form {padding-bottom: 1%;} #table-div-conta, #table-div-corr {padding-top: 1%;}
-.primerafila{
+.automatico{
   background-color: rgb(194, 194, 207) !important;
 }
-
+.my-legend .legend-title {
+    text-align: left;
+    margin-bottom: 5px;
+    font-weight: bold;
+    font-size: 90%;
+    }
+  .my-legend .legend-scale ul {
+    margin: 0;
+    margin-bottom: 5px;
+    padding: 0;
+    float: left;
+    list-style: none;
+    }
+  .my-legend .legend-scale ul li {
+    font-size: 80%;
+    list-style: none;
+    margin-left: 0;
+    line-height: 18px;
+    margin-bottom: 2px;
+    }
+  .my-legend ul.legend-labels li span {
+    display: block;
+    float: left;
+    height: 16px;
+    width: 30px;
+    margin-right: 5px;
+    margin-left: 0;
+    border: 1px solid #999;
+    }
+  .my-legend .legend-source {
+    font-size: 70%;
+    color: #999;
+    clear: both;
+    }
+  .my-legend a {
+    color: #777;
+    }
 
 </style>
 
 <legend ><h1>Archive</h1></legend>
 
 <form class="form-inline">
-<fieldset>
+  <fieldset>
     <div class="row clearfix">
       <!-- Select Basic -->
       <div class="form-group col-md-3 ">
@@ -48,45 +84,45 @@
         </div>
       </div>
     
-
-  <div class="form-group col-md-3">
-      <label class="control-label" for="boton-consulta">  </label>
-      <div> 
-        <button type="button" id="boton-consulta" data-loading-text="Cargando..." class="col-md-5 btn btn-primary" autocomplete="off">
+      <div class="form-group col-md-3">
+        <label class="control-label" for="boton-consulta">  </label>
+        <div> 
+          <button type="button" id="boton-consulta" data-loading-text="Cargando..." class="col-md-5 btn btn-primary" autocomplete="off">
           Consulta
-        </button>
-    </div>
-  </div>
-    <div class="form-group col-md-4">
+          </button>
+        </div>
+      </div>
+
+      <div class="form-group col-md-4">
         <label class="control-label" for="cta_nostro">Minima Fecha de Match: </label>  
         <div>
-        <input id="minima_fecha" name="minima_fecha" type="text" placeholder="" class="form-control input-md" style="width:80%" readonly>
+          <input id="minima_fecha" name="minima_fecha" type="text" placeholder="" class="form-control input-md" style="width:80%" readonly>
         </div>
       </div>
     </div>  
-</fieldset>
+  </fieldset>
 </form>
 
 <form class="form-inline">
   <fieldset>
     <div class="row clearfix">
-<!-- Text input-->
-    <div class="form-group col-md-3">
-      <label class="control-label">Fecha:</label>
-      <div>
-        <input id="fecha-ejecutar" class="form-control" style="width:65%;background-color:white">
+      <!-- Text input-->
+      <div class="form-group col-md-3">
+        <label class="control-label">Fecha:</label>
+        <div>
+          <input id="fecha-ejecutar" class="form-control" style="width:65%;background-color:white">
+        </div>
+      </div>
+
+      <div class="form-group col-md-3">
+        <label class="control-label" for="boton-ejecutar">  </label>
+        <div> 
+          <button type="button" id="boton-ejecutar" data-loading-text="Cargando..." class="col-md-5 btn btn-success" autocomplete="off">
+          Ejecutar
+          </button>
+        </div>
       </div>
     </div>
-
-    <div class="form-group col-md-3">
-      <label class="control-label" for="boton-ejecutar">  </label>
-      <div> 
-        <button type="button" id="boton-ejecutar" data-loading-text="Cargando..." class="col-md-5 btn btn-success" autocomplete="off">
-          Ejecutar
-        </button>
-    </div>
-  </div>
-</div>
   </fieldset>
 </form>
 
@@ -98,31 +134,30 @@
   <fieldset>
     <div class="row clearfix">
       <!-- Text input-->
-    <div class="form-group col-md-3">
-      <label class="control-label">Fecha Inicial:</label>
-      <div>
-        <input id="fecha-desde" class="form-control" style="width:65%;background-color:white">
+      <div class="form-group col-md-3">
+        <label class="control-label">Fecha Inicial:</label>
+        <div>
+          <input id="fecha-desde" class="form-control" style="width:65%;background-color:white">
+        </div>
       </div>
-    </div>
     
-
-    <div class="col-md-4 form-group">
-      <label class="control-label" >Archivo:</label>
-      <div id="divselec_archivo">
+      <div class="col-md-4 form-group">
+        <label class="control-label" >Archivo:</label>
+        <div id="divselec_archivo">
           <select style="width:70%" id="selec_archivo" name="selec_archivo" class="form-control">
-              <option align="center"value="-1">---------------------------</option>
+            <option align="center"value="-1">---------------------------</option>
           </select>
+        </div>
       </div>
-    </div>
 
-    <div class="form-group col-md-3">
-      <label class="control-label" for="boton-buscar">  </label>
-      <div> 
-        <button type="button" id="boton-buscar" data-loading-text="Cargando..." class="col-md-5 btn btn-primary" autocomplete="off">
+      <div class="form-group col-md-3">
+        <label class="control-label" for="boton-buscar">  </label>
+        <div> 
+          <button type="button" id="boton-buscar" data-loading-text="Cargando..." class="col-md-5 btn btn-primary" autocomplete="off">
           Buscar
-        </button>
-    </div>
-  </div>
+          </button>
+        </div>
+      </div>
     </div>
   </fieldset>
 </form>
@@ -131,43 +166,38 @@
   <fieldset>
     <div class="row clearfix">
       <!-- Text input-->
-    <div class="form-group col-md-3">
-      <label class="control-label">Fecha Final:</label>
-      <div>
-        <input id="fecha-hasta" class="form-control" style="width:65%;background-color:white">
+      <div class="form-group col-md-3">
+        <label class="control-label">Fecha Final:</label>
+        <div>
+          <input id="fecha-hasta" class="form-control" style="width:65%;background-color:white">
+        </div>
       </div>
-    </div>
     </div>
   </fieldset>
 </form>
 
-<div ="row" id="tabla-detalle">
-  <div style="padding-bottom:1%;" class="col-md-3 pull-right">
+  <div class="tab-pane active" id="conta-tab">
+    <div id="table-div-conta" class="table-responsive col-md-12">
+      <table id="table-pa" class="table table-bordered table-striped tabla">
+        <thead>
+          <tr>
+            <th>E/C</th>
+            <th>Pag.</th>
+            <th>Fecha</th>
+            <th>Tipo</th>
+            <th>Ref Nostro</th>
+            <th>Ref Vostro</th>
+            <th>Detalles</th>
+            <th>C/D</th>
+            <th>Monto</th>
+            <th>S/L</th>
+          </tr>
+        </thead>
+        <tbody id="tb-conta">
+        </tbody>
+      </table>
+    </div>
   </div>
-</div>
-
-    <div class="tab-pane active" id="conta-tab">
-        <div id="table-div-conta" class="table-responsive col-md-12">
-            <table id="table-pa" class="table table-bordered table-striped tabla">
-                <thead>
-                    <tr>
-                        <th>E/C</th>
-                        <th>Pag.</th>
-                        <th>Fecha</th>
-                        <th>Tipo</th>
-                        <th>Ref Nostro</th>
-                        <th>Ref Vostro</th>
-                        <th>Detalles</th>
-                        <th>C/D</th>
-                        <th>Monto</th>
-                        <th>S/L</th>
-                    </tr>
-                </thead>
-                <tbody id="tb-conta">
-                </tbody>
-            </table>
-        </div>
-        </div>
     
 
 

@@ -19,12 +19,11 @@ function iniciar_tabla(idioma){
             language: {
                 url: '/static/json/Spanish-tables.json'
             },
+            "autoWidth": false,
             "scrollY": "350px",
-            "scrollCollapse": true,
             "deferRender": true,
-            "orderClasses": false,
             "ordering":  false,
-            paging: false,
+            "paging": false,
             
             "columns": [
                 { "width": "11%" },//E/C
@@ -278,9 +277,29 @@ function buscarEnArchivo(archivo,cuenta){
                     
                     
 
-                    var automaticas = data.transacciones['auto']
+                    var automaticas = data.transacciones['auto'];
+                    var manuales = data.transacciones['manual'];
+                    var contabilidades = data.transacciones['contabilidad'];
+                    var corresponsales = data.transacciones['corresponsal'];
 
                     t_conta.clear().draw();
+
+                    var contador = 1;
+                    var td1 = '<td></td>';
+                    var td2 = '<td></td>';
+                    var td3 = '<td></td>';
+                    var td4 = '<td></td>';
+                    var td5 = '<td><h4>Match</h4></td>';
+                    var td6 = '<td><h4>Automático</h4></td>';
+                    var td7 = '<td></td>';
+                    var td8 = '<td></td>';
+                    var td9 = '<td></td>';
+                    var td10 = '<td></td>';
+                    //creamos la fila con los elementos y la mostramos
+                    $('#table-pa > tbody').append('<tr class = "automatico" id ="tr-con-'+contador+'"></tr>');
+                    var jRow = $("#tr-con-"+contador).append(td1,td2,td3,td4,td5,td6,td7,td8,td9,td10);
+                    t_conta.row.add(jRow);
+                    contador++;
 
                     for (var i = 0 ; i < automaticas.length ; i++){
                         var fechaMatch = automaticas[i][0][0][0];
@@ -289,18 +308,19 @@ function buscarEnArchivo(archivo,cuenta){
                         var td1 = '<td>Match</td>';
                         var td2 = '<td>Id:</td>';
                         var td3 = '<td>'+idMatch+'</td>';
-                        var td4 = '<td> </td>';
-                        var td5 = '<td> </td>';
-                        var td6 = '<td> </td>';
+                        var td4 = '<td></td>';
+                        var td5 = '<td></td>';
+                        var td6 = '<td></td>';
                         var td7 = '<td></td>';
                         var td8 = '<td></td>';
                         var td9 = '<td></td>';
                         var td10 = '<td></td>';
 
                         //creamos la fila con los elementos y la mostramos
-                        $('#table-pa > tbody').append('<tr class = "primerafila" id ="tr-con-'+i+'"></tr>');
-                        var jRow = $("#tr-con-"+i).append(td1,td2,td3,td4,td5,td6,td7,td8,td9,td10);
+                        $('#table-pa > tbody').append('<tr class = "automatico" id ="tr-con-'+contador+'"></tr>');
+                        var jRow = $("#tr-con-"+contador).append(td1,td2,td3,td4,td5,td6,td7,td8,td9,td10);
                         t_conta.row.add(jRow);
+                        contador++;
             
                         
                         for(var j = 0; j < automaticas[i][1].length ; j++){
@@ -315,6 +335,17 @@ function buscarEnArchivo(archivo,cuenta){
                             var monto = automaticas[i][1][j][8];
                             var contaCorr = automaticas[i][1][j][9];
 
+                            if (detalles == "null"){
+                                detalles = "";
+                            }
+                            if (rNostro == "null"){
+                                rNostro = "";
+                            }
+                            if (rVostro == "null"){
+                                rVostro = "";
+                            }
+
+
                             //creamos los elementos de cada fila
                             var td1 = '<td>'+edoCta+'</td>';
                             var td2 = '<td>'+pagina+'</td>';
@@ -328,9 +359,210 @@ function buscarEnArchivo(archivo,cuenta){
                             var td10 = '<td>'+contaCorr+'</td>';
 
                             //creamos la fila con los elementos y la mostramos
-                            $('#table-pa > tbody').append('<tr id ="tr-con-'+i+j+'"></tr>');
-                            var jRow = $("#tr-con-"+i+j).append(td1,td2,td3,td4,td5,td6,td7,td8,td9,td10);
+                            $('#table-pa > tbody').append('<tr id ="tr-con-'+contador+'"></tr>');
+                            var jRow = $("#tr-con-"+contador).append(td1,td2,td3,td4,td5,td6,td7,td8,td9,td10);
                             t_conta.row.add(jRow);
+                            contador++;
+                            
+                        }
+
+                    }
+                    for (var i = 0 ; i < manuales.length ; i++){
+                        var fechaMatch = manuales[i][0][0][0];
+                        var idMatch = manuales[i][0][0][1];
+                        //creamos los elementos de cada fila
+                        var td1 = '<td>Match</td>';
+                        var td2 = '<td>Id:</td>';
+                        var td3 = '<td>'+idMatch+'</td>';
+                        var td4 = '<td></td>';
+                        var td5 = '<td></td>';
+                        var td6 = '<td></td>';
+                        var td7 = '<td></td>';
+                        var td8 = '<td></td>';
+                        var td9 = '<td></td>';
+                        var td10 = '<td></td>';
+
+                        //creamos la fila con los elementos y la mostramos
+                        $('#table-pa > tbody').append('<tr class = "success" id ="tr-con-'+contador+'"></tr>');
+                        var jRow = $("#tr-con-"+contador).append(td1,td2,td3,td4,td5,td6,td7,td8,td9,td10);
+                        t_conta.row.add(jRow);
+                        contador++;
+            
+                        
+                        for(var j = 0; j < manuales[i][1].length ; j++){
+                            var edoCta = manuales[i][1][j][0];
+                            var pagina = manuales[i][1][j][1];
+                            var fecha = manuales[i][1][j][2];
+                            var tipo = manuales[i][1][j][3];
+                            var rNostro = manuales[i][1][j][4];
+                            var rVostro = manuales[i][1][j][5];
+                            var detalles = manuales[i][1][j][6];
+                            var credDeb = manuales[i][1][j][7];
+                            var monto = manuales[i][1][j][8];
+                            var contaCorr = manuales[i][1][j][9];
+
+                            if (detalles == "null"){
+                                detalles = "";
+                            }
+                            if (rNostro == "null"){
+                                rNostro = "";
+                            }
+                            if (rVostro == "null"){
+                                rVostro = "";
+                            }
+
+
+                            //creamos los elementos de cada fila
+                            var td1 = '<td>'+edoCta+'</td>';
+                            var td2 = '<td>'+pagina+'</td>';
+                            var td3 = '<td>'+fecha+'</td>';
+                            var td4 = '<td>'+tipo+'</td>';
+                            var td5 = '<td>'+rNostro+'</td>';
+                            var td6 = '<td>'+rVostro+'</td>';
+                            var td7 = '<td>'+detalles+'</td>';
+                            var td8 = '<td>'+credDeb+'</td>';
+                            var td9 = '<td>'+monto+'</td>';
+                            var td10 = '<td>'+contaCorr+'</td>';
+
+                            //creamos la fila con los elementos y la mostramos
+                            $('#table-pa > tbody').append('<tr id ="tr-con-'+contador+'"></tr>');
+                            var jRow = $("#tr-con-"+contador).append(td1,td2,td3,td4,td5,td6,td7,td8,td9,td10);
+                            t_conta.row.add(jRow);
+                            contador++;
+                            
+                        }
+
+                    }
+                    
+                    for (var i = 0 ; i < contabilidades.length ; i++){
+                        var fechaMatch = contabilidades[i][0][0][0];
+                        var idMatch = contabilidades[i][0][0][1];
+                        //creamos los elementos de cada fila
+                        var td1 = '<td>Match</td>';
+                        var td2 = '<td>Id:</td>';
+                        var td3 = '<td>'+idMatch+'</td>';
+                        var td4 = '<td></td>';
+                        var td5 = '<td></td>';
+                        var td6 = '<td></td>';
+                        var td7 = '<td></td>';
+                        var td8 = '<td></td>';
+                        var td9 = '<td></td>';
+                        var td10 = '<td></td>';
+
+                        //creamos la fila con los elementos y la mostramos
+                        $('#table-pa > tbody').append('<tr class = "warning" id ="tr-con-'+contador+'"></tr>');
+                        var jRow = $("#tr-con-"+contador).append(td1,td2,td3,td4,td5,td6,td7,td8,td9,td10);
+                        t_conta.row.add(jRow);
+                        contador++;
+            
+                        
+                        for(var j = 0; j < contabilidades[i][1].length ; j++){
+                            var edoCta = contabilidades[i][1][j][0];
+                            var pagina = contabilidades[i][1][j][1];
+                            var fecha = contabilidades[i][1][j][2];
+                            var tipo = contabilidades[i][1][j][3];
+                            var rNostro = contabilidades[i][1][j][4];
+                            var rVostro = contabilidades[i][1][j][5];
+                            var detalles = contabilidades[i][1][j][6];
+                            var credDeb = contabilidades[i][1][j][7];
+                            var monto = contabilidades[i][1][j][8];
+                            var contaCorr = contabilidades[i][1][j][9];
+
+                            if (detalles == "null"){
+                                detalles = "";
+                            }
+                            if (rNostro == "null"){
+                                rNostro = "";
+                            }
+                            if (rVostro == "null"){
+                                rVostro = "";
+                            }
+
+
+                            //creamos los elementos de cada fila
+                            var td1 = '<td>'+edoCta+'</td>';
+                            var td2 = '<td>'+pagina+'</td>';
+                            var td3 = '<td>'+fecha+'</td>';
+                            var td4 = '<td>'+tipo+'</td>';
+                            var td5 = '<td>'+rNostro+'</td>';
+                            var td6 = '<td>'+rVostro+'</td>';
+                            var td7 = '<td>'+detalles+'</td>';
+                            var td8 = '<td>'+credDeb+'</td>';
+                            var td9 = '<td>'+monto+'</td>';
+                            var td10 = '<td>'+contaCorr+'</td>';
+
+                            //creamos la fila con los elementos y la mostramos
+                            $('#table-pa > tbody').append('<tr id ="tr-con-'+contador+'"></tr>');
+                            var jRow = $("#tr-con-"+contador).append(td1,td2,td3,td4,td5,td6,td7,td8,td9,td10);
+                            t_conta.row.add(jRow);
+                            contador++;
+                            
+                        }
+
+
+                    }
+                    for (var i = 0 ; i < corresponsales.length ; i++){
+                        var fechaMatch = corresponsales[i][0][0][0];
+                        var idMatch = corresponsales[i][0][0][1];
+                        //creamos los elementos de cada fila
+                        var td1 = '<td>Match</td>';
+                        var td2 = '<td>Id:</td>';
+                        var td3 = '<td>'+idMatch+'</td>';
+                        var td4 = '<td></td>';
+                        var td5 = '<td></td>';
+                        var td6 = '<td></td>';
+                        var td7 = '<td></td>';
+                        var td8 = '<td></td>';
+                        var td9 = '<td></td>';
+                        var td10 = '<td></td>';
+
+                        //creamos la fila con los elementos y la mostramos
+                        $('#table-pa > tbody').append('<tr class = "danger" id ="tr-con-'+contador+'"></tr>');
+                        var jRow = $("#tr-con-"+contador).append(td1,td2,td3,td4,td5,td6,td7,td8,td9,td10);
+                        t_conta.row.add(jRow);
+                        contador++;
+            
+                        
+                        for(var j = 0; j < corresponsales[i][1].length ; j++){
+                            var edoCta = corresponsales[i][1][j][0];
+                            var pagina = corresponsales[i][1][j][1];
+                            var fecha = corresponsales[i][1][j][2];
+                            var tipo = corresponsales[i][1][j][3];
+                            var rNostro = corresponsales[i][1][j][4];
+                            var rVostro = corresponsales[i][1][j][5];
+                            var detalles = corresponsales[i][1][j][6];
+                            var credDeb = corresponsales[i][1][j][7];
+                            var monto = corresponsales[i][1][j][8];
+                            var contaCorr = corresponsales[i][1][j][9];
+
+                            if (detalles == "null"){
+                                detalles = "";
+                            }
+                            if (rNostro == "null"){
+                                rNostro = "";
+                            }
+                            if (rVostro == "null"){
+                                rVostro = "";
+                            }
+
+
+                            //creamos los elementos de cada fila
+                            var td1 = '<td>'+edoCta+'</td>';
+                            var td2 = '<td>'+pagina+'</td>';
+                            var td3 = '<td>'+fecha+'</td>';
+                            var td4 = '<td>'+tipo+'</td>';
+                            var td5 = '<td>'+rNostro+'</td>';
+                            var td6 = '<td>'+rVostro+'</td>';
+                            var td7 = '<td>'+detalles+'</td>';
+                            var td8 = '<td>'+credDeb+'</td>';
+                            var td9 = '<td>'+monto+'</td>';
+                            var td10 = '<td>'+contaCorr+'</td>';
+
+                            //creamos la fila con los elementos y la mostramos
+                            $('#table-pa > tbody').append('<tr id ="tr-con-'+contador+'"></tr>');
+                            var jRow = $("#tr-con-"+contador).append(td1,td2,td3,td4,td5,td6,td7,td8,td9,td10);
+                            t_conta.row.add(jRow);
+                            contador++;
                             
                         }
                         
