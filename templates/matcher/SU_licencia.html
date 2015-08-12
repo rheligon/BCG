@@ -9,12 +9,7 @@
 <link rel="stylesheet" href="{% static 'css/picker.date.css' %}">
 <link rel="stylesheet" href="{% static 'css/sweet-alert.css' %}">
 <link rel="stylesheet" href="{% static 'css/dual_list.css' %}">
-<link rel="stylesheet" href="{% static 'css/jquery-ui.css' %}">
-<link rel="stylesheet" href="{% static 'css/jquery-ui.min.css' %}">
-<link rel="stylesheet" href="{% static 'css/jquery-ui.structure.css' %}">
-<link rel="stylesheet" href="{% static 'css/jquery-ui.structure.min.css' %}">
-<link rel="stylesheet" href="{% static 'css/jquery-ui.theme.css' %}">
-<link rel="stylesheet" href="{% static 'css/jquery-ui.theme.min.css' %}">
+<link rel="stylesheet" href="{% static 'css/jquery.bootstrap-touchspin.min.css' %}">
 {% endblock%}
 
 {% block content %}
@@ -41,7 +36,7 @@
         <div class="col-md-7 form-group">
             <label class="col-md-4 control-label" >Número de Usuarios:</label>
                 <div class="col-md-4">
-                    <input class="form-control input-sm" name="numUserLicenciaN" id="numUserLicencia" type="number" min="0" max="500" required>
+                    <input class="form-control" name="numUserLicenciaN" id="numUserLicencia" type="number" min="0" max="500" maxlength="3" required>
                 </div>
         </div>
     </td>
@@ -89,8 +84,7 @@ idioma_tr = "es"
 <script type="text/javascript" src="{% static 'js/pickerlegacy.js' %}"></script>
 <script type="text/javascript" src="{% static 'js/sweet-alert.min.js' %}"></script>
 <script src="{% static 'js/validator.js' %}" type="text/javascript"></script>
-<script type="text/javascript" src="{% static 'js/jquery-ui.js' %}"></script>
-<script type="text/javascript" src="{% static 'js/jquery-ui.min.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/jquery.bootstrap-touchspin.min.js' %}"></script>
 <script type="text/javascript" src="{% static 'js/SU_licencia.js' %}"></script>
 
 {% endblock %}

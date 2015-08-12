@@ -1,0 +1,51 @@
+{% extends "matcher/base.html" %}
+
+{% load staticfiles %}
+
+{% block title %}Error 403{% endblock %}
+<!DOCTYPE HTML>
+{%block head%}
+	<style type="text/css">
+	.wrap{
+		margin:0 auto;
+		width:1000px;
+	}
+	.logo{
+		text-align:center;
+		margin-top:200px;
+	}
+	.logo img{
+		width:450px;
+	}
+	.logo p{
+		color:#272727;
+		font-family: cursive;
+		font-size:40px;
+		margin-top:1px;
+	}	
+	.logo p span{
+		color:lightgreen;
+	}
+	.explicacion p{
+		color:#272727;
+		font-family: cursive;
+		font-size:35px;
+		margin-top:1px;
+	}	
+	</style>
+{%endblock%}
+
+{% block content %}
+ <div class="wrap">
+	<div class="logo">
+		<p>OOPS! - Permiso Denegado</p>
+		<img src="../static/images/500.png"/>
+		<br>
+		<br>
+		<div class="explicacion">
+			<p>Usted no tiene los privilegios para acceder al url</p>
+		</div>
+	</div>
+ </div>	
+
+{%endblock%}

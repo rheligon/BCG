@@ -3,6 +3,11 @@ from django.contrib import admin
 
 from django.contrib.auth.views import login, logout
 
+#handler404 = 'Matcher_WS.views.custom_404'
+#handler500 = 'Matcher_WS.views.custom_500'
+#handler403 = 'Matcher_WS.views.custom_403'
+#handler400 = 'Matcher_WS.views.custom_400'
+
 urlpatterns = patterns('',
     url(r'^test/$', 'Matcher_WS.views.test', name='test'),              
 
@@ -66,7 +71,6 @@ urlpatterns = patterns('',
     url(r'^sobre/matcher$', 'Matcher_WS.views.sobre_matcher', name='sobre_matcher'),
 
     #SU
-    url(r'^SU/status/$', 'Matcher_WS.views.SU_status', name='SU_status'),
     url(r'^SU/licencia/$', 'Matcher_WS.views.SU_licencia', name='SU_licencia'),
     url(r'^SU/modulos/$', 'Matcher_WS.views.SU_modulos', name='SU_modulos'),
     url(r'^SU/version/$', 'Matcher_WS.views.SU_version', name='SU_version'),
