@@ -3775,12 +3775,6 @@ def sobre_matcher(request):
         return HttpResponseNotFound('<h1>Report Not Found</h1>')
 
 @login_required(login_url='/login')
-def SU_status(request):
-    template = "matcher/SU_status.html"
-    context = {'ops':get_ops(request)}
-    return render(request, template, context)
-
-@login_required(login_url='/login')
 def SU_licencia(request):
     template = "matcher/SU_licencia.html"
     context = {'ops':get_ops(request)}
@@ -3821,6 +3815,26 @@ def SU_version(request):
         version = Version.objects.all()[0]
         context = {'ops':get_ops(request), 'version':version}
         return render(request, template, context)
+
+def custom_404(request):
+    template = "matcher/404.html"
+    context = {'ops':get_ops(request)}
+    return render(request,template, context)
+
+def custom_500(request):
+    template = "matcher/500.html"
+    context = {'ops':get_ops(request)}
+    return render(request,template, context)
+
+def custom_403(request):
+    template = "matcher/403.html"
+    context = {'ops':get_ops(request)}
+    return render(request,template, context)
+
+def custom_400(request):
+    template = "matcher/400.html"
+    context = {'ops':get_ops(request)}
+    return render(request,template, context)
 
 #################################################################################################
 ## Otras funciones
