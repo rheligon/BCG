@@ -24,7 +24,7 @@ from Matcher_WS.edo_cuenta import edoCta, edc_list, Trans, Bal
 from Matcher_WS.mailConf import enviar_mail
 from Matcher_WS.cargaAutomatica import leer_linea_conta, leer_linea_corr, leer_punto_coma, validar_archivo
 from Matcher_WS.Matcher_call import matcher, dma_millis
-from Matcher_WS.funciones_get import get_ops, get_cuentas, get_ci, get_idioma, get_bancos, get_archivosMT99, get_archivosMT96, get_codigos95,elimina_tildes
+from Matcher_WS.funciones_get import get_ops, get_cuentas, get_ci, get_idioma, get_bancos, get_archivosMT99, get_archivosMT96, get_codigos95,elimina_tildes,verificarDirectorio
 from Matcher_WS.generar_reporte import generarReporte, pdfView, xlsView
 from Matcher_WS.setConsolidado import setConsolidado
 
@@ -2345,6 +2345,8 @@ def configuracion(request, tipo):
                 dir_c_mt99 = request.POST.get('dir_c_mt99')
                 dir_p_mt96 = request.POST.get('dir_p_mt96')
                 dir_p_mt99 = request.POST.get('dir_p_mt99')
+                dirlicencia = request.POST.get('dirlicencia')
+                expiracion = request.POST.get('expiracion')
                 idioma = request.POST.get('Idiom-sel')
 
                 ce = request.POST.get('ce')
@@ -2356,6 +2358,8 @@ def configuracion(request, tipo):
                 conf = Configuracion.objects.all()[0]
 
                 # Asignar los cambios
+                arregloDir = [cont_carg,cont_procs,corr_carg,corr_procs,arch,dir_s_mt95,dir_c_mt96,dir_s_mt99,dir_c_mt99,dir_p_mt96,dir_p_mt99,archconfirm,dirlicencia]
+                verificarDirectorio(arregloDir)
                 conf.archcontabilidadcarg = cont_carg
                 conf.archswiftcarg = corr_carg
                 conf.archcontabilidadproc = cont_procs
@@ -2382,6 +2386,8 @@ def configuracion(request, tipo):
                 conf.dircarga99 = dir_c_mt99
                 conf.dirprocesado96 = dir_p_mt96
                 conf.dirprocesado99 = dir_p_mt99
+                conf.dirlicencia = dirlicencia
+                conf.expira_sesion = expiracion
                 conf.idioma = int(idioma)
 
                 # Chequeando checkboxes
@@ -3341,7 +3347,6 @@ def admin_archive(request):
 
                 else:
                     
-                    match2 = Matchconfirmado.objects.get(tc_corres=transcorr[0])
                     fechaMinima = match.fecha.strftime("%d/%m/%Y")
                     exito = True
 
@@ -3350,11 +3355,16 @@ def admin_archive(request):
         if actn == 'buscarArchivos':
 
             cuenta = request.POST.get('cuenta')
+            archivos = ""
             
             obj = Configuracion.objects.all()[0]
             directorio = obj.dirarchiveconfirmados +"\\"+ cuenta
-            archivos = os.listdir(directorio)
-            exito = True
+            try:
+                archivos = os.listdir(directorio)
+            except OSError:
+                os.makedirs(directorio)
+                archivos = os.listdir(directorio)
+                exito = True
 
             return JsonResponse({'exito':exito,'archivos':archivos})
 

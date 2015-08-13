@@ -289,8 +289,8 @@ function buscarEnArchivo(archivo,cuenta){
                     var td2 = '<td></td>';
                     var td3 = '<td></td>';
                     var td4 = '<td></td>';
-                    var td5 = '<td><h4>Match</h4></td>';
-                    var td6 = '<td><h4>Automático</h4></td>';
+                    var td5 = '<td align ="center"><h4>Match</h4></td>';
+                    var td6 = '<td>align ="center"<h4>Automático</h4></td>';
                     var td7 = '<td></td>';
                     var td8 = '<td></td>';
                     var td9 = '<td></td>';
