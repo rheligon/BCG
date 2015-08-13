@@ -64,6 +64,7 @@ urlpatterns = patterns('',
     url(r'^admin/archive/$', 'Matcher_WS.views.admin_archive', name='admin_archive'),
     url(r'^admin/criterios_reglas/$', 'Matcher_WS.views.admin_crit_reglas', name='admin_crit_reglas'),
     url(r'^admin/reglas_transf/$', 'Matcher_WS.views.admin_reglas_transf', name='admin_reglas_transf'),
+    url(r'^admin/licencia/$', 'Matcher_WS.views.admin_licencia', name='admin_licencia'),
 
     #Ayudas
     url(r'^ayuda/usuario/$', 'Matcher_WS.views.manual_usuario', name='manual_usuario'),

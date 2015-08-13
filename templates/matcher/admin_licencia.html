@@ -13,46 +13,34 @@
 {% endblock%}
 
 {% block content %}
+<div class="table-responsive col-md-10">
 <br>
-<legend>Licencia</legend>
-<div id="Licencia-Info">
-    <td class="col-md-6 ">
-        <div class="col-md-7 form-group">
-            <label class="col-md-4 control-label" >Bic:</label>
-                <div class="col-md-4">
-                    <input class="form-control input-sm" name="BicLicenciaN" id="BicLicencia" type="text" maxlength="25" placeholder="" required readonly>
-                </div>
-        </div>
-    </td>
-    <td class="col-md-6 ">
-        <div class="col-md-7 form-group">
-            <label class="col-md-4 control-label" >Número de Módulos:</label>
-                <div class="col-md-4">
-                    <input class="form-control input-sm" name="numModLicenciaN" id="numModLicencia" type="text" maxlength="100" placeholder="" required readonly>
-                </div>
-        </div>
-    </td>
-    <td class="col-md-6 ">
-        <div class="col-md-7 form-group">
-            <label class="col-md-4 control-label" >Número de Usuarios:</label>
-                <div class="col-md-4">
-                    <input class="form-control" name="numUserLicenciaN" id="numUserLicencia" type="text" onkeypress='return solonumero(event)' onkeyup='return solonumero(event)' required>
-                </div>
-        </div>
-    </td>
-    <td class "col-md-6">
-        <div id="fechaExp" class="col-md-7 form-group">
-            <label class="col-md-4 control-label">Fecha de Expiración:</label>
-                <div class="col-md-4"><input name="expiracionLicenciaN" id="expiracionLicencia" class="form-control"></div>
-        </div>
-    </td>
-    <td class "col-md-6">
-        <div class="col-md-7 form-group">
-            <button type="button" id="guardarCambiosButton" style="align:right" class="col-md-2 btn btn-primary">
-                Guardar
-            </button>
-        </div>
-    </td> 
+    <h2> Licencia </h2>
+    <br> 
+    <div id="Licencia-cargar">
+        <legend>Cargar Licencia</legend>
+            <tr>
+                <td class="col-md-6 ">
+                    <div class="col-md-7 form-group">
+                        <label class="col-md-4 control-label" >Archivo de Carga:</label>
+                        <div class="col-md-8">
+                            <select id="archivoLic" name="archivoLicN" class="form-control">
+                                <option value="-1">--------------</option>
+                                {% for archivo in archivos %}
+                                <option value="{{archivo}}">{{archivo}}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                </td>
+                <td class "col-md-3">
+                    <button type="button" id="cargarLicButton" class="col-md-2 btn btn-primary">
+                        Cargar
+                    </button>
+                </td>           
+            </tr>
+            <br>
+    </div>
 </div>
 
 <!-- Static Modal para procesando -->

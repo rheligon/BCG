@@ -4,3 +4,5 @@ C:\Matcher\SALIDA95
 C:\Matcher\SALIDA99
 C:\Matcher\PROCESADO96
 C:\Matcher\PROCESADO99
+C:\Matcher\LICENCIA
+C:\Matcher\Archives-Confirmados

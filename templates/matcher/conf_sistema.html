@@ -1,6 +1,10 @@
 {% extends "matcher/base.html" %}
 {% load staticfiles %}
 
+{% block head %}
+    <link rel="stylesheet" href="{% static 'css/jquery.bootstrap-touchspin.min.css' %}">
+{%endblock%}
+
 {% block content %}
 
 <style type="text/css">
@@ -148,6 +152,15 @@
                 </select>
             </div>
         </div>
+        <div >
+            <label class="col-xs-3 control-label">Expiración de Sesión:</label>
+            <div class="col-md-3">
+                <input type="text" class="form-control" value="{{conf.expiracion_sesion}}" name="expiracion" id="expiracionid" onkeypress='return solonumero(event)' onkeyup='return solonumero(event)' required>
+            </div>
+        </div>
+        <br>
+        <br>
+        <br>
         <div class="form-group">
             <label class="col-xs-3 control-label">Contabilidad cargados:</label>
             <div class="col-xs-5">
@@ -181,6 +194,7 @@
         <li><a href="#contr-tab" data-toggle="tab">Contraseñas <i class="fa"></i></a></li>
         <li><a href="#log-tab" data-toggle="tab">Logs <i class="fa"></i></a></li>
         <li><a href="#msgSWIFT-tab" data-toggle="tab">Mensajes SWIFT <i class="fa"></i></a></li>
+        <li><a href="#licencia-tab" data-toggle="tab">Licencia <i class="fa"></i></a></li>
         <li><a href="#archive-tab" data-toggle="tab">Archive Matches Conf. <i class="fa"></i></a></li>
     </ul>
     <div class="tab-content col-md-12">
@@ -326,6 +340,17 @@
 
         </div>
 
+        <div class="tab-pane" id="licencia-tab">
+            
+            <div class="form-group">
+                <label class="col-xs-3 control-label">Directorio para carga de licencia:</label>
+                <div class="col-xs-5">
+                    <input type="text" class="form-control" value="{{conf.dirlicencia}}" name="dirlicencia" />
+                </div>
+            </div>
+
+        </div>
+
 
         <div class="tab-pane" id="contr-tab">
             <div class="form-group">
@@ -419,6 +444,7 @@
 {% block script %}
 
 <script src="{% static 'js/validator.js' %}" type="text/javascript"></script>
+<script type="text/javascript" src="{% static 'js/jquery.bootstrap-touchspin.min.js' %}"></script>
 
 <script>
 function goBack() {
@@ -430,6 +456,22 @@ function goBack() {
     }
 };
 
+// funcion para aceptar solo numeros
+function solonumero(e) {
+    var codigo;
+    codigo = (document.all) ? e.keyCode : e.which;
+    if (codigo > 31 && (codigo < 48 || codigo > 57) ) {
+    return false;
+    }
+    return true;
+};
+
+$("#expiracionid").TouchSpin({
+    verticalbuttons: true,
+    min: 1,
+    max: 3600,
+    step: 5,
+});
 
 </script>
 {% endblock %}
