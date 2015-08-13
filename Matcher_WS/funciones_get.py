@@ -68,3 +68,7 @@ def get_idioma():
 def elimina_tildes(s):
     return ''.join((c for c in unicodedata.normalize('NFD', s) if unicodedata.category(c) != 'Mn'))
  
+def verificarDirectorio(directorio):
+    for elem in directorio:
+        if not os.path.exists(elem):
+            os.makedirs(elem)
