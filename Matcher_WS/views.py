@@ -3389,7 +3389,7 @@ def admin_archive(request):
                     fechaMinima = match.fecha.strftime("%d/%m/%Y")
                     exito = True
 
-            return JsonResponse({'exito':exito, 'msg':msg, 'fechaMinima':fechaMinima})
+            return JsonResponse({'exito':exito,'cuenta':cuenta, 'msg':msg, 'fechaMinima':fechaMinima})
 
         if actn == 'buscarArchivos':
 
@@ -3403,7 +3403,7 @@ def admin_archive(request):
             except OSError:
                 os.makedirs(directorio)
                 archivos = os.listdir(directorio)
-                exito = True
+            exito = True
 
             return JsonResponse({'exito':exito,'archivos':archivos})
 
@@ -3592,6 +3592,39 @@ def admin_archive(request):
                 exito = False
                 msg = "Caracter inesperado, en la línea número " +str(contador+1)+ " del archivo " + archivo
                 return JsonResponse({'exito':exito,'msg':msg})
+
+        if actn == 'ejecutarArchive':
+
+            cuenta = request.POST.get('cuenta')
+            fechaMinima = request.POST.get('fechaMinima')
+            fechaMaxima = request.POST.get('fechaMaxima')
+            
+            arregloMin = fechaMinima.split('/')
+            fechaMin= datetime(int(arregloMin[2]), int(arregloMin[1]), int(arregloMin[0]))
+            
+            arregloMax = fechaMaxima.split('/')
+            fechaMax= datetime(int(arregloMax[2]), int(arregloMax[1]), int(arregloMax[0]),23,59,59)
+
+            arregloTrans = []
+            arregloTodas = []
+            
+            matchesConf = Matchconfirmado.objects.filter(fecha__range=(fechaMin,fechaMax),auto_manual=0)
+            
+            for elem in matchesConf:
+                if (elem.tc_conta.codigocuenta == cuenta):
+                    arregloTodas.append(elem)
+            
+            for elem in arregloTodas:
+                print(elem.idmatch)
+
+
+
+            #filterargs = { 'a': 1, 'b': 2, 'c': 3 }
+            #matches = Matchconfirmado.objects.filter(cuenta_idcuenta=cuenta)
+                
+            print ("paso a ejecutar archive")
+            exito = True
+            return JsonResponse({'exito':exito})
 
 
 
