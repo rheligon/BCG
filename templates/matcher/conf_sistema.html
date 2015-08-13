@@ -35,94 +35,118 @@
                 </div>
             </div>
 
-            <div class="form-group">
+            <div class="form-group has-feedback">
                 <label class="col-xs-3 control-label">Grupo Financiero</label>
                 <div class="col-xs-5">
-                    <input type="text" class="form-control" value="{{empresa.nombregrupo}}" name="g_fin" >
+                    <input type="text" class="form-control" value="{{empresa.nombregrupo}}" name="g_fin" required>
+                    <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
+                <div class="help-block with-errors"></div>
                 </div>
             </div>
 
-            <div class="form-group">
+            <div class="form-group has-feedback">
                 <label class="col-xs-3 control-label">Dirección</label>
                 <div class="col-xs-5">
-                    <input type="text" class="form-control" value="{{empresa.direccion}}" name="dir" />
+                    <input type="text" class="form-control" value="{{empresa.direccion}}" name="dir" required/>
+                    <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
+                <div class="help-block with-errors"></div>
                 </div>
             </div>
 
 
-            <div class="form-group">
+            <div class="form-group has-feedback">
                 <label class="col-xs-3 control-label">Logo:</label>
                 <div class="col-xs-5">
-                    <input type="text" class="form-control" value="{{empresa.dir_logo}}" name="logo" />
+                    <input type="text" class="form-control" value="{{empresa.dir_logo}}" name="logo" required/>
+                    <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
+                <div class="help-block with-errors"></div>
                 </div>
             </div>
 
 
-            <div class="form-group">
+            <div class="form-group has-feedback">
                 <label class="col-xs-3 control-label">BIC:</label>
                 <div class="col-xs-5">
-                    <input type="text" class="form-control" value="{{conf.bic}}" name="bic" />
+                    <input type="text" class="form-control" value="{{conf.bic}}" name="bic" required/>
+                    <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
+                <div class="help-block with-errors"></div>
                 </div>
             </div>
 
 
-            <div class="form-group">
+            <div class="form-group has-feedback">
                 <label class="col-xs-3 control-label">País:</label>
                 <div class="col-xs-5">
-                    <input type="text" class="form-control" value="{{empresa.pais}}" name="pais" />
+                    <input type="text" class="form-control" value="{{empresa.pais}}" name="pais" required/>
+                    <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
+                <div class="help-block with-errors"></div>
                 </div>
             </div>
         </div>
 
         <div class="tab-pane" id="nomen-tab">
-            <div class="form-group">
+            <div class="form-group has-feedback">
                 <label class="col-xs-3 control-label">Créditos Contabilidad:</label>
                 <div class="col-xs-5">
-                    <input type="text" class="form-control" value="{{empresa.creditoscontabilidad}}" name="c_conta" />
+                    <input type="text" class="form-control" value="{{empresa.creditoscontabilidad}}" name="c_conta" required/>
+                    <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
+                <div class="help-block with-errors"></div>
                 </div>
             </div>
             
-            <div class="form-group">
+            <div class="form-group has-feedback">
                 <label class="col-xs-3 control-label">Débitos Contabilidad:</label>
                 <div class="col-xs-5">
-                    <input type="text" class="form-control" value="{{empresa.debitoscontabilidad}}" name="d_conta" />
+                    <input type="text" class="form-control" value="{{empresa.debitoscontabilidad}}" name="d_conta" required/>
+                    <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
+                <div class="help-block with-errors"></div>
                 </div>
             </div>
 
-            <div class="form-group">
+            <div class="form-group has-feedback">
                 <label class="col-xs-3 control-label">Créditos Corresponsal:</label>
                 <div class="col-xs-5">
-                    <input type="text" class="form-control" value="{{empresa.creditoscorresponsal}}" name="c_corr" />
+                    <input type="text" class="form-control" value="{{empresa.creditoscorresponsal}}" name="c_corr" required/>
+                    <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
+                <div class="help-block with-errors"></div>
                 </div>
             </div>
 
-            <div class="form-group">
+            <div class="form-group has-feedback">
                 <label class="col-xs-3 control-label">Débitos Corresponsal:</label>
                 <div class="col-xs-5">
-                    <input type="text" class="form-control" value="{{empresa.debitoscorresponsal}}" name="d_corr" />
+                    <input type="text" class="form-control" value="{{empresa.debitoscorresponsal}}" name="d_corr" required/>
+                    <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
+                <div class="help-block with-errors"></div>
                 </div>
             </div>
         </div>
 
         <div class="tab-pane" id="conc-tab">
-            <div class="form-group">
+            <div class="form-group has-feedback">
                 <label class="col-xs-3 control-label">Persona que Autoriza la Conciliación:</label>
                 <div class="col-xs-5">
-                    <input type="text" class="form-control" value="{{empresa.autorizadopor}}" name="p_aut" />
+                    <input type="text" class="form-control" value="{{empresa.autorizadopor}}" name="p_aut" required/>
+                    <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
+                <div class="help-block with-errors"></div>
                 </div>
             </div>
 
-            <div class="form-group">
+            <div class="form-group has-feedback">
                 <label class="col-xs-3 control-label">Persona que Firma la Conciliación:</label>
                 <div class="col-xs-5">
-                    <input type="text" class="form-control" value="{{empresa.firmadopor}}" name="p_fir" />
+                    <input type="text" class="form-control" value="{{empresa.firmadopor}}" name="p_fir" required/>
+                    <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
+                <div class="help-block with-errors"></div>
                 </div>
             </div>
 
-            <div class="form-group">
+            <div class="form-group has-feedback">
                 <label class="col-xs-3 control-label">Cargo:</label>
                 <div class="col-xs-5">
-                    <input type="text" class="form-control" value="{{empresa.cargofirmante}}" name="cargo" />
+                    <input type="text" class="form-control" value="{{empresa.cargofirmante}}" name="cargo" required/>
+                    <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
+                <div class="help-block with-errors"></div>
                 </div>
             </div>
         </div>
@@ -154,35 +178,47 @@
         </div>
         <div >
             <label class="col-xs-3 control-label">Expiración de Sesión:</label>
-            <div class="col-md-3">
-                <input type="text" class="form-control" value="{{conf.expiracion_sesion}}" name="expiracion" id="expiracionid" onkeypress='return solonumero(event)' onkeyup='return solonumero(event)' required>
+            <div class="col-xs-3">
+                <input type="text" class="form-control" value="{{conf.expiracion_sesion}}" name="expiracion" id="expiracionid" onkeypress='return solonumero(event)' onkeyup='return solonumero(event)' required />
+                <p class="help-block">
+                    Tiempo en Minutos.
+                </p>
             </div>
         </div>
         <br>
         <br>
         <br>
-        <div class="form-group">
+        <br>
+        <div class="form-group has-feedback">
             <label class="col-xs-3 control-label">Contabilidad cargados:</label>
             <div class="col-xs-5">
-                <input type="text" class="form-control" value="{{conf.archcontabilidadcarg}}" name="cont_carg" />
+                <input type="text" class="form-control" value="{{conf.archcontabilidadcarg}}" name="cont_carg"  pattern="^[A-Z]+\:\\[a-zA-Z0-9-_\.\'\(\)\&\%\$\#\!\¿\¡\[\]\{\}\,\;\\]+$" oninvalid="this.setCustomValidity('Introduzca un directirio válido. Por ejemplo: C:\\Matcher\\Ruta')" oninput="setCustomValidity('')" required/>
+                <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
+                <div class="help-block with-errors"></div>
             </div>
         </div>
-        <div class="form-group">
+        <div class="form-group has-feedback">
             <label class="col-xs-3 control-label">Corresponsal Cargados:</label>
             <div class="col-xs-5">
-                <input type="text" class="form-control" value="{{conf.archswiftcarg}}" name="corr_carg" />
+                <input type="text" class="form-control" value="{{conf.archswiftcarg}}" name="corr_carg" pattern="^[A-Z]+\:\\[a-zA-Z0-9-_\.\'\(\)\&\%\$\#\!\¿\¡\[\]\{\}\,\;\\]+$" oninvalid="this.setCustomValidity('Introduzca un directirio válido. Por ejemplo: C:\\Matcher\\Ruta')" oninput="setCustomValidity('')" required/>
+                <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
+                <div class="help-block with-errors"></div>
             </div>
         </div>
-        <div class="form-group">
+        <div class="form-group has-feedback">
             <label class="col-xs-3 control-label">Contabilidad Procesados:</label>
             <div class="col-xs-5">
-                <input type="text" class="form-control" value="{{conf.archcontabilidadproc}}" name="cont_procs" />
+                <input type="text" class="form-control" value="{{conf.archcontabilidadproc}}" name="cont_procs" pattern="^[A-Z]+\:\\[a-zA-Z0-9-_\.\'\(\)\&\%\$\#\!\¿\¡\[\]\{\}\,\;\\]+$" oninvalid="this.setCustomValidity('Introduzca un directirio válido. Por ejemplo: C:\\Matcher\\Ruta')" oninput="setCustomValidity('')" required/>
+                <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
+                <div class="help-block with-errors"></div>
             </div>
         </div>
-        <div class="form-group">
+        <div class="form-group has-feedback">
             <label class="col-xs-3 control-label">Corresponsal Procesados:</label>
             <div class="col-xs-5">
-                <input type="text" class="form-control" value="{{conf.archswiftproc}}" name="corr_procs" />
+                <input type="text" class="form-control" value="{{conf.archswiftproc}}" name="corr_procs" pattern="^[A-Z]+\:\\[a-zA-Z0-9-_\.\'\(\)\&\%\$\#\!\¿\¡\[\]\{\}\,\;\\]+$" oninvalid="this.setCustomValidity('Introduzca un directirio válido. Por ejemplo: C:\\Matcher\\Ruta')" oninput="setCustomValidity('')" required/>
+                <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
+                <div class="help-block with-errors"></div>
             </div>
         </div>
     </div>
@@ -200,33 +236,41 @@
     <div class="tab-content col-md-12">
     <br/>
         <div class="tab-pane active" id="smatcher-tab">
-            <div class="form-group">
+            <div class="form-group has-feedback">
                 <label class="col-xs-3 control-label">Host:</label>
                 <div class="col-xs-5">
-                    <input type="text" class="form-control" value="{{conf.matcherhost}}" name="m-host" />
+                    <input type="text" class="form-control" value="{{conf.matcherhost}}" name="m-host" pattern="^(?!0)(?!.*\.$)((1?\d?\d|25[0-5]|2[0-4]\d)(\.|$)){4}$" oninvalid="this.setCustomValidity('Introduzca una dirección IP válida. Por ejemplo: 1.2.3.4')" oninput="setCustomValidity('')" onkeypress='return solonumeroypunto(event)' onkeyup='return solonumeroypunto(event)' required/>
+                    <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
+                    <div class="help-block with-errors"></div>
                 </div>
             </div>
 
-            <div class="form-group">
+            <div class="form-group has-feedback">
                 <label class="col-xs-3 control-label">Puerto:</label>
                 <div class="col-xs-5">
-                    <input type="text" class="form-control" value="{{conf.matcherpuerto}}" name="m-puerto" />
+                    <input type="text" class="form-control" value="{{conf.matcherpuerto}}" name="m-puerto" pattern="^[0-9]{1,5}$" oninvalid="this.setCustomValidity('Introduzca un puero válido. Por ejemplo: 1234')" oninput="setCustomValidity('')" onkeypress='return solonumero(event)' onkeyup='return solonumero(event)' required/>
+                    <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
+                    <div class="help-block with-errors"></div>
                 </div>
             </div>
         </div>
 
         <div class="tab-pane" id="ldap-tab">
-            <div class="form-group">
+            <div class="form-group has-feedback">
                 <label class="col-xs-3 control-label">IP:</label>
                 <div class="col-xs-5">
-                    <input type="text" class="form-control" value="{{conf.ldap_ip}}" name="ldap_ip" />
+                    <input type="text" class="form-control" value="{{conf.ldap_ip}}" name="ldap_ip"pattern="^(?!0)(?!.*\.$)((1?\d?\d|25[0-5]|2[0-4]\d)(\.|$)){4}$" oninvalid="this.setCustomValidity('Introduzca una dirección IP válida. Por ejemplo: 1.2.3.4')" oninput="setCustomValidity('')" onkeypress='return solonumeroypunto(event)' onkeyup='return solonumeroypunto(event)' required/>
+                    <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
+                    <div class="help-block with-errors"></div>
                 </div>
             </div>
 
-            <div class="form-group">
+            <div class="form-group has-feedback">
                 <label class="col-xs-3 control-label">Puerto:</label>
                 <div class="col-xs-5">
-                    <input type="text" class="form-control" value="{{conf.ldap_puerto}}" name="ldap_puerto" />
+                    <input type="text" class="form-control" value="{{conf.ldap_puerto}}" name="ldap_puerto" pattern="^[0-9]{1,5}$" oninvalid="this.setCustomValidity('Introduzca un puero válido. Por ejemplo: 1234')" oninput="setCustomValidity('')" onkeypress='return solonumero(event)' onkeyup='return solonumero(event)' required/>
+                    <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
+                    <div class="help-block with-errors"></div>
                 </div>
             </div>
 
@@ -240,34 +284,42 @@
 
         <div class="tab-pane" id="alerta-tab">
 
-            <div class="form-group">
+            <div class="form-group has-feedback">
                 <label class="col-xs-3 control-label">Servidor de Correos:</label>
                 <div class="col-xs-5">
                     <input type="text" class="form-control" value="{{conf.alertasservidor}}" name="a-mail" />
+                    <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
+                    <div class="help-block with-errors"></div>  
                 </div>
             </div>
 
 
-            <div class="form-group">
+            <div class="form-group has-feedback">
                 <label class="col-xs-3 control-label">Puerto:</label>
                 <div class="col-xs-5">
-                    <input type="text" class="form-control" value="{{conf.alertaspuerto}}" name="a-puerto" />
+                    <input type="text" class="form-control" value="{{conf.alertaspuerto}}" name="a-puerto" pattern="^[0-9]{1,5}$" oninvalid="this.setCustomValidity('Introduzca un puero válido. Por ejemplo: 1234')" oninput="setCustomValidity('')" onkeypress='return solonumero(event)' onkeyup='return solonumero(event)'/>
+                    <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
+                    <div class="help-block with-errors"></div>
                 </div>
             </div>
 
 
-            <div class="form-group">
+            <div class="form-group has-feedback">
                 <label class="col-xs-3 control-label">Usuario:</label>
                 <div class="col-xs-5">
                     <input type="text" class="form-control" value="{{conf.alertasusuario}}" name="a-usrn" />
+                    <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
+                    <div class="help-block with-errors"></div>
                 </div>
             </div>
 
 
-            <div class="form-group">
+            <div class="form-group has-feedback">
                 <label class="col-xs-3 control-label">Contraseña:</label>
                 <div class="col-xs-5">
                     <input type="password" class="form-control" value="{{conf.alertaspass}}" name="a-contr" />
+                    <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
+                    <div class="help-block with-errors"></div>
                 </div>
             </div>
         </div>
@@ -281,60 +333,76 @@
                 </div>
             </div>
             
-            <div class="form-group">
+            <div class="form-group has-feedback">
                 <label class="col-xs-3 control-label">Directorio de Archive:</label>
                 <div class="col-xs-5">
-                    <input type="text" class="form-control" value="{{conf.dirarchive}}" name="arch" />
+                    <input type="text" class="form-control" value="{{conf.dirarchive}}" name="arch" pattern="^[A-Z]+\:\\[a-zA-Z0-9-_\.\'\(\)\&\%\$\#\!\¿\¡\[\]\{\}\,\;\\]+$" oninvalid="this.setCustomValidity('Introduzca un directirio válido. Por ejemplo: C:\\Matcher\\Ruta')" oninput="setCustomValidity('')" />
+                <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
+                <div class="help-block with-errors"></div>
                 </div>
             </div>
 
         </div>
 
         <div class="tab-pane" id="msgSWIFT-tab">
-            <div class="form-group">
+            <div class="form-group has-feedback">
                 <label class="col-xs-3 control-label">Directorio de Salida Mtn95:</label>
                 <div class="col-xs-5">
-                    <input type="text" class="form-control" value="{{conf.dirsalida95}}" name="dir_s_mt95" />
+                    <input type="text" class="form-control" value="{{conf.dirsalida95}}" name="dir_s_mt95" pattern="^[A-Z]+\:\\[a-zA-Z0-9-_\.\'\(\)\&\%\$\#\!\¿\¡\[\]\{\}\,\;\\]+$" oninvalid="this.setCustomValidity('Introduzca un directirio válido. Por ejemplo: C:\\Matcher\\Ruta')" oninput="setCustomValidity('')" required/>
+                <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
+                <div class="help-block with-errors"></div>
                 </div>
             </div>
-            <div class="form-group">
+            <div class="form-group has-feedback">
                 <label class="col-xs-3 control-label">Directorio de Carga Mtn96:</label>
                 <div class="col-xs-5">
-                    <input type="text" class="form-control" value="{{conf.dircarga96}}" name="dir_c_mt96" />
+                    <input type="text" class="form-control" value="{{conf.dircarga96}}" name="dir_c_mt96" pattern="^[A-Z]+\:\\[a-zA-Z0-9-_\.\'\(\)\&\%\$\#\!\¿\¡\[\]\{\}\,\;\\]+$" oninvalid="this.setCustomValidity('Introduzca un directirio válido. Por ejemplo: C:\\Matcher\\Ruta')" oninput="setCustomValidity('')" required/>
+                <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
+                <div class="help-block with-errors"></div>
                 </div>
             </div>
-            <div class="form-group">
+            <div class="form-group has-feedback">
                 <label class="col-xs-3 control-label">Directorio de Salida Mtn99:</label>
                 <div class="col-xs-5">
-                    <input type="text" class="form-control" value="{{conf.dirsalida99}}" name="dir_s_mt99" />
+                    <input type="text" class="form-control" value="{{conf.dirsalida99}}" name="dir_s_mt99" pattern="^[A-Z]+\:\\[a-zA-Z0-9-_\.\'\(\)\&\%\$\#\!\¿\¡\[\]\{\}\,\;\\]+$" oninvalid="this.setCustomValidity('Introduzca un directirio válido. Por ejemplo: C:\\Matcher\\Ruta')" oninput="setCustomValidity('')" required/>
+                <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
+                <div class="help-block with-errors"></div>
                 </div>
             </div>
-            <div class="form-group">
+            <div class="form-group has-feedback">
                 <label class="col-xs-3 control-label">Directorio de Carga Mtn99:</label>
                 <div class="col-xs-5">
-                    <input type="text" class="form-control" value="{{conf.dircarga99}}" name="dir_c_mt99" />
+                    <input type="text" class="form-control" value="{{conf.dircarga99}}" name="dir_c_mt99" pattern="^[A-Z]+\:\\[a-zA-Z0-9-_\.\'\(\)\&\%\$\#\!\¿\¡\[\]\{\}\,\;\\]+$" oninvalid="this.setCustomValidity('Introduzca un directirio válido. Por ejemplo: C:\\Matcher\\Ruta')" oninput="setCustomValidity('')" required/>
+                <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
+                <div class="help-block with-errors"></div>
                 </div>
             </div>
-            <div class="form-group">
+            <div class="form-group has-feedback">
                 <label class="col-xs-3 control-label">Directorio de Procesados Mtn96:</label>
                 <div class="col-xs-5">
-                    <input type="text" class="form-control" value="{{conf.dirprocesado96}}" name="dir_p_mt96" />
+                    <input type="text" class="form-control" value="{{conf.dirprocesado96}}" name="dir_p_mt96" pattern="^[A-Z]+\:\\[a-zA-Z0-9-_\.\'\(\)\&\%\$\#\!\¿\¡\[\]\{\}\,\;\\]+$" oninvalid="this.setCustomValidity('Introduzca un directirio válido. Por ejemplo: C:\\Matcher\\Ruta')" oninput="setCustomValidity('')" required/>
+                <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
+                <div class="help-block with-errors"></div>
                 </div>
             </div>
-            <div class="form-group">
+            <div class="form-group has-feedback">
                 <label class="col-xs-3 control-label">Directorio de Procesados Mtn99:</label>
                 <div class="col-xs-5">
-                    <input type="text" class="form-control" value="{{conf.dirprocesado99}}" name="dir_p_mt99" />
+                    <input type="text" class="form-control" value="{{conf.dirprocesado99}}" name="dir_p_mt99" pattern="^[A-Z]+\:\\[a-zA-Z0-9-_\.\'\(\)\&\%\$\#\!\¿\¡\[\]\{\}\,\;\\]+$" oninvalid="this.setCustomValidity('Introduzca un directirio válido. Por ejemplo: C:\\Matcher\\Ruta')" oninput="setCustomValidity('')" required/>
+                <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
+                <div class="help-block with-errors"></div>
                 </div>
             </div>
         </div>
 
         <div class="tab-pane" id="archive-tab">
             
-            <div class="form-group">
+            <div class="form-group has-feedback">
                 <label class="col-xs-3 control-label">Directorio Archive de Matches Confirmados:</label>
                 <div class="col-xs-5">
-                    <input type="text" class="form-control" value="{{conf.dirarchiveconfirmados}}" name="archconfirm" />
+                    <input type="text" class="form-control" value="{{conf.dirarchiveconfirmados}}" name="archconfirm" pattern="^[A-Z]+\:\\[a-zA-Z0-9-_\.\'\(\)\&\%\$\#\!\¿\¡\[\]\{\}\,\;\\]+$" oninvalid="this.setCustomValidity('Introduzca un directirio válido. Por ejemplo: C:\\Matcher\\Ruta')" oninput="setCustomValidity('')" required/>
+                <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
+                <div class="help-block with-errors"></div>
                 </div>
             </div>
 
@@ -342,10 +410,12 @@
 
         <div class="tab-pane" id="licencia-tab">
             
-            <div class="form-group">
+            <div class="form-group has-feedback">
                 <label class="col-xs-3 control-label">Directorio para carga de licencia:</label>
                 <div class="col-xs-5">
-                    <input type="text" class="form-control" value="{{conf.dirlicencia}}" name="dirlicencia" />
+                    <input type="text" class="form-control" value="{{conf.dirlicencia}}" name="dirlicencia" pattern="^[A-Z]+\:\\[a-zA-Z0-9-_\.\'\(\)\&\%\$\#\!\¿\¡\[\]\{\}\,\;\\]+$" oninvalid="this.setCustomValidity('Introduzca un directirio válido. Por ejemplo: C:\\Matcher\\Ruta')" oninput="setCustomValidity('')" required/>
+                <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
+                <div class="help-block with-errors"></div>
                 </div>
             </div>
 
@@ -356,22 +426,28 @@
             <div class="form-group">
                 <label class="col-xs-3 control-label">Tiempo de Caducidad:</label>
                 <div class="input-group col-xs-5">
-                    <input type="text" class="form-control" value="{{conf.caducidad}}" name="t_cad" />
+                    <input type="text" class="form-control" value="{{conf.caducidad}}" name="t_cad"/>
+                    <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
+                    <div class="help-block with-errors"></div>
                     <span class="input-group-addon" id="basic-addon2">Días</span>
                 </div>
             </div>
             
-            <div class="form-group">
+            <div class="form-group has-feedback">
                 <label class="col-xs-3 control-label">Longitud Mínima:</label>
                 <div class="col-xs-5">
-                    <input type="text" class="form-control" value="{{conf.longitud_minima}}" name="long_min" />
+                    <input type="text" class="form-control" value="{{conf.longitud_minima}}" name="long_min" oninvalid="this.setCustomValidity('Introduzca la longitud mínima para las contraseñas')" oninput="setCustomValidity('')" onkeypress='return solonumero(event)' onkeyup='return solonumero(event)'required/>
+                    <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
+                    <div class="help-block with-errors"></div>
                 </div>
             </div>
 
-            <div class="form-group">
+            <div class="form-group has-feedback">
                 <label class="col-xs-3 control-label">Número de Intentos Fallidos:</label>
                 <div class="col-xs-5">
-                    <input type="text" class="form-control" value="{{conf.num_intentos}}" name="num_fall" />
+                    <input type="text" class="form-control" value="{{conf.num_intentos}}" name="num_fall" oninvalid="this.setCustomValidity('Introduzca el número de intentos fallidos para las contraseñas')" oninput="setCustomValidity('')" onkeypress='return solonumero(event)' onkeyup='return solonumero(event)'required/>
+                    <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
+                    <div class="help-block with-errors"></div>
                 </div>
             </div>
 
@@ -461,6 +537,16 @@ function solonumero(e) {
     var codigo;
     codigo = (document.all) ? e.keyCode : e.which;
     if (codigo > 31 && (codigo < 48 || codigo > 57) ) {
+    return false;
+    }
+    return true;
+};
+
+// funcion para aceptar solo numeros y puntos
+function solonumeroypunto(e) {
+    var codigo;
+    codigo = (document.all) ? e.keyCode : e.which;
+    if (codigo > 31 && (codigo!=46 && (codigo < 48 || codigo > 57)) ) {
     return false;
     }
     return true;
