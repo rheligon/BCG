@@ -1144,7 +1144,9 @@ def pd_partidasAbiertas(request):
             trans95 = request.POST.get('transaccion')
             clase95 = request.POST.get('clase')
             cuenta95 = request.POST.get('cuenta')
+            tipoOriginal = request.POST.get_cuentas('tipoOriginal')
             mensajeMT = ""
+            query = preg95
 
             codAux = Codigo95.objects.filter(idcodigo95=cod95)[0]
             if fecha95 != "":
@@ -1158,13 +1160,13 @@ def pd_partidasAbiertas(request):
             if clase95 == "conta":
 
                 tra = TransabiertaContabilidad.objects.filter(idtransaccion=trans95)[0]
-                Mt95.objects.create(ta_conta=tra,codigo=ref95,codigo95_idcodigo95=codAux,ref_relacion=refOrg95,query=preg95,narrativa=narra95,num_mt=tipo95,fecha_msg_original=fechad,campo79=original95)
+                Mt95.objects.create(ta_conta=tra,codigo=ref95,codigo95_idcodigo95=codAux,ref_relacion=refOrg95,query=query,narrativa=narra95,num_mt=tipo95,fecha_msg_original=fechad,campo79=original95)
                 mensajeMT = "exito"
 
             if clase95 == "corres":
                 
                 tra = TransabiertaCorresponsal.objects.filter(idtransaccion=trans95)[0]
-                Mt95.objects.create(ta_corres=tra,codigo=ref95,codigo95_idcodigo95=codAux,ref_relacion=refOrg95,query=preg95,narrativa=narra95,num_mt=tipo95,fecha_msg_original=fechad,campo79=original95) 
+                Mt95.objects.create(ta_corres=tra,codigo=ref95,codigo95_idcodigo95=codAux,ref_relacion=refOrg95,query=query,narrativa=narral95,num_mt=tipo95,fecha_msg_original=fechad,campo79=original95) 
                 mensajeMT = "exito"
 
             tn = str(timenow())
@@ -1176,7 +1178,7 @@ def pd_partidasAbiertas(request):
             aux = aux2[2]+aux2[1]+aux2[0]
             fechaNombre = aux + "_" + hora
 
-            #Buscar directorio de salida de los mensajes MT99
+            #Buscar directorio de salida de los mensajes MT95
             obj = Configuracion.objects.all()[0]
             sender = obj.bic
             directorio = obj.dirsalida95
@@ -1200,7 +1202,12 @@ def pd_partidasAbiertas(request):
             fo = open(archivo, 'w')
             fo.write( "$\n")
             if tipo95!="-1":
-                fo.write( "[M]"+tipo95+"\n")
+                if tipo95 == "103":
+                    fo.write( "[M]"+"195"+"\n")
+                if tipo95 == "202":
+                    fo.write( "[M]"+"295"+"\n")
+                if tipo95 == "950":
+                    fo.write( "[M]"+"995"+"\n")
             else:
                 fo.write( "[M]\n")
             fo.write( "[S]"+sender+"\n")
@@ -1209,14 +1216,19 @@ def pd_partidasAbiertas(request):
             fo.write( "[21]"+refOrg95+"\n")
             if cod2 == 7 or cod2 == 11 or cod2 == 12 or cod2 == 13 or cod2 == 17 or cod2 == 19 or cod2 == 20 or cod2 == 22 or (23<=cod2<=29) or (30<=cod2<=35) or cod2 == 38 or (40 <= cod2 <=45) or (48 <= cod2 <= 52): 
                 cod2 = str(cod2)
-                fo.write( "[75]"+cod2+"/"+narra95+"\n")
+                fo.write( "[75]"+cod2+"/"+original95+"\n")
             else:
                 cod2 = str(cod2)
                 fo.write("[75]"+cod2+"\n")
             if narra95 != "":
                 fo.write( "[77A]"+narra95+"\n")
             if tipo95!="-1":
-                fo.write( "[11a]"+tipo95+fechaArchivo+"\n")
+                if tipoOriginal == "R":
+                    fo.write( "[11R]"+tipo95+fechaArchivo+"\n")    
+                elif tipoOriginal == "S":
+                    fo.write( "[11S]"+tipo95+fechaArchivo+"\n")
+                else:
+                    fo.write( "[11a]"+tipo95+fechaArchivo+"\n")
             if original95!="":
                 fo.write( "[79]"+original95+"\n");
             fo.write( "@@")
@@ -1966,14 +1978,14 @@ def mtn96(request):
                         auxCuenta+=1
                         line = lines[cuenta]
 
-                        while (line[:5] != "[11a]" and line[:4] != "[79]" and line[:2] != "@@"):
+                        while (line[:5] != "[11a]" and line[:5] != "[11R]" and line[:5] != "[11S]" and line[:4] != "[79]" and line[:2] != "@@"):
                                     
                             narrativaCargar = narrativaCargar + line
                             cuenta+=1
                             auxCuenta+=1
                             line = lines[cuenta]
 
-                        if line[:5] == "[11a]":
+                        if line[:5] == "[11a]" or line[:5] == "[11R]" or line[:5] == "[11S]":
                             fechaCargar = line[8:].strip()
                             cuenta+=1
                             auxCuenta+=1

@@ -310,6 +310,7 @@ table {
             <option value="-1">---</option>
             <option value="103">103</option>
             <option value="202">202</option>
+            <option value="950">950</option>
           </select>
           <p class="help-block">
             Este campo no es indispensable.
@@ -343,15 +344,28 @@ table {
     </td>
     <td class="col-md-6 ">
       <div class="col-md-7 form-group">
-        <label class="col-md-4 control-label" >Descripción Mesj. Original:</label>
+        <label class="col-md-4 control-label" >Narrativa:</label>
         <div class="col-md-8">
-          <textarea class="form-control input-sm" name="originalMT" id="original" type="text" maxlength="45" placeholder="Ingrese la Descripción del mensaje original" required autofocus/></textarea>
+          <textarea class="form-control input-sm" name="narrativaMT" id="narrativa" type="text" maxlength="45" placeholder="Ingrese la Descripción del mensaje original" required autofocus/></textarea>
           <p class="help-block">
             Este campo no es indispensable.
           </p> 
         </div>
       </div>
     </td>
+    <div class="col-md-7 form-group">
+      <label class="col-md-4 control-label" >Enviado/Recibido:</label>
+      <div class="col-md-4">
+        <select id="claseOriginal" name="claseOriginalN" class="form-control">
+          <option value="-1">---</option>
+          <option value="S">Enviado</option>
+          <option value="R">Recibido</option>
+        </select>
+        <p class="help-block">
+          Este campo no es indispensable.
+        </p> 
+      </div>
+    </div>
     <td class="col-md-10">
       <div class="col-md-8 form-group">
         <tr>
