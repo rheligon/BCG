@@ -25,7 +25,7 @@ from Matcher_WS.edo_cuenta import edoCta, edc_list, Trans, Bal
 from Matcher_WS.mailConf import enviar_mail
 from Matcher_WS.cargaAutomatica import leer_linea_conta, leer_linea_corr, leer_punto_coma, validar_archivo
 from Matcher_WS.Matcher_call import matcher, dma_millis
-from Matcher_WS.funciones_get import get_ops, get_cuentas, get_ci, get_idioma, get_bancos, get_archivosMT99, get_archivosMT96, get_codigos95,elimina_tildes
+from Matcher_WS.funciones_get import get_ops, get_cuentas, get_ci, get_idioma, get_bancos, get_archivosMT99, get_archivosMT96, get_codigos95,elimina_tildes, get_archivosLicencia
 from Matcher_WS.generar_reporte import generarReporte, pdfView, xlsView
 from Matcher_WS.setConsolidado import setConsolidado
 
@@ -109,6 +109,7 @@ def usr_login(request):
             print (e)   
             message ='Ese usuario no existe en la base de datos.'
 
+    expirarSesion(request)
     context = {'message': message}
     template = "matcher/login.html"
     return render(request, template, context)
@@ -148,6 +149,7 @@ def listar_cuentas(request):
 
     context = {'cuentas': get_cuentas(request), 'ops':get_ops(request)}
     template = "matcher/listarCuentas.html"
+    expirarSesion(request)
 
     return render(request, template, context)
 
@@ -156,6 +158,7 @@ def listar_cuentas(request):
 def resumen_cuenta(request, cuenta_id):
 
     conciliacion = Conciliacionconsolidado.objects.filter(cuenta_idcuenta = cuenta_id)
+    expirarSesion(request)
 
     if conciliacion:
         cons = conciliacion[0]
@@ -188,6 +191,7 @@ def resumen_cuenta(request, cuenta_id):
 @login_required(login_url='/login')
 def pd_estadoCuentas(request):
 
+    expirarSesion(request)
     if request.method == 'POST':
 
         cuentaid = int(request.POST.get('cuentaid'))
@@ -246,6 +250,7 @@ def pd_estadoCuentas(request):
 @login_required(login_url='/login')
 def pd_cargaAutomatica(request):
 
+    expirarSesion(request)
     if request.method == 'POST':
         actn = request.POST.get('action')
         msg = ""
@@ -638,6 +643,7 @@ def pd_cargaAutomatica(request):
 @login_required(login_url='/login')
 def pd_cargaManual(request):
 
+    expirarSesion(request)
     if request.method == 'POST':
         actn = request.POST.get('action')
         if actn == 'buscar':
@@ -773,6 +779,7 @@ def pd_cargaManual(request):
 
 @login_required(login_url='/login')
 def pd_match(request):
+    expirarSesion(request)
     if request.method == 'POST':
         actn = request.POST.get('action')
         if actn == 'buscar':
@@ -859,6 +866,7 @@ def pd_match(request):
 
 @login_required(login_url='/login')
 def pd_matchesPropuestos(request, cuenta):
+    expirarSesion(request)
     if request.method == 'POST':
         my_dict = dict(request.POST)
         del my_dict['csrfmiddlewaretoken'] #Sirve para quitar el token antiforgery del diccionario
@@ -906,6 +914,7 @@ def pd_matchesPropuestos(request, cuenta):
 @login_required(login_url='/login')
 def pd_detallesMT(request, mensaje,tipo):
 
+    expirarSesion(request)
     if request.method == 'GET':
 
         msj = ""
@@ -950,6 +959,7 @@ def pd_detallesMT(request, mensaje,tipo):
 
 @login_required(login_url='/login')
 def pd_partidasAbiertas(request):
+    expirarSesion(request)
     if request.method == 'POST':
         actn = request.POST.get('action')
 
@@ -1228,6 +1238,7 @@ def pd_partidasAbiertas(request):
 @login_required(login_url='/login')
 def pd_matchesConfirmados(request,cuenta):
 
+    expirarSesion(request)
     if request.method == 'POST':
         actn = request.POST.get('action')
 
@@ -1376,6 +1387,7 @@ def pd_matchesConfirmados(request,cuenta):
 
 @login_required(login_url='/login')
 def pd_conciliacion(request):
+    expirarSesion(request)
     template = "matcher/pd_conciliacion.html"
     fecha_hoy = ("/").join(str(timenow().date()).split("-")[::-1])
 
@@ -1385,6 +1397,7 @@ def pd_conciliacion(request):
 @login_required(login_url='/login')
 def reportes(request):
 
+    expirarSesion(request)
     if request.method == 'POST':
         reporte = request.POST.get('rep')
         tipoarch = request.POST.get('tipoArch')
@@ -1790,6 +1803,7 @@ def reportes(request):
 
 @login_required(login_url='/login')
 def mensajesSWIFT(request):
+    expirarSesion(request)
     template = "matcher/admin_criteriosyreglas.html"
     context = {'ops':get_ops(request)}
     return render(request, template, context)
@@ -1797,6 +1811,7 @@ def mensajesSWIFT(request):
 @login_required(login_url='/login')
 def mtn96(request):
 
+    expirarSesion(request)
     if request.method == 'GET':
         template = "matcher/mtn96.html"
         context = {'ops':get_ops(request), 'archivos':get_archivosMT96()}
@@ -2042,6 +2057,7 @@ def mtn96(request):
 @login_required(login_url='/login')
 def mtn99(request):
 
+    expirarSesion(request)
     if request.method == 'GET':
         template = "matcher/mtn99.html"
         context = {'ops':get_ops(request), 'bancos':get_bancos(), 'archivos':get_archivosMT99()}
@@ -2262,6 +2278,7 @@ def mtn99(request):
 
 @login_required(login_url='/login')
 def intraday(request):
+    expirarSesion(request)
     if request.method == 'GET':
         context = {'ops':get_ops(request)}
         template = "matcher/intraday.html"
@@ -2270,6 +2287,7 @@ def intraday(request):
 
 @login_required(login_url='/login')
 def configuracion(request, tipo):
+    expirarSesion(request)
     if request.method == 'POST':
 
         if tipo == "sis":
@@ -2347,6 +2365,7 @@ def configuracion(request, tipo):
                 dir_p_mt96 = request.POST.get('dir_p_mt96')
                 dir_p_mt99 = request.POST.get('dir_p_mt99')
                 dirlicencia = request.POST.get('dirlicencia')
+                expiracion = request.POST.get('expiracion')
                 idioma = request.POST.get('Idiom-sel')
 
                 ce = request.POST.get('ce')
@@ -2385,6 +2404,7 @@ def configuracion(request, tipo):
                 conf.dirprocesado96 = dir_p_mt96
                 conf.dirprocesado99 = dir_p_mt99
                 conf.dirlicencia = dirlicencia
+                conf.expiracion_sesion = expiracion
                 conf.idioma = int(idioma)
 
                 # Chequeando checkboxes
@@ -2502,6 +2522,7 @@ def configuracion(request, tipo):
 
 @login_required(login_url='/login')
 def seg_Usuarios(request):
+    expirarSesion(request)
     if request.method == "POST":
         actn = request.POST.get('action')
 
@@ -2716,6 +2737,7 @@ def seg_Usuarios(request):
 
 @login_required(login_url='/login')
 def seg_Perfiles(request):
+    expirarSesion(request)
     if request.method == "POST":
         actn = request.POST.get('action')
         
@@ -2809,6 +2831,7 @@ def seg_Perfiles(request):
 
 @login_required(login_url='/login')
 def seg_Logs(request):
+    expirarSesion(request)
     if request.method == "POST":
         desde = request.POST.get('desde')
         hasta = request.POST.get('hasta')
@@ -2859,6 +2882,7 @@ def seg_Logs(request):
 
 @login_required(login_url='/login')
 def seg_backupRestore(request):
+    expirarSesion(request)
     if request.method == "POST":
         actn = request.POST.get("action")
 
@@ -2920,6 +2944,7 @@ def seg_backupRestore(request):
 @login_required(login_url='/login')
 def admin_bancos(request):
 
+    expirarSesion(request)
     if request.method == 'POST':
         actn = request.POST.get('action')
 
@@ -2991,6 +3016,7 @@ def admin_bancos(request):
 @login_required(login_url='/login')
 def admin_monedas(request):
 
+    expirarSesion(request)
     if request.method == 'POST':
         actn = request.POST.get('action')
 
@@ -3060,6 +3086,7 @@ def admin_monedas(request):
 
 @login_required(login_url='/login')
 def admin_cuentas(request):
+    expirarSesion(request)
     if request.method == 'POST':
         actn = request.POST.get('action')
 
@@ -3296,6 +3323,7 @@ def admin_cuentas(request):
 
 @login_required(login_url='/login')
 def admin_archive(request):
+    expirarSesion(request)
     if request.method == 'GET':
         
         template = "matcher/admin_archive.html"
@@ -3551,6 +3579,7 @@ def admin_archive(request):
 
 @login_required(login_url='/login')
 def admin_reglas_transf(request):
+    expirarSesion(request)
     if request.method == 'POST':
         
         actn = request.POST.get('action')
@@ -3649,6 +3678,7 @@ def admin_reglas_transf(request):
 @login_required(login_url='/login')
 def admin_crit_reglas(request):
 
+    expirarSesion(request)
     if request.method == 'POST':
         actn = request.POST.get('action')
 
@@ -3749,14 +3779,16 @@ def admin_crit_reglas(request):
 
 @login_required(login_url='/login')
 def admin_licencia(request):
+    expirarSesion(request)
     if request.method == 'GET':
         template = "matcher/admin_licencia.html"
         criterios = CriteriosMatch.objects.all()
-        context = {'ops':get_ops(request)}
+        context = {'ops':get_ops(request),'archivos':get_archivosLicencia()}
         return render(request, template, context)
 
 @login_required(login_url='/login')
 def manual_usuario(request):
+    expirarSesion(request)
     try:
         with open('static/Manuales/Manual del Usuario/Manual del Usuario.pdf', 'rb') as pdf:
             response = HttpResponse(pdf.read(),content_type='application/pdf')
@@ -3767,6 +3799,7 @@ def manual_usuario(request):
 
 @login_required(login_url='/login')
 def manual_sistema(request):
+    expirarSesion(request)
     try:
         with open('static/Manuales/Manual del Sistema/Manual del Sistema.pdf', 'rb') as pdf:
             response = HttpResponse(pdf.read(),content_type='application/pdf')
@@ -3777,6 +3810,7 @@ def manual_sistema(request):
 
 @login_required(login_url='/login')
 def sobre_matcher(request):
+    expirarSesion(request)
     try:
         with open('static/Manuales/Manual del Sistema/Manual del Sistema.pdf', 'rb') as pdf:
             response = HttpResponse(pdf.read(),content_type='application/pdf')
@@ -3787,6 +3821,7 @@ def sobre_matcher(request):
 
 @login_required(login_url='/login')
 def SU_licencia(request):
+    expirarSesion(request)
     template = "matcher/SU_licencia.html"
     context = {'ops':get_ops(request)}
     return render(request, template, context)
@@ -3794,6 +3829,7 @@ def SU_licencia(request):
 @login_required(login_url='/login')
 def SU_modulos(request):
 
+    expirarSesion(request)
     if request.method == 'GET':
         template = "matcher/SU_modulos.html"
         modulos = Modulos.objects.exclude(opcion=15)
@@ -3821,6 +3857,7 @@ def SU_modulos(request):
 
 @login_required(login_url='/login')
 def SU_version(request):
+    expirarSesion(request)
     if request.method == 'GET':
         template = "matcher/SU_version.html"
         version = Version.objects.all()[0]
@@ -3828,21 +3865,25 @@ def SU_version(request):
         return render(request, template, context)
 
 def custom_404(request):
+    expirarSesion(request)
     template = "matcher/404.html"
     context = {'ops':get_ops(request)}
     return render(request,template, context)
 
 def custom_500(request):
+    expirarSesion(request)
     template = "matcher/500.html"
     context = {'ops':get_ops(request)}
     return render(request,template, context)
 
 def custom_403(request):
+    expirarSesion(request)
     template = "matcher/403.html"
     context = {'ops':get_ops(request)}
     return render(request,template, context)
 
 def custom_400(request):
+    expirarSesion(request)
     template = "matcher/400.html"
     context = {'ops':get_ops(request)}
     return render(request,template, context)
@@ -3878,3 +3919,8 @@ def log(request,eid,detalles=None):
         Traza.objects.create(evento_idevento=evento,usuario=nombre, fecha_hora=fechaHora, terminal=terminal, detalles=detalles)
     else:
         Traza.objects.create(evento_idevento=evento,usuario=nombre, fecha_hora=fechaHora, terminal=terminal)
+
+def expirarSesion(request):
+    config = Configuracion.objects.all()[0]
+    tiempo = config.expiracion_sesion * 60 
+    request.session.set_expiry(tiempo)

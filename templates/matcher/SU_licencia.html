@@ -36,7 +36,7 @@
         <div class="col-md-7 form-group">
             <label class="col-md-4 control-label" >Número de Usuarios:</label>
                 <div class="col-md-4">
-                    <input class="form-control" name="numUserLicenciaN" id="numUserLicencia" type="number" min="0" max="500" maxlength="3" required>
+                    <input class="form-control" name="numUserLicenciaN" id="numUserLicencia" type="text" onkeypress='return solonumero(event)' onkeyup='return solonumero(event)' required>
                 </div>
         </div>
     </td>

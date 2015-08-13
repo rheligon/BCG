@@ -24,10 +24,20 @@ $("#numUserLicencia").TouchSpin({
     verticalbuttons: true,
     verticalupclass: 'glyphicon glyphicon-plus',
     verticaldownclass: 'glyphicon glyphicon-minus',
-    min: 0,
+    min: 1,
     max: 100,
     step: 1,
 });
+
+// funcion para aceptar solo numeros
+function solonumero(e) {
+    var codigo;
+    codigo = (document.all) ? e.keyCode : e.which;
+    if (codigo > 31 && (codigo < 48 || codigo > 57) ) {
+    return false;
+    }
+    return true;
+};
 
 //Boton para salvar los cambios realizados
 $('#guardarCambiosButton').on('click', function () {
