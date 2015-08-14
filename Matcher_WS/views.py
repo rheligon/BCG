@@ -2,7 +2,7 @@ from django.core import serializers
 from django.core.mail import send_mail
 from django.shortcuts import render, get_object_or_404
 from django.contrib import auth
-from django.http import HttpResponseRedirect, HttpResponse, JsonResponse, HttpResponseNotFound
+from django.http import HttpResponseRedirect, HttpResponse, JsonResponse, HttpResponseNotFound, HttpResponseForbidden
 from django.contrib.auth.decorators import login_required
 from django.utils import timezone
 from django.contrib.auth.forms import UserCreationForm
@@ -147,18 +147,29 @@ def usr_logout(request):
 @login_required(login_url='/login')
 def listar_cuentas(request):
 
+    permisos = get_ops(request)
+    if not 1 in permisos:
+        retour = custom_403(request)
+        return HttpResponseForbidden(retour)
+
+    expirarSesion(request)
     context = {'cuentas': get_cuentas(request), 'ops':get_ops(request)}
     template = "matcher/listarCuentas.html"
-    expirarSesion(request)
-
+    
     return render(request, template, context)
 
 
 @login_required(login_url='/login')
 def resumen_cuenta(request, cuenta_id):
 
-    conciliacion = Conciliacionconsolidado.objects.filter(cuenta_idcuenta = cuenta_id)
+    permisos = get_ops(request)
+    if not 1 in permisos:
+        retour = custom_403(request)
+        return HttpResponseForbidden(retour)
+
     expirarSesion(request)
+    conciliacion = Conciliacionconsolidado.objects.filter(cuenta_idcuenta = cuenta_id)
+    empresa = Empresa.objects.all()[0]
 
     if conciliacion:
         cons = conciliacion[0]
@@ -183,7 +194,7 @@ def resumen_cuenta(request, cuenta_id):
         cod = ['C']*4
 
 
-    context = {'cuenta': cuenta, 'cons':cons, 'cod': cod, 'ops':get_ops(request)}
+    context = {'cuenta': cuenta, 'cons':cons, 'cod': cod, 'ops':get_ops(request), 'empresa':empresa}
     template = "matcher/ResumenCuenta.html"
 
     return render(request, template, context)
@@ -242,6 +253,11 @@ def pd_estadoCuentas(request):
         
     if request.method == 'GET':
 
+        permisos = get_ops(request)
+        if not 1 in permisos:
+            retour = custom_403(request)
+            return HttpResponseForbidden(retour)
+
         context = {'cuentas': get_cuentas(request), 'ops':get_ops(request)}
         template = "matcher/pd_estadoCuentas.html"
 
@@ -249,6 +265,11 @@ def pd_estadoCuentas(request):
 
 @login_required(login_url='/login')
 def pd_cargaAutomatica(request):
+
+    permisos = get_ops(request)
+    if not 1 in permisos:
+        retour = custom_403(request)
+        return HttpResponseForbidden(retour)
 
     expirarSesion(request)
     if request.method == 'POST':
@@ -643,6 +664,11 @@ def pd_cargaAutomatica(request):
 @login_required(login_url='/login')
 def pd_cargaManual(request):
 
+    permisos = get_ops(request)
+    if not 1 in permisos:
+        retour = custom_403(request)
+        return HttpResponseForbidden(retour)
+
     expirarSesion(request)
     if request.method == 'POST':
         actn = request.POST.get('action')
@@ -779,6 +805,12 @@ def pd_cargaManual(request):
 
 @login_required(login_url='/login')
 def pd_match(request):
+    
+    permisos = get_ops(request)
+    if not 1 in permisos:
+        retour = custom_403(request)
+        return HttpResponseForbidden(retour)
+
     expirarSesion(request)
     if request.method == 'POST':
         actn = request.POST.get('action')
@@ -866,6 +898,12 @@ def pd_match(request):
 
 @login_required(login_url='/login')
 def pd_matchesPropuestos(request, cuenta):
+    
+    permisos = get_ops(request)
+    if not 1 in permisos:
+        retour = custom_403(request)
+        return HttpResponseForbidden(retour)
+
     expirarSesion(request)
     if request.method == 'POST':
         my_dict = dict(request.POST)
@@ -914,6 +952,11 @@ def pd_matchesPropuestos(request, cuenta):
 @login_required(login_url='/login')
 def pd_detallesMT(request, mensaje,tipo):
 
+    permisos = get_ops(request)
+    if not 1 in permisos:
+        retour = custom_403(request)
+        return HttpResponseForbidden(retour)
+
     expirarSesion(request)
     if request.method == 'GET':
 
@@ -959,6 +1002,12 @@ def pd_detallesMT(request, mensaje,tipo):
 
 @login_required(login_url='/login')
 def pd_partidasAbiertas(request):
+    
+    permisos = get_ops(request)
+    if not 1 in permisos:
+        retour = custom_403(request)
+        return HttpResponseForbidden(retour)
+
     expirarSesion(request)
     if request.method == 'POST':
         actn = request.POST.get('action')
@@ -1257,6 +1306,11 @@ def pd_partidasAbiertas(request):
 @login_required(login_url='/login')
 def pd_matchesConfirmados(request,cuenta):
 
+    permisos = get_ops(request)
+    if not 1 in permisos:
+        retour = custom_403(request)
+        return HttpResponseForbidden(retour)
+
     expirarSesion(request)
     if request.method == 'POST':
         actn = request.POST.get('action')
@@ -1406,6 +1460,12 @@ def pd_matchesConfirmados(request,cuenta):
 
 @login_required(login_url='/login')
 def pd_conciliacion(request):
+    
+    permisos = get_ops(request)
+    if not 1 in permisos:
+        retour = custom_403(request)
+        return HttpResponseForbidden(retour)
+        
     expirarSesion(request)
     template = "matcher/pd_conciliacion.html"
     fecha_hoy = ("/").join(str(timenow().date()).split("-")[::-1])
