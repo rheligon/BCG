@@ -1144,29 +1144,36 @@ def pd_partidasAbiertas(request):
             trans95 = request.POST.get('transaccion')
             clase95 = request.POST.get('clase')
             cuenta95 = request.POST.get('cuenta')
-            tipoOriginal = request.POST.get_cuentas('tipoOriginal')
+            tipoOriginal = request.POST.get('tipoOriginal')
             mensajeMT = ""
             query = preg95
 
             codAux = Codigo95.objects.filter(idcodigo95=cod95)[0]
             if fecha95 != "":
                 fechad = datetime.strptime(fecha95, '%d/%m/%Y')
+            else:
+                fechad = None
 
-            if tipo95 == "":
-                tipo95 = None
-
-            fechad = None   
+            if tipo95 == "" or tipo95 =="-1":
+                tipo95a = None
+            else:
+                if tipo95 == "103":
+                    tipo95a = "195"
+                if tipo95 == "202":
+                    tipo95a = "295"
+                if tipo95 == "950":
+                    tipo95a = "995"
 
             if clase95 == "conta":
 
                 tra = TransabiertaContabilidad.objects.filter(idtransaccion=trans95)[0]
-                Mt95.objects.create(ta_conta=tra,codigo=ref95,codigo95_idcodigo95=codAux,ref_relacion=refOrg95,query=query,narrativa=narra95,num_mt=tipo95,fecha_msg_original=fechad,campo79=original95)
+                Mt95.objects.create(ta_conta=tra,codigo=ref95,codigo95_idcodigo95=codAux,ref_relacion=refOrg95,query=query,narrativa=narra95,num_mt=tipo95a,fecha_msg_original=fechad,campo79=original95)
                 mensajeMT = "exito"
 
             if clase95 == "corres":
                 
                 tra = TransabiertaCorresponsal.objects.filter(idtransaccion=trans95)[0]
-                Mt95.objects.create(ta_corres=tra,codigo=ref95,codigo95_idcodigo95=codAux,ref_relacion=refOrg95,query=query,narrativa=narral95,num_mt=tipo95,fecha_msg_original=fechad,campo79=original95) 
+                Mt95.objects.create(ta_corres=tra,codigo=ref95,codigo95_idcodigo95=codAux,ref_relacion=refOrg95,query=query,narrativa=narral95,num_mt=tipo95a,fecha_msg_original=fechad,campo79=original95) 
                 mensajeMT = "exito"
 
             tn = str(timenow())
@@ -1889,6 +1896,12 @@ def mtn96(request):
                             return JsonResponse({'mens':mensaje})
                         tipoCargar = line[3:]
                         tipoCargar = tipoCargar[:3].strip()
+                        print("eeeeees: " + tipoCargar[-2:].strip())
+                        if tipoCargar[-2:].strip() != "96":
+                            mensaje = "El tipo del mensaje no corresponde a un MTn96,error en la línea número " +str(i+auxCuenta+1)+ " del archivo"
+                            #cerrar archivo
+                            fo.close()
+                            return JsonResponse({'mens':mensaje})
                     if j%8 == 2:
                         opcion = line[:3]
                         if opcion != "[S]":
@@ -1964,7 +1977,7 @@ def mtn96(request):
                     if j%8 == 7:
                         opcion = line[:5]
                         if opcion != "[77A]":
-                            mensaje = "Caracter inesperado en narrativa del mensaje,  en la linea numero " +str(i+auxCuenta+1)+ " del archivo"
+                            mensaje = "Caracter inesperado en la forma narrativa de la respuesta,  en la linea numero " +str(i+auxCuenta+1)+ " del archivo"
                             #cerrar archivo
                             fo.close()
                             return JsonResponse({'mens':mensaje})

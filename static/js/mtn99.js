@@ -61,47 +61,6 @@ function iniciar_tabla_detalle(idioma){
 }
 
 
-
-// Para esconder los div de crear y cargar la primera vez que se entra a la vista
-if($('#buscar-cb:checked')){
-    document.getElementById("MT99-crear").style.display = "none";
-    document.getElementById("MT99-cargar").style.display = "none";
-    document.getElementById("MT99-cargar").style.display = "none";
-    document.getElementById("MT99-verDetalle").style.display = "none";
-    document.getElementById("MT99-buscar").style.display = "block";
-}
-
-//Mostrar div de opciones dependiendo del filtro (buscar, crear o cargar MT)
-$('.cbfilter1').on('click', function(){
-
-    var idaux = $(this).attr('id').split('-')[0];
-    var id = '#MT99-'+idaux;
-
-    if (idaux==='buscar'){
-
-        document.getElementById("MT99-crear").style.display = "none";
-        document.getElementById("MT99-cargar").style.display = "none";
-        document.getElementById("MT99-verDetalle").style.display = "none";
-        document.getElementById("MT99-buscar").style.display = "block";
-    }
-
-    if (idaux==='crear'){
-        document.getElementById("MT99-buscar").style.display = "none";
-        document.getElementById("MT99-cargar").style.display = "none";
-        document.getElementById("MT99-verDetalle").style.display = "none";
-        document.getElementById("MT99-crear").style.display = "block";
-    }
-
-    if (idaux==='cargar'){
-        
-        document.getElementById("MT99-buscar").style.display = "none";
-        document.getElementById("MT99-crear").style.display = "none";
-        document.getElementById("MT99-verDetalle").style.display = "none";
-        document.getElementById("MT99-cargar").style.display = "block";
-    }
-
-});
-
 //Boton para buscar MTx99
 $('#confButton').on('click', function () {
     var banco = $('#mtx99_banco').val()
@@ -262,9 +221,7 @@ function verDetalle(){
             if (idaux===j){
 
                
-                document.getElementById("MT99-buscar").style.display = "none";
-                document.getElementById("MT99-crear").style.display = "none";
-                document.getElementById("MT99-cargar").style.display = "none";
+                document.getElementById("MT99-normal").style.display = "none";
 
                 $("#narrativaValue").empty();
                 $( ".value" ).html(narrativas[i]);
@@ -281,9 +238,7 @@ function verDetalle(){
 $('#regresarMTButton').on('click', function () {
 
     document.getElementById("MT99-verDetalle").style.display = "none";
-    document.getElementById("MT99-crear").style.display = "none";
-    document.getElementById("MT99-cargar").style.display = "none";
-    document.getElementById("MT99-buscar").style.display = "block";
+    document.getElementById("MT99-normal").style.display = "block";
     $("input:radio").attr("checked", false);
 
 });    

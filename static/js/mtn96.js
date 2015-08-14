@@ -1,4 +1,4 @@
-var csrftoken = $.cookie('csrftoken');
+    var csrftoken = $.cookie('csrftoken');
 
 //Boton para cargar MTn96
 $('#cargarMT96Button').on('click', function () {
@@ -25,7 +25,7 @@ function cargarmtn96(archivo){
         success: function(data){
             var errorMensaje = data.mens.substring(0,8);
             var mensaje = data.mens;
-            if (errorMensaje === "Caracter" || errorMensaje === "No se ti"  || errorMensaje === "El códig"){
+            if (errorMensaje === "Caracter" || errorMensaje === "No se ti"  || errorMensaje === "El códig" || errorMensaje === "El tipo "){
 
                 $('#processing-modal').modal('toggle');
                 swal("Ups", mensaje, "error");
