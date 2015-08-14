@@ -56,6 +56,7 @@ urlpatterns = patterns('',
     url(r'^seguridad/perfiles/$', 'Matcher_WS.views.seg_Perfiles', name='seg_perfiles'),
     url(r'^seguridad/logs/$', 'Matcher_WS.views.seg_Logs', name='seg_logs'),
     url(r'^seguridad/backup_restore/$', 'Matcher_WS.views.seg_backupRestore', name='seg_backupRestore'),
+    url(r'^seguridad/licencia/$', 'Matcher_WS.views.seg_licencia', name='seg_licencia'),
 
     # Administración
     url(r'^admin/bancos/$', 'Matcher_WS.views.admin_bancos', name='admin_bancos'),
@@ -64,7 +65,6 @@ urlpatterns = patterns('',
     url(r'^admin/archive/$', 'Matcher_WS.views.admin_archive', name='admin_archive'),
     url(r'^admin/criterios_reglas/$', 'Matcher_WS.views.admin_crit_reglas', name='admin_crit_reglas'),
     url(r'^admin/reglas_transf/$', 'Matcher_WS.views.admin_reglas_transf', name='admin_reglas_transf'),
-    url(r'^admin/licencia/$', 'Matcher_WS.views.admin_licencia', name='admin_licencia'),
 
     #Ayudas
     url(r'^ayuda/usuario/$', 'Matcher_WS.views.manual_usuario', name='manual_usuario'),

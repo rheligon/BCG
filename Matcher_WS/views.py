@@ -148,7 +148,10 @@ def usr_logout(request):
 def listar_cuentas(request):
 
     permisos = get_ops(request)
-    if not 1 in permisos:
+    lista = [Opcion.objects.get(idopcion=p).funprincipal for p in permisos]
+    lista.sort()
+    lista = set(lista)
+    if not 1 in lista:
         retour = custom_403(request)
         return HttpResponseForbidden(retour)
 
@@ -163,7 +166,10 @@ def listar_cuentas(request):
 def resumen_cuenta(request, cuenta_id):
 
     permisos = get_ops(request)
-    if not 1 in permisos:
+    lista = [Opcion.objects.get(idopcion=p).funprincipal for p in permisos]
+    lista.sort()
+    lista = set(lista)
+    if not 1 in lista:
         retour = custom_403(request)
         return HttpResponseForbidden(retour)
 
@@ -202,7 +208,16 @@ def resumen_cuenta(request, cuenta_id):
 @login_required(login_url='/login')
 def pd_estadoCuentas(request):
 
+    permisos = get_ops(request)
+    lista = [Opcion.objects.get(idopcion=p).funprincipal for p in permisos]
+    lista.sort()
+    lista = set(lista)
+    if not 1 in lista:
+        retour = custom_403(request)
+        return HttpResponseForbidden(retour)
+
     expirarSesion(request)
+
     if request.method == 'POST':
 
         cuentaid = int(request.POST.get('cuentaid'))
@@ -253,11 +268,6 @@ def pd_estadoCuentas(request):
         
     if request.method == 'GET':
 
-        permisos = get_ops(request)
-        if not 1 in permisos:
-            retour = custom_403(request)
-            return HttpResponseForbidden(retour)
-
         context = {'cuentas': get_cuentas(request), 'ops':get_ops(request)}
         template = "matcher/pd_estadoCuentas.html"
 
@@ -267,7 +277,10 @@ def pd_estadoCuentas(request):
 def pd_cargaAutomatica(request):
 
     permisos = get_ops(request)
-    if not 1 in permisos:
+    lista = [Opcion.objects.get(idopcion=p).funprincipal for p in permisos]
+    lista.sort()
+    lista = set(lista)
+    if not 1 in lista:
         retour = custom_403(request)
         return HttpResponseForbidden(retour)
 
@@ -665,7 +678,10 @@ def pd_cargaAutomatica(request):
 def pd_cargaManual(request):
 
     permisos = get_ops(request)
-    if not 1 in permisos:
+    lista = [Opcion.objects.get(idopcion=p).funprincipal for p in permisos]
+    lista.sort()
+    lista = set(lista)
+    if not 1 in lista:
         retour = custom_403(request)
         return HttpResponseForbidden(retour)
 
@@ -807,7 +823,10 @@ def pd_cargaManual(request):
 def pd_match(request):
     
     permisos = get_ops(request)
-    if not 1 in permisos:
+    lista = [Opcion.objects.get(idopcion=p).funprincipal for p in permisos]
+    lista.sort()
+    lista = set(lista)
+    if not 1 in lista:
         retour = custom_403(request)
         return HttpResponseForbidden(retour)
 
@@ -900,7 +919,10 @@ def pd_match(request):
 def pd_matchesPropuestos(request, cuenta):
     
     permisos = get_ops(request)
-    if not 1 in permisos:
+    lista = [Opcion.objects.get(idopcion=p).funprincipal for p in permisos]
+    lista.sort()
+    lista = set(lista)
+    if not 1 in lista:
         retour = custom_403(request)
         return HttpResponseForbidden(retour)
 
@@ -953,7 +975,10 @@ def pd_matchesPropuestos(request, cuenta):
 def pd_detallesMT(request, mensaje,tipo):
 
     permisos = get_ops(request)
-    if not 1 in permisos:
+    lista = [Opcion.objects.get(idopcion=p).funprincipal for p in permisos]
+    lista.sort()
+    lista = set(lista)
+    if not 1 in lista:
         retour = custom_403(request)
         return HttpResponseForbidden(retour)
 
@@ -1004,7 +1029,10 @@ def pd_detallesMT(request, mensaje,tipo):
 def pd_partidasAbiertas(request):
     
     permisos = get_ops(request)
-    if not 1 in permisos:
+    lista = [Opcion.objects.get(idopcion=p).funprincipal for p in permisos]
+    lista.sort()
+    lista = set(lista)
+    if not 1 in lista:
         retour = custom_403(request)
         return HttpResponseForbidden(retour)
 
@@ -1307,7 +1335,10 @@ def pd_partidasAbiertas(request):
 def pd_matchesConfirmados(request,cuenta):
 
     permisos = get_ops(request)
-    if not 1 in permisos:
+    lista = [Opcion.objects.get(idopcion=p).funprincipal for p in permisos]
+    lista.sort()
+    lista = set(lista)
+    if not 1 in lista:
         retour = custom_403(request)
         return HttpResponseForbidden(retour)
 
@@ -1462,10 +1493,13 @@ def pd_matchesConfirmados(request,cuenta):
 def pd_conciliacion(request):
     
     permisos = get_ops(request)
-    if not 1 in permisos:
+    lista = [Opcion.objects.get(idopcion=p).funprincipal for p in permisos]
+    lista.sort()
+    lista = set(lista)
+    if not 1 in lista:
         retour = custom_403(request)
         return HttpResponseForbidden(retour)
-        
+
     expirarSesion(request)
     template = "matcher/pd_conciliacion.html"
     fecha_hoy = ("/").join(str(timenow().date()).split("-")[::-1])
@@ -1475,6 +1509,14 @@ def pd_conciliacion(request):
 
 @login_required(login_url='/login')
 def reportes(request):
+
+    permisos = get_ops(request)
+    lista = [Opcion.objects.get(idopcion=p).funprincipal for p in permisos]
+    lista.sort()
+    lista = set(lista)
+    if not 2 in lista:
+        retour = custom_403(request)
+        return HttpResponseForbidden(retour)
 
     expirarSesion(request)
     if request.method == 'POST':
@@ -1882,6 +1924,15 @@ def reportes(request):
 
 @login_required(login_url='/login')
 def mensajesSWIFT(request):
+
+    permisos = get_ops(request)
+    lista = [Opcion.objects.get(idopcion=p).funprincipal for p in permisos]
+    lista.sort()
+    lista = set(lista)
+    if not 3 in lista:
+        retour = custom_403(request)
+        return HttpResponseForbidden(retour)
+
     expirarSesion(request)
     template = "matcher/admin_criteriosyreglas.html"
     context = {'ops':get_ops(request)}
@@ -1889,6 +1940,14 @@ def mensajesSWIFT(request):
 
 @login_required(login_url='/login')
 def mtn96(request):
+
+    permisos = get_ops(request)
+    lista = [Opcion.objects.get(idopcion=p).funprincipal for p in permisos]
+    lista.sort()
+    lista = set(lista)
+    if not 3 in lista:
+        retour = custom_403(request)
+        return HttpResponseForbidden(retour)
 
     expirarSesion(request)
     if request.method == 'GET':
@@ -2142,6 +2201,14 @@ def mtn96(request):
 @login_required(login_url='/login')
 def mtn99(request):
 
+    permisos = get_ops(request)
+    lista = [Opcion.objects.get(idopcion=p).funprincipal for p in permisos]
+    lista.sort()
+    lista = set(lista)
+    if not 3 in lista:
+        retour = custom_403(request)
+        return HttpResponseForbidden(retour)
+
     expirarSesion(request)
     if request.method == 'GET':
         template = "matcher/mtn99.html"
@@ -2363,6 +2430,15 @@ def mtn99(request):
 
 @login_required(login_url='/login')
 def intraday(request):
+    
+    permisos = get_ops(request)
+    lista = [Opcion.objects.get(idopcion=p).funprincipal for p in permisos]
+    lista.sort()
+    lista = set(lista)
+    if not 16 in lista:
+        retour = custom_403(request)
+        return HttpResponseForbidden(retour)
+
     expirarSesion(request)
     if request.method == 'GET':
         context = {'ops':get_ops(request)}
@@ -2372,6 +2448,15 @@ def intraday(request):
 
 @login_required(login_url='/login')
 def configuracion(request, tipo):
+    
+    permisos = get_ops(request)
+    lista = [Opcion.objects.get(idopcion=p).funprincipal for p in permisos]
+    lista.sort()
+    lista = set(lista)
+    if not 4 or not 14 in lista:
+        retour = custom_403(request)
+        return HttpResponseForbidden(retour)
+
     expirarSesion(request)
     if request.method == 'POST':
 
@@ -2609,6 +2694,15 @@ def configuracion(request, tipo):
 
 @login_required(login_url='/login')
 def seg_Usuarios(request):
+    
+    permisos = get_ops(request)
+    lista = [Opcion.objects.get(idopcion=p).funprincipal for p in permisos]
+    lista.sort()
+    lista = set(lista)
+    if not 5 in lista:
+        retour = custom_403(request)
+        return HttpResponseForbidden(retour)
+
     expirarSesion(request)
     if request.method == "POST":
         actn = request.POST.get('action')
@@ -2824,6 +2918,15 @@ def seg_Usuarios(request):
 
 @login_required(login_url='/login')
 def seg_Perfiles(request):
+    
+    permisos = get_ops(request)
+    lista = [Opcion.objects.get(idopcion=p).funprincipal for p in permisos]
+    lista.sort()
+    lista = set(lista)
+    if not 6 in lista:
+        retour = custom_403(request)
+        return HttpResponseForbidden(retour)
+
     expirarSesion(request)
     if request.method == "POST":
         actn = request.POST.get('action')
@@ -2918,6 +3021,15 @@ def seg_Perfiles(request):
 
 @login_required(login_url='/login')
 def seg_Logs(request):
+    
+    permisos = get_ops(request)
+    lista = [Opcion.objects.get(idopcion=p).funprincipal for p in permisos]
+    lista.sort()
+    lista = set(lista)
+    if not 7 in lista:
+        retour = custom_403(request)
+        return HttpResponseForbidden(retour)
+
     expirarSesion(request)
     if request.method == "POST":
         desde = request.POST.get('desde')
@@ -2969,6 +3081,15 @@ def seg_Logs(request):
 
 @login_required(login_url='/login')
 def seg_backupRestore(request):
+    
+    permisos = get_ops(request)
+    lista = [Opcion.objects.get(idopcion=p).funprincipal for p in permisos]
+    lista.sort()
+    lista = set(lista)
+    if not 13 in lista:
+        retour = custom_403(request)
+        return HttpResponseForbidden(retour)
+
     expirarSesion(request)
     if request.method == "POST":
         actn = request.POST.get("action")
@@ -3030,6 +3151,14 @@ def seg_backupRestore(request):
 
 @login_required(login_url='/login')
 def admin_bancos(request):
+
+    permisos = get_ops(request)
+    lista = [Opcion.objects.get(idopcion=p).funprincipal for p in permisos]
+    lista.sort()
+    lista = set(lista)
+    if not 8 in lista:
+        retour = custom_403(request)
+        return HttpResponseForbidden(retour)
 
     expirarSesion(request)
     if request.method == 'POST':
@@ -3103,6 +3232,14 @@ def admin_bancos(request):
 @login_required(login_url='/login')
 def admin_monedas(request):
 
+    permisos = get_ops(request)
+    lista = [Opcion.objects.get(idopcion=p).funprincipal for p in permisos]
+    lista.sort()
+    lista = set(lista)
+    if not 9 in lista:
+        retour = custom_403(request)
+        return HttpResponseForbidden(retour)
+
     expirarSesion(request)
     if request.method == 'POST':
         actn = request.POST.get('action')
@@ -3173,6 +3310,15 @@ def admin_monedas(request):
 
 @login_required(login_url='/login')
 def admin_cuentas(request):
+    
+    permisos = get_ops(request)
+    lista = [Opcion.objects.get(idopcion=p).funprincipal for p in permisos]
+    lista.sort()
+    lista = set(lista)
+    if not 10 in lista:
+        retour = custom_403(request)
+        return HttpResponseForbidden(retour)
+
     expirarSesion(request)
     if request.method == 'POST':
         actn = request.POST.get('action')
@@ -3410,6 +3556,15 @@ def admin_cuentas(request):
 
 @login_required(login_url='/login')
 def admin_archive(request):
+    
+    permisos = get_ops(request)
+    lista = [Opcion.objects.get(idopcion=p).funprincipal for p in permisos]
+    lista.sort()
+    lista = set(lista)
+    if not 17 in lista:
+        retour = custom_403(request)
+        return HttpResponseForbidden(retour)
+
     expirarSesion(request)
     if request.method == 'GET':
         
@@ -3703,6 +3858,15 @@ def admin_archive(request):
 
 @login_required(login_url='/login')
 def admin_reglas_transf(request):
+    
+    permisos = get_ops(request)
+    lista = [Opcion.objects.get(idopcion=p).funprincipal for p in permisos]
+    lista.sort()
+    lista = set(lista)
+    if not 11 in lista:
+        retour = custom_403(request)
+        return HttpResponseForbidden(retour)
+
     expirarSesion(request)
     if request.method == 'POST':
         
@@ -3802,6 +3966,14 @@ def admin_reglas_transf(request):
 @login_required(login_url='/login')
 def admin_crit_reglas(request):
 
+    permisos = get_ops(request)
+    lista = [Opcion.objects.get(idopcion=p).funprincipal for p in permisos]
+    lista.sort()
+    lista = set(lista)
+    if not 12 in lista:
+        retour = custom_403(request)
+        return HttpResponseForbidden(retour)
+    
     expirarSesion(request)
     if request.method == 'POST':
         actn = request.POST.get('action')
@@ -3902,10 +4074,19 @@ def admin_crit_reglas(request):
         return render(request, template, context)
 
 @login_required(login_url='/login')
-def admin_licencia(request):
+def seg_licencia(request):
+    
+    permisos = get_ops(request)
+    lista = [Opcion.objects.get(idopcion=p).funprincipal for p in permisos]
+    lista.sort()
+    lista = set(lista)
+    if not 6 or not 5 in lista:
+        retour = custom_403(request)
+        return HttpResponseForbidden(retour)
+
     expirarSesion(request)
     if request.method == 'GET':
-        template = "matcher/admin_licencia.html"
+        template = "matcher/seg_licencia.html"
         criterios = CriteriosMatch.objects.all()
         context = {'ops':get_ops(request),'archivos':get_archivosLicencia()}
         return render(request, template, context)
@@ -3945,6 +4126,15 @@ def sobre_matcher(request):
 
 @login_required(login_url='/login')
 def SU_licencia(request):
+
+    permisos = get_ops(request)
+    lista = [Opcion.objects.get(idopcion=p).funprincipal for p in permisos]
+    lista.sort()
+    lista = set(lista)
+    if not 15 in lista:
+        retour = custom_403(request)
+        return HttpResponseForbidden(retour)
+
     expirarSesion(request)
     template = "matcher/SU_licencia.html"
     context = {'ops':get_ops(request)}
@@ -3952,6 +4142,14 @@ def SU_licencia(request):
 
 @login_required(login_url='/login')
 def SU_modulos(request):
+
+    permisos = get_ops(request)
+    lista = [Opcion.objects.get(idopcion=p).funprincipal for p in permisos]
+    lista.sort()
+    lista = set(lista)
+    if not 15 in lista:
+        retour = custom_403(request)
+        return HttpResponseForbidden(retour)
 
     expirarSesion(request)
     if request.method == 'GET':
@@ -3981,6 +4179,15 @@ def SU_modulos(request):
 
 @login_required(login_url='/login')
 def SU_version(request):
+
+    permisos = get_ops(request)
+    lista = [Opcion.objects.get(idopcion=p).funprincipal for p in permisos]
+    lista.sort()
+    lista = set(lista)
+    if not 15 in lista:
+        retour = custom_403(request)
+        return HttpResponseForbidden(retour)
+
     expirarSesion(request)
     if request.method == 'GET':
         template = "matcher/SU_version.html"
