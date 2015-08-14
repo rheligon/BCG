@@ -165,6 +165,8 @@ $('#Cuenta-sel').change(function() {
         $('#fecha-hasta').val("");
 
         $('#divselec_archivo option[value!="-1"]').remove();
+        t_conta.clear().draw();
+                    
         
         $('#processing-modal').modal('toggle')
         buscarArchivos(codigoCuenta);
@@ -176,6 +178,8 @@ $('#Cuenta-sel').change(function() {
         $('#fecha-desde').val("");
         $('#fecha-hasta').val("");
         $('#divselec_archivo option[value!="-1"]').remove();
+        t_conta.clear().draw();
+                    
 
     }
 
@@ -193,7 +197,42 @@ $('#boton-consulta').on('click', function () {
         console.log(codigoCuenta);
         $('#processing-modal').modal('toggle')
         consultar(codigoCuenta);
-        //$('#minima_fecha').val("soy Gay");
+        
+        
+    }else{
+        swal("Ups!", "Debe Seleccionar el Código de la Cuenta", "error");
+    }
+    
+});
+
+//Mostramos como seria el nuevo estado de cuenta
+$('#boton-ejecutar').on('click', function () {
+
+    var cuenta = $('#Cuenta-sel').val()
+    
+    if (cuenta>=0){
+        var codigoCuenta = $('#opt-'+cuenta).attr("codigo");
+        var fecha = $('#fecha-ejecutar').val()
+        var fechaMinima =$('#minima_fecha').val()
+
+        if(fecha.length<1){ 
+            swal("Ups!", "Debe introducir la Fecha para ejecutar el proceso de Archive", "error");
+        }else{
+            //caso en que no se ha consultado la fecha minima
+            if(fechaMinima.length < 1){
+                $('#processing-modal').modal('toggle')
+                consultarEjecutar(codigoCuenta)
+            }else{
+                fecha1 = fechaStringtoDate(fechaMinima);
+                fecha2 = fechaStringtoDate(fecha);
+                if(fecha1 > fecha2){
+                    swal("Ups!", "La fecha Final no puede ser menor a la Fecha Mínima de Match con fecha", "error");
+                }else{
+                    swal("Ups!", "TODO ESTARA BIEN con fecha", "error");
+
+                }            
+            }
+        }
         
     }else{
         swal("Ups!", "Debe Seleccionar el Código de la Cuenta", "error");
@@ -235,7 +274,7 @@ function consultar(cuenta){
             url: "/admin/archive/",
             data: {"cuenta":cuenta, "action": "consultar"},
             success: function(data){
-                $('#processing-modal').modal('toggle')
+                
                 if (data.exito){
                     $('#minima_fecha').val(data.fechaMinima);
                 }else{
@@ -244,7 +283,7 @@ function consultar(cuenta){
                              type: "error"
                          });
                 }
-                
+                $('#processing-modal').modal('toggle')
                 
             },
             error: function(q,error){
@@ -259,6 +298,79 @@ function consultar(cuenta){
         });
         return false;
 };
+
+function consultarEjecutar(cuenta){
+        $.ajax({
+            type:"POST",
+            url: "/admin/archive/",
+            data: {"cuenta":cuenta, "action": "consultar"},
+            success: function(data){
+                
+                if (data.exito){
+                    var fecha = $('#fecha-ejecutar').val()
+        
+                    fecha1 = fechaStringtoDate(data.fechaMinima);
+                    fecha2 = fechaStringtoDate(fecha);
+                    if(fecha1 > fecha2){
+                        swal("Ups!", "La fecha Final no puede ser menor a la Fecha Mínima de Match sin fecha", "error");
+                    }else{
+                        ejecutarArchive(data.cuenta,data.fechaMinima,fecha)
+                    }            
+                }else{
+                    swal({   title: "",
+                             text: data.msg,
+                             type: "error"
+                         });
+                }
+                $('#processing-modal').modal('toggle')
+                
+            },
+            error: function(q,error){
+                alert(q.responseText) //debug
+                $('#processing-modal').modal('toggle')
+                swal("Ups!", "Hubo un error consultando la Cuenta, intente de Nuevo.", "error");
+        },
+            dataType:'json',
+            headers:{
+                'X-CSRFToken':csrftoken
+            }
+        });
+        return false;
+};
+
+function ejecutarArchive(cuenta,fechaMinima,fechaMaxima){
+        $.ajax({
+            type:"POST",
+            url: "/admin/archive/",
+            data: {"cuenta":cuenta, "fechaMinima":fechaMinima, "fechaMaxima":fechaMaxima,"action": "ejecutarArchive"},
+            success: function(data){
+                //********************************************
+                if (data.exito){
+                          swal({   title: "",
+                             text: "El Archive se ha ejecutado con Exito",
+                             type: "success"
+                         }); 
+                }else{
+                    swal({   title: "",
+                             text: data.msg,
+                             type: "error"
+                         });
+                }
+                
+            },
+            error: function(q,error){
+                alert(q.responseText) //debug
+                $('#processing-modal').modal('toggle')
+                swal("Ups!", "Hubo un error consultando la Cuenta, intente de Nuevo.", "error");
+        },
+            dataType:'json',
+            headers:{
+                'X-CSRFToken':csrftoken
+            }
+        });
+        return false;
+};
+
 
 function buscarEnArchivo(archivo,cuenta){
         $.ajax({
@@ -283,24 +395,28 @@ function buscarEnArchivo(archivo,cuenta){
                     var corresponsales = data.transacciones['corresponsal'];
 
                     t_conta.clear().draw();
-
                     var contador = 1;
-                    var td1 = '<td></td>';
-                    var td2 = '<td></td>';
-                    var td3 = '<td></td>';
-                    var td4 = '<td></td>';
-                    var td5 = '<td align ="center"><h4>Match</h4></td>';
-                    var td6 = '<td>align ="center"<h4>Automático</h4></td>';
-                    var td7 = '<td></td>';
-                    var td8 = '<td></td>';
-                    var td9 = '<td></td>';
-                    var td10 = '<td></td>';
-                    //creamos la fila con los elementos y la mostramos
-                    $('#table-pa > tbody').append('<tr class = "automatico" id ="tr-con-'+contador+'"></tr>');
-                    var jRow = $("#tr-con-"+contador).append(td1,td2,td3,td4,td5,td6,td7,td8,td9,td10);
-                    t_conta.row.add(jRow);
-                    contador++;
 
+                    if(automaticas.length>0){
+                        
+                        var td1 = '<td></td>';
+                        var td2 = '<td></td>';
+                        var td3 = '<td></td>';
+                        var td4 = '<td></td>';
+                        var td5 = '<td align ="center"><h4><strong>Matches</strong></h4></td>';
+                        var td6 = '<td align ="center"><h4><strong>Automáticos</strong></h4></td>';
+                        var td7 = '<td></td>';
+                        var td8 = '<td></td>';
+                        var td9 = '<td></td>';
+                        var td10 = '<td></td>';
+                        //creamos la fila con los elementos y la mostramos
+                        $('#table-pa > tbody').append('<tr class = "automatico" id ="tr-con-'+contador+'"></tr>');
+                        var jRow = $("#tr-con-"+contador).append(td1,td2,td3,td4,td5,td6,td7,td8,td9,td10);
+                        t_conta.row.add(jRow);
+                        contador++;
+
+                    }
+                    
                     for (var i = 0 ; i < automaticas.length ; i++){
                         var fechaMatch = automaticas[i][0][0][0];
                         var idMatch = automaticas[i][0][0][1];
@@ -367,6 +483,26 @@ function buscarEnArchivo(archivo,cuenta){
                         }
 
                     }
+
+                    if(manuales.length>0){
+                        var td1 = '<td></td>';
+                        var td2 = '<td></td>';
+                        var td3 = '<td></td>';
+                        var td4 = '<td></td>';
+                        var td5 = '<td align ="center"><h4><strong>Matches</strong></h4></td>';
+                        var td6 = '<td align ="center"><h4><strong>Manuales</strong></h4></td>';
+                        var td7 = '<td></td>';
+                        var td8 = '<td></td>';
+                        var td9 = '<td></td>';
+                        var td10 = '<td></td>';
+                        //creamos la fila con los elementos y la mostramos
+                        $('#table-pa > tbody').append('<tr class = "success" id ="tr-con-'+contador+'"></tr>');
+                        var jRow = $("#tr-con-"+contador).append(td1,td2,td3,td4,td5,td6,td7,td8,td9,td10);
+                        t_conta.row.add(jRow);
+                        contador++;
+
+                    }
+
                     for (var i = 0 ; i < manuales.length ; i++){
                         var fechaMatch = manuales[i][0][0][0];
                         var idMatch = manuales[i][0][0][1];
@@ -434,6 +570,25 @@ function buscarEnArchivo(archivo,cuenta){
 
                     }
                     
+                    if(contabilidades.length>0){
+                        var td1 = '<td></td>';
+                        var td2 = '<td></td>';
+                        var td3 = '<td></td>';
+                        var td4 = '<td align ="center"><h4><strong>Matches</strong></h4></td>';
+                        var td5 = '<td align ="center"><h4><strong>Reverso</strong></h4></td>';
+                        var td6 = '<td align ="center"><h4><strong>Contabilidad</strong></h4></td>';
+                        var td7 = '<td></td>';
+                        var td8 = '<td></td>';
+                        var td9 = '<td></td>';
+                        var td10 = '<td></td>';
+                        //creamos la fila con los elementos y la mostramos
+                        $('#table-pa > tbody').append('<tr class = "warning" id ="tr-con-'+contador+'"></tr>');
+                        var jRow = $("#tr-con-"+contador).append(td1,td2,td3,td4,td5,td6,td7,td8,td9,td10);
+                        t_conta.row.add(jRow);
+                        contador++;
+
+                    }
+
                     for (var i = 0 ; i < contabilidades.length ; i++){
                         var fechaMatch = contabilidades[i][0][0][0];
                         var idMatch = contabilidades[i][0][0][1];
@@ -501,6 +656,26 @@ function buscarEnArchivo(archivo,cuenta){
 
 
                     }
+
+                    if(corresponsales.length>0){
+                        var td1 = '<td></td>';
+                        var td2 = '<td></td>';
+                        var td3 = '<td></td>';
+                        var td4 = '<td align ="center"><h4><strong>Matches</strong></h4></td>';
+                        var td5 = '<td align ="center"><h4><strong>Reverso</strong></h4></td>';
+                        var td6 = '<td align ="center"><h4><strong>Corresponsal</strong></h4></td>';
+                        var td7 = '<td></td>';
+                        var td8 = '<td></td>';
+                        var td9 = '<td></td>';
+                        var td10 = '<td></td>';
+                        //creamos la fila con los elementos y la mostramos
+                        $('#table-pa > tbody').append('<tr class = "danger" id ="tr-con-'+contador+'"></tr>');
+                        var jRow = $("#tr-con-"+contador).append(td1,td2,td3,td4,td5,td6,td7,td8,td9,td10);
+                        t_conta.row.add(jRow);
+                        contador++;
+
+                    }
+
                     for (var i = 0 ; i < corresponsales.length ; i++){
                         var fechaMatch = corresponsales[i][0][0][0];
                         var idMatch = corresponsales[i][0][0][1];
