@@ -6,7 +6,7 @@ import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 
-def enviar_mail(titulo,msg,destino):
+def enviar_mail(titulo,mensaje,destino):
     config = Configuracion.objects.all()[0]
 
     mailS = config.alertasservidor
@@ -35,6 +35,9 @@ def enviar_mail(titulo,msg,destino):
       </body>
     </html>
     """
+
+    text=mensaje
+    html="<html><head></head><body><p>"+mensaje.replace("\n","<br>")+"</p></body></html>"
 
     part1 = MIMEText(text, 'plain')
     part2 = MIMEText(html, 'html')

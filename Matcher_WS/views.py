@@ -40,12 +40,12 @@ import shutil
 
 def test(request):
     
-    #enviar_mail('Prueba Mail','msg','rheligon@gmail.com')
+    enviar_mail('Prueba Mail','Prueba','religon@gmail.com')
     
     #ops = get_ops(request)
     #print (ops)
 
-    setConsolidado('BMARCH',request)
+    #setConsolidado('BMARCH',request)
 
     return JsonResponse('exito', safe=False)
 
@@ -4136,9 +4136,60 @@ def SU_licencia(request):
         return HttpResponseForbidden(retour)
 
     expirarSesion(request)
-    template = "matcher/SU_licencia.html"
-    context = {'ops':get_ops(request)}
-    return render(request, template, context)
+
+    if request.method == "GET":
+        try:
+            prev = Licencia.objects.all()[0] 
+            numU = prev.num_usuarios
+            Exp = prev.fecha_expira
+            bicB = Configuracion.objects.all()[0].bic
+            template = "matcher/SU_licencia.html"
+            context = {'ops':get_ops(request),'bic':bicB,'numU':numU,'Exp':Exp}
+            return render(request, template, context)
+
+        except:
+            template = "matcher/SU_licencia.html"
+            bicB = Configuracion.objects.all()[0].bic
+            context = {'ops':get_ops(request),'bic':bicB,'numU':0,'Exp':None}
+            return render(request, template, context)
+
+    if request.method == "POST":
+       action = request.POST.get('action')
+
+       if action == "guardarCambios":
+        numUsers = request.POST.get('numUsers') 
+        fecha = request.POST.get('fecha')
+        bic = Configuracion.objects.all()[0].bic
+           
+        try:
+            # Buscar licencia
+            previa = Licencia.objects.all()[0]
+            pwd = bic + numUsers + fecha
+            newp = make_password(pwd, salt='BCG.bcg+2015', hasher='pbkdf2_sha1')
+            x, x, salt, hashp = newp.split("$")
+            fecha = datetime.strptime(fecha, '%d/%m/%Y')
+            previa.num_usuarios = numUsers
+            previa.fecha_expira = fecha
+            previa.salt = salt
+            previa.llave = hashp
+            previa.save()
+            msg = "Bic: " +bic + "\nUsuarios: " + numUsers +"\n Expiración: "+ str(fecha) +"\n Llave: " + hashp+ "\nSalt : " + salt   
+            enviar_mail('Licencia del banco'+bic,msg,'jotha41@gmail.com')
+            mensaje = "Licencia modificada exitosamente"
+            return JsonResponse({'mens':mensaje})
+               
+        except:
+            pwd = bic + numUsers + fecha
+            newp = make_password(pwd, salt='BCG.bcg+2015', hasher='pbkdf2_sha1')
+            x, x, salt, hashp = newp.split("$")
+            fecha = datetime.strptime(fecha, '%d/%m/%Y')
+            nuevalicencia = Licencia.objects.create(bic=bic,num_usuarios=numUsers,fecha_expira=fecha,llave=hashp,salt=salt)
+            msg = "Bic: " +bic + "\nUsuarios: " + numUsers +"\n Expiración: "+ str(fecha) +"\n Llave: " + hashp+ "\nSalt : " + salt   
+            enviar_mail('Licencia del banco'+bic,msg,'jotha41@gmail.com')
+            mensaje = "Licencia agregada exitosamente"
+            return JsonResponse({'mens':mensaje})
+
+
 
 @login_required(login_url='/login')
 def SU_modulos(request):
