@@ -1,8 +1,8 @@
 var csrftoken = $.cookie('csrftoken');
 
 //Boton para cargar MTn96
-$('#cargarMT96Button').on('click', function () {
-    var archivo = $('#mtn96_archivo').val()
+$('#cargarLicButton').on('click', function () {
+    var archivo = $('#archivoLic').val()
 
     if (archivo===("-1")){
         swal("Ups!","Debe seleccionar un archivo para cargar los datos.","error");        
@@ -10,31 +10,25 @@ $('#cargarMT96Button').on('click', function () {
         
         $('#processing-modal').modal('toggle');
     
-        //Llamar funcion de cargar del mensaje
-        cargarmtn96(archivo);
+        //Llamar funcion de cargar licencia
+        cargarLicencia(archivo);
     }
 
 });
 
-//Cargar mensajes desde archivo
-function cargarmtn96(archivo){
+//Cargar licencia desde archivo
+function cargarLicencia(archivo){
     $.ajax({
         type:"POST",
-        url: "/mtn96/",
-        data: {"action":"cargar", "archivo96":archivo},
+        url: "/seguridad/licencia/",
+        data: {"action":"cargarLicencia", "archivo":archivo},
         success: function(data){
             var errorMensaje = data.mens.substring(0,8);
             var mensaje = data.mens;
-            if (errorMensaje === "Caracter" || errorMensaje === "No se ti"  || errorMensaje === "El códig" || errorMensaje === "El tipo "){
-
+           
                 $('#processing-modal').modal('toggle');
-                swal("Ups", mensaje, "error");
+                swal("OK", mensaje, "success");
 
-            } else {
-                $('#processing-modal').modal('toggle');
-                swal("OK", "Archivo cargado exitosamente", "success");
-                window.location.reload();
-            }
         },
         error: function(jqXHR, error){ 
             alert(jqXHR.responseText) //debug

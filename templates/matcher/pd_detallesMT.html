@@ -46,7 +46,7 @@
                         {% if men.fecha_msg_original == None %}
                         {%endif%}
                         {% if men.fecha_msg_original != None %}
-                            {{men.fecha_msg_original}}
+                            {{men.fecha_msg_original | date:"Y M d"}}
                         {%endif%}
                     </td>
                     <td>{{men.codigo}}</td>

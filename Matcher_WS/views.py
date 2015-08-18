@@ -2,7 +2,7 @@ from django.core import serializers
 from django.core.mail import send_mail
 from django.shortcuts import render, get_object_or_404
 from django.contrib import auth
-from django.http import HttpResponseRedirect, HttpResponse, JsonResponse, HttpResponseNotFound
+from django.http import HttpResponseRedirect, HttpResponse, JsonResponse, HttpResponseNotFound, HttpResponseForbidden
 from django.contrib.auth.decorators import login_required
 from django.utils import timezone
 from django.contrib.auth.forms import UserCreationForm
@@ -40,12 +40,12 @@ import shutil
 
 def test(request):
     
-    #enviar_mail('Prueba Mail','msg','rheligon@gmail.com')
+    enviar_mail('Prueba Mail','Prueba','religon@gmail.com')
     
     #ops = get_ops(request)
     #print (ops)
 
-    setConsolidado('BMARCH',request)
+    #setConsolidado('BMARCH',request)
 
     return JsonResponse('exito', safe=False)
 
@@ -147,18 +147,35 @@ def usr_logout(request):
 @login_required(login_url='/login')
 def listar_cuentas(request):
 
+    permisos = get_ops(request)
+    lista = [Opcion.objects.get(idopcion=p).funprincipal for p in permisos]
+    lista.sort()
+    lista = set(lista)
+    if not 1 in lista:
+        retour = custom_403(request)
+        return HttpResponseForbidden(retour)
+
+    expirarSesion(request)
     context = {'cuentas': get_cuentas(request), 'ops':get_ops(request)}
     template = "matcher/listarCuentas.html"
-    expirarSesion(request)
-
+    
     return render(request, template, context)
 
 
 @login_required(login_url='/login')
 def resumen_cuenta(request, cuenta_id):
 
-    conciliacion = Conciliacionconsolidado.objects.filter(cuenta_idcuenta = cuenta_id)
+    permisos = get_ops(request)
+    lista = [Opcion.objects.get(idopcion=p).funprincipal for p in permisos]
+    lista.sort()
+    lista = set(lista)
+    if not 1 in lista:
+        retour = custom_403(request)
+        return HttpResponseForbidden(retour)
+
     expirarSesion(request)
+    conciliacion = Conciliacionconsolidado.objects.filter(cuenta_idcuenta = cuenta_id)
+    empresa = Empresa.objects.all()[0]
 
     if conciliacion:
         cons = conciliacion[0]
@@ -183,7 +200,7 @@ def resumen_cuenta(request, cuenta_id):
         cod = ['C']*4
 
 
-    context = {'cuenta': cuenta, 'cons':cons, 'cod': cod, 'ops':get_ops(request)}
+    context = {'cuenta': cuenta, 'cons':cons, 'cod': cod, 'ops':get_ops(request), 'empresa':empresa}
     template = "matcher/ResumenCuenta.html"
 
     return render(request, template, context)
@@ -191,7 +208,16 @@ def resumen_cuenta(request, cuenta_id):
 @login_required(login_url='/login')
 def pd_estadoCuentas(request):
 
+    permisos = get_ops(request)
+    lista = [Opcion.objects.get(idopcion=p).funprincipal for p in permisos]
+    lista.sort()
+    lista = set(lista)
+    if not 1 in lista:
+        retour = custom_403(request)
+        return HttpResponseForbidden(retour)
+
     expirarSesion(request)
+
     if request.method == 'POST':
 
         cuentaid = int(request.POST.get('cuentaid'))
@@ -249,6 +275,14 @@ def pd_estadoCuentas(request):
 
 @login_required(login_url='/login')
 def pd_cargaAutomatica(request):
+
+    permisos = get_ops(request)
+    lista = [Opcion.objects.get(idopcion=p).funprincipal for p in permisos]
+    lista.sort()
+    lista = set(lista)
+    if not 1 in lista:
+        retour = custom_403(request)
+        return HttpResponseForbidden(retour)
 
     expirarSesion(request)
     if request.method == 'POST':
@@ -643,6 +677,14 @@ def pd_cargaAutomatica(request):
 @login_required(login_url='/login')
 def pd_cargaManual(request):
 
+    permisos = get_ops(request)
+    lista = [Opcion.objects.get(idopcion=p).funprincipal for p in permisos]
+    lista.sort()
+    lista = set(lista)
+    if not 1 in lista:
+        retour = custom_403(request)
+        return HttpResponseForbidden(retour)
+
     expirarSesion(request)
     if request.method == 'POST':
         actn = request.POST.get('action')
@@ -779,6 +821,15 @@ def pd_cargaManual(request):
 
 @login_required(login_url='/login')
 def pd_match(request):
+    
+    permisos = get_ops(request)
+    lista = [Opcion.objects.get(idopcion=p).funprincipal for p in permisos]
+    lista.sort()
+    lista = set(lista)
+    if not 1 in lista:
+        retour = custom_403(request)
+        return HttpResponseForbidden(retour)
+
     expirarSesion(request)
     if request.method == 'POST':
         actn = request.POST.get('action')
@@ -866,6 +917,15 @@ def pd_match(request):
 
 @login_required(login_url='/login')
 def pd_matchesPropuestos(request, cuenta):
+    
+    permisos = get_ops(request)
+    lista = [Opcion.objects.get(idopcion=p).funprincipal for p in permisos]
+    lista.sort()
+    lista = set(lista)
+    if not 1 in lista:
+        retour = custom_403(request)
+        return HttpResponseForbidden(retour)
+
     expirarSesion(request)
     if request.method == 'POST':
         my_dict = dict(request.POST)
@@ -914,6 +974,14 @@ def pd_matchesPropuestos(request, cuenta):
 @login_required(login_url='/login')
 def pd_detallesMT(request, mensaje,tipo):
 
+    permisos = get_ops(request)
+    lista = [Opcion.objects.get(idopcion=p).funprincipal for p in permisos]
+    lista.sort()
+    lista = set(lista)
+    if not 1 in lista:
+        retour = custom_403(request)
+        return HttpResponseForbidden(retour)
+
     expirarSesion(request)
     if request.method == 'GET':
 
@@ -959,6 +1027,15 @@ def pd_detallesMT(request, mensaje,tipo):
 
 @login_required(login_url='/login')
 def pd_partidasAbiertas(request):
+    
+    permisos = get_ops(request)
+    lista = [Opcion.objects.get(idopcion=p).funprincipal for p in permisos]
+    lista.sort()
+    lista = set(lista)
+    if not 1 in lista:
+        retour = custom_403(request)
+        return HttpResponseForbidden(retour)
+
     expirarSesion(request)
     if request.method == 'POST':
         actn = request.POST.get('action')
@@ -1144,27 +1221,36 @@ def pd_partidasAbiertas(request):
             trans95 = request.POST.get('transaccion')
             clase95 = request.POST.get('clase')
             cuenta95 = request.POST.get('cuenta')
+            tipoOriginal = request.POST.get('tipoOriginal')
             mensajeMT = ""
+            query = preg95
 
             codAux = Codigo95.objects.filter(idcodigo95=cod95)[0]
             if fecha95 != "":
                 fechad = datetime.strptime(fecha95, '%d/%m/%Y')
+            else:
+                fechad = None
 
-            if tipo95 == "":
-                tipo95 = None
-
-            fechad = None   
+            if tipo95 == "" or tipo95 =="-1":
+                tipo95a = None
+            else:
+                if tipo95 == "103":
+                    tipo95a = "195"
+                if tipo95 == "202":
+                    tipo95a = "295"
+                if tipo95 == "950":
+                    tipo95a = "995"
 
             if clase95 == "conta":
 
                 tra = TransabiertaContabilidad.objects.filter(idtransaccion=trans95)[0]
-                Mt95.objects.create(ta_conta=tra,codigo=ref95,codigo95_idcodigo95=codAux,ref_relacion=refOrg95,query=preg95,narrativa=narra95,num_mt=tipo95,fecha_msg_original=fechad,campo79=original95)
+                Mt95.objects.create(ta_conta=tra,codigo=ref95,codigo95_idcodigo95=codAux,ref_relacion=refOrg95,query=query,narrativa=narra95,num_mt=tipo95a,fecha_msg_original=fechad,campo79=original95)
                 mensajeMT = "exito"
 
             if clase95 == "corres":
                 
                 tra = TransabiertaCorresponsal.objects.filter(idtransaccion=trans95)[0]
-                Mt95.objects.create(ta_corres=tra,codigo=ref95,codigo95_idcodigo95=codAux,ref_relacion=refOrg95,query=preg95,narrativa=narra95,num_mt=tipo95,fecha_msg_original=fechad,campo79=original95) 
+                Mt95.objects.create(ta_corres=tra,codigo=ref95,codigo95_idcodigo95=codAux,ref_relacion=refOrg95,query=query,narrativa=narral95,num_mt=tipo95a,fecha_msg_original=fechad,campo79=original95) 
                 mensajeMT = "exito"
 
             tn = str(timenow())
@@ -1176,7 +1262,7 @@ def pd_partidasAbiertas(request):
             aux = aux2[2]+aux2[1]+aux2[0]
             fechaNombre = aux + "_" + hora
 
-            #Buscar directorio de salida de los mensajes MT99
+            #Buscar directorio de salida de los mensajes MT95
             obj = Configuracion.objects.all()[0]
             sender = obj.bic
             directorio = obj.dirsalida95
@@ -1200,7 +1286,12 @@ def pd_partidasAbiertas(request):
             fo = open(archivo, 'w')
             fo.write( "$\n")
             if tipo95!="-1":
-                fo.write( "[M]"+tipo95+"\n")
+                if tipo95 == "103":
+                    fo.write( "[M]"+"195"+"\n")
+                if tipo95 == "202":
+                    fo.write( "[M]"+"295"+"\n")
+                if tipo95 == "950":
+                    fo.write( "[M]"+"995"+"\n")
             else:
                 fo.write( "[M]\n")
             fo.write( "[S]"+sender+"\n")
@@ -1209,14 +1300,19 @@ def pd_partidasAbiertas(request):
             fo.write( "[21]"+refOrg95+"\n")
             if cod2 == 7 or cod2 == 11 or cod2 == 12 or cod2 == 13 or cod2 == 17 or cod2 == 19 or cod2 == 20 or cod2 == 22 or (23<=cod2<=29) or (30<=cod2<=35) or cod2 == 38 or (40 <= cod2 <=45) or (48 <= cod2 <= 52): 
                 cod2 = str(cod2)
-                fo.write( "[75]"+cod2+"/"+narra95+"\n")
+                fo.write( "[75]"+cod2+"/"+original95+"\n")
             else:
                 cod2 = str(cod2)
                 fo.write("[75]"+cod2+"\n")
             if narra95 != "":
                 fo.write( "[77A]"+narra95+"\n")
             if tipo95!="-1":
-                fo.write( "[11a]"+tipo95+fechaArchivo+"\n")
+                if tipoOriginal == "R":
+                    fo.write( "[11R]"+tipo95+fechaArchivo+"\n")    
+                elif tipoOriginal == "S":
+                    fo.write( "[11S]"+tipo95+fechaArchivo+"\n")
+                else:
+                    fo.write( "[11a]"+tipo95+fechaArchivo+"\n")
             if original95!="":
                 fo.write( "[79]"+original95+"\n");
             fo.write( "@@")
@@ -1237,6 +1333,14 @@ def pd_partidasAbiertas(request):
 
 @login_required(login_url='/login')
 def pd_matchesConfirmados(request,cuenta):
+
+    permisos = get_ops(request)
+    lista = [Opcion.objects.get(idopcion=p).funprincipal for p in permisos]
+    lista.sort()
+    lista = set(lista)
+    if not 1 in lista:
+        retour = custom_403(request)
+        return HttpResponseForbidden(retour)
 
     expirarSesion(request)
     if request.method == 'POST':
@@ -1387,6 +1491,15 @@ def pd_matchesConfirmados(request,cuenta):
 
 @login_required(login_url='/login')
 def pd_conciliacion(request):
+    
+    permisos = get_ops(request)
+    lista = [Opcion.objects.get(idopcion=p).funprincipal for p in permisos]
+    lista.sort()
+    lista = set(lista)
+    if not 1 in lista:
+        retour = custom_403(request)
+        return HttpResponseForbidden(retour)
+
     expirarSesion(request)
     template = "matcher/pd_conciliacion.html"
     fecha_hoy = ("/").join(str(timenow().date()).split("-")[::-1])
@@ -1396,6 +1509,14 @@ def pd_conciliacion(request):
 
 @login_required(login_url='/login')
 def reportes(request):
+
+    permisos = get_ops(request)
+    lista = [Opcion.objects.get(idopcion=p).funprincipal for p in permisos]
+    lista.sort()
+    lista = set(lista)
+    if not 2 in lista:
+        retour = custom_403(request)
+        return HttpResponseForbidden(retour)
 
     expirarSesion(request)
     if request.method == 'POST':
@@ -1803,6 +1924,15 @@ def reportes(request):
 
 @login_required(login_url='/login')
 def mensajesSWIFT(request):
+
+    permisos = get_ops(request)
+    lista = [Opcion.objects.get(idopcion=p).funprincipal for p in permisos]
+    lista.sort()
+    lista = set(lista)
+    if not 3 in lista:
+        retour = custom_403(request)
+        return HttpResponseForbidden(retour)
+
     expirarSesion(request)
     template = "matcher/admin_criteriosyreglas.html"
     context = {'ops':get_ops(request)}
@@ -1810,6 +1940,14 @@ def mensajesSWIFT(request):
 
 @login_required(login_url='/login')
 def mtn96(request):
+
+    permisos = get_ops(request)
+    lista = [Opcion.objects.get(idopcion=p).funprincipal for p in permisos]
+    lista.sort()
+    lista = set(lista)
+    if not 3 in lista:
+        retour = custom_403(request)
+        return HttpResponseForbidden(retour)
 
     expirarSesion(request)
     if request.method == 'GET':
@@ -1877,6 +2015,12 @@ def mtn96(request):
                             return JsonResponse({'mens':mensaje})
                         tipoCargar = line[3:]
                         tipoCargar = tipoCargar[:3].strip()
+                        print("eeeeees: " + tipoCargar[-2:].strip())
+                        if tipoCargar[-2:].strip() != "96":
+                            mensaje = "El tipo del mensaje no corresponde a un MTn96,error en la línea número " +str(i+auxCuenta+1)+ " del archivo"
+                            #cerrar archivo
+                            fo.close()
+                            return JsonResponse({'mens':mensaje})
                     if j%8 == 2:
                         opcion = line[:3]
                         if opcion != "[S]":
@@ -1952,7 +2096,7 @@ def mtn96(request):
                     if j%8 == 7:
                         opcion = line[:5]
                         if opcion != "[77A]":
-                            mensaje = "Caracter inesperado en narrativa del mensaje,  en la linea numero " +str(i+auxCuenta+1)+ " del archivo"
+                            mensaje = "Caracter inesperado en la forma narrativa de la respuesta,  en la linea numero " +str(i+auxCuenta+1)+ " del archivo"
                             #cerrar archivo
                             fo.close()
                             return JsonResponse({'mens':mensaje})
@@ -1966,14 +2110,14 @@ def mtn96(request):
                         auxCuenta+=1
                         line = lines[cuenta]
 
-                        while (line[:5] != "[11a]" and line[:4] != "[79]" and line[:2] != "@@"):
+                        while (line[:5] != "[11a]" and line[:5] != "[11R]" and line[:5] != "[11S]" and line[:4] != "[79]" and line[:2] != "@@"):
                                     
                             narrativaCargar = narrativaCargar + line
                             cuenta+=1
                             auxCuenta+=1
                             line = lines[cuenta]
 
-                        if line[:5] == "[11a]":
+                        if line[:5] == "[11a]" or line[:5] == "[11R]" or line[:5] == "[11S]":
                             fechaCargar = line[8:].strip()
                             cuenta+=1
                             auxCuenta+=1
@@ -2056,6 +2200,14 @@ def mtn96(request):
 
 @login_required(login_url='/login')
 def mtn99(request):
+
+    permisos = get_ops(request)
+    lista = [Opcion.objects.get(idopcion=p).funprincipal for p in permisos]
+    lista.sort()
+    lista = set(lista)
+    if not 3 in lista:
+        retour = custom_403(request)
+        return HttpResponseForbidden(retour)
 
     expirarSesion(request)
     if request.method == 'GET':
@@ -2278,6 +2430,15 @@ def mtn99(request):
 
 @login_required(login_url='/login')
 def intraday(request):
+    
+    permisos = get_ops(request)
+    lista = [Opcion.objects.get(idopcion=p).funprincipal for p in permisos]
+    lista.sort()
+    lista = set(lista)
+    if not 16 in lista:
+        retour = custom_403(request)
+        return HttpResponseForbidden(retour)
+
     expirarSesion(request)
     if request.method == 'GET':
         context = {'ops':get_ops(request)}
@@ -2287,6 +2448,15 @@ def intraday(request):
 
 @login_required(login_url='/login')
 def configuracion(request, tipo):
+    
+    permisos = get_ops(request)
+    lista = [Opcion.objects.get(idopcion=p).funprincipal for p in permisos]
+    lista.sort()
+    lista = set(lista)
+    if not 4 or not 14 in lista:
+        retour = custom_403(request)
+        return HttpResponseForbidden(retour)
+
     expirarSesion(request)
     if request.method == 'POST':
 
@@ -2524,6 +2694,15 @@ def configuracion(request, tipo):
 
 @login_required(login_url='/login')
 def seg_Usuarios(request):
+    
+    permisos = get_ops(request)
+    lista = [Opcion.objects.get(idopcion=p).funprincipal for p in permisos]
+    lista.sort()
+    lista = set(lista)
+    if not 5 in lista:
+        retour = custom_403(request)
+        return HttpResponseForbidden(retour)
+
     expirarSesion(request)
     if request.method == "POST":
         actn = request.POST.get('action')
@@ -2739,6 +2918,15 @@ def seg_Usuarios(request):
 
 @login_required(login_url='/login')
 def seg_Perfiles(request):
+    
+    permisos = get_ops(request)
+    lista = [Opcion.objects.get(idopcion=p).funprincipal for p in permisos]
+    lista.sort()
+    lista = set(lista)
+    if not 6 in lista:
+        retour = custom_403(request)
+        return HttpResponseForbidden(retour)
+
     expirarSesion(request)
     if request.method == "POST":
         actn = request.POST.get('action')
@@ -2833,6 +3021,15 @@ def seg_Perfiles(request):
 
 @login_required(login_url='/login')
 def seg_Logs(request):
+    
+    permisos = get_ops(request)
+    lista = [Opcion.objects.get(idopcion=p).funprincipal for p in permisos]
+    lista.sort()
+    lista = set(lista)
+    if not 7 in lista:
+        retour = custom_403(request)
+        return HttpResponseForbidden(retour)
+
     expirarSesion(request)
     if request.method == "POST":
         desde = request.POST.get('desde')
@@ -2884,6 +3081,15 @@ def seg_Logs(request):
 
 @login_required(login_url='/login')
 def seg_backupRestore(request):
+    
+    permisos = get_ops(request)
+    lista = [Opcion.objects.get(idopcion=p).funprincipal for p in permisos]
+    lista.sort()
+    lista = set(lista)
+    if not 13 in lista:
+        retour = custom_403(request)
+        return HttpResponseForbidden(retour)
+
     expirarSesion(request)
     if request.method == "POST":
         actn = request.POST.get("action")
@@ -2945,6 +3151,14 @@ def seg_backupRestore(request):
 
 @login_required(login_url='/login')
 def admin_bancos(request):
+
+    permisos = get_ops(request)
+    lista = [Opcion.objects.get(idopcion=p).funprincipal for p in permisos]
+    lista.sort()
+    lista = set(lista)
+    if not 8 in lista:
+        retour = custom_403(request)
+        return HttpResponseForbidden(retour)
 
     expirarSesion(request)
     if request.method == 'POST':
@@ -3018,6 +3232,14 @@ def admin_bancos(request):
 @login_required(login_url='/login')
 def admin_monedas(request):
 
+    permisos = get_ops(request)
+    lista = [Opcion.objects.get(idopcion=p).funprincipal for p in permisos]
+    lista.sort()
+    lista = set(lista)
+    if not 9 in lista:
+        retour = custom_403(request)
+        return HttpResponseForbidden(retour)
+
     expirarSesion(request)
     if request.method == 'POST':
         actn = request.POST.get('action')
@@ -3088,6 +3310,15 @@ def admin_monedas(request):
 
 @login_required(login_url='/login')
 def admin_cuentas(request):
+    
+    permisos = get_ops(request)
+    lista = [Opcion.objects.get(idopcion=p).funprincipal for p in permisos]
+    lista.sort()
+    lista = set(lista)
+    if not 10 in lista:
+        retour = custom_403(request)
+        return HttpResponseForbidden(retour)
+
     expirarSesion(request)
     if request.method == 'POST':
         actn = request.POST.get('action')
@@ -3325,6 +3556,15 @@ def admin_cuentas(request):
 
 @login_required(login_url='/login')
 def admin_archive(request):
+    
+    permisos = get_ops(request)
+    lista = [Opcion.objects.get(idopcion=p).funprincipal for p in permisos]
+    lista.sort()
+    lista = set(lista)
+    if not 17 in lista:
+        retour = custom_403(request)
+        return HttpResponseForbidden(retour)
+
     expirarSesion(request)
     if request.method == 'GET':
         
@@ -4007,6 +4247,15 @@ def admin_archive(request):
 
 @login_required(login_url='/login')
 def admin_reglas_transf(request):
+    
+    permisos = get_ops(request)
+    lista = [Opcion.objects.get(idopcion=p).funprincipal for p in permisos]
+    lista.sort()
+    lista = set(lista)
+    if not 11 in lista:
+        retour = custom_403(request)
+        return HttpResponseForbidden(retour)
+
     expirarSesion(request)
     if request.method == 'POST':
         
@@ -4106,6 +4355,14 @@ def admin_reglas_transf(request):
 @login_required(login_url='/login')
 def admin_crit_reglas(request):
 
+    permisos = get_ops(request)
+    lista = [Opcion.objects.get(idopcion=p).funprincipal for p in permisos]
+    lista.sort()
+    lista = set(lista)
+    if not 12 in lista:
+        retour = custom_403(request)
+        return HttpResponseForbidden(retour)
+    
     expirarSesion(request)
     if request.method == 'POST':
         actn = request.POST.get('action')
@@ -4206,13 +4463,112 @@ def admin_crit_reglas(request):
         return render(request, template, context)
 
 @login_required(login_url='/login')
-def admin_licencia(request):
+def seg_licencia(request):
+    
+    permisos = get_ops(request)
+    lista = [Opcion.objects.get(idopcion=p).funprincipal for p in permisos]
+    lista.sort()
+    lista = set(lista)
+    if not 6 or not 5 in lista:
+        retour = custom_403(request)
+        return HttpResponseForbidden(retour)
+
     expirarSesion(request)
     if request.method == 'GET':
-        template = "matcher/admin_licencia.html"
+        template = "matcher/seg_licencia.html"
         criterios = CriteriosMatch.objects.all()
         context = {'ops':get_ops(request),'archivos':get_archivosLicencia()}
         return render(request, template, context)
+
+    if request.method == 'POST':
+        action = request.POST.get('action')
+
+        if action == "cargarLicencia":
+            archivo = request.POST.get('archivo')
+            
+            #Buscar directorio de licencia
+            obj = Configuracion.objects.all()[0]
+            directorio = obj.dirlicencia
+            directorio = directorio + "\\"
+
+            #ruta del archivo a cargar
+            ruta = directorio + archivo
+            bicLicencia = obj.bic
+            fechaLicencia = ""
+            usuariosLicencia = ""
+            numeroModulos = 0
+            modulosLicencia = []
+            llaveLicencia = ""
+
+            #abrir archivo
+            fo = open(ruta, 'r')
+            for line in fo:
+                if line[:17] == "<FechaExpiracion>":
+                    fechaLicencia = line.strip()
+                    fechaLicencia = fechaLicencia[17:][:-18]
+                if line[:13] == "<NumUsuarios>":
+                    usuariosLicencia = line.strip()
+                    usuariosLicencia = usuariosLicencia[13:][:-14]
+                if line[:12] == "<NumModulos>":
+                    aux = line.strip()
+                    numeroModulos = int(aux[12:][:-13])
+                if line[:2] == "- ":
+                    aux = line.strip()
+                    aux = aux[2:] 
+                    modulosLicencia.append(aux)
+                if line[:7] == "<Llave>":
+                    llaveLicencia = line.strip()
+                    llaveLicencia = llaveLicencia[7:][:-8]
+
+            fo.close()
+            
+            try:
+                # Buscar licencia
+                previa = Licencia.objects.all()[0]
+                previa.bic = bicLicencia
+                previa.num_usuarios = int(usuariosLicencia)
+                fechaAux = datetime.strptime(fechaLicencia, '%Y-%m-%d')
+                previa.fecha_expira = fechaAux
+                previa.llave = llaveLicencia
+                previa.salt = "BCG.bcg+2015"
+                previa.save()
+
+                #modulos
+                modulosemail = "\n"
+                for mod in modulosLicencia:
+                    moduloQuery = Modulos.objects.get(descripcion=mod)
+                    moduloQuery.activo = 1
+                    moduloQuery.save()
+                    modulosemail =  modulosemail + "- " + mod + "\n"
+
+                #Enviar mail
+                msg = "Bic: " + bicLicencia + "\nUsuarios: " + usuariosLicencia +"\n Expiración (YY-MM-DD): "+ str(fechaLicencia) +"\n Llave: " + llaveLicencia+ "\nSalt : BCG.bcg+2015" +"\n Modulos: " +str(numeroModulos)+ modulosemail
+                enviar_mail('Licencia del banco: '+bicLicencia,msg,'jotha41@gmail.com')
+
+                mensaje = "Licencia modificada exitosamente"
+                return JsonResponse({'mens':mensaje})
+
+            except:
+
+                #Si es la primera vez que se carga la licencia
+                fechaAux = datetime.strptime(fechaLicencia, '%Y-%m-%d')
+                nuevalicencia = Licencia.objects.create(bic=bicLicencia,num_usuarios=int(usuariosLicencia),fecha_expira=fechaAux,llave=llaveLicencia,salt="BCG.bcg+2015")
+                
+                #modulos
+                modulosemail = "\n"
+                for mod in modulosLicencia:
+                    moduloQuery = Modulos.objects.get(descripcion=mod)
+                    moduloQuery.activo = 1
+                    moduloQuery.save()
+                    modulosemail =  modulosemail + "- " + mod + "\n"
+
+                #Enviar mail
+                msg = "Bic: " + bicLicencia + "\nUsuarios: " + usuariosLicencia +"\n Expiración (YY-MM-DD): "+ str(fechaLicencia) +"\n Llave: " + llaveLicencia+ "\nSalt : BCG.bcg+2015" +"\n Modulos: " +str(numeroModulos)+ modulosemail
+                enviar_mail('Licencia del banco: '+bicLicencia,msg,'jotha41@gmail.com')
+                
+                mensaje = "La agregada exitosamente"
+                return JsonResponse({'mens':mensaje})
+
 
 @login_required(login_url='/login')
 def manual_usuario(request):
@@ -4249,13 +4605,162 @@ def sobre_matcher(request):
 
 @login_required(login_url='/login')
 def SU_licencia(request):
+
+    permisos = get_ops(request)
+    lista = [Opcion.objects.get(idopcion=p).funprincipal for p in permisos]
+    lista.sort()
+    lista = set(lista)
+    if not 15 in lista:
+        retour = custom_403(request)
+        return HttpResponseForbidden(retour)
+
     expirarSesion(request)
-    template = "matcher/SU_licencia.html"
-    context = {'ops':get_ops(request)}
-    return render(request, template, context)
+
+    if request.method == "GET":
+        try:
+            prev = Licencia.objects.all()[0] 
+            numU = prev.num_usuarios
+            Exp = prev.fecha_expira
+            bicB = Configuracion.objects.all()[0].bic
+            template = "matcher/SU_licencia.html"
+            context = {'ops':get_ops(request),'bic':bicB,'numU':numU,'Exp':Exp}
+            return render(request, template, context)
+
+        except:
+            template = "matcher/SU_licencia.html"
+            bicB = Configuracion.objects.all()[0].bic
+            context = {'ops':get_ops(request),'bic':bicB,'numU':0,'Exp':None}
+            return render(request, template, context)
+
+    if request.method == "POST":
+       action = request.POST.get('action')
+
+       if action == "guardarCambios":
+        numUsers = request.POST.get('numUsers') 
+        fecha = request.POST.get('fecha')
+        bic = Configuracion.objects.all()[0].bic
+           
+        try:
+            # Buscar licencia
+            previa = Licencia.objects.all()[0]
+            pwd = bic + "$" + numUsers + "$" + fecha
+            newp = make_password(pwd, salt='BCG.bcg+2015', hasher='pbkdf2_sha256')
+            x, x, salt, hashp = newp.split("$")
+            fecha = datetime.strptime(fecha, '%d/%m/%Y')
+            previa.num_usuarios = numUsers
+            previa.fecha_expira = fecha
+            previa.salt = salt
+            previa.llave = hashp
+            previa.save()
+            modulos = Modulos.objects.exclude(opcion=15).exclude(activo=0).order_by('descripcion')
+            modulosemail = "\n"
+            cuentamod = 0
+            for i in modulos:
+                modulosemail =  modulosemail + "- " + i.descripcion + "\n"
+                cuentamod += 1
+
+            #Se crea el archivo de texto con la copia de la licencia
+            tn = str(timenow())
+            aux = tn[:10]
+            aux2 = aux.split('-')
+            aux = aux2[2]+aux2[1]+aux2[0]
+            fechaNombre = aux
+
+
+            #Buscar directorio de la licencia
+            obj = Configuracion.objects.all()[0]
+            directorio = obj.dirlicencia
+            directorio = directorio + "\\"
+
+            #Nombre del archivo a crear
+            archivo = directorio + "Licencia" + "_" + bic + "_" + fechaNombre + ".txt"
+
+            #abrir archivo
+            fo = open(archivo, 'w')
+            fo.write( "Licencia Matcher\n")
+            fo.write( "<BIC>"+bic+"</BIC>"+"\n")
+            fo.write( "<FechaExpiracion>"+str(fecha).split(" ")[0]+"</FechaExpiracion>"+"\n")
+            fo.write( "<NumUsuarios>"+numUsers+"</NumUsuarios>"+"\n")
+            fo.write( "<NumModulos>"+str(cuentamod)+"</NumModulos>"+"\n")
+            fo.write( "<Modulos>"+modulosemail+"</Modulos>"+"\n")
+            fo.write( "<Llave>"+hashp+"</Llave>\n")
+            fo.write( "\n@BCG")
+
+            #cerrar archivo
+            fo.close()
+
+            #Enviar mail
+            msg = "Bic: " +bic + "\nUsuarios: " + numUsers +"\n Expiración (YY-MM-DD): "+ str(fecha).split(" ")[0] +"\n Llave: " + hashp+ "\nSalt : " + salt  +"\n Modulos: " + str(cuentamod) + modulosemail
+            enviar_mail('Licencia del banco: '+bic,msg,'jotha41@gmail.com')
+            
+            mensaje = "Licencia modificada exitosamente"
+            return JsonResponse({'mens':mensaje})
+               
+        except:
+
+            #Si es la primera vez que se agrega la licencia
+            pwd = bic + "$" + numUsers + "$" + fecha
+            newp = make_password(pwd, salt='BCG.bcg+2015', hasher='pbkdf2_sha256')
+            x, x, salt, hashp = newp.split("$")
+            fecha = datetime.strptime(fecha, '%d/%m/%Y')
+            nuevalicencia = Licencia.objects.create(bic=bic,num_usuarios=numUsers,fecha_expira=fecha,llave=hashp,salt=salt)
+            modulos = Modulos.objects.exclude(opcion=15).exclude(activo=0).order_by('descripcion')
+            modulosemail = "\n"
+            cuentamod = 0
+            for i in modulos:
+                modulosemail =  modulosemail + "- " + i.descripcion + "\n"
+                cuentamod += 1
+
+            #Se crea el archivo de texto con la copia de la licencia
+            tn = str(timenow())
+            aux = tn[:10]
+            aux2 = aux.split('-')
+            aux = aux2[2]+aux2[1]+aux2[0]
+            fechaNombre = aux
+
+
+            #Buscar directorio de la licencia
+            obj = Configuracion.objects.all()[0]
+            directorio = obj.dirlicencia
+            directorio = directorio + "\\"
+
+            #Nombre del archivo a crear
+            archivo = directorio + "Licencia" + "_" + bic + "_" + fechaNombre + ".txt"
+
+            #abrir archivo
+            fo = open(archivo, 'w')
+            fo.write( "Licencia Matcher\n")
+            fo.write( "<BIC>"+bic+"</BIC>"+"\n")
+            fo.write( "<FechaExpiracion>"+str(fecha).split(" ")[0]+"</FechaExpiracion>"+"\n")
+            fo.write( "<NumUsuarios>"+numUsers+"</NumUsuarios>"+"\n")
+            fo.write( "<NumModulos>"+str(cuentamod)+"</NumModulos>"+"\n")
+            fo.write( "<Modulos>"+modulosemail+"</Modulos>"+"\n")
+            fo.write( "\n")
+            fo.write( "<Llave>"+hashp+"</Llave>\n")
+            fo.write( "\n@BCG")
+
+            #cerrar archivo
+            fo.close()
+
+            #Enviar mail
+            msg = "Bic: " +bic + "\nUsuarios: " + numUsers +"\n Expiración (YY-MM-DD): "+ str(fecha).split(" ")[0] +"\n Llave: " + hashp+ "\nSalt : " + salt +"\n Modulos: " +str(cuentamod)+ modulosemail
+            enviar_mail('Licencia del banco: '+bic,msg,'jotha41@gmail.com')
+            
+            mensaje = "Licencia agregada exitosamente"
+            return JsonResponse({'mens':mensaje})
+
+
 
 @login_required(login_url='/login')
 def SU_modulos(request):
+
+    permisos = get_ops(request)
+    lista = [Opcion.objects.get(idopcion=p).funprincipal for p in permisos]
+    lista.sort()
+    lista = set(lista)
+    if not 15 in lista:
+        retour = custom_403(request)
+        return HttpResponseForbidden(retour)
 
     expirarSesion(request)
     if request.method == 'GET':
@@ -4285,6 +4790,15 @@ def SU_modulos(request):
 
 @login_required(login_url='/login')
 def SU_version(request):
+
+    permisos = get_ops(request)
+    lista = [Opcion.objects.get(idopcion=p).funprincipal for p in permisos]
+    lista.sort()
+    lista = set(lista)
+    if not 15 in lista:
+        retour = custom_403(request)
+        return HttpResponseForbidden(retour)
+
     expirarSesion(request)
     if request.method == 'GET':
         template = "matcher/SU_version.html"

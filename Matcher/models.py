@@ -481,6 +481,17 @@ class Idioma(models.Model):
     class Meta:
         db_table = 'Idioma'
 
+class Licencia(models.Model):
+    idlicencia = sqlserver_ado.fields.BigAutoField(db_column='idLicencia', primary_key=True)  
+    bic = models.CharField(db_column='Bic', max_length=10)  
+    num_usuarios = models.IntegerField(db_column='NumeroUsuarios')
+    fecha_expira = models.DateTimeField(db_column='FechaExpira')
+    llave = models.CharField(db_column='Llave', max_length=500, unique=True)
+    salt = models.CharField(db_column='Salt',max_length=100,unique=True)  
+
+    class Meta:
+        db_table = 'Licencia'
+
 
 class Modulos(models.Model):
     idmodulo = sqlserver_ado.fields.BigAutoField(db_column='idModulo', primary_key=True)   

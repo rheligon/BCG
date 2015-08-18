@@ -667,7 +667,8 @@ $('#crearMT95Button').on('click', function () {
     var codigo = $('#mt95cod').val().split("-")[0];
     var codigo2 = $('#mt95cod').val().split("-")[2];
     var narrativa = $('#mt95cod').val().split("-")[1];
-    var original = $('#original').val();
+    var original = $('#narrativa').val();
+    var tipoOriginal = $('#claseOriginal').val();
     var pregunta = codigo2;
     console.log(codigo + codigo2 + narrativa + pregunta);
     var transaccion = este.split('-')[1];
@@ -697,16 +698,16 @@ $('#crearMT95Button').on('click', function () {
         $('#processing-modal').modal('toggle');
     
         //Llamar funcion de creación del mensaje
-        crearmt95(ref_mensaje,ref_mensaje_original,tipo,fecha,codigo,pregunta,narrativa,original,transaccion,clase,cuenta,codigo2);
+        crearmt95(ref_mensaje,ref_mensaje_original,tipo,fecha,codigo,pregunta,narrativa,original,transaccion,clase,cuenta,codigo2,tipoOriginal);
     };
 });
 
 //Crear mensajes MT95
-function crearmt95(ref_mensaje,ref_mensaje_original,tipo,fecha,codigo,pregunta,narrativa,original,transaccion,clase,cuenta,codigo2){
+function crearmt95(ref_mensaje,ref_mensaje_original,tipo,fecha,codigo,pregunta,narrativa,original,transaccion,clase,cuenta,codigo2,tipoOriginal){
     $.ajax({
         type:"POST",
         url: "/procd/pAbiertas/",
-        data: {"ref95":ref_mensaje, "refOrg95":ref_mensaje_original, "tipo95":tipo, "fecha95":fecha, "cod95":codigo, "preg95":pregunta, "narrativa95":narrativa, "original95":original, "transaccion":transaccion, "action":"crearMT95", "clase":clase, "cuenta":cuenta, "codigo2":codigo2},
+        data: {"ref95":ref_mensaje, "refOrg95":ref_mensaje_original, "tipo95":tipo, "fecha95":fecha, "cod95":codigo, "preg95":pregunta, "narrativa95":narrativa, "original95":original, "transaccion":transaccion, "action":"crearMT95", "clase":clase, "cuenta":cuenta, "codigo2":codigo2, "tipoOriginal":tipoOriginal},
         success: function(data){
             $('#processing-modal').modal('toggle');
             swal("OK", "Mensaje creado exitosamente", "success");
