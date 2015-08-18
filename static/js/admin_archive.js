@@ -321,8 +321,9 @@ function consultarEjecutar(cuenta){
                              text: data.msg,
                              type: "error"
                          });
+                    $('#processing-modal').modal('toggle')
                 }
-                $('#processing-modal').modal('toggle')
+                
                 
             },
             error: function(q,error){
@@ -356,7 +357,6 @@ function ejecutarArchive(cuenta,fechaMinima,fechaMaxima){
                              type: "error"
                          });
                 }
-                
             },
             error: function(q,error){
                 alert(q.responseText) //debug
