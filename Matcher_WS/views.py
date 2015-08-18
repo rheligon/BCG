@@ -4091,6 +4091,96 @@ def seg_licencia(request):
         context = {'ops':get_ops(request),'archivos':get_archivosLicencia()}
         return render(request, template, context)
 
+    if request.method == 'POST':
+        action = request.POST.get('action')
+
+        if action == "cargarLicencia":
+            archivo = request.POST.get('archivo')
+            
+            #Buscar directorio de licencia
+            obj = Configuracion.objects.all()[0]
+            directorio = obj.dirlicencia
+            directorio = directorio + "\\"
+
+            #ruta del archivo a cargar
+            ruta = directorio + archivo
+            bicLicencia = obj.bic
+            fechaLicencia = ""
+            usuariosLicencia = ""
+            numeroModulos = 0
+            modulosLicencia = []
+            llaveLicencia = ""
+
+            #abrir archivo
+            fo = open(ruta, 'r')
+            for line in fo:
+                if line[:17] == "<FechaExpiracion>":
+                    fechaLicencia = line.strip()
+                    fechaLicencia = fechaLicencia[17:][:-18]
+                if line[:13] == "<NumUsuarios>":
+                    usuariosLicencia = line.strip()
+                    usuariosLicencia = usuariosLicencia[13:][:-14]
+                if line[:12] == "<NumModulos>":
+                    aux = line.strip()
+                    numeroModulos = int(aux[12:][:-13])
+                if line[:2] == "- ":
+                    aux = line.strip()
+                    aux = aux[2:] 
+                    modulosLicencia.append(aux)
+                if line[:7] == "<Llave>":
+                    llaveLicencia = line.strip()
+                    llaveLicencia = llaveLicencia[7:][:-8]
+
+            fo.close()
+            
+            try:
+                # Buscar licencia
+                previa = Licencia.objects.all()[0]
+                previa.bic = bicLicencia
+                previa.num_usuarios = int(usuariosLicencia)
+                fechaAux = datetime.strptime(fechaLicencia, '%Y-%m-%d')
+                previa.fecha_expira = fechaAux
+                previa.llave = llaveLicencia
+                previa.salt = "BCG.bcg+2015"
+                previa.save()
+
+                #modulos
+                modulosemail = "\n"
+                for mod in modulosLicencia:
+                    moduloQuery = Modulos.objects.get(descripcion=mod)
+                    moduloQuery.activo = 1
+                    moduloQuery.save()
+                    modulosemail =  modulosemail + "- " + mod + "\n"
+
+                #Enviar mail
+                msg = "Bic: " + bicLicencia + "\nUsuarios: " + usuariosLicencia +"\n Expiración (YY-MM-DD): "+ str(fechaLicencia) +"\n Llave: " + llaveLicencia+ "\nSalt : BCG.bcg+2015" +"\n Modulos: " +str(numeroModulos)+ modulosemail
+                enviar_mail('Licencia del banco: '+bicLicencia,msg,'jotha41@gmail.com')
+
+                mensaje = "Licencia modificada exitosamente"
+                return JsonResponse({'mens':mensaje})
+
+            except:
+
+                #Si es la primera vez que se carga la licencia
+                fechaAux = datetime.strptime(fechaLicencia, '%Y-%m-%d')
+                nuevalicencia = Licencia.objects.create(bic=bicLicencia,num_usuarios=int(usuariosLicencia),fecha_expira=fechaAux,llave=llaveLicencia,salt="BCG.bcg+2015")
+                
+                #modulos
+                modulosemail = "\n"
+                for mod in modulosLicencia:
+                    moduloQuery = Modulos.objects.get(descripcion=mod)
+                    moduloQuery.activo = 1
+                    moduloQuery.save()
+                    modulosemail =  modulosemail + "- " + mod + "\n"
+
+                #Enviar mail
+                msg = "Bic: " + bicLicencia + "\nUsuarios: " + usuariosLicencia +"\n Expiración (YY-MM-DD): "+ str(fechaLicencia) +"\n Llave: " + llaveLicencia+ "\nSalt : BCG.bcg+2015" +"\n Modulos: " +str(numeroModulos)+ modulosemail
+                enviar_mail('Licencia del banco: '+bicLicencia,msg,'jotha41@gmail.com')
+                
+                mensaje = "La agregada exitosamente"
+                return JsonResponse({'mens':mensaje})
+
+
 @login_required(login_url='/login')
 def manual_usuario(request):
     expirarSesion(request)
@@ -4164,8 +4254,8 @@ def SU_licencia(request):
         try:
             # Buscar licencia
             previa = Licencia.objects.all()[0]
-            pwd = bic + numUsers + fecha
-            newp = make_password(pwd, salt='BCG.bcg+2015', hasher='pbkdf2_sha1')
+            pwd = bic + "$" + numUsers + "$" + fecha
+            newp = make_password(pwd, salt='BCG.bcg+2015', hasher='pbkdf2_sha256')
             x, x, salt, hashp = newp.split("$")
             fecha = datetime.strptime(fecha, '%d/%m/%Y')
             previa.num_usuarios = numUsers
@@ -4173,19 +4263,100 @@ def SU_licencia(request):
             previa.salt = salt
             previa.llave = hashp
             previa.save()
-            msg = "Bic: " +bic + "\nUsuarios: " + numUsers +"\n Expiración: "+ str(fecha) +"\n Llave: " + hashp+ "\nSalt : " + salt   
-            enviar_mail('Licencia del banco'+bic,msg,'jotha41@gmail.com')
+            modulos = Modulos.objects.exclude(opcion=15).exclude(activo=0).order_by('descripcion')
+            modulosemail = "\n"
+            cuentamod = 0
+            for i in modulos:
+                modulosemail =  modulosemail + "- " + i.descripcion + "\n"
+                cuentamod += 1
+
+            #Se crea el archivo de texto con la copia de la licencia
+            tn = str(timenow())
+            aux = tn[:10]
+            aux2 = aux.split('-')
+            aux = aux2[2]+aux2[1]+aux2[0]
+            fechaNombre = aux
+
+
+            #Buscar directorio de la licencia
+            obj = Configuracion.objects.all()[0]
+            directorio = obj.dirlicencia
+            directorio = directorio + "\\"
+
+            #Nombre del archivo a crear
+            archivo = directorio + "Licencia" + "_" + bic + "_" + fechaNombre + ".txt"
+
+            #abrir archivo
+            fo = open(archivo, 'w')
+            fo.write( "Licencia Matcher\n")
+            fo.write( "<BIC>"+bic+"</BIC>"+"\n")
+            fo.write( "<FechaExpiracion>"+str(fecha).split(" ")[0]+"</FechaExpiracion>"+"\n")
+            fo.write( "<NumUsuarios>"+numUsers+"</NumUsuarios>"+"\n")
+            fo.write( "<NumModulos>"+str(cuentamod)+"</NumModulos>"+"\n")
+            fo.write( "<Modulos>"+modulosemail+"</Modulos>"+"\n")
+            fo.write( "<Llave>"+hashp+"</Llave>\n")
+            fo.write( "\n@BCG")
+
+            #cerrar archivo
+            fo.close()
+
+            #Enviar mail
+            msg = "Bic: " +bic + "\nUsuarios: " + numUsers +"\n Expiración (YY-MM-DD): "+ str(fecha).split(" ")[0] +"\n Llave: " + hashp+ "\nSalt : " + salt  +"\n Modulos: " + str(cuentamod) + modulosemail
+            enviar_mail('Licencia del banco: '+bic,msg,'jotha41@gmail.com')
+            
             mensaje = "Licencia modificada exitosamente"
             return JsonResponse({'mens':mensaje})
                
         except:
-            pwd = bic + numUsers + fecha
-            newp = make_password(pwd, salt='BCG.bcg+2015', hasher='pbkdf2_sha1')
+
+            #Si es la primera vez que se agrega la licencia
+            pwd = bic + "$" + numUsers + "$" + fecha
+            newp = make_password(pwd, salt='BCG.bcg+2015', hasher='pbkdf2_sha256')
             x, x, salt, hashp = newp.split("$")
             fecha = datetime.strptime(fecha, '%d/%m/%Y')
             nuevalicencia = Licencia.objects.create(bic=bic,num_usuarios=numUsers,fecha_expira=fecha,llave=hashp,salt=salt)
-            msg = "Bic: " +bic + "\nUsuarios: " + numUsers +"\n Expiración: "+ str(fecha) +"\n Llave: " + hashp+ "\nSalt : " + salt   
-            enviar_mail('Licencia del banco'+bic,msg,'jotha41@gmail.com')
+            modulos = Modulos.objects.exclude(opcion=15).exclude(activo=0).order_by('descripcion')
+            modulosemail = "\n"
+            cuentamod = 0
+            for i in modulos:
+                modulosemail =  modulosemail + "- " + i.descripcion + "\n"
+                cuentamod += 1
+
+            #Se crea el archivo de texto con la copia de la licencia
+            tn = str(timenow())
+            aux = tn[:10]
+            aux2 = aux.split('-')
+            aux = aux2[2]+aux2[1]+aux2[0]
+            fechaNombre = aux
+
+
+            #Buscar directorio de la licencia
+            obj = Configuracion.objects.all()[0]
+            directorio = obj.dirlicencia
+            directorio = directorio + "\\"
+
+            #Nombre del archivo a crear
+            archivo = directorio + "Licencia" + "_" + bic + "_" + fechaNombre + ".txt"
+
+            #abrir archivo
+            fo = open(archivo, 'w')
+            fo.write( "Licencia Matcher\n")
+            fo.write( "<BIC>"+bic+"</BIC>"+"\n")
+            fo.write( "<FechaExpiracion>"+str(fecha).split(" ")[0]+"</FechaExpiracion>"+"\n")
+            fo.write( "<NumUsuarios>"+numUsers+"</NumUsuarios>"+"\n")
+            fo.write( "<NumModulos>"+str(cuentamod)+"</NumModulos>"+"\n")
+            fo.write( "<Modulos>"+modulosemail+"</Modulos>"+"\n")
+            fo.write( "\n")
+            fo.write( "<Llave>"+hashp+"</Llave>\n")
+            fo.write( "\n@BCG")
+
+            #cerrar archivo
+            fo.close()
+
+            #Enviar mail
+            msg = "Bic: " +bic + "\nUsuarios: " + numUsers +"\n Expiración (YY-MM-DD): "+ str(fecha).split(" ")[0] +"\n Llave: " + hashp+ "\nSalt : " + salt +"\n Modulos: " +str(cuentamod)+ modulosemail
+            enviar_mail('Licencia del banco: '+bic,msg,'jotha41@gmail.com')
+            
             mensaje = "Licencia agregada exitosamente"
             return JsonResponse({'mens':mensaje})
 
