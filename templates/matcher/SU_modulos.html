@@ -32,10 +32,10 @@
                 <tbody id="tb-Adq" >
                     {% for modulo in modulos %}
                         {% if modulo.activo == 1 %}
-                            <tr>
+                            <tr id="{{modulo.idmodulo}}">
                                 <td>{{modulo.descripcion}}</td>
                                 <td style="text-align:center; width: 24px;"><span class="fa fa-unlock"></span></td>
-                                <td style="text-align:center; width: 24px;"><input class="chkSelection" type="checkbox" id="Mod-{{modulo.pk}}"></td>
+                                <td style="text-align:center; width: 24px;"><input class="chkSelection" type="checkbox" id="Mod-{{modulo.pk}}" onchange="chequear(this)"></td>
                             </tr>
                         {%endif%}
                     {% endfor %}
@@ -63,10 +63,10 @@
                 <tbody id="tb-NoAdq">
                     {% for modulo in modulos %}
                         {% if modulo.activo == 0 %}
-                            <tr>
+                            <tr id="{{modulo.idmodulo}}">
                                 <td>{{modulo.descripcion}}</td>
                                 <td style="text-align:center; width: 24px;"><span class="fa fa-lock"></span></td>
-                                <td style="text-align:center; width: 24px;"><input class="chkSelection2" type="checkbox" id="Mod-{{modulo.pk}}"></td>
+                                <td style="text-align:center; width: 24px;"><input class="chkSelection2" type="checkbox" id="Mod-{{modulo.pk}}" onchange="chequearA(this)"></td>
                             </tr>
                         {%endif%}
                     {% endfor %}

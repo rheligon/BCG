@@ -59,7 +59,7 @@ function iniciar_tabla_NAD(idioma){
                 url: '/static/json/Spanish-tables.json'
             },
             "scrollY": "350px",
-            "pageLength": 15,
+            "pageLength": 5,
             "lengthMenu": [5, 10, 25, 50, 75, 100 ],
             "paging": true,
             "scrollCollapse": true,
@@ -78,7 +78,7 @@ function iniciar_tabla_NAD(idioma){
                 url: '/static/json/English-tables.json'
             },
             "scrollY": "350px",
-            "pageLength": 15,
+            "pageLength": 5,
             "lengthMenu": [5, 10, 25, 50, 75, 100 ],
             "paging": true,
             "scrollCollapse": true,
@@ -92,40 +92,41 @@ function iniciar_tabla_NAD(idioma){
     };
 }
 
-// agregar elementos a un arreglo sólo si éste no pertenece ya al arreglo
-function checkAndAdd(name) {
-    var found = arregloQuitar.some(function (el) {
-        return el === name;
-    });
-    if (!found) {
-        arregloQuitar.push(name); 
+//Agregar o sacar del arreglo quitar cuando se haya seleccionado un modulo
+function chequear(elemento){
+
+    var id = elemento.id.split("-")[1];
+    var index = $.inArray(id, arregloQuitar);
+ 
+    if ( index === -1 ) {
+        arregloQuitar.push( id );
+    } else {
+        arregloQuitar.splice( index, 1 );
     }
+
 }
 
-// agregar elementos a un arreglo sólo si éste no pertenece ya al arreglo
-function checkAndAddAgregar(name) {
-    var found = arregloAgregar.some(function (el) {
-        return el === name;
-    });
-    if (!found) {
-        arregloAgregar.push(name); 
+//Agregar o sacar del arreglo agregar cuando se haya seleccionado un modulo
+function chequearA(elemento){
+
+    var id = elemento.id.split("-")[1];
+    var index = $.inArray(id, arregloAgregar);
+ 
+    if ( index === -1 ) {
+        arregloAgregar.push( id );
+    } else {
+        arregloAgregar.splice( index, 1 );
     }
+
 }
 
 //Introducir en el arreglo el id del checkbox que se haya clickeado
 $('#quitarModButton').on('click', function () {
-    arregloQuitar = [];   
-    $('.chkSelection').each(function(){
-        if ($(this).prop('checked')===true){
-            var aux = $(this).attr('id').split("-")[1];
-            checkAndAdd(aux); 
-        };
-    });
-    console.log(arregloQuitar);
     $('#processing-modal').modal('toggle');
     
     //Llamar funcion de creación del mensaje
     quitarModulos(arregloQuitar);
+    arregloQuitar = [];
     
 });
 
@@ -159,18 +160,11 @@ function quitarModulos(array){
 
 //Introducir en el arreglo el id del checkbox que se haya clickeado
 $('#agregarModButton').on('click', function () {
-    arregloAgregar = [];   
-    $('.chkSelection2').each(function(){
-        if ($(this).prop('checked')===true){
-            var aux = $(this).attr('id').split("-")[1];
-            checkAndAddAgregar(aux); 
-        };
-    });
-    console.log(arregloAgregar);
     $('#processing-modal').modal('toggle');
     
     //Llamar funcion de creación del mensaje
     agregarModulos(arregloAgregar);
+    arregloAgregar = []; 
     
 });
 
