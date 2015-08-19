@@ -575,7 +575,10 @@ $('#updButton').on('click', function () {
                              confirmButtonText: "Ok" });
                 }
                 $('#processing-modal').modal('toggle');
-                $btn.button('reset')
+                $btn.button('reset');
+                setTimeout(function(){
+                    window.location.reload();
+                },1000);
             },
             dataType:'json',
             headers:{
