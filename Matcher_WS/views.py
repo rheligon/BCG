@@ -47,7 +47,7 @@ def test(request):
 
     #setConsolidado('BMARCH',request)
 
-    return JsonResponse('exito', safe=False)
+    return JsonResponse('UPS!', safe=False)
 
 @login_required(login_url='/login')
 def index(request):
