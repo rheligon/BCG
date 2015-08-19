@@ -2933,8 +2933,8 @@ def seg_Perfiles(request):
         
         if actn == 'sel':
             perfid = int(request.POST.get('perfid'))
-            perfil_funcs = PerfilOpcion.objects.all()
-            funciones = [opcion for opcion in perfil_funcs if opcion.perfil_idperfil.id      == perfid]
+            perfil_funcs = PerfilOpcion.objects.filter(perfil_idperfil=perfid)
+            funciones = [opcion for opcion in perfil_funcs]
             res_json = serializers.serialize('json', funciones)
         
             return JsonResponse(res_json, safe=False)
@@ -2979,10 +2979,12 @@ def seg_Perfiles(request):
             perfid = request.POST.get('perfid')
             perfnom = request.POST.get('perfNom')
             funcs = request.POST.getlist('perfFuncs[]')
-
+            funcs = list(set(funcs))
+            funcs.sort()
+            
             try:
                 perfil = Perfil.objects.get(idperfil=perfid)
-
+               
                 #Borrar opciones anteriores
                 opciones = PerfilOpcion.objects.filter(perfil_idperfil=perfil).delete()
 
@@ -2994,6 +2996,7 @@ def seg_Perfiles(request):
                 #Cambiar el nombre
                 perfil.nombre = perfnom
                 perfil.save()
+
             except:
                 msg = "No se pudo modificar el perfil especificado."
                 return JsonResponse({'msg': msg, 'modif': False})
@@ -3010,7 +3013,7 @@ def seg_Perfiles(request):
 
         perfiles = Perfil.objects.exclude(nombre="SysAdmin").order_by('nombre')
 
-        opciones = Opcion.objects.exclude(funprincipal__in=sub_index2).order_by('nombre')
+        opciones = Opcion.objects.exclude(funprincipal__in=sub_index2).exclude(funprincipal__in=sub_index).order_by('nombre')
         nosub = [opcion.nombre for opcion in opciones]
         nosubid = [str(opcion.idopcion) for opcion in opciones]
 
@@ -4133,6 +4136,10 @@ def seg_licencia(request):
 
             fo.close()
             
+            if fechaLicencia == "" or usuariosLicencia == "" or numeroModulos == 0 or modulosLicencia == [] or llaveLicencia == "":
+                mensaje = "Problemas con el archivo"
+                return JsonResponse({'mens':mensaje})
+
             try:
                 # Buscar licencia
                 previa = Licencia.objects.all()[0]
@@ -4179,7 +4186,7 @@ def seg_licencia(request):
                 
                 mensaje = "La agregada exitosamente"
                 return JsonResponse({'mens':mensaje})
-
+                
 
 @login_required(login_url='/login')
 def manual_usuario(request):

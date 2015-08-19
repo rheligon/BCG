@@ -23,12 +23,18 @@ function cargarLicencia(archivo){
         url: "/seguridad/licencia/",
         data: {"action":"cargarLicencia", "archivo":archivo},
         success: function(data){
-            var errorMensaje = data.mens.substring(0,8);
             var mensaje = data.mens;
+
+            if (mensaje === "Problemas con el archivo"){
+
+                $('#processing-modal').modal('toggle');
+                swal("Ups!", mensaje, "error");
+
+            } else {
            
                 $('#processing-modal').modal('toggle');
                 swal("OK", mensaje, "success");
-
+            }
         },
         error: function(jqXHR, error){ 
             alert(jqXHR.responseText) //debug
