@@ -681,13 +681,17 @@ def pd_cargaManual(request):
     lista = [Opcion.objects.get(idopcion=p).funprincipal for p in permisos]
     lista.sort()
     lista = set(lista)
+    
     if not 1 in lista:
         retour = custom_403(request)
         return HttpResponseForbidden(retour)
 
     expirarSesion(request)
+
     if request.method == 'POST':
+
         actn = request.POST.get('action')
+
         if actn == 'buscar':
             
             cuentaid =int(request.POST.get('cuentaid'))
@@ -706,6 +710,7 @@ def pd_cargaManual(request):
             return JsonResponse({'query':res_json2, 'tipo':tipo,'moneda':moneda})
 
         if actn == 'cargar':
+
             msg = "El Edo. de Cuenta se ha cargado con exito"
             numTrans = int(request.POST.get('numTrans'))
 
@@ -3561,11 +3566,13 @@ def admin_archive(request):
     lista = [Opcion.objects.get(idopcion=p).funprincipal for p in permisos]
     lista.sort()
     lista = set(lista)
+
     if not 17 in lista:
         retour = custom_403(request)
         return HttpResponseForbidden(retour)
 
     expirarSesion(request)
+
     if request.method == 'GET':
         
         template = "matcher/admin_archive.html"
@@ -3574,6 +3581,7 @@ def admin_archive(request):
         return render(request, template, context)
     
     if request.method == 'POST':
+        
         actn = request.POST.get('action')
         
         if actn == 'consultar':
@@ -3582,40 +3590,14 @@ def admin_archive(request):
             fechaMinima = ""
             msg = ""
             
-            transconta = TranscerradaContabilidad.objects.filter(codigocuenta=cuenta)
-            transcorr = TranscerradaCorresponsal.objects.filter(codigocuenta=cuenta)
+            consulta = Matchconfirmado.objects.filter(tc_corres__codigocuenta=cuenta).order_by('fecha')
             
-            if (not transconta and not transcorr):
-                
+            if (not consulta):
                 exito = False
                 msg = "No existen Matches Confirmados para esta cuenta"
-
-            elif (not transconta):
-               
-                match = Matchconfirmado.objects.get(tc_corres=transcorr[0])
-                fechaMinima = match.fecha.strftime("%d/%m/%Y")
+            else:
+                fechaMinima = consulta[0].fecha.strftime("%d/%m/%Y")
                 exito = True
-
-            elif (not transcorr):
-               
-                match = Matchconfirmado.objects.get(tc_conta=transconta[0])
-                fechaMinima = match.fecha.strftime("%d/%m/%Y")
-                exito = True
-
-            elif (transconta and transcorr):
-                
-                match = Matchconfirmado.objects.get(tc_conta=transconta[0])
-               
-                if (not match):
-                   
-                    match = Matchconfirmado.objects.get(tc_corres=transcorr[0])
-                    fechaMinima = match.fecha.strftime("%d/%m/%Y")
-                    exito = True
-
-                else:
-                    
-                    fechaMinima = match.fecha.strftime("%d/%m/%Y")
-                    exito = True
 
             return JsonResponse({'exito':exito,'cuenta':cuenta, 'msg':msg, 'fechaMinima':fechaMinima})
 
@@ -3626,11 +3608,13 @@ def admin_archive(request):
             
             obj = Configuracion.objects.all()[0]
             directorio = obj.dirarchiveconfirmados +"\\"+ cuenta
+
             try:
                 archivos = os.listdir(directorio)
             except OSError:
                 os.makedirs(directorio)
                 archivos = os.listdir(directorio)
+
             exito = True
 
             return JsonResponse({'exito':exito,'archivos':archivos})
@@ -3639,6 +3623,17 @@ def admin_archive(request):
            
             cuenta = request.POST.get('cuenta')
             archivo = request.POST.get('archivo')
+            fechaIni = request.POST.get('fechaIni')
+            fechaFin = request.POST.get('fechaFin')
+
+            arregloMin = fechaIni.split('/')
+            fechaMin = datetime(int(arregloMin[2]), int(arregloMin[1]), int(arregloMin[0]),0,0,0)
+            
+            arregloMax = fechaFin.split('/')
+            fechaMax = datetime(int(arregloMax[2]), int(arregloMax[1]), int(arregloMax[0]),23,59,59)
+            
+            print(fechaMin)
+            print(fechaMax)
             
             obj = Configuracion.objects.all()[0]
             directorio = obj.dirarchiveconfirmados +"\\"+ cuenta +"\\"
@@ -3655,21 +3650,25 @@ def admin_archive(request):
             contador = 0
             numTrans = 0
             lineaError = 0
+
             arregloAux = []
             arregloTrans = []
             arregloCabecera = []
             arregloTotal = []
+
             transacciones = dict()
             transacciones['auto'] = [] 
             transacciones['manual'] = [] 
             transacciones['contabilidad'] = [] 
             transacciones['corresponsal'] = [] 
+
             automatico = False
             manual = False
             contabilidad = False
             corresponsal = False
-            msg = ""
             exito = False
+            pertenece = False
+            msg = ""
             
             infoLinea =lines[contador]
             
@@ -3689,17 +3688,25 @@ def admin_archive(request):
                         contador += 1
                         infoLinea =lines[contador]
                         
-                        
                         while (infoLinea != "@@" and infoLinea != "***** Match Manual *****"):
                             arregloAux = infoLinea.split(";")
+                            fechaPartida = arregloAux[2]
+                            arregloPartida = fechaPartida.split('/')
+                            fechaPartida = datetime(int(arregloPartida[2]), int(arregloPartida[1]), int(arregloPartida[0]),0,0,0)
+                            
+                            if(fechaPartida <= fechaMax and fechaPartida >= fechaMin and not pertenece):
+                                pertenece = True
+
                             arregloTrans.append(arregloAux)
                             contador += 1
                             infoLinea =lines[contador]
-                            
-                        arregloTotal.append([arregloCabecera,arregloTrans])
+
+                        if(pertenece):    
+                            arregloTotal.append([arregloCabecera,arregloTrans])
+                            pertenece = False
+
                         arregloTrans = []
                         arregloCabecera = []
-
 
                 transacciones['auto'] = arregloTotal
                 arregloAux = []
@@ -3709,30 +3716,35 @@ def admin_archive(request):
                 contador += 1
                 infoLinea =lines[contador]
                 
-
                 while(infoLinea != "***** Reversos Contabilidad *****"):
                     
                     if (infoLinea == "@@"):
                         contador += 1
-                        infoLinea= lines[contador]
-                        
+                        infoLinea= lines[contador]   
                     else:
                         arregloAux = infoLinea.split(";")
                         arregloCabecera.append(arregloAux)
                         contador += 1
                         infoLinea =lines[contador]
                         
-                        
                         while (infoLinea != "@@" and infoLinea != "***** Reversos Contabilidad *****"):
                             arregloAux = infoLinea.split(";")
+                            fechaPartida = arregloAux[2]
+                            arregloPartida = fechaPartida.split('/')
+                            fechaPartida = datetime(int(arregloPartida[2]), int(arregloPartida[1]), int(arregloPartida[0]),0,0,0)
+                            
+                            if(fechaPartida <= fechaMax and fechaPartida >= fechaMin and not pertenece):
+                                pertenece = True
                             arregloTrans.append(arregloAux)
                             contador += 1
                             infoLinea =lines[contador]
                            
-                        arregloTotal.append([arregloCabecera,arregloTrans])
+                        if(pertenece):    
+                            arregloTotal.append([arregloCabecera,arregloTrans])
+                            pertenece = False
+
                         arregloTrans = []
                         arregloCabecera = []
-
 
                 transacciones['manual'] = arregloTotal
                 arregloAux = []
@@ -3742,47 +3754,49 @@ def admin_archive(request):
                 contador += 1
                 infoLinea =lines[contador]
                 
-
-                
                 while(infoLinea != "***** Reversos Corresponsal *****"):
                    
                     if (infoLinea == "@@"):
                         contador += 1
-                        infoLinea= lines[contador]
-                        
+                        infoLinea= lines[contador] 
                     else:
                         arregloAux = infoLinea.split(";")
                         arregloCabecera.append(arregloAux)
                         contador += 1
                         infoLinea =lines[contador]
                        
-                        
                         while (infoLinea != "@@" and infoLinea != "***** Reversos Corresponsal *****"):
                             arregloAux = infoLinea.split(";")
+                            fechaPartida = arregloAux[2]
+                            arregloPartida = fechaPartida.split('/')
+                            fechaPartida = datetime(int(arregloPartida[2]), int(arregloPartida[1]), int(arregloPartida[0]),0,0,0)
+                            
+                            if(fechaPartida <= fechaMax and fechaPartida >= fechaMin and not pertenece):
+                                pertenece = True
                             arregloTrans.append(arregloAux)
                             contador += 1
                             infoLinea =lines[contador]
                             
-                        arregloTotal.append([arregloCabecera,arregloTrans])
+                        if(pertenece):    
+                            arregloTotal.append([arregloCabecera,arregloTrans])
+                            pertenece = False
                         arregloTrans = []
                         arregloCabecera = []
-
 
                 transacciones['contabilidad'] = arregloTotal
                 arregloAux = []
                 arregloTrans = []
                 arregloCabecera = [] 
                 arregloTotal = []
+
                 if (contador < numLineas-1):
                     contador += 1
                     infoLinea =lines[contador]
                 else: 
                     exito = True
-                    return JsonResponse({'exito':exito,'msg':msg,'transacciones':transacciones})
-                
-                
 
-                
+                    return JsonResponse({'exito':exito,'msg':msg,'transacciones':transacciones})
+
                 while(contador < numLineas-1):
                     
                     if (infoLinea == "@@"):
@@ -3795,17 +3809,24 @@ def admin_archive(request):
                         contador += 1
                         infoLinea =lines[contador]
                         
-                        
                         while (infoLinea != "@@" and contador < numLineas-1):
                             arregloAux = infoLinea.split(";")
+                            fechaPartida = arregloAux[2]
+                            arregloPartida = fechaPartida.split('/')
+                            fechaPartida = datetime(int(arregloPartida[2]), int(arregloPartida[1]), int(arregloPartida[0]),0,0,0)
+                            
+                            if(fechaPartida <= fechaMax and fechaPartida >= fechaMin and not pertenece):
+                                pertenece = True
+
                             arregloTrans.append(arregloAux)
                             contador += 1
                             infoLinea =lines[contador]
                             
-                        arregloTotal.append([arregloCabecera,arregloTrans])
+                        if(pertenece):    
+                            arregloTotal.append([arregloCabecera,arregloTrans])
+                            pertenece = False
                         arregloTrans = []
                         arregloCabecera = []
-
 
                 transacciones['corresponsal'] = arregloTotal
                 arregloAux = []
@@ -3813,6 +3834,7 @@ def admin_archive(request):
                 arregloCabecera = [] 
                 arregloTotal = []
                 exito = True
+
                 #cerrar archivo
                 info.close()
 
@@ -3821,8 +3843,10 @@ def admin_archive(request):
             else:
                 #cerrar archivo
                 info.close()
+
                 exito = False
                 msg = "Caracter inesperado, en la línea número " +str(contador+1)+ " del archivo " + archivo
+                
                 return JsonResponse({'exito':exito,'msg':msg})
 
         if actn == 'ejecutarArchive':
@@ -3858,64 +3882,70 @@ def admin_archive(request):
             arregloMax = fechaMaxima.split('/')
             fechaMax= datetime(int(arregloMax[2]), int(arregloMax[1]), int(arregloMax[0]),23,59,59)
             
-            matchesConf = Matchconfirmado.objects.filter(fecha__range=(fechaMin,fechaMax),auto_manual=0)
+            matchesConf = Matchconfirmado.objects.filter(fecha__range=(fechaMin,fechaMax),auto_manual=0,tc_conta__codigocuenta=cuenta)
             
             #Escribimos en el archivo los Matches Automaticos
             for elem in matchesConf:
-                if (elem.tc_conta.codigocuenta == cuenta):
-                    nuevoArch.write('@@\n')
 
-                    fecha = datetime.strftime(elem.fecha, '%d/%m/%Y')
-                    linea1 = fecha + ";" + elem.codigomatch + "\n"
+                nuevoArch.write('@@\n')
+            
+                fecha = datetime.strftime(elem.fecha, '%d/%m/%Y')
+                linea1 = fecha + ";" + elem.codigomatch + "\n"
 
-                    nuevoArch.write(linea1)
+                nuevoArch.write(linea1)
 
-                    a = elem.tc_conta
-                    if (a.referencianostro == None):
-                        rNostroConta = "null"
-                    else:
-                        rNostroConta = a.referencianostro 
-                    if (a.referenciacorresponsal == None):
-                        rVostroConta = "null"
-                    else:
-                        rVostroConta = a.referenciacorresponsal
-                    if (a.descripcion == None):
-                        detConta = "null"
-                    else: 
-                        detConta = a.descripcion
-                    fechaT = datetime.strftime(a.fecha, '%d/%m/%Y')
-                    linea2 = str(a.estado_cuenta_idedocuenta.idedocuenta) + ";" + str(a.pagina) + ";" + fechaT + ";" + a.codigo_transaccion + ";" + rNostroConta + ";" + rVostroConta + ";" + detConta + ";" + a.credito_debito + ";" + str(a.monto) + ";L\n"
-                    
-                    nuevoArch.write(linea2)
+                a = elem.tc_conta
 
-                    b = elem.tc_corres
-                    if (b.referencianostro == None):
-                        rNostroCorr = "null"
-                    else:
-                        rNostroCorr = b.referencianostro
-                    if (b.referenciacorresponsal == None):
-                        rVostroCorr = "null"
-                    else:
-                        rVostroCorr = b.referenciacorresponsal
-                    if (b.descripcion == None):
-                        detCorr = "null"
-                    else:
-                        detCorr = b.descripcion
-                    fechaT = datetime.strftime(b.fecha_valor, '%d/%m/%Y')
-                    linea3 = str(b.estado_cuenta_idedocuenta.idedocuenta) + ";" + str(b.pagina) + ";" + fechaT + ";" + b.codigo_transaccion + ";" + rNostroCorr + ";" + rVostroCorr + ";" + detCorr + ";" + b.credito_debito + ";" + str(b.monto) + ";S\n"
-                    
-                    nuevoArch.write(linea3)
+                if (a.referencianostro == None):
+                    rNostroConta = "null"
+                else:
+                    rNostroConta = a.referencianostro 
+                if (a.referenciacorresponsal == None):
+                    rVostroConta = "null"
+                else:
+                    rVostroConta = a.referenciacorresponsal
+                if (a.descripcion == None):
+                    detConta = "null"
+                else: 
+                    detConta = a.descripcion
+
+                fechaT = datetime.strftime(a.fecha, '%d/%m/%Y')
+                linea2 = str(a.estado_cuenta_idedocuenta.idedocuenta) + ";" + str(a.pagina) + ";" + fechaT + ";" + a.codigo_transaccion + ";" + rNostroConta + ";" + rVostroConta + ";" + detConta + ";" + a.credito_debito + ";" + str(a.monto) + ";L\n"
+                
+                nuevoArch.write(linea2)
+
+                b = elem.tc_corres
+
+                if (b.referencianostro == None):
+                    rNostroCorr = "null"
+                else:
+                    rNostroCorr = b.referencianostro
+                if (b.referenciacorresponsal == None):
+                    rVostroCorr = "null"
+                else:
+                    rVostroCorr = b.referenciacorresponsal
+                if (b.descripcion == None):
+                    detCorr = "null"
+                else:
+                    detCorr = b.descripcion
+
+                fechaT = datetime.strftime(b.fecha_valor, '%d/%m/%Y')
+                linea3 = str(b.estado_cuenta_idedocuenta.idedocuenta) + ";" + str(b.pagina) + ";" + fechaT + ";" + b.codigo_transaccion + ";" + rNostroCorr + ";" + rVostroCorr + ";" + detCorr + ";" + b.credito_debito + ";" + str(b.monto) + ";S\n"
+                
+                nuevoArch.write(linea3)
 
             nuevoArch.write('***** Match Manual *****\n')
 
-            matchesConfMan = Matchconfirmado.objects.filter(fecha__range=(fechaMin,fechaMax),auto_manual=1).order_by('codigomatch')
+            matchesConfMan = Matchconfirmado.objects.filter(Q(tc_corres__codigocuenta=cuenta) | Q(tc_conta__codigocuenta=cuenta),fecha__range=(fechaMin,fechaMax),auto_manual=1).order_by('codigomatch')
 
             if(matchesConfMan):
+
                 contador = 0
                 largo = len(matchesConfMan)
+
                 while(contador < largo):
                     if (matchesConfMan[contador].tc_corres == None and matchesConfMan[contador].tc_conta.codigocuenta == cuenta):
-
+                        
                         codigo = matchesConfMan[contador].codigomatch
 
                         nuevoArch.write('@@\n')
@@ -3924,6 +3954,7 @@ def admin_archive(request):
                         linea1 = fecha + ";" + matchesConfMan[contador].codigomatch + "\n"
 
                         nuevoArch.write(linea1)
+                       
                         if (contador < largo+1):
                             siguiente = matchesConfMan[contador+1].codigomatch
                         else:
@@ -3932,7 +3963,9 @@ def admin_archive(request):
                         while(codigo == siguiente):
                             if(matchesConfMan[contador].tc_conta == None):
 
+
                                 a = matchesConfMan[contador].tc_corres
+                                
                                 if (a.referencianostro == None):
                                     rNostroConta = "null"
                                 else:
@@ -3945,6 +3978,7 @@ def admin_archive(request):
                                     detConta = "null"
                                 else: 
                                     detConta = a.descripcion
+                               
                                 fechaT = datetime.strftime(a.fecha_valor, '%d/%m/%Y')
                                 linea2 = str(a.estado_cuenta_idedocuenta.idedocuenta) + ";" + str(a.pagina) + ";" + fechaT + ";" + a.codigo_transaccion + ";" + rNostroConta + ";" + rVostroConta + ";" + detConta + ";" + a.credito_debito + ";" + str(a.monto) + ";S\n"
                                 
@@ -3952,6 +3986,7 @@ def admin_archive(request):
 
                             else:
                                 a = matchesConfMan[contador].tc_conta
+                                
                                 if (a.referencianostro == None):
                                     rNostroConta = "null"
                                 else:
@@ -3964,6 +3999,7 @@ def admin_archive(request):
                                     detConta = "null"
                                 else: 
                                     detConta = a.descripcion
+                                
                                 fechaT = datetime.strftime(a.fecha, '%d/%m/%Y')
                                 linea2 = str(a.estado_cuenta_idedocuenta.idedocuenta) + ";" + str(a.pagina) + ";" + fechaT + ";" + a.codigo_transaccion + ";" + rNostroConta + ";" + rVostroConta + ";" + detConta + ";" + a.credito_debito + ";" + str(a.monto) + ";L\n"
                                 
@@ -3978,13 +4014,11 @@ def admin_archive(request):
                             else:
                                 siguiente = ""
 
-                            
-
                         if(contador < largo):
-
                             if(matchesConfMan[contador].tc_conta == None):
 
                                 a = matchesConfMan[contador].tc_corres
+                                
                                 if (a.referencianostro == None):
                                     rNostroConta = "null"
                                 else:
@@ -3997,6 +4031,7 @@ def admin_archive(request):
                                     detConta = "null"
                                 else: 
                                     detConta = a.descripcion
+                                
                                 fechaT = datetime.strftime(a.fecha_valor, '%d/%m/%Y')
                                 linea2 = str(a.estado_cuenta_idedocuenta.idedocuenta) + ";" + str(a.pagina) + ";" + fechaT + ";" + a.codigo_transaccion + ";" + rNostroConta + ";" + rVostroConta + ";" + detConta + ";" + a.credito_debito + ";" + str(a.monto) + ";S\n"
                                 
@@ -4004,6 +4039,7 @@ def admin_archive(request):
 
                             else:
                                 a = matchesConfMan[contador].tc_conta
+                               
                                 if (a.referencianostro == None):
                                     rNostroConta = "null"
                                 else:
@@ -4016,6 +4052,7 @@ def admin_archive(request):
                                     detConta = "null"
                                 else: 
                                     detConta = a.descripcion
+                                
                                 fechaT = datetime.strftime(a.fecha, '%d/%m/%Y')
                                 linea2 = str(a.estado_cuenta_idedocuenta.idedocuenta) + ";" + str(a.pagina) + ";" + fechaT + ";" + a.codigo_transaccion + ";" + rNostroConta + ";" + rVostroConta + ";" + detConta + ";" + a.credito_debito + ";" + str(a.monto) + ";L\n"
                                 
@@ -4023,6 +4060,7 @@ def admin_archive(request):
                             contador += 1
 
                     elif(matchesConfMan[contador].tc_conta == None and matchesConfMan[contador].tc_corres.codigocuenta == cuenta):
+
                         codigo = matchesConfMan[contador].codigomatch
 
                         nuevoArch.write('@@\n')
@@ -4031,6 +4069,7 @@ def admin_archive(request):
                         linea1 = fecha + ";" + matchesConfMan[contador].codigomatch + "\n"
 
                         nuevoArch.write(linea1)
+                        
                         if (contador < largo-1):
                             siguiente = matchesConfMan[contador+1].codigomatch
                         else:
@@ -4040,6 +4079,7 @@ def admin_archive(request):
                             if(matchesConfMan[contador].tc_conta == None):
 
                                 a = matchesConfMan[contador].tc_corres
+                               
                                 if (a.referencianostro == None):
                                     rNostroConta = "null"
                                 else:
@@ -4052,6 +4092,7 @@ def admin_archive(request):
                                     detConta = "null"
                                 else: 
                                     detConta = a.descripcion
+                                
                                 fechaT = datetime.strftime(a.fecha_valor, '%d/%m/%Y')
                                 linea2 = str(a.estado_cuenta_idedocuenta.idedocuenta) + ";" + str(a.pagina) + ";" + fechaT + ";" + a.codigo_transaccion + ";" + rNostroConta + ";" + rVostroConta + ";" + detConta + ";" + a.credito_debito + ";" + str(a.monto) + ";S\n"
                                 
@@ -4059,6 +4100,7 @@ def admin_archive(request):
 
                             else:
                                 a = matchesConfMan[contador].tc_conta
+                                
                                 if (a.referencianostro == None):
                                     rNostroConta = "null"
                                 else:
@@ -4071,6 +4113,7 @@ def admin_archive(request):
                                     detConta = "null"
                                 else: 
                                     detConta = a.descripcion
+                                
                                 fechaT = datetime.strftime(a.fecha, '%d/%m/%Y')
                                 linea2 = str(a.estado_cuenta_idedocuenta.idedocuenta) + ";" + str(a.pagina) + ";" + fechaT + ";" + a.codigo_transaccion + ";" + rNostroConta + ";" + rVostroConta + ";" + detConta + ";" + a.credito_debito + ";" + str(a.monto) + ";L\n"
                                 
@@ -4085,13 +4128,11 @@ def admin_archive(request):
                             else:
                                 siguiente = ""
 
-                            
-
                         if(contador < largo):
-
                             if(matchesConfMan[contador].tc_conta == None):
 
                                 a = matchesConfMan[contador].tc_corres
+                                
                                 if (a.referencianostro == None):
                                     rNostroConta = "null"
                                 else:
@@ -4104,6 +4145,7 @@ def admin_archive(request):
                                     detConta = "null"
                                 else: 
                                     detConta = a.descripcion
+                                
                                 fechaT = datetime.strftime(a.fecha_valor, '%d/%m/%Y')
                                 linea2 = str(a.estado_cuenta_idedocuenta.idedocuenta) + ";" + str(a.pagina) + ";" + fechaT + ";" + a.codigo_transaccion + ";" + rNostroConta + ";" + rVostroConta + ";" + detConta + ";" + a.credito_debito + ";" + str(a.monto) + ";S\n"
                                 
@@ -4111,6 +4153,7 @@ def admin_archive(request):
 
                             else:
                                 a = matchesConfMan[contador].tc_conta
+                                
                                 if (a.referencianostro == None):
                                     rNostroConta = "null"
                                 else:
@@ -4123,63 +4166,67 @@ def admin_archive(request):
                                     detConta = "null"
                                 else: 
                                     detConta = a.descripcion
+                                
                                 fechaT = datetime.strftime(a.fecha, '%d/%m/%Y')
                                 linea2 = str(a.estado_cuenta_idedocuenta.idedocuenta) + ";" + str(a.pagina) + ";" + fechaT + ";" + a.codigo_transaccion + ";" + rNostroConta + ";" + rVostroConta + ";" + detConta + ";" + a.credito_debito + ";" + str(a.monto) + ";L\n"
                                 
                                 nuevoArch.write(linea2)
                             contador += 1
                             
-
             nuevoArch.write('***** Reversos Contabilidad *****\n')
 
-            reversosConta = ReversocerradaContabilidad.objects.filter(fecha__range=(fechaMin,fechaMax))
+            reversosConta = ReversocerradaContabilidad.objects.filter(fecha__range=(fechaMin,fechaMax),tc_conta__codigocuenta=cuenta)
             
             for elem in reversosConta:
-                if (elem.tc_conta.codigocuenta == cuenta):
-                    nuevoArch.write('@@\n')
+                
+                nuevoArch.write('@@\n')
 
-                    fecha = datetime.strftime(elem.fecha, '%d/%m/%Y')
-                    linea1 = fecha + ";" + elem.codigomatch + "\n"
+                fecha = datetime.strftime(elem.fecha, '%d/%m/%Y')
+                linea1 = fecha + ";" + elem.codigomatch + "\n"
 
-                    nuevoArch.write(linea1)
+                nuevoArch.write(linea1)
 
-                    a = elem.tc_conta
-                    if (a.referencianostro == None):
-                        rNostroConta = "null"
-                    else:
-                        rNostroConta = a.referencianostro 
-                    if (a.referenciacorresponsal == None):
-                        rVostroConta = "null"
-                    else:
-                        rVostroConta = a.referenciacorresponsal
-                    if (a.descripcion == None):
-                        detConta = "null"
-                    else: 
-                        detConta = a.descripcion
-                    fechaT = datetime.strftime(a.fecha, '%d/%m/%Y')
-                    linea2 = str(a.estado_cuenta_idedocuenta.idedocuenta) + ";" + str(a.pagina) + ";" + fechaT + ";" + a.codigo_transaccion + ";" + rNostroConta + ";" + rVostroConta + ";" + detConta + ";" + a.credito_debito + ";" + str(a.monto) + ";L\n"
-                    
-                    nuevoArch.write(linea2)
+                a = elem.tc_conta
+                
+                if (a.referencianostro == None):
+                    rNostroConta = "null"
+                else:
+                    rNostroConta = a.referencianostro 
+                if (a.referenciacorresponsal == None):
+                    rVostroConta = "null"
+                else:
+                    rVostroConta = a.referenciacorresponsal
+                if (a.descripcion == None):
+                    detConta = "null"
+                else: 
+                    detConta = a.descripcion
+                
+                fechaT = datetime.strftime(a.fecha, '%d/%m/%Y')
+                linea2 = str(a.estado_cuenta_idedocuenta.idedocuenta) + ";" + str(a.pagina) + ";" + fechaT + ";" + a.codigo_transaccion + ";" + rNostroConta + ";" + rVostroConta + ";" + detConta + ";" + a.credito_debito + ";" + str(a.monto) + ";L\n"
+                
+                nuevoArch.write(linea2)
 
-                    b = elem.tc_conta_id_2
-                    if (b.referencianostro == None):
-                        rNostroCorr = "null"
-                    else:
-                        rNostroCorr = b.referencianostro
-                    if (b.referenciacorresponsal == None):
-                        rVostroCorr = "null"
-                    else:
-                        rVostroCorr = b.referenciacorresponsal
-                    if (b.descripcion == None):
-                        detCorr = "null"
-                    else:
-                        detCorr = b.descripcion
-                    fechaT = datetime.strftime(b.fecha_valor, '%d/%m/%Y')
-                    linea3 = str(b.estado_cuenta_idedocuenta.idedocuenta) + ";" + str(b.pagina) + ";" + fechaT + ";" + b.codigo_transaccion + ";" + rNostroCorr + ";" + rVostroCorr + ";" + detCorr + ";" + b.credito_debito + ";" + str(b.monto) + ";L\n"
-                    
-                    nuevoArch.write(linea3)
+                b = elem.tc_conta_id_2
+                
+                if (b.referencianostro == None):
+                    rNostroCorr = "null"
+                else:
+                    rNostroCorr = b.referencianostro
+                if (b.referenciacorresponsal == None):
+                    rVostroCorr = "null"
+                else:
+                    rVostroCorr = b.referenciacorresponsal
+                if (b.descripcion == None):
+                    detCorr = "null"
+                else:
+                    detCorr = b.descripcion
+                
+                fechaT = datetime.strftime(b.fecha_valor, '%d/%m/%Y')
+                linea3 = str(b.estado_cuenta_idedocuenta.idedocuenta) + ";" + str(b.pagina) + ";" + fechaT + ";" + b.codigo_transaccion + ";" + rNostroCorr + ";" + rVostroCorr + ";" + detCorr + ";" + b.credito_debito + ";" + str(b.monto) + ";L\n"
+                
+                nuevoArch.write(linea3)
 
-            reversosCorr = ReversocerradaCorresponsal.objects.filter(fecha__range=(fechaMin,fechaMax))
+            reversosCorr = ReversocerradaCorresponsal.objects.filter(fecha__range=(fechaMin,fechaMax),tc_corres__codigocuenta=cuenta)
 
             if(not reversosCorr):
                 nuevoArch.write('***** Reversos Corresponsal *****')
@@ -4187,62 +4234,70 @@ def admin_archive(request):
                 nuevoArch.write('***** Reversos Corresponsal *****\n')
             
             for elem in reversosCorr:
-                if (elem.tc_corres.codigocuenta == cuenta):
-                    nuevoArch.write('@@\n')
+                
+                nuevoArch.write('@@\n')
 
-                    fecha = datetime.strftime(elem.fecha, '%d/%m/%Y')
-                    linea1 = fecha + ";" + elem.codigomatch + "\n"
+                fecha = datetime.strftime(elem.fecha, '%d/%m/%Y')
+                linea1 = fecha + ";" + elem.codigomatch + "\n"
 
-                    nuevoArch.write(linea1)
+                nuevoArch.write(linea1)
 
-                    a = elem.tc_corres
-                    if (a.referencianostro == None):
-                        rNostroConta = "null"
-                    else:
-                        rNostroConta = a.referencianostro 
-                    if (a.referenciacorresponsal == None):
-                        rVostroConta = "null"
-                    else:
-                        rVostroConta = a.referenciacorresponsal
-                    if (a.descripcion == None):
-                        detConta = "null"
-                    else: 
-                        detConta = a.descripcion
-                    fechaT = datetime.strftime(a.fecha, '%d/%m/%Y')
-                    linea2 = str(a.estado_cuenta_idedocuenta.idedocuenta) + ";" + str(a.pagina) + ";" + fechaT + ";" + a.codigo_transaccion + ";" + rNostroConta + ";" + rVostroConta + ";" + detConta + ";" + a.credito_debito + ";" + str(a.monto) + ";S\n"
-                    
-                    nuevoArch.write(linea2)
+                a = elem.tc_corres
+                
+                if (a.referencianostro == None):
+                    rNostroConta = "null"
+                else:
+                    rNostroConta = a.referencianostro 
+                if (a.referenciacorresponsal == None):
+                    rVostroConta = "null"
+                else:
+                    rVostroConta = a.referenciacorresponsal
+                if (a.descripcion == None):
+                    detConta = "null"
+                else: 
+                    detConta = a.descripcion
+                
+                fechaT = datetime.strftime(a.fecha, '%d/%m/%Y')
+                linea2 = str(a.estado_cuenta_idedocuenta.idedocuenta) + ";" + str(a.pagina) + ";" + fechaT + ";" + a.codigo_transaccion + ";" + rNostroConta + ";" + rVostroConta + ";" + detConta + ";" + a.credito_debito + ";" + str(a.monto) + ";S\n"
+                
+                nuevoArch.write(linea2)
 
-                    b = elem.tc_corres_id_2
-                    if (b.referencianostro == None):
-                        rNostroCorr = "null"
-                    else:
-                        rNostroCorr = b.referencianostro
-                    if (b.referenciacorresponsal == None):
-                        rVostroCorr = "null"
-                    else:
-                        rVostroCorr = b.referenciacorresponsal
-                    if (b.descripcion == None):
-                        detCorr = "null"
-                    else:
-                        detCorr = b.descripcion
-                    fechaT = datetime.strftime(b.fecha_valor, '%d/%m/%Y')
-                    linea3 = str(b.estado_cuenta_idedocuenta.idedocuenta) + ";" + str(b.pagina) + ";" + fechaT + ";" + b.codigo_transaccion + ";" + rNostroCorr + ";" + rVostroCorr + ";" + detCorr + ";" + b.credito_debito + ";" + str(b.monto) + ";S\n"
-                    
-                    nuevoArch.write(linea3)
+                b = elem.tc_corres_id_2
+                
+                if (b.referencianostro == None):
+                    rNostroCorr = "null"
+                else:
+                    rNostroCorr = b.referencianostro
+                if (b.referenciacorresponsal == None):
+                    rVostroCorr = "null"
+                else:
+                    rVostroCorr = b.referenciacorresponsal
+                if (b.descripcion == None):
+                    detCorr = "null"
+                else:
+                    detCorr = b.descripcion
+                
+                fechaT = datetime.strftime(b.fecha_valor, '%d/%m/%Y')
+                linea3 = str(b.estado_cuenta_idedocuenta.idedocuenta) + ";" + str(b.pagina) + ";" + fechaT + ";" + b.codigo_transaccion + ";" + rNostroCorr + ";" + rVostroCorr + ";" + detCorr + ";" + b.credito_debito + ";" + str(b.monto) + ";S\n"
+                
+                nuevoArch.write(linea3)
 
-            
             #Para el log
             detalle = "Cuenta: " + cuenta
             log(request,43,detalle)
-                
-            print ("paso a ejecutar archive")
+            
             exito = True
+
+            #Llamar store proc
+            #cursor = connection.cursor()
+            #try:
+            #    cursor.execute('EXEC [dbo].[archiveMatches] %s, %s', (cuenta,fechaMax))
+            #finally:
+            #    cursor.close()
 
             #cerrar archivo
             nuevoArch.close()
             return JsonResponse({'exito':exito})
-
 
 
 @login_required(login_url='/login')
