@@ -24,12 +24,25 @@
                     </span>Inicio</a>
                 </h4>
             </div>
+            {% if 4 in ops %}
             <div id="collapseOne" class="panel-collapse collapse">
                 <div class="panel-body">
                     <table class="table">
                         <tr>
                             <td>
                                 <span class="fa fa-clipboard text-primary"></span><a style="color:gray" href="{% url 'Matcher_WS.views.listar_cuentas'%}">Resumen Cuentas</a>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+            {% endif %}
+            <div id="collapseOne" class="panel-collapse collapse">
+                <div class="panel-body">
+                    <table class="table">
+                        <tr>
+                            <td>
+                                <span class="fa fa-unlock-alt text-primary"></span><a style="color:gray" href="{% url 'Matcher_WS.views.cambioClave'%}">Cambiar Contraseña</a>
                             </td>
                         </tr>
                     </table>

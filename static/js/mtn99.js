@@ -315,10 +315,18 @@ $('#crearMTButton').on('click', function () {
         swal("Ups!","Debe colocar la narrativa","error");
     }else{
 
-        $('#processing-modal').modal('toggle');
-    
-        //Llamar funcion de creación del mensaje
-        agregarmtx99(banco,tipo,ref_mensaje,ref_mensaje_original,narrativa);
+        swal({
+            title: "",
+            text: "¿Seguro que desea crear el mensaje MT?",
+            type: "warning",
+            showCancelButton: true,
+            confirmButtonText: "Ok"},
+            function(){
+                $('#processing-modal').modal('toggle');
+                //Llamar funcion de creación del mensaje
+                agregarmtx99(banco,tipo,ref_mensaje,ref_mensaje_original,narrativa);
+            }
+        ); 
     };
 });
 
@@ -359,12 +367,19 @@ $('#cargarMTButton').on('click', function () {
         swal("Ups!","Debe seleccionar un archivo para cargar datos.","error");        
     } else {
         
-        $('#processing-modal').modal('toggle');
-    
-        //Llamar funcion de cargar del mensaje
-        cargarmtx99(archivo);
+        swal({
+            title: "",
+            text: "¿Seguro que desea cargar los mensajes MT desde el archivo seleccionado?",
+            type: "warning",
+            showCancelButton: true,
+            confirmButtonText: "Ok"},
+            function(){
+                $('#processing-modal').modal('toggle');
+                 //Llamar funcion de cargar del mensaje
+                cargarmtx99(archivo);
+            }
+        );   
     }
-
 });
 
 //Cargar mensajes desde archivo

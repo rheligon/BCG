@@ -8,10 +8,18 @@ $('#cargarMT96Button').on('click', function () {
         swal("Ups!","Debe seleccionar un archivo para cargar los datos.","error");        
     } else {
         
-        $('#processing-modal').modal('toggle');
-    
-        //Llamar funcion de cargar del mensaje
-        cargarmtn96(archivo);
+        swal({
+            title: "",
+            text: "¿Seguro que desea cargar los mensajes MT desde el archivo seleccionado?",
+            type: "warning",
+            showCancelButton: true,
+            confirmButtonText: "Ok"},
+            function(){
+                $('#processing-modal').modal('toggle');
+                //Llamar funcion de cargar del mensaje
+                cargarmtn96(archivo);
+            }
+        ); 
     }
 
 });

@@ -99,9 +99,18 @@ $('#guardarCambiosButton').on('click', function () {
                 swal("Ups!","La fecha seleccionada debe ser mayor a la fecha de hoy.","error");        
             } else {
 
-                $('#processing-modal').modal('toggle');
-                //Llamar funcion de guardar cambios
-                guardarCambios(numUsers,fecha0);
+                swal({
+                    title: "",
+                    text: "¿Seguro que desea guardar los cambios en la licencia?",
+                    type: "warning",
+                    showCancelButton: true,
+                    confirmButtonText: "Ok"},
+                    function(){
+                        $('#processing-modal').modal('toggle');
+                        //Llamar funcion de guardar cambios
+                        guardarCambios(numUsers,fecha0);
+                    }
+                ); 
             }
         }     
     } 

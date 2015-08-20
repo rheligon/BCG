@@ -695,10 +695,19 @@ $('#crearMT95Button').on('click', function () {
         swal("Ups!","Debe seleccionar un codigo de Mensaje MT.","error");        
     }else{
 
-        $('#processing-modal').modal('toggle');
+        swal({
+            title: "",
+            text: "¿Seguro que desea crear el mensaje MT?",
+            type: "warning",
+            showCancelButton: true,
+            confirmButtonText: "Ok"},
+            function(){
+                $('#processing-modal').modal('toggle');
+                //Llamar funcion de creación del mensaje
+                crearmt95(ref_mensaje,ref_mensaje_original,tipo,fecha,codigo,pregunta,narrativa,original,transaccion,clase,cuenta,codigo2,tipoOriginal);
     
-        //Llamar funcion de creación del mensaje
-        crearmt95(ref_mensaje,ref_mensaje_original,tipo,fecha,codigo,pregunta,narrativa,original,transaccion,clase,cuenta,codigo2,tipoOriginal);
+            }
+        );
     };
 });
 
