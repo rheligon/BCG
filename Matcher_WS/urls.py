@@ -21,6 +21,9 @@ urlpatterns = patterns('',
     url(r'^login/$', 'Matcher_WS.views.usr_login', name='login'),
     url(r'^logout/$', 'Matcher_WS.views.usr_logout', name='logout'),
 
+    #Cambio de clave primera vez que se logea el usuario /cambioClave/
+     url(r'^cambioClave/$', 'Matcher_WS.views.cambioClave', name='cambioClave'),
+
     # Resumen Cuentas
     url(r'^cuentas/$', 'Matcher_WS.views.listar_cuentas', name='listar_cuentas'),
    	url(r'^resumen/(?P<cuenta_id>\d+)/$', 'Matcher_WS.views.resumen_cuenta', name='resumen_cuenta'),

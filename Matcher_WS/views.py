@@ -56,7 +56,9 @@ def index(request):
     return render(request, template, context)
 
 def usr_login(request):
+    
     message = None
+    expirarSesion(request)
 
     if request.method == 'POST':
         username = request.POST.get('username', '')
@@ -83,13 +85,27 @@ def usr_login(request):
 
             sesion = Sesion.objects.filter(login=username, estado__in=["Activo","Pendiente"])[0]
             user = MyAuthBackend.authenticate(sesion, username=username, password=password)
+
             if user is not None and sesion.estado!="Inactivo":
-                auth.login(request, user)
-                message = "Login successful"
-                sesion.conexion = 1
-                sesion.save()
-                # Para el log
-                log(request,1)
+
+                if sesion.ldap != "1" and sesion.estado == "Pendiente":
+
+                    auth.login(request, user)
+                    message = "Login successful"
+                    sesion.conexion = 1
+                    sesion.save()
+                    # Para el log
+                    log(request,1)
+                    return HttpResponseRedirect('/cambioClave/')
+
+                else:
+
+                    auth.login(request, user)
+                    message = "Login successful"
+                    sesion.conexion = 1
+                    sesion.save()
+                    # Para el log
+                    log(request,1)
 
                 # Redireccionar a index
                 return HttpResponseRedirect('/')
@@ -143,6 +159,50 @@ def usr_logout(request):
                 log(request,2)
         auth.logout(request)
         return HttpResponseRedirect('/')
+
+def cambioClave(request):
+
+    expirarSesion(request)
+
+    if request.method == 'GET':
+
+        ops = []
+        context = {'ops':ops}
+        template = "matcher/cambioClave.html"
+    
+        return render(request, template, context)
+
+    if request.method == 'POST':
+
+        clave = request.POST.get('clave')
+        newp = make_password(clave, hasher='pbkdf2_sha1')
+        x, x, salt, hashp = newp.split("$")
+        try:
+            #Busco la sesion que esta conectada
+            login = request.user.username 
+            actual = Sesion.objects.get(login=login, conexion="1")
+            actual.salt = salt
+            actual.pass_field = hashp
+            actual.estado = "Activo"
+            actual.save()
+            msg = "Contraseña actualizada exitosamente"
+        except:
+            msg = "Error al tratar de encontrar el usuario especificado."
+            return JsonResponse({'mens': msg})    
+
+        #Para las tablas propias de django
+        user = User.objects.get(username=actual.login)
+        user.password = newp
+        user.save()
+
+        update_session_auth_hash(request, user)
+
+        # Para el log
+        log(request,36,actual.login)
+
+        return JsonResponse({'mens': msg})
+
+
 
 @login_required(login_url='/login')
 def listar_cuentas(request):
@@ -2814,7 +2874,11 @@ def seg_Usuarios(request):
                 return JsonResponse({'msg': msg, 'usrid': usuario.idusuario, 'add': False})
 
             # Crear sesion
-            sesion, creado = Sesion.objects.get_or_create(login=usrlogin, defaults={'usuario_idusuario':usuario, 'estado':"Pendiente", 'fecha_registro':timenow(), 'conexion':0, 'ldap':usrldap, 'salt':salt, 'pass_field':hashp})
+            if usrldap == "0":
+                estadoAux = "Pendiente"
+            else:
+                estadoAux = "Activo"
+            sesion, creado = Sesion.objects.get_or_create(login=usrlogin, defaults={'usuario_idusuario':usuario, 'estado':estadoAux, 'fecha_registro':timenow(), 'conexion':0, 'ldap':usrldap, 'salt':salt, 'pass_field':hashp})
             if not creado:
                 msg = "No se pudo crear el usuario especificado, debido a que ese login ya existe para otro usuario."
                 usuario.delete()
