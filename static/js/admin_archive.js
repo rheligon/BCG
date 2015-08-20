@@ -120,29 +120,26 @@ $('#boton-buscar').on('click', function () {
     var cuentaId = $('#Cuenta-sel').val();
     
     if (cuentaId>=0){
-        var fecha1 = $('#fecha-desde').val();
-        var fecha2 = $('#fecha-hasta').val();
+        var fechaIni = $('#fecha-desde').val();
+        var fechaFin = $('#fecha-hasta').val();
         var archivo = $('#selec_archivo').val();
         var codigoCuenta = $('#opt-'+cuentaId).attr("codigo");
         
-        if(fecha1.length<1){ 
+        if(fechaIni.length<1){ 
             swal("Ups!", "Debe introducir la Fecha Inicial para la Busqueda", "error");
-        }else if(fecha2.length<1){ 
+        }else if(fechaFin.length<1){ 
             swal("Ups!", "Debe introducir la Fecha Final para la Busqueda", "error");
         }else if(archivo=="-1"){ 
             swal("Ups!", "Debe Seleccionar el Archivo en el que se realizara la Busqueda", "error");
         }else{
-            fecha1 = fechaStringtoDate(fecha1);
-            fecha2 = fechaStringtoDate(fecha2);
+            fecha1 = fechaStringtoDate(fechaIni);
+            fecha2 = fechaStringtoDate(fechaFin);
             if(fecha1 > fecha2){
                 swal("Ups!", "La fecha Final no puede ser menor a la Fecha Inicial", "error");
             }else{
                 $('#processing-modal').modal('toggle');
-                buscarEnArchivo(archivo,codigoCuenta);
-
+                buscarEnArchivo(archivo,codigoCuenta,fechaIni,fechaFin);
             }
-            
-            
         }
     }else{
         swal("Ups!", "Debe Seleccionar el Código de la Cuenta", "error");
@@ -167,7 +164,6 @@ $('#Cuenta-sel').change(function() {
         $('#divselec_archivo option[value!="-1"]').remove();
         t_conta.clear().draw();
                     
-        
         $('#processing-modal').modal('toggle')
         buscarArchivos(codigoCuenta);
     }else{
@@ -179,11 +175,7 @@ $('#Cuenta-sel').change(function() {
         $('#fecha-hasta').val("");
         $('#divselec_archivo option[value!="-1"]').remove();
         t_conta.clear().draw();
-                    
-
     }
-
-
 });   
 
 //Mostramos como seria el nuevo estado de cuenta
@@ -191,18 +183,14 @@ $('#boton-consulta').on('click', function () {
 
     var cuenta = $('#Cuenta-sel').val()
     
-    
     if (cuenta>=0){
         var codigoCuenta = $('#opt-'+cuenta).attr("codigo");
         console.log(codigoCuenta);
         $('#processing-modal').modal('toggle')
         consultar(codigoCuenta);
-        
-        
     }else{
         swal("Ups!", "Debe Seleccionar el Código de la Cuenta", "error");
     }
-    
 });
 
 //Mostramos como seria el nuevo estado de cuenta
@@ -229,11 +217,9 @@ $('#boton-ejecutar').on('click', function () {
                     swal("Ups!", "La fecha Final no puede ser menor a la Fecha Mínima de Match con fecha", "error");
                 }else{
                     swal("Ups!", "TODO ESTARA BIEN con fecha", "error");
-
                 }            
             }
         }
-        
     }else{
         swal("Ups!", "Debe Seleccionar el Código de la Cuenta", "error");
     }
@@ -248,18 +234,16 @@ function buscarArchivos(cuenta){
             success: function(data){
                 if (data.exito){
                     for (var i = 0; i < data.archivos.length;i++){
-                         $('#selec_archivo').append($("<option></option>").attr("value",data.archivos[i]).text(data.archivos[i])); 
+                        $('#selec_archivo').append($("<option></option>").attr("value",data.archivos[i]).text(data.archivos[i])); 
                     }
                 }
-            $('#processing-modal').modal('toggle')
-                
-                
+                $('#processing-modal').modal('toggle')
             },
             error: function(q,error){
                 alert(q.responseText) //debug
                 $('#processing-modal').modal('toggle')
                 swal("Ups!", "Hubo un error consultando los Archivos, intente de Nuevo.", "error");
-        },
+            },
             dataType:'json',
             headers:{
                 'X-CSRFToken':csrftoken
@@ -284,7 +268,6 @@ function consultar(cuenta){
                          });
                 }
                 $('#processing-modal').modal('toggle')
-                
             },
             error: function(q,error){
                 alert(q.responseText) //debug
@@ -345,7 +328,6 @@ function ejecutarArchive(cuenta,fechaMinima,fechaMaxima){
             url: "/admin/archive/",
             data: {"cuenta":cuenta, "fechaMinima":fechaMinima, "fechaMaxima":fechaMaxima,"action": "ejecutarArchive"},
             success: function(data){
-                //********************************************
                 if (data.exito){
                           swal({   title: "",
                              text: "El Archive se ha ejecutado con Exito",
@@ -357,6 +339,7 @@ function ejecutarArchive(cuenta,fechaMinima,fechaMaxima){
                              type: "error"
                          });
                 }
+                $('#processing-modal').modal('toggle')
             },
             error: function(q,error){
                 alert(q.responseText) //debug
@@ -372,22 +355,13 @@ function ejecutarArchive(cuenta,fechaMinima,fechaMaxima){
 };
 
 
-function buscarEnArchivo(archivo,cuenta){
+function buscarEnArchivo(archivo,cuenta,fechaIni,fechaFin){
         $.ajax({
             type:"POST",
             url: "/admin/archive/",
-            data: {"cuenta":cuenta,"archivo":archivo, "action": "buscarEnArchivo"},
+            data: {"cuenta":cuenta,"archivo":archivo,"fechaIni":fechaIni, "fechaFin":fechaFin, "action": "buscarEnArchivo"},
             success: function(data){
                 if (data.exito){
-
-                    fechaIni = $('#fecha-desde').val();
-                    fechaFin = $('#fecha-hasta').val(); 
-
-                    console.log(fechaIni + " " +fechaFin );   
-
-
-                    
-                    
 
                     var automaticas = data.transacciones['auto'];
                     var manuales = data.transacciones['manual'];
@@ -438,7 +412,6 @@ function buscarEnArchivo(archivo,cuenta){
                         t_conta.row.add(jRow);
                         contador++;
             
-                        
                         for(var j = 0; j < automaticas[i][1].length ; j++){
                             var edoCta = automaticas[i][1][j][0];
                             var pagina = automaticas[i][1][j][1];
@@ -478,10 +451,8 @@ function buscarEnArchivo(archivo,cuenta){
                             $('#table-pa > tbody').append('<tr id ="tr-con-'+contador+'"></tr>');
                             var jRow = $("#tr-con-"+contador).append(td1,td2,td3,td4,td5,td6,td7,td8,td9,td10);
                             t_conta.row.add(jRow);
-                            contador++;
-                            
+                            contador++;   
                         }
-
                     }
 
                     if(manuales.length>0){
@@ -523,7 +494,6 @@ function buscarEnArchivo(archivo,cuenta){
                         var jRow = $("#tr-con-"+contador).append(td1,td2,td3,td4,td5,td6,td7,td8,td9,td10);
                         t_conta.row.add(jRow);
                         contador++;
-            
                         
                         for(var j = 0; j < manuales[i][1].length ; j++){
                             var edoCta = manuales[i][1][j][0];
@@ -547,7 +517,6 @@ function buscarEnArchivo(archivo,cuenta){
                                 rVostro = "";
                             }
 
-
                             //creamos los elementos de cada fila
                             var td1 = '<td>'+edoCta+'</td>';
                             var td2 = '<td>'+pagina+'</td>';
@@ -564,10 +533,8 @@ function buscarEnArchivo(archivo,cuenta){
                             $('#table-pa > tbody').append('<tr id ="tr-con-'+contador+'"></tr>');
                             var jRow = $("#tr-con-"+contador).append(td1,td2,td3,td4,td5,td6,td7,td8,td9,td10);
                             t_conta.row.add(jRow);
-                            contador++;
-                            
+                            contador++; 
                         }
-
                     }
                     
                     if(contabilidades.length>0){
@@ -609,8 +576,7 @@ function buscarEnArchivo(archivo,cuenta){
                         var jRow = $("#tr-con-"+contador).append(td1,td2,td3,td4,td5,td6,td7,td8,td9,td10);
                         t_conta.row.add(jRow);
                         contador++;
-            
-                        
+             
                         for(var j = 0; j < contabilidades[i][1].length ; j++){
                             var edoCta = contabilidades[i][1][j][0];
                             var pagina = contabilidades[i][1][j][1];
@@ -633,7 +599,6 @@ function buscarEnArchivo(archivo,cuenta){
                                 rVostro = "";
                             }
 
-
                             //creamos los elementos de cada fila
                             var td1 = '<td>'+edoCta+'</td>';
                             var td2 = '<td>'+pagina+'</td>';
@@ -651,10 +616,7 @@ function buscarEnArchivo(archivo,cuenta){
                             var jRow = $("#tr-con-"+contador).append(td1,td2,td3,td4,td5,td6,td7,td8,td9,td10);
                             t_conta.row.add(jRow);
                             contador++;
-                            
                         }
-
-
                     }
 
                     if(corresponsales.length>0){
@@ -720,7 +682,6 @@ function buscarEnArchivo(archivo,cuenta){
                                 rVostro = "";
                             }
 
-
                             //creamos los elementos de cada fila
                             var td1 = '<td>'+edoCta+'</td>';
                             var td2 = '<td>'+pagina+'</td>';
@@ -738,14 +699,17 @@ function buscarEnArchivo(archivo,cuenta){
                             var jRow = $("#tr-con-"+contador).append(td1,td2,td3,td4,td5,td6,td7,td8,td9,td10);
                             t_conta.row.add(jRow);
                             contador++;
-                            
                         }
-                        
-                       
                     }
                     $('#processing-modal').modal('toggle')
                     t_conta.draw()
-                    
+
+                    if(automaticas.length < 1 && manuales.length < 1 && contabilidades.length < 1 && corresponsales.length < 1){
+                        swal({   title: "",
+                             text: "No existen Coincidencias con la busqueda realizada,Intente con fechas diferentes",
+                             type: "error"
+                         });
+                    }
                     
                 }else{
                     $('#processing-modal').modal('toggle')
@@ -753,7 +717,6 @@ function buscarEnArchivo(archivo,cuenta){
                              text: data.msg,
                              type: "error"
                          });
-
                 }    
                 
             },
