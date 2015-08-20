@@ -40,14 +40,28 @@ import shutil
 
 def test(request):
     
-    enviar_mail('Prueba Mail','Prueba','religon@gmail.com')
+    #enviar_mail('Prueba Mail','Prueba','religon@gmail.com')
     
     #ops = get_ops(request)
     #print (ops)
 
     #setConsolidado('BMARCH',request)
 
-    return JsonResponse('UPS!', safe=False)
+    hora = timenow()
+    hora = str(hora)
+
+    """sessions = Session.objects.filter(expire_date__gte=timezone.now())
+    uid_list = []
+
+    # Build a list of user ids from that query
+    for session in sessions:
+        data = session.get_decoded()
+        uid_list.append(data.get('_auth_user_id', None))
+
+    for i in uid_list:
+        print("usuario: " + str(i))
+    """ 
+    return JsonResponse(hora, safe=False)
 
 @login_required(login_url='/login')
 def index(request):
@@ -58,72 +72,98 @@ def index(request):
 def usr_login(request):
     
     message = None
-    expirarSesion(request)
 
     if request.method == 'POST':
         username = request.POST.get('username', '')
         password = request.POST.get('password', '')
-        try:
 
-            '''
-            usr = 'PRUEBA1'
-            usrpwd = 'prueba1'
+        licencia = Licencia.objects.all()[0]
+        bic = licencia.bic
+        num_usuarios = licencia.num_usuarios
+        fecha_expira = licencia.fecha_expira
+        llave = licencia.llave
+        salt = licencia.salt
+        ahora = str(timenow())[:10]
+        ahora = datetime.strptime(ahora, '%Y-%m-%d')
+        fecha_aux = str(fecha_expira)[:10]
+        a , b, c = fecha_aux.split("-")
+        fecha_aux = c + "/" + b + "/" + a
 
-            # Hash password
-            newp = make_password(usrpwd, hasher='pbkdf2_sha1')
-            x, x, salt, hashp = newp.split("$")
+        pwd = bic + "$" + str(num_usuarios) + "$" + fecha_aux
+        newp = make_password(pwd, salt=salt, hasher='pbkdf2_sha256')
+        x, x, saltnuevo, hashp = newp.split("$")
 
-            #Crear usuario de django
-            user, created = User.objects.get_or_create(username=usr, defaults={'password':newp})
+        if saltnuevo != salt or llave != hashp:   
+            
+            message ='Datos de licencia corruptos. Por favor contacte a BCG.'
+        
+        elif fecha_expira < ahora :
 
-            #Cambiar clave guardada por nueva
-            sess = Sesion.objects.get(pk=9)
-            sess.pass_field = hashp
-            sess.salt = salt
-            sess.save()
-            '''
+            message ='Su licencia a expirado. Por favor contacte a BCG.'
 
-            sesion = Sesion.objects.filter(login=username, estado__in=["Activo","Pendiente"])[0]
-            user = MyAuthBackend.authenticate(sesion, username=username, password=password)
+        else:
 
-            if user is not None and sesion.estado!="Inactivo":
+            try:
 
-                if sesion.ldap != "1" and sesion.estado == "Pendiente":
+                '''
+                usr = 'PRUEBA1'
+                usrpwd = 'prueba1'
 
-                    auth.login(request, user)
-                    message = "Login successful"
-                    sesion.conexion = 1
-                    sesion.save()
-                    # Para el log
-                    log(request,1)
-                    return HttpResponseRedirect('/cambioClave/')
+                # Hash password
+                newp = make_password(usrpwd, hasher='pbkdf2_sha1')
+                x, x, salt, hashp = newp.split("$")
 
+                #Crear usuario de django
+                user, created = User.objects.get_or_create(username=usr, defaults={'password':newp})
+
+                #Cambiar clave guardada por nueva
+                sess = Sesion.objects.get(pk=9)
+                sess.pass_field = hashp
+                sess.salt = salt
+                sess.save()
+                '''
+
+                sesion = Sesion.objects.filter(login=username, estado__in=["Activo","Pendiente"])[0]
+                user = MyAuthBackend.authenticate(sesion, username=username, password=password)
+
+                if user is not None and sesion.estado!="Inactivo":
+
+                    if sesion.ldap != "1" and sesion.estado == "Pendiente":
+
+                        auth.login(request, user)
+                        message = "Login successful"
+                        sesion.conexion = 1
+                        sesion.save()
+                        # Para el log
+                        log(request,1)
+                        return HttpResponseRedirect('/cambioClave/')
+
+                    else:
+
+                        auth.login(request, user)
+                        message = "Login successful"
+                        sesion.conexion = 1
+                        sesion.save()
+                        # Para el log
+                        log(request,1)
+
+                    # Redireccionar a index
+                    return HttpResponseRedirect('/')
                 else:
+                    message ='La combinacion de usuario y clave fue incorrecta.'
 
-                    auth.login(request, user)
-                    message = "Login successful"
-                    sesion.conexion = 1
-                    sesion.save()
                     # Para el log
-                    log(request,1)
+                    terminal = request.META.get('COMPUTERNAME')
+                    fechaHora = timenow()
+                    evento = Evento.objects.get(pk=37)
+                    nombre = sesion.usuario_idusuario.nombres+" "+sesion.usuario_idusuario.apellidos
+                    detalles = "Usuario: "+username
+                    Traza.objects.create(evento_idevento=evento,usuario=nombre, fecha_hora=fechaHora, terminal=terminal, detalles=detalles)
 
-                # Redireccionar a index
-                return HttpResponseRedirect('/')
-            else:
-                message ='La combinacion de usuario y clave fue incorrecta.'
-
-                # Para el log
-                terminal = request.META.get('COMPUTERNAME')
-                fechaHora = timenow()
-                evento = Evento.objects.get(pk=37)
-                nombre = sesion.usuario_idusuario.nombres+" "+sesion.usuario_idusuario.apellidos
-                detalles = "Usuario: "+username
-                Traza.objects.create(evento_idevento=evento,usuario=nombre, fecha_hora=fechaHora, terminal=terminal, detalles=detalles)
-
-        except Exception as e:
-            # Show a message  
-            print (e)   
-            message ='Ese usuario no existe en la base de datos.'
+            except Exception as e:
+                # Show a message  
+                print (e)   
+                message ='Ese usuario no existe en la base de datos.'
 
     expirarSesion(request)
     context = {'message': message}
