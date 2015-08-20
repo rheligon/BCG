@@ -8,10 +8,18 @@ $('#cargarLicButton').on('click', function () {
         swal("Ups!","Debe seleccionar un archivo para cargar los datos.","error");        
     } else {
         
-        $('#processing-modal').modal('toggle');
-    
-        //Llamar funcion de cargar licencia
-        cargarLicencia(archivo);
+        swal({
+            title: "",
+            text: "¿Seguro que desea cargar la licencia desde el archivo seleccionado?",
+            type: "warning",
+            showCancelButton: true,
+            confirmButtonText: "Ok"},
+            function(){
+                $('#processing-modal').modal('toggle');
+                //Llamar funcion de cargar licencia
+                cargarLicencia(archivo);
+            }
+        ); 
     }
 
 });

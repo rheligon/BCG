@@ -122,12 +122,20 @@ function chequearA(elemento){
 
 //Introducir en el arreglo el id del checkbox que se haya clickeado
 $('#quitarModButton').on('click', function () {
-    $('#processing-modal').modal('toggle');
     
-    //Llamar funcion de creación del mensaje
-    quitarModulos(arregloQuitar);
-    arregloQuitar = [];
-    
+    swal({
+        title: "",
+        text: "¿Seguro que desea eliminar los módulos seleccionados?",
+        type: "warning",
+        showCancelButton: true,
+        confirmButtonText: "Ok"},
+        function(){
+            $('#processing-modal').modal('toggle');
+            //Llamar funcion de creación del mensaje
+            quitarModulos(arregloQuitar);
+            arregloQuitar = [];
+        }
+    ); 
 });
 
 //Quitar Modulos
@@ -160,12 +168,20 @@ function quitarModulos(array){
 
 //Introducir en el arreglo el id del checkbox que se haya clickeado
 $('#agregarModButton').on('click', function () {
-    $('#processing-modal').modal('toggle');
     
-    //Llamar funcion de creación del mensaje
-    agregarModulos(arregloAgregar);
-    arregloAgregar = []; 
-    
+    swal({
+        title: "",
+        text: "¿Seguro que desea agregar los módulos seleccionados?",
+        type: "warning",
+        showCancelButton: true,
+        confirmButtonText: "Ok"},
+        function(){
+            $('#processing-modal').modal('toggle');
+            //Llamar funcion de creación del mensaje
+            agregarModulos(arregloAgregar);
+            arregloAgregar = [];
+        }
+    ); 
 });
 
 //Agregar Modulos
