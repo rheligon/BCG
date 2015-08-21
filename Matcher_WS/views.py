@@ -50,7 +50,7 @@ def test(request):
     hora = timenow()
     hora = str(hora)
 
-    """sessions = Session.objects.filter(expire_date__gte=timezone.now())
+    sessions = Session.objects.filter(expire_date__gte=timezone.now())
     uid_list = []
 
     # Build a list of user ids from that query
@@ -60,7 +60,7 @@ def test(request):
 
     for i in uid_list:
         print("usuario: " + str(i))
-    """ 
+    
     return JsonResponse(hora, safe=False)
 
 @login_required(login_url='/login')
@@ -93,6 +93,7 @@ def usr_login(request):
             username = request.POST.get('user','')
             password = request.POST.get('pass','')
 
+            #Verificación de licencia
             licencia = Licencia.objects.all()[0]
             bic = licencia.bic
             num_usuarios = licencia.num_usuarios
@@ -141,6 +142,17 @@ def usr_login(request):
                     sess.save()
                     '''
 
+                    #Verificar si el usuario ya esta logueado para expropiarlo
+                    vieja = Sesion.objects.filter(login=username, conexion="1")
+                    userAux = User.objects.get(username=username)
+                    if vieja:
+
+                        print("aqui")
+                        #Cerrar sesion anterior del mismo usuario
+                        user = User.objects.get(username=username)
+                        [s.delete() for s in Session.objects.all() if s.get_decoded().get('_auth_user_id') == user.id]
+
+
                     sesion = Sesion.objects.filter(login=username, estado__in=["Activo","Pendiente"])[0]
                     user = MyAuthBackend.authenticate(sesion, username=username, password=password)
 
@@ -177,7 +189,10 @@ def usr_login(request):
                         evento = Evento.objects.get(pk=37)
                         nombre = sesion.usuario_idusuario.nombres+" "+sesion.usuario_idusuario.apellidos
                         detalles = "Usuario: "+username
-                        Traza.objects.create(evento_idevento=evento,usuario=nombre, fecha_hora=fechaHora, terminal=terminal, detalles=detalles)
+                        if username == "SysAdminBCG":
+                            print("")
+                        else:
+                            Traza.objects.create(evento_idevento=evento,usuario=nombre, fecha_hora=fechaHora, terminal=terminal, detalles=detalles)
                         return JsonResponse({'mens':message})
 
                 except Exception as e:
@@ -200,7 +215,6 @@ def usr_logout(request):
         sesion.save()
 
         username = sesion.login
-        print(username)
         # Buscar el usuario
         user = User.objects.get(username=username)
         [s.delete() for s in Session.objects.all() if s.get_decoded().get('_auth_user_id') == user.id]
@@ -3207,7 +3221,8 @@ def seg_Logs(request):
 
     if request.method == "GET":
         eventos = Evento.objects.all()
-        usuarios = Usuario.objects.all()
+        exc = Perfil.objects.get(nombre = "SysAdmin")
+        usuarios = Usuario.objects.exclude(perfil_idperfil = exc)
         eventos_acc = [evento.accion for evento in eventos]
         fecha_hoy = ("/").join(str(timenow().date()).split("-")[::-1])
         context = {'eventos':eventos, 'usuarios':usuarios, 'eventos_acc':eventos_acc, 'fecha_hoy':fecha_hoy, 'ops':get_ops(request)}
@@ -5052,15 +5067,24 @@ def timenow():
 
 def log(request,eid,detalles=None):
     # Funcion que recibe el request, ve cual es el usr loggeado y realiza el log
-    username = request.user.username 
+    username = request.user.username
     terminal = request.META.get('COMPUTERNAME')
     fechaHora = timenow()
     evento = Evento.objects.get(pk=eid)
     sesion = Sesion.objects.get(login=username)
     nombre = sesion.usuario_idusuario.nombres+" "+sesion.usuario_idusuario.apellidos
 
-    if detalles is not None:
-        Traza.objects.create(evento_idevento=evento,usuario=nombre, fecha_hora=fechaHora, terminal=terminal, detalles=detalles)
+    if sesion.login == "SysAdminBCG": 
+        print("")
+    elif detalles is not None:
+
+        pattern = re.compile("^.*'SysAdmin'.*$")
+        m = pattern.match(string)
+
+        if m == False: 
+
+            Traza.objects.create(evento_idevento=evento,usuario=nombre, fecha_hora=fechaHora, terminal=terminal, detalles=detalles)
+    
     else:
         Traza.objects.create(evento_idevento=evento,usuario=nombre, fecha_hora=fechaHora, terminal=terminal)
 
