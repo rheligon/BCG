@@ -586,9 +586,9 @@ $('#acptButton').on('click', function () {
         swal("Ups!","Por favor elegir un perfil para el usuario.","error");
       }else if(a_login.length===0 || a_login.length>20){
         swal("Ups!","Por favor colocar un login para el usuario con un máximo de 20 caracteres.","error");
-      }else if (a_pass.length === 0){
+      }else if ( a_ldap === 0 & a_pass.length === 0){
         swal("Ups!","Por favor introducir una contraseña.","error");
-      }else if (a_pass != a_pass2){
+      }else if (a_ldap === 0 & a_pass != a_pass2){
         swal("Ups!","Las contraseñas no coinciden.","error");
       };
     }
