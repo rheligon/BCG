@@ -126,11 +126,11 @@ $('#boton-buscar').on('click', function () {
         var codigoCuenta = $('#opt-'+cuentaId).attr("codigo");
         
         if(fechaIni.length<1){ 
-            swal("Ups!", "Debe introducir la Fecha Inicial para la Busqueda", "error");
+            swal("Ups!", "Debe introducir la Fecha Inicial para la Búsqueda", "error");
         }else if(fechaFin.length<1){ 
-            swal("Ups!", "Debe introducir la Fecha Final para la Busqueda", "error");
+            swal("Ups!", "Debe introducir la Fecha Final para la Búsqueda", "error");
         }else if(archivo=="-1"){ 
-            swal("Ups!", "Debe Seleccionar el Archivo en el que se realizara la Busqueda", "error");
+            swal("Ups!", "Debe Seleccionar el Archivo en el que se realizará la Búsqueda", "error");
         }else{
             fecha1 = fechaStringtoDate(fechaIni);
             fecha2 = fechaStringtoDate(fechaFin);
@@ -195,7 +195,7 @@ $('#boton-consulta').on('click', function () {
 
 //Mostramos como seria el nuevo estado de cuenta
 $('#boton-ejecutar').on('click', function () {
-
+    var $btn;
     var cuenta = $('#Cuenta-sel').val()
     
     if (cuenta>=0){
@@ -206,6 +206,7 @@ $('#boton-ejecutar').on('click', function () {
         if(fecha.length<1){ 
             swal("Ups!", "Debe introducir la Fecha para ejecutar el proceso de Archive", "error");
         }else{
+
             //caso en que no se ha consultado la fecha minima
             if(fechaMinima.length < 1){
                 $('#processing-modal').modal('toggle')
@@ -214,9 +215,21 @@ $('#boton-ejecutar').on('click', function () {
                 fecha1 = fechaStringtoDate(fechaMinima);
                 fecha2 = fechaStringtoDate(fecha);
                 if(fecha1 > fecha2){
-                    swal("Ups!", "La fecha Final no puede ser menor a la Fecha Mínima de Match con fecha", "error");
+                    swal("Ups!", "La fecha Final no puede ser menor a la Fecha Mínima de Match", "error");
                 }else{
-                    swal("Ups!", "TODO ESTARA BIEN con fecha", "error");
+                    var $btn;
+                        swal({
+                            title: "",
+                            text: "Seguro que desea crear el Archive para la Cuenta: " + codigoCuenta + " entre las fechas "+fechaMinima+" y " +fecha+ " ?",
+                            type: "warning",
+                            showCancelButton: true,
+                            confirmButtonText: "Ok"},
+                            function(){
+                                $('#processing-modal').modal('toggle')
+                                $btn = $(this).button('loading')
+                                ejecutarArchive(codigoCuenta,fechaMinima,fecha)
+                            }
+                        );
                 }            
             }
         }
@@ -294,17 +307,32 @@ function consultarEjecutar(cuenta){
         
                     fecha1 = fechaStringtoDate(data.fechaMinima);
                     fecha2 = fechaStringtoDate(fecha);
-                    if(fecha1 > fecha2){
-                        swal("Ups!", "La fecha Final no puede ser menor a la Fecha Mínima de Match sin fecha", "error");
+                    if(fecha1 > fecha2){  
+                        $('#processing-modal').modal('toggle')
+                        swal("Ups!", "La fecha Final no puede ser menor a la Fecha Mínima de Match", "error");
                     }else{
-                        ejecutarArchive(data.cuenta,data.fechaMinima,fecha)
-                    }            
+                        $('#processing-modal').modal('toggle')
+                        var $btn;
+                        swal({
+                            title: "",
+                            text: "Seguro que desea crear el Archive para la Cuenta: " + cuenta + " entre las fechas "+data.fechaMinima+" y " +fecha+ " ?",
+                            type: "warning",
+                            showCancelButton: true,
+                            confirmButtonText: "Ok"},
+                            function(){
+                                $('#processing-modal').modal('toggle')
+                                $btn = $(this).button('loading')
+                                ejecutarArchive(data.cuenta,data.fechaMinima,fecha)
+                            }
+                        );
+                    }
+                              
                 }else{
+                    $('#processing-modal').modal('toggle')
                     swal({   title: "",
                              text: data.msg,
                              type: "error"
                          });
-                    $('#processing-modal').modal('toggle')
                 }
                 
                 
@@ -329,10 +357,14 @@ function ejecutarArchive(cuenta,fechaMinima,fechaMaxima){
             data: {"cuenta":cuenta, "fechaMinima":fechaMinima, "fechaMaxima":fechaMaxima,"action": "ejecutarArchive"},
             success: function(data){
                 if (data.exito){
-                          swal({   title: "",
-                             text: "El Archive se ha ejecutado con Exito",
-                             type: "success"
-                         }); 
+                    $('#divselec_archivo option[value!="-1"]').remove();
+                    for (var i = 0; i < data.archivos.length;i++){
+                        $('#selec_archivo').append($("<option></option>").attr("value",data.archivos[i]).text(data.archivos[i])); 
+                    }
+                    swal({   title: "",
+                        text: "El Archive se ha ejecutado con éxito",
+                        type: "success"
+                    }); 
                 }else{
                     swal({   title: "",
                              text: data.msg,
@@ -344,7 +376,7 @@ function ejecutarArchive(cuenta,fechaMinima,fechaMaxima){
             error: function(q,error){
                 alert(q.responseText) //debug
                 $('#processing-modal').modal('toggle')
-                swal("Ups!", "Hubo un error consultando la Cuenta, intente de Nuevo.", "error");
+                swal("Ups!", "Hubo un error ejecutando el Archive, intente de Nuevo.", "error");
         },
             dataType:'json',
             headers:{

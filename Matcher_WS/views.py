@@ -290,11 +290,13 @@ def resumen_cuenta(request, cuenta_id):
     lista = [Opcion.objects.get(idopcion=p).funprincipal for p in permisos]
     lista.sort()
     lista = set(lista)
+    
     if not 1 in lista:
         retour = custom_403(request)
         return HttpResponseForbidden(retour)
 
     expirarSesion(request)
+
     conciliacion = Conciliacionconsolidado.objects.filter(cuenta_idcuenta = cuenta_id)
     empresa = Empresa.objects.all()[0]
 
@@ -2567,8 +2569,10 @@ def intraday(request):
 
     expirarSesion(request)
     if request.method == 'GET':
-        context = {'ops':get_ops(request)}
+
+        context = {'cuentas':get_cuentas(request),'ops':get_ops(request)}
         template = "matcher/intraday.html"
+
         return render(request, template, context)
 
 
@@ -4425,7 +4429,18 @@ def admin_archive(request):
 
             #cerrar archivo
             nuevoArch.close()
-            return JsonResponse({'exito':exito})
+
+            archivos = ""
+            
+            obj = Configuracion.objects.all()[0]
+            directorio = obj.dirarchiveconfirmados +"\\"+ cuenta
+
+            try:
+                archivos = os.listdir(directorio)
+            except OSError:
+                os.makedirs(directorio)
+                archivos = os.listdir(directorio)
+            return JsonResponse({'exito':exito,'archivos':cuenta})
 
 
 @login_required(login_url='/login')
