@@ -65,7 +65,20 @@ def test(request):
 
 @login_required(login_url='/login')
 def index(request):
-    context = {'ops':get_ops(request)}
+
+    mensaje = None
+    licencia = Licencia.objects.all()[0]
+    fecha_expira = str(licencia.fecha_expira)[:10]
+    ahora = str(timenow())[:10]
+    a1, m1, d1 = ahora.split("-")
+    a2, m2, d2 = fecha_expira.split("-")
+    m1 = int(m1)
+    m2 = int (m2)
+
+    if a1 == a2 and (m2 - m1) <= 1:
+        mensaje = "Su licencia vencerá en la fecha (YY-MM-DD): " + fecha_expira
+
+    context = {'ops':get_ops(request),'mensaje':mensaje}
     template = "matcher/index.html"
     return render(request, template, context)
 
@@ -73,102 +86,110 @@ def usr_login(request):
     
     message = None
 
+    expirarSesion(request)
     if request.method == 'POST':
-        username = request.POST.get('username', '')
-        password = request.POST.get('password', '')
+        action = request.POST.get('action')
+        if action == "login":
+            username = request.POST.get('user','')
+            password = request.POST.get('pass','')
 
-        licencia = Licencia.objects.all()[0]
-        bic = licencia.bic
-        num_usuarios = licencia.num_usuarios
-        fecha_expira = licencia.fecha_expira
-        llave = licencia.llave
-        salt = licencia.salt
-        ahora = str(timenow())[:10]
-        ahora = datetime.strptime(ahora, '%Y-%m-%d')
-        fecha_aux = str(fecha_expira)[:10]
-        a , b, c = fecha_aux.split("-")
-        fecha_aux = c + "/" + b + "/" + a
+            licencia = Licencia.objects.all()[0]
+            bic = licencia.bic
+            num_usuarios = licencia.num_usuarios
+            fecha_expira = licencia.fecha_expira
+            llave = licencia.llave
+            salt = licencia.salt
+            ahora = str(timenow())[:10]
+            ahora = datetime.strptime(ahora, '%Y-%m-%d')
+            fecha_aux = str(fecha_expira)[:10]
+            a , b, c = fecha_aux.split("-")
+            fecha_aux = c + "/" + b + "/" + a
 
-        pwd = bic + "$" + str(num_usuarios) + "$" + fecha_aux
-        newp = make_password(pwd, salt=salt, hasher='pbkdf2_sha256')
-        x, x, saltnuevo, hashp = newp.split("$")
+            pwd = bic + "$" + str(num_usuarios) + "$" + fecha_aux
+            newp = make_password(pwd, salt=salt, hasher='pbkdf2_sha256')
+            x, x, saltnuevo, hashp = newp.split("$")
 
-        if saltnuevo != salt or llave != hashp:   
+            if saltnuevo != salt or llave != hashp:   
+                
+                message ='Datos de licencia corruptos. Por favor contacte a BCG.'
+                return JsonResponse({'mens':message})
             
-            message ='Datos de licencia corruptos. Por favor contacte a BCG.'
-        
-        elif fecha_expira < ahora :
+            elif fecha_expira < ahora :
 
-            message ='Su licencia a expirado. Por favor contacte a BCG.'
+                message ='Su licencia a expirado. Por favor contacte a BCG.'
+                return JsonResponse({'mens':message})
 
-        else:
+            else:
 
-            try:
+                try:
 
-                '''
-                usr = 'PRUEBA1'
-                usrpwd = 'prueba1'
+                    '''
+                    usr = 'PRUEBA1'
+                    usrpwd = 'prueba1'
 
-                # Hash password
-                newp = make_password(usrpwd, hasher='pbkdf2_sha1')
-                x, x, salt, hashp = newp.split("$")
+                    # Hash password
+                    newp = make_password(usrpwd, hasher='pbkdf2_sha1')
+                    x, x, salt, hashp = newp.split("$")
 
-                #Crear usuario de django
-                user, created = User.objects.get_or_create(username=usr, defaults={'password':newp})
+                    #Crear usuario de django
+                    user, created = User.objects.get_or_create(username=usr, defaults={'password':newp})
 
-                #Cambiar clave guardada por nueva
-                sess = Sesion.objects.get(pk=9)
-                sess.pass_field = hashp
-                sess.salt = salt
-                sess.save()
-                '''
+                    #Cambiar clave guardada por nueva
+                    sess = Sesion.objects.get(pk=9)
+                    sess.pass_field = hashp
+                    sess.salt = salt
+                    sess.save()
+                    '''
 
-                sesion = Sesion.objects.filter(login=username, estado__in=["Activo","Pendiente"])[0]
-                user = MyAuthBackend.authenticate(sesion, username=username, password=password)
+                    sesion = Sesion.objects.filter(login=username, estado__in=["Activo","Pendiente"])[0]
+                    user = MyAuthBackend.authenticate(sesion, username=username, password=password)
 
-                if user is not None and sesion.estado!="Inactivo":
+                    if user is not None and sesion.estado!="Inactivo":
 
-                    if sesion.ldap != "1" and sesion.estado == "Pendiente":
+                        if sesion.ldap != "1" and sesion.estado == "Pendiente":
 
-                        auth.login(request, user)
-                        message = "Login successful"
-                        sesion.conexion = 1
-                        sesion.save()
-                        # Para el log
-                        log(request,1)
-                        return HttpResponseRedirect('/cambioClave/')
+                            auth.login(request, user)
+                            message = "Login successful"
+                            sesion.conexion = 1
+                            sesion.save()
+                            # Para el log
+                            log(request,1)
+                            return HttpResponseRedirect('/cambioClave/')
+
+                        else:
+
+                            auth.login(request, user)
+                            message = "Login successful"
+                            sesion.conexion = 1
+                            sesion.save()
+                            # Para el log
+                            log(request,1)
+
+                        message ='Login exitoso'
+                        return JsonResponse({'mens':message})
 
                     else:
+                        message ='La combinacion de usuario y clave fue incorrecta.'
 
-                        auth.login(request, user)
-                        message = "Login successful"
-                        sesion.conexion = 1
-                        sesion.save()
                         # Para el log
-                        log(request,1)
+                        terminal = request.META.get('COMPUTERNAME')
+                        fechaHora = timenow()
+                        evento = Evento.objects.get(pk=37)
+                        nombre = sesion.usuario_idusuario.nombres+" "+sesion.usuario_idusuario.apellidos
+                        detalles = "Usuario: "+username
+                        Traza.objects.create(evento_idevento=evento,usuario=nombre, fecha_hora=fechaHora, terminal=terminal, detalles=detalles)
+                        return JsonResponse({'mens':message})
 
-                    # Redireccionar a index
-                    return HttpResponseRedirect('/')
-                else:
-                    message ='La combinacion de usuario y clave fue incorrecta.'
+                except Exception as e:
+                    # Show a message  
+                    print (e)   
+                    message ='Ese usuario no existe en la base de datos.'
+                    return JsonResponse({'mens':message}) 
 
-                    # Para el log
-                    terminal = request.META.get('COMPUTERNAME')
-                    fechaHora = timenow()
-                    evento = Evento.objects.get(pk=37)
-                    nombre = sesion.usuario_idusuario.nombres+" "+sesion.usuario_idusuario.apellidos
-                    detalles = "Usuario: "+username
-                    Traza.objects.create(evento_idevento=evento,usuario=nombre, fecha_hora=fechaHora, terminal=terminal, detalles=detalles)
-
-            except Exception as e:
-                # Show a message  
-                print (e)   
-                message ='Ese usuario no existe en la base de datos.'
-
-    expirarSesion(request)
-    context = {'message': message}
-    template = "matcher/login.html"
-    return render(request, template, context)
+    if request.method == 'GET':    
+        context = {'message': message}
+        template = "matcher/login.html"
+        return render(request, template, context)
 
 def usr_logout(request):
 

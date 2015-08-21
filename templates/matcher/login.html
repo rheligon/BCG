@@ -4,6 +4,7 @@
 
 {%block head%}
 <link rel="stylesheet" type="text/css" href="{% static 'css/login.css' %}">
+<link rel="stylesheet" href="{% static 'css/sweet-alert.css' %}">
 {%endblock%}
 
 {% block content %}  
@@ -16,25 +17,41 @@
                 {%endif%}
               </div>
               </br>
-              <form class="form-signin login" action="" method="POST">
+              <div class="form-signin login">
                     {% csrf_token %}
                     <h2 class="form-signin-heading text-center">Inicie Sesión</h2>
                     <label for="inputEmail" class="sr-only">Username</label>
-                    <input type="text" id="username" name="username" value="" class="form-control" placeholder="Username" required autofocus/>
+                    <input type="text" id="usernameID" name="username" value="" class="form-control" placeholder="Username" required autofocus/>
                     <label for="inputPassword" class="sr-only">Password</label>
-                    <input type="password" id="password" name="password" value="" class="form-control" placeholder="Password"/>
+                    <input type="password" id="passwordID" name="password" value="" class="form-control" placeholder="Password" required autofocus/>
                     <div class="checkbox">
                       <label>
                         <input type="checkbox" value="remember-me"> Remember me
                       </label>
                     </div>
-                    <button class="btn btn-lg btn-primary btn-block" value="login" type="submit">Sign in</button>
-              </form>
+                    <button class="btn btn-lg btn-primary btn-block" value="login" type="submit" id="loginButton" >Sign in</button>
+              </div>
             </div>
         </div>
     </div> <!-- /container -->
 
+    <!-- Static Modal para procesando -->
+    <div class="modal modal-static fade" id="processing-modal" role="dialog" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <div class="text-center">
+                        <img src="{% static 'images/procesando.gif' %}" class="icon" />
+                        <h4>Procesando, por favor espere.</h4>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
 {% endblock %}
 
 {% block script %}
+<script type="text/javascript" src="{% static 'js/sweet-alert.min.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/login.js' %}"></script>
 {% endblock %}
