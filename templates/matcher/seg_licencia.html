@@ -16,9 +16,35 @@
 <div class="table-responsive col-md-10">
 <br>
     <h2> Licencia </h2>
-    <br> 
+    <br>
+
+    <legend>Información</legend>
+    <div id="Licencia-Info">
+        <tr>
+            <td class="col-md-5 ">
+                <div class="col-md-5 form-group">
+                    <label class="col-md-5 control-label" >Número de usuarios:</label>
+                        <div class="col-md-4">
+                            <input class="form-control" name="numUserLicenciaN" id="numUserLicencia" type="text" placeholder="{{numU}}" onkeypress='return solonumero(event)' onkeyup='return solonumero(event)' required readonly>
+                        </div>
+                </div>
+            </td>
+            <td class "col-md-7">
+                <div id="fechaExp" class="col-md-5 form-group">
+                    <label class="col-md-5 control-label">Fecha de expiración:</label>
+                        <div class="col-md-7"><input name="expiracionLicenciaN" id="expiracionLicencia" class="form-control" placeholder="{{Exp | date:"d/m/Y"}}" readonly></div>
+                </div>
+            </td>
+        </tr>
+    </div>
+
     <div id="Licencia-cargar">
-        <legend>Cargar Licencia</legend>
+        <br>
+        <br>
+        <br>
+        <br>
+        <br>
+        <legend>Cargar Nueva </legend>
             <tr>
                 <td class="col-md-6 ">
                     <div class="col-md-7 form-group">

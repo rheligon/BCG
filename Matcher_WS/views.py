@@ -25,7 +25,7 @@ from Matcher_WS.edo_cuenta import edoCta, edc_list, Trans, Bal
 from Matcher_WS.mailConf import enviar_mail
 from Matcher_WS.cargaAutomatica import leer_linea_conta, leer_linea_corr, leer_punto_coma, validar_archivo
 from Matcher_WS.Matcher_call import matcher, dma_millis
-from Matcher_WS.funciones_get import get_ops, get_cuentas, get_ci, get_idioma, get_bancos, get_archivosMT99, get_archivosMT96, get_codigos95,elimina_tildes, get_archivosLicencia,verificarDirectorio
+from Matcher_WS.funciones_get import get_ops, get_cuentas, get_ci, get_idioma, get_bancos, get_archivosMT99, get_archivosMT96, get_codigos95,elimina_tildes, get_archivosLicencia,verificarDirectorio, get_ldap
 from Matcher_WS.generar_reporte import generarReporte, pdfView, xlsView
 from Matcher_WS.setConsolidado import setConsolidado
 
@@ -58,8 +58,26 @@ def test(request):
         data = session.get_decoded()
         uid_list.append(data.get('_auth_user_id', None))
 
+    uid_list = set(uid_list)
+    uid_list.remove(None)
+    uid_list = sorted(uid_list)
+
+    #todos = User.objects.all()
+    ensesion = [u.username for u in User.objects.all() if u.id in uid_list] 
+
     for i in uid_list:
         print("usuario: " + str(i))
+
+    for j in ensesion:
+        print("name: " + j)
+
+    en1 = Sesion.objects.filter(conexion="1")
+    
+    for s in en1:
+        if s.login not in ensesion:
+            s.conexion = "0"
+            s.save()
+            #ensesion.remove(s.login)
     
     return JsonResponse(hora, safe=False)
 
@@ -78,7 +96,7 @@ def index(request):
     if a1 == a2 and (m2 - m1) <= 1:
         mensaje = "Su licencia vencerá en la fecha (YY-MM-DD): " + fecha_expira
 
-    context = {'ops':get_ops(request),'mensaje':mensaje}
+    context = {'ops':get_ops(request),'mensaje':mensaje,'ldap':get_ldap(request)}
     template = "matcher/index.html"
     return render(request, template, context)
 
@@ -145,14 +163,57 @@ def usr_login(request):
                     #Verificar si el usuario ya esta logueado para expropiarlo
                     vieja = Sesion.objects.filter(login=username, conexion="1")
                     userAux = User.objects.get(username=username)
+
                     if vieja:
 
-                        print("aqui")
                         #Cerrar sesion anterior del mismo usuario
                         user = User.objects.get(username=username)
                         [s.delete() for s in Session.objects.all() if s.get_decoded().get('_auth_user_id') == user.id]
+                        U_name = user.username
+                        U_terminal = request.META.get('COMPUTERNAME')
+                        logAux(U_name,U_terminal,"Logout por sesión expropiativa")
 
+                    #Verificación de usuarios concurrentes
+                    sessions = Session.objects.filter(expire_date__gte=timezone.now())
+                    uid_list = []
 
+                    # Build a list of user ids from that query
+                    for session in sessions:
+                        data = session.get_decoded()
+                        uid_list.append(data.get('_auth_user_id', None))
+
+                    uid_list = set(uid_list)
+                    uid_list.remove(None)
+                    uid_list = sorted(uid_list)
+
+                    ensesion = [u.username for u in User.objects.all() if u.id in uid_list] 
+
+                    en1 = Sesion.objects.filter(conexion="1")
+                    
+                    for s in en1:
+                        if s.login not in ensesion:
+                            s.conexion = "0"
+                            s.save()
+
+                    logedcount = len(ensesion)
+
+                    if logedcount >= num_usuarios and username != "SysAdminBCG":
+
+                        message ='Cantidad de usuarios concurrentes a tope. Por favor, cierre alguna otra sesión e intente nuevamente.'
+
+                        # Para el log
+                        terminal = request.META.get('COMPUTERNAME')
+                        fechaHora = timenow()
+                        evento = Evento.objects.get(pk=37)
+                        nombre = username
+                        detalles = "Usuario: "+username + ". " + "Login fallido por: Cantidad de usuarios concurrentes a tope."
+                        if username == "SysAdminBCG":
+                            print("")
+                        else:
+                            Traza.objects.create(evento_idevento=evento,usuario=nombre, fecha_hora=fechaHora, terminal=terminal, detalles=detalles)
+                        return JsonResponse({'mens':message})
+
+                    #Continuacion de flujo
                     sesion = Sesion.objects.filter(login=username, estado__in=["Activo","Pendiente"])[0]
                     user = MyAuthBackend.authenticate(sesion, username=username, password=password)
 
@@ -242,7 +303,7 @@ def cambioClave(request):
     if request.method == 'GET':
 
         ops = []
-        context = {'ops':ops}
+        context = {'ops':ops,'ldap':get_ldap(request)}
         template = "matcher/cambioClave.html"
     
         return render(request, template, context)
@@ -291,7 +352,7 @@ def listar_cuentas(request):
         return HttpResponseForbidden(retour)
 
     expirarSesion(request)
-    context = {'cuentas': get_cuentas(request), 'ops':get_ops(request)}
+    context = {'cuentas': get_cuentas(request), 'ops':get_ops(request),'ldap':get_ldap(request)}
     template = "matcher/listarCuentas.html"
     
     return render(request, template, context)
@@ -337,7 +398,7 @@ def resumen_cuenta(request, cuenta_id):
         cod = ['C']*4
 
 
-    context = {'cuenta': cuenta, 'cons':cons, 'cod': cod, 'ops':get_ops(request), 'empresa':empresa}
+    context = {'cuenta': cuenta, 'cons':cons, 'cod': cod, 'ops':get_ops(request), 'empresa':empresa,'ldap':get_ldap(request)}
     template = "matcher/ResumenCuenta.html"
 
     return render(request, template, context)
@@ -405,7 +466,7 @@ def pd_estadoCuentas(request):
         
     if request.method == 'GET':
 
-        context = {'cuentas': get_cuentas(request), 'ops':get_ops(request)}
+        context = {'cuentas': get_cuentas(request), 'ops':get_ops(request),'ldap':get_ldap(request)}
         template = "matcher/pd_estadoCuentas.html"
 
         return render(request, template, context)
@@ -807,7 +868,7 @@ def pd_cargaAutomatica(request):
         path_corr = Configuracion.objects.all()[0].archswiftcarg+'\\'
         filenames_corr = next(os.walk(path_corr))[2]
 
-        context = {'filenames_corr':filenames_corr,'filenames_conta':filenames_conta, 'ops':get_ops(request)}
+        context = {'filenames_corr':filenames_corr,'filenames_conta':filenames_conta, 'ops':get_ops(request),'ldap':get_ldap(request)}
         template = "matcher/pd_cargaAutomatica.html"
         return render(request, template, context)
 
@@ -956,7 +1017,7 @@ def pd_cargaManual(request):
 
 
     if request.method == 'GET':
-        context = {'cuentas': get_cuentas(request), 'ops':get_ops(request)}
+        context = {'cuentas': get_cuentas(request), 'ops':get_ops(request),'ldap':get_ldap(request)}
         template = "matcher/pd_cargaManual.html"
         return render(request, template, context)
 
@@ -1052,7 +1113,7 @@ def pd_match(request):
 
     if request.method == 'GET':
         template = "matcher/pd_match.html"
-        context = {'ops':get_ops(request)}
+        context = {'ops':get_ops(request),'ldap':get_ldap(request)}
 
         return render(request, template, context)
 
@@ -1098,7 +1159,7 @@ def pd_matchesPropuestos(request, cuenta):
         template = "matcher/pd_matchesPropuestos.html"
         msg = 'Matches Confirmados Exitosamente!'
         cuentas = Cuenta.objects.all().order_by('codigo')
-        context = {'cuentas':cuentas, 'matches':None, 'cta':None, 'msg':msg, 'ops':get_ops(request)}
+        context = {'cuentas':cuentas, 'matches':None, 'cta':None, 'msg':msg, 'ops':get_ops(request),'ldap':get_ldap(request)}
         return render(request, template, context)
 
     if request.method == 'GET':
@@ -1110,7 +1171,7 @@ def pd_matchesPropuestos(request, cuenta):
 
         template = "matcher/pd_matchesPropuestos.html"
 
-        context = {'cuentas':get_cuentas(request), 'matches':matches, 'cta':cuenta, 'msg':None, 'ops':get_ops(request)}
+        context = {'cuentas':get_cuentas(request), 'matches':matches, 'cta':cuenta, 'msg':None, 'ops':get_ops(request),'ldap':get_ldap(request)}
         return render(request, template, context)
 
 @login_required(login_url='/login')
@@ -1140,14 +1201,14 @@ def pd_detallesMT(request, mensaje,tipo):
                 msj = "MTs listados exitosamente"
                 MT96s = Mt96.objects.filter(mt95_idmt95=MTs)
                 template = "matcher/pd_detallesMT.html"
-                context = {'cuentas':get_cuentas(request), 'msg':msj, 'ops':get_ops(request), 'mensajes95': MTs, 'mensaje':mensaje, 'mensajes96':MT96s}
+                context = {'cuentas':get_cuentas(request), 'msg':msj, 'ops':get_ops(request), 'mensajes95': MTs, 'mensaje':mensaje, 'mensajes96':MT96s,'ldap':get_ldap(request)}
                 return render(request, template, context)
             except:
                 msj = "No hay mensajes relacionados a la transacción"
                 MTs = None
                 MT96s = None
                 template = "matcher/pd_detallesMT.html"
-                context = {'cuentas':get_cuentas(request), 'msg':msj, 'ops':get_ops(request), 'mensajes95': MTs, 'mensaje':mensaje, 'mensajes96':MT96s}
+                context = {'cuentas':get_cuentas(request), 'msg':msj, 'ops':get_ops(request), 'mensajes95': MTs, 'mensaje':mensaje, 'mensajes96':MT96s,'ldap':get_ldap(request)}
                 return render(request, template, context) 
 
         try:
@@ -1157,14 +1218,14 @@ def pd_detallesMT(request, mensaje,tipo):
             msj = "MTs listados exitosamente"
             MT96s = Mt96.objects.filter(mt95_idmt95=MTs)
             template = "matcher/pd_detallesMT.html"
-            context = {'cuentas':get_cuentas(request), 'msg':msj, 'ops':get_ops(request), 'mensajes95': MTs, 'mensaje':mensaje, 'mensajes96':MT96s}
+            context = {'cuentas':get_cuentas(request), 'msg':msj, 'ops':get_ops(request), 'mensajes95': MTs, 'mensaje':mensaje, 'mensajes96':MT96s,'ldap':get_ldap(request)}
             return render(request, template, context)
         except:
             msj = "No hay mensajes relacionados a la transacción"
             MTs = None
             MT96s = None
             template = "matcher/pd_detallesMT.html"
-            context = {'cuentas':get_cuentas(request), 'msg':msj, 'ops':get_ops(request), 'mensajes95': MTs, 'mensaje':mensaje, 'mensajes96':MT96s}
+            context = {'cuentas':get_cuentas(request), 'msg':msj, 'ops':get_ops(request), 'mensajes95': MTs, 'mensaje':mensaje, 'mensajes96':MT96s,'ldap':get_ldap(request)}
             return render(request, template, context)
 
 @login_required(login_url='/login')
@@ -1470,7 +1531,7 @@ def pd_partidasAbiertas(request):
     if request.method == 'GET':
 
         template = "matcher/pd_partidasAbiertas.html"
-        context = {'cuentas':get_cuentas(request), 'ops':get_ops(request), 'codigos':get_codigos95()}
+        context = {'cuentas':get_cuentas(request), 'ops':get_ops(request), 'codigos':get_codigos95(),'ldap':get_ldap(request)}
         return render(request, template, context)
 
 @login_required(login_url='/login')
@@ -1576,7 +1637,7 @@ def pd_matchesConfirmados(request,cuenta):
             
             cuentas = Cuenta.objects.all().order_by('codigo')
             
-            context = {'cuentas':cuentas, 'matches':mConf, 'cta':cuenta, 'fArray':filterArray, 'msg':None, 'ops':get_ops(request)}
+            context = {'cuentas':cuentas, 'matches':mConf, 'cta':cuenta, 'fArray':filterArray, 'msg':None, 'ops':get_ops(request),'ldap':get_ldap(request)}
             template = "matcher/pd_matchesConfirmados.html"
             return render(request, template, context)
 
@@ -1628,7 +1689,7 @@ def pd_matchesConfirmados(request,cuenta):
 
         template = "matcher/pd_matchesConfirmados.html"
 
-        context = {'cuentas':get_cuentas(request), 'matches':matches, 'cta':cuenta, 'fArray':[[],[],[],[],[]], 'msg':None, 'ops':get_ops(request)}
+        context = {'cuentas':get_cuentas(request), 'matches':matches, 'cta':cuenta, 'fArray':[[],[],[],[],[]], 'msg':None, 'ops':get_ops(request),'ldap':get_ldap(request)}
         return render(request, template, context)
 
 @login_required(login_url='/login')
@@ -1646,7 +1707,7 @@ def pd_conciliacion(request):
     template = "matcher/pd_conciliacion.html"
     fecha_hoy = ("/").join(str(timenow().date()).split("-")[::-1])
 
-    context = {'cuentas':get_cuentas(request), 'fecha_hoy':fecha_hoy, 'ops':get_ops(request)}
+    context = {'cuentas':get_cuentas(request), 'fecha_hoy':fecha_hoy, 'ops':get_ops(request),'ldap':get_ldap(request)}
     return render(request, template, context)
 
 @login_required(login_url='/login')
@@ -2061,7 +2122,7 @@ def reportes(request):
         eventos = Evento.objects.all().order_by('accion')
         fecha_hoy = ("/").join(str(timenow().date()).split("-")[::-1])
 
-        context = {'cuentas':get_cuentas(request), 'perfiles':perfiles, 'usuarios':usuarios, 'eventos':eventos, 'fecha_hoy':fecha_hoy, 'ops':get_ops(request)}
+        context = {'cuentas':get_cuentas(request), 'perfiles':perfiles, 'usuarios':usuarios, 'eventos':eventos, 'fecha_hoy':fecha_hoy, 'ops':get_ops(request),'ldap':get_ldap(request)}
         return render(request, template, context)
 
 @login_required(login_url='/login')
@@ -2077,7 +2138,7 @@ def mensajesSWIFT(request):
 
     expirarSesion(request)
     template = "matcher/admin_criteriosyreglas.html"
-    context = {'ops':get_ops(request)}
+    context = {'ops':get_ops(request),'ldap':get_ldap(request)}
     return render(request, template, context)
 
 @login_required(login_url='/login')
@@ -2094,7 +2155,7 @@ def mtn96(request):
     expirarSesion(request)
     if request.method == 'GET':
         template = "matcher/mtn96.html"
-        context = {'ops':get_ops(request), 'archivos':get_archivosMT96()}
+        context = {'ops':get_ops(request), 'archivos':get_archivosMT96(),'ldap':get_ldap(request)}
         
         return render(request, template, context)
 
@@ -2354,7 +2415,7 @@ def mtn99(request):
     expirarSesion(request)
     if request.method == 'GET':
         template = "matcher/mtn99.html"
-        context = {'ops':get_ops(request), 'bancos':get_bancos(), 'archivos':get_archivosMT99()}
+        context = {'ops':get_ops(request), 'bancos':get_bancos(), 'archivos':get_archivosMT99(),'ldap':get_ldap(request)}
         
         return render(request, template, context)
 
@@ -2584,7 +2645,7 @@ def intraday(request):
     expirarSesion(request)
     if request.method == 'GET':
 
-        context = {'cuentas':get_cuentas(request),'ops':get_ops(request)}
+        context = {'cuentas':get_cuentas(request),'ops':get_ops(request),'ldap':get_ldap(request)}
         template = "matcher/intraday.html"
 
         return render(request, template, context)
@@ -2816,7 +2877,7 @@ def configuracion(request, tipo):
             empresa = Empresa.objects.all()
             conf = Configuracion.objects.all()
 
-            context = {'empresa': empresa[0], 'conf': conf[0], 'ops':get_ops(request)}
+            context = {'empresa': empresa[0], 'conf': conf[0], 'ops':get_ops(request),'ldap':get_ldap(request)}
             return render(request, template, context)
 
         if tipo == "arc":
@@ -2829,7 +2890,7 @@ def configuracion(request, tipo):
                 form = request.POST
                 print (form)
 
-            context = {'archivos':archivos, 'cuentas':cuentas, 'campos_disp':campos_disp, 'ops':get_ops(request)}
+            context = {'archivos':archivos, 'cuentas':cuentas, 'campos_disp':campos_disp, 'ops':get_ops(request),'ldap':get_ldap(request)}
             return render(request, template, context)
         
         # ninguna, deberia raise 404
@@ -3050,6 +3111,7 @@ def seg_Usuarios(request):
             # Para el log
             log(request,14,sesion.login)
 
+
             return JsonResponse({'msg': msg, 'sessid':sesion.pk , 'usrid': usuario.idusuario, 'usrnom':usrnom, 'usrapell':usrapell, 'usrci':usrci, 'usrtlf':usrtlf, 'usrmail':usrmail, 'usrdir':usrdir, 'usrperf':usrperf, 'usrobs':usrobs, 'usrlogin':sesion.login, 'usrldap':usrldap, 'usrestado':sesion.estado, 'modif': True})
 
     if request.method == "GET":
@@ -3059,7 +3121,7 @@ def seg_Usuarios(request):
         perfiles = Perfil.objects.exclude(nombre="SysAdmin").order_by('nombre')
         cuentas = Cuenta.objects.all().order_by('codigo')
         # filtrar por usuario
-        context = {'sesiones': sesion_list, 'perfiles':perfiles, 'cuentas':cuentas, 'ops':get_ops(request)}
+        context = {'sesiones': sesion_list, 'perfiles':perfiles, 'cuentas':cuentas, 'ops':get_ops(request),'ldap':get_ldap(request)}
         template = "matcher/seg_Usuarios.html"
 
         return render(request, template, context)
@@ -3165,7 +3227,7 @@ def seg_Perfiles(request):
         nosub = [opcion.nombre for opcion in opciones]
         nosubid = [str(opcion.idopcion) for opcion in opciones]
 
-        context = {'perfiles': perfiles, 'opciones':opciones, 'nosub':nosub, 'nosubid':nosubid, 'ops':get_ops(request), 'subindex':sub_index2}
+        context = {'perfiles': perfiles, 'opciones':opciones, 'nosub':nosub, 'nosubid':nosubid, 'ops':get_ops(request), 'subindex':sub_index2,'ldap':get_ldap(request)}
         template = "matcher/seg_Perfiles.html"
 
         return render(request, template, context)
@@ -3225,7 +3287,7 @@ def seg_Logs(request):
         usuarios = Usuario.objects.exclude(perfil_idperfil = exc)
         eventos_acc = [evento.accion for evento in eventos]
         fecha_hoy = ("/").join(str(timenow().date()).split("-")[::-1])
-        context = {'eventos':eventos, 'usuarios':usuarios, 'eventos_acc':eventos_acc, 'fecha_hoy':fecha_hoy, 'ops':get_ops(request)}
+        context = {'eventos':eventos, 'usuarios':usuarios, 'eventos_acc':eventos_acc, 'fecha_hoy':fecha_hoy, 'ops':get_ops(request),'ldap':get_ldap(request)}
         template = "matcher/seg_Logs.html"
 
         return render(request, template, context)
@@ -3296,7 +3358,7 @@ def seg_backupRestore(request):
             return JsonResponse({'msg': msg,'bkUp': True})
 
     if request.method == "GET":
-        context = {'cuentas': get_cuentas(request), 'ops':get_ops(request)}
+        context = {'cuentas': get_cuentas(request), 'ops':get_ops(request),'ldap':get_ldap(request)}
         template = "matcher/seg_backupRestore.html"
 
         return render(request, template, context)
@@ -3376,7 +3438,7 @@ def admin_bancos(request):
     if request.method == 'GET':
         bancos = BancoCorresponsal.objects.all()
 
-        context = {'bancos': bancos, 'idioma': get_idioma(), 'ops':get_ops(request)}
+        context = {'bancos': bancos, 'idioma': get_idioma(), 'ops':get_ops(request),'ldap':get_ldap(request)}
         template = "matcher/admin_bancos.html"
 
         return render(request, template, context)
@@ -3457,7 +3519,7 @@ def admin_monedas(request):
         template = "matcher/admin_monedas.html"
         monedas = Moneda.objects.all()
 
-        context = {'monedas': monedas, 'ops':get_ops(request)}
+        context = {'monedas': monedas, 'ops':get_ops(request),'ldap':get_ldap(request)}
         return render(request, template, context)
 
 @login_required(login_url='/login')
@@ -3703,7 +3765,7 @@ def admin_cuentas(request):
             alertas.append([[alerta.alertas_idalertas.idalertas,alerta.valor] for alerta in alertC])
 
         template = "matcher/admin_cuentas.html"
-        context = {'cuentas':cuentas, 'bancos':bancos, 'monedas':monedas, 'alertas':alertas, 'criterios':criterios, 'ops':get_ops(request)}
+        context = {'cuentas':cuentas, 'bancos':bancos, 'monedas':monedas, 'alertas':alertas, 'criterios':criterios, 'ops':get_ops(request),'ldap':get_ldap(request)}
         return render(request, template, context)
 
 @login_required(login_url='/login')
@@ -3723,7 +3785,7 @@ def admin_archive(request):
     if request.method == 'GET':
         
         template = "matcher/admin_archive.html"
-        context = {'cuentas':get_cuentas(request), 'ops':get_ops(request)}
+        context = {'cuentas':get_cuentas(request), 'ops':get_ops(request),'ldap':get_ldap(request)}
         
         return render(request, template, context)
     
@@ -4562,7 +4624,7 @@ def admin_reglas_transf(request):
 
     if request.method == 'GET':
         template = "matcher/admin_reglasTransf.html"
-        context = {'cuentas':get_cuentas(request), 'ops':get_ops(request)}
+        context = {'cuentas':get_cuentas(request), 'ops':get_ops(request),'ldap':get_ldap(request)}
         return render(request, template, context)
 
 @login_required(login_url='/login')
@@ -4672,7 +4734,7 @@ def admin_crit_reglas(request):
     if request.method == 'GET':
         template = "matcher/admin_criteriosReglas.html"
         criterios = CriteriosMatch.objects.all()
-        context = {'criterios':criterios, 'ops':get_ops(request)}
+        context = {'criterios':criterios, 'ops':get_ops(request),'ldap':get_ldap(request)}
         return render(request, template, context)
 
 @login_required(login_url='/login')
@@ -4688,9 +4750,12 @@ def seg_licencia(request):
 
     expirarSesion(request)
     if request.method == 'GET':
+        prev = Licencia.objects.all()[0] 
+        numU = prev.num_usuarios
+        Exp = prev.fecha_expira
         template = "matcher/seg_licencia.html"
         criterios = CriteriosMatch.objects.all()
-        context = {'ops':get_ops(request),'archivos':get_archivosLicencia()}
+        context = {'ops':get_ops(request),'archivos':get_archivosLicencia(),'numU':numU,'Exp':Exp,'ldap':get_ldap(request)}
         return render(request, template, context)
 
     if request.method == 'POST':
@@ -4840,13 +4905,13 @@ def SU_licencia(request):
             Exp = prev.fecha_expira
             bicB = Configuracion.objects.all()[0].bic
             template = "matcher/SU_licencia.html"
-            context = {'ops':get_ops(request),'bic':bicB,'numU':numU,'Exp':Exp}
+            context = {'ops':get_ops(request),'bic':bicB,'numU':numU,'Exp':Exp,'ldap':get_ldap(request)}
             return render(request, template, context)
 
         except:
             template = "matcher/SU_licencia.html"
             bicB = Configuracion.objects.all()[0].bic
-            context = {'ops':get_ops(request),'bic':bicB,'numU':0,'Exp':None}
+            context = {'ops':get_ops(request),'bic':bicB,'numU':0,'Exp':None,'ldap':get_ldap(request)}
             return render(request, template, context)
 
     if request.method == "POST":
@@ -4983,7 +5048,7 @@ def SU_modulos(request):
     if request.method == 'GET':
         template = "matcher/SU_modulos.html"
         modulos = Modulos.objects.exclude(opcion=15)
-        context = {'ops':get_ops(request), 'modulos':modulos}
+        context = {'ops':get_ops(request), 'modulos':modulos,'ldap':get_ldap(request)}
         return render(request, template, context)
 
     if request.method == 'POST':
@@ -5020,31 +5085,31 @@ def SU_version(request):
     if request.method == 'GET':
         template = "matcher/SU_version.html"
         version = Version.objects.all()[0]
-        context = {'ops':get_ops(request), 'version':version}
+        context = {'ops':get_ops(request), 'version':version,'ldap':get_ldap(request)}
         return render(request, template, context)
 
 def custom_404(request):
     expirarSesion(request)
     template = "matcher/404.html"
-    context = {'ops':get_ops(request)}
+    context = {'ops':get_ops(request),'ldap':get_ldap(request)}
     return render(request,template, context)
 
 def custom_500(request):
     expirarSesion(request)
     template = "matcher/500.html"
-    context = {'ops':get_ops(request)}
+    context = {'ops':get_ops(request),'ldap':get_ldap(request)}
     return render(request,template, context)
 
 def custom_403(request):
     expirarSesion(request)
     template = "matcher/403.html"
-    context = {'ops':get_ops(request)}
+    context = {'ops':get_ops(request),'ldap':get_ldap(request)}
     return render(request,template, context)
 
 def custom_400(request):
     expirarSesion(request)
     template = "matcher/400.html"
-    context = {'ops':get_ops(request)}
+    context = {'ops':get_ops(request),'ldap':get_ldap(request)}
     return render(request,template, context)
 
 #################################################################################################
@@ -5074,12 +5139,12 @@ def log(request,eid,detalles=None):
     sesion = Sesion.objects.get(login=username)
     nombre = sesion.usuario_idusuario.nombres+" "+sesion.usuario_idusuario.apellidos
 
-    if sesion.login == "SysAdminBCG": 
+    if sesion.login == "SysAdminBCG":
         print("")
     elif detalles is not None:
 
         pattern = re.compile("^.*'SysAdmin'.*$")
-        m = pattern.match(string)
+        m = pattern.match(detalles)
 
         if m == False: 
 
@@ -5087,6 +5152,20 @@ def log(request,eid,detalles=None):
     
     else:
         Traza.objects.create(evento_idevento=evento,usuario=nombre, fecha_hora=fechaHora, terminal=terminal)
+
+def logAux(name,terminal,detalles):
+    # Funcion que recibe el nombre del usuario y guarda su traza
+    username = name
+    fechaHora = timenow()
+    evento = Evento.objects.get(pk=2)
+    sesion = Sesion.objects.get(login=username)
+    nombre = sesion.usuario_idusuario.nombres+" "+sesion.usuario_idusuario.apellidos
+
+    if sesion.login == "SysAdminBCG": 
+        print("")
+    else:
+        Traza.objects.create(evento_idevento=evento,usuario=nombre, fecha_hora=fechaHora, terminal=terminal, detalles=detalles)
+
 
 def expirarSesion(request):
     config = Configuracion.objects.all()[0]
