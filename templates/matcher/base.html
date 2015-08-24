@@ -20,7 +20,9 @@
     <link rel="stylesheet" type="text/css" href="{% static 'css/base.css' %}">
 	{%block head%}
 	{%endblock%}
-	<p align="right">{{user.username}} <span class="fa fa-user text-primary"></span><a style="color:gray"></a></p>
+	{%if user.is_authenticated %}
+	<h4 align="right">Usuario: {{user.username}} <span class="fa fa-user text-primary"></span><a style="color:gray"></a></h4>
+	{%endif%}
   </head>
 
   <body>
