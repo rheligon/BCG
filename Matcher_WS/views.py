@@ -94,9 +94,13 @@ def index(request):
     m2 = int (m2)
 
     if a1 == a2 and (m2 - m1) <= 1:
-        mensaje = "Su licencia vencerá en la fecha (YY-MM-DD): " + fecha_expira
+        mensaje = "Su licencia vencerá en la fecha (YYYY-MM-DD): " + fecha_expira
 
-    context = {'ops':get_ops(request),'mensaje':mensaje,'ldap':get_ldap(request)}
+    username = request.user.username
+    sesion = Sesion.objects.get(login=username)
+    nombre = sesion.usuario_idusuario.nombres+" "+sesion.usuario_idusuario.apellidos
+
+    context = {'ops':get_ops(request),'mensaje':mensaje,'ldap':get_ldap(request),'nombre':nombre}
     template = "matcher/index.html"
     return render(request, template, context)
 
@@ -4969,6 +4973,7 @@ def SU_licencia(request):
         bic = Configuracion.objects.all()[0].bic
            
         try:
+            
             # Buscar licencia
             previa = Licencia.objects.all()[0]
             pwd = bic + "$" + numUsers + "$" + fecha
