@@ -1,5 +1,5 @@
 {% extends "matcher/base.html" %}
-
+{% load humanize %}
 {% load staticfiles %}
 
 {% block title %}Intraday{% endblock %}
@@ -33,12 +33,15 @@
             {% endfor %}
           </select>
         </div>
-      </div>  
+      </div> 
+      <div class="form-group col-md-5 ">
+        <label class="control-label"> </label>
+        <h4>Fecha de Última Conciliación: <strong><span id="fecha_conci"></span></strong></h4>
+      </div> 
   </fieldset>
 </form>
 
-<h3> Detalles Última Conciliación</h3>
-<h4> Fecha: </h4>
+
 <div>
     <div class="row clearfix">
         <div class="col-md-3 well" style="margin-top:10%;">
@@ -48,9 +51,9 @@
                             <!-- Appended Input-->
                             <div class="form-group col-md-12">
                               <label class="control-label" for="sald_fin_conta">Saldo Final Contabilidad</label>
-                                <div class="input-group">
+                                <div class="input-group" id = "balanceFinalConta" >
                                   <input id="sald_fin_conta" name="sald_fin_conta" class="form-control" type="text" readonly>
-                                  <span class="input-group-addon"></span>
+                                  <span id= "cdFinConta" class="input-group-addon"></span>
                                 </div>
                             </div>
 
@@ -59,7 +62,7 @@
                               <label class="control-label" for="sald_fin_corr">Saldo Final Corresponsal</label>
                                 <div class="input-group">
                                   <input id="sald_fin_corr" name="sald_fin_corr" class="form-control"  type="text" readonly>
-                                  <span class="input-group-addon"></span>
+                                  <span id= "cdFinCorr" class="input-group-addon"></span>
                                 </div>
                             </div>
                         </fieldset>
@@ -85,7 +88,7 @@
                     <fieldset>
                         <!-- Appended Input-->
                         <div class="form-group col-md-12">
-                          <label class="col-md-6 control-label" for="ced_corr_nodeb" style="text-align:center"></label>
+                          <label class="col-md-6 control-label" for="ced_corr_nodeb" style="text-align:center">{{empresa.creditoscorresponsal}}:</label>
                             <div class="col-md-5 col-md-push-1 input-group">
                               <input id="ced_corr_nodeb" name="ced_corr_nodeb" class="form-control"  type="text" readonly>
                               <span class="input-group-addon">C</span>
@@ -94,7 +97,7 @@
 
                         <!-- Appended Input-->
                         <div class="form-group col-md-12">
-                            <label class="col-md-6 control-label" for="deb_corr_noacr" style="text-align:center"></label>
+                            <label class="col-md-6 control-label" for="deb_corr_noacr" style="text-align:center">{{empresa.debitoscorresponsal}}:</label>
                             <div class="col-md-5 col-md-push-1 input-group">
                               <input id="deb_corr_noacr" name="deb_corr_noacr" class="form-control"type="text" readonly>
                               <span class="input-group-addon">D</span>
@@ -109,7 +112,7 @@
                     <fieldset>
                         <!-- Appended Input-->
                         <div class="form-group col-md-12">
-                          <label class="col-md-6 control-label" for="ced_banco_nodeb" style="text-align:center"></label>
+                          <label class="col-md-6 control-label" for="ced_banco_nodeb" style="text-align:center">{{empresa.creditoscontabilidad}}:</label>
                             <div class="col-md-5 col-md-push-1 input-group">
                               <input id="ced_banco_nodeb" name="ced_banco_nodeb" class="form-control"  type="text" readonly>
                               <span class="input-group-addon">C</span>
@@ -118,9 +121,9 @@
 
                         <!-- Appended Input-->
                         <div class="form-group col-md-12">
-                            <label class="col-md-6 control-label" for="deb_corr_noacr" style="text-align:center"></label>
+                            <label class="col-md-6 control-label" for="deb_corr_noacr" style="text-align:center">{{empresa.debitoscontabilidad}}:</label>
                             <div class="col-md-5 col-md-push-1 input-group">
-                              <input id="deb_corr_noacr" name="deb_corr_noacr" class="form-control"  type="text" readonly>
+                              <input id="deb_banco_noacr" name="deb_banco_noacr" class="form-control"  type="text" readonly>
                               <span class="input-group-addon">D</span>
                             </div>
                         </div>
@@ -139,7 +142,7 @@
                     <label class="control-label" for="sald_tot_conta">Total Saldo Contabilidad</label>
                       <div class="input-group">
                         <input id="sald_tot_conta" name="sald_tot_conta" class="form-control"  type="text" readonly>
-                        <span class="input-group-addon"></span>
+                        <span id= "cdTotalConta" class="input-group-addon"></span>
                       </div>
                   </div>
 
@@ -148,7 +151,102 @@
                       <label class="control-label" for="sald_tot_corr">Total Saldo Corresponsal</label>
                       <div class="input-group">
                         <input id="sald_tot_corr" name="sald_tot_corr" class="form-control"  type="text" readonly>
-                        <span class="input-group-addon"></span>
+                        <span id= "cdTotalCorr" class="input-group-addon"></span>
+                      </div>
+                  </div>
+              </fieldset>
+          </form>
+        </div>
+    </div>
+</div>
+
+<legend><h3>Transacciones Desde: <strong><span style="font-size:18px"id="fecha_tran"></strong></strong> Hasta: <strong><span style="font-size:18px" id="fecha_actual"></span></strong> </h3></legend>
+
+<div>
+    <div class="row clearfix">
+        <div class="col-md-3 well">
+            <div class="row clearfix">
+                     <form class="form-vertical">
+                        <fieldset>
+                            <!-- Appended Input-->
+                            <div class="form-group col-md-12">
+                              <label class="control-label" for="sald_fin_conta">Saldo Inicial Contabilidad</label>
+                                <div class="input-group" id = "balanceFinalConta" >
+                                  <input id="sald_ini_conta" name="sald_ini_conta" class="form-control" type="text" readonly>
+                                  <span id= "cdIniConta" class="input-group-addon"></span>
+                                </div>
+                            </div>
+
+                            <!-- Appended Input-->
+                            <div class="form-group col-md-12">
+                              <label class="control-label" for="sald_ini_corr">Saldo Inicial Corresponsal</label>
+                                <div class="input-group">
+                                  <input id="sald_ini_corr" name="sald_ini_corr" class="form-control"  type="text" readonly>
+                                  <span id= "cdIniCorr" class="input-group-addon"></span>
+                                </div>
+                            </div>
+                        </fieldset>
+                    </form>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+
+            <div class="row clearfix"><hr/></div>
+
+            <div class="row clearfix">
+                <form class="form-horizontal">
+                    <fieldset>
+                        <!-- Appended Input-->
+                        <div class="form-group col-md-12">
+                          <label class="col-md-6 control-label" for="debitos" style="text-align:center">Debitos:</label>
+                            <div class="col-md-5 col-md-push-1 input-group">
+                              <input id="debitos" name="debitos" class="form-control"  type="text" readonly>
+                              <span class="input-group-addon">C</span>
+                            </div>
+                        </div>
+
+                    </fieldset>
+                </form>
+            </div>
+
+            <div class="row clearfix">
+                <form class="form-horizontal">
+                    <fieldset>
+                        <!-- Appended Input-->
+                        <div class="form-group col-md-12">
+                          <label class="col-md-6 control-label" for="creditos" style="text-align:center">Creditos:</label>
+                            <div class="col-md-5 col-md-push-1 input-group">
+                              <input id="creditos" name="creditos" class="form-control"  type="text" readonly>
+                              <span class="input-group-addon">C</span>
+                            </div>
+                        </div>
+
+                    </fieldset>
+                </form>
+            </div>
+
+        </div>
+
+
+        <div class="col-md-3 well">
+           <form class="form-horizontal">
+              <fieldset>
+                  <!-- Appended Input-->
+                  <div class="form-group col-md-12">
+                    <label class="control-label" for="saldo_fin_conta">Saldo Final Contabilidad</label>
+                      <div class="input-group">
+                        <input id="saldo_fin_conta" name="saldo_fin_conta" class="form-control"  type="text" readonly>
+                        <span id= "cdSaldoFinalConta" class="input-group-addon"></span>
+                      </div>
+                  </div>
+
+                  <!-- Appended Input-->
+                  <div class="form-group col-md-12">
+                      <label class="control-label" for="saldo_fin_corr">Total Final Corresponsal</label>
+                      <div class="input-group">
+                        <input id="saldo_fin_corr" name="saldo_fin_corr" class="form-control"  type="text" readonly>
+                        <span id= "cdSaldoFinalCorr" class="input-group-addon"></span>
                       </div>
                   </div>
               </fieldset>

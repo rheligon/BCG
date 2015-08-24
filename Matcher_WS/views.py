@@ -2643,12 +2643,58 @@ def intraday(request):
         return HttpResponseForbidden(retour)
 
     expirarSesion(request)
-    if request.method == 'GET':
 
-        context = {'cuentas':get_cuentas(request),'ops':get_ops(request),'ldap':get_ldap(request)}
+    if request.method == 'GET':
+        empresa = Empresa.objects.all()[0]
+        context = {'cuentas':get_cuentas(request),'ops':get_ops(request),'empresa':empresa,'ldap':get_ldap(request)}
         template = "matcher/intraday.html"
 
         return render(request, template, context)
+
+    if request.method == 'POST':
+        actn = request.POST.get('action')
+
+        if actn == 'buscarConci':
+            cuenta_id = request.POST.get('cuenta')
+            conciliacion = Conciliacionconsolidado.objects.filter(cuenta_idcuenta = cuenta_id)
+            json_cons =""
+            exito = False
+            fecha = ""
+            fechaActual = ""
+    
+            if conciliacion:
+                exito =True
+                cons = conciliacion[0]
+                cuenta = cons.cuenta_idcuenta
+                fecha = cuenta.ultimafechaconciliacion.strftime("%d/%m/%Y")
+                fechaActual = datetime.now().strftime("%d/%m/%Y %H:%M %p")
+                bfcon = cons.balancefinalcontabilidad
+                bfcor = cons.balancefinalcorresponsal
+                scon = cons.saldocontabilidad
+                scor = cons.saldocorresponsal
+                json_cons = serializers.serialize('json', [cons])
+                cod = ['C']*4
+
+                if bfcon < 0:
+                    cod[0] = "D"
+                if bfcor < 0:
+                    cod[1] = "D"
+                if scon < 0:
+                    cod[2] = "D"
+                if scor < 0:
+                    cod[3] = "D"
+            else:
+                cuenta = Cuenta.objects.filter(idcuenta=cuenta_id)[0]
+                cons = None
+                cod = ['C']*4
+                exito = False
+
+            json_cuenta = serializers.serialize('json', [cuenta])
+                
+
+            return JsonResponse({'fecha':fecha,'fechaActual':fechaActual, 'exito':exito, 'cuenta': json_cuenta, 'cons':json_cons, 'cod': cod})
+
+        
 
 
 @login_required(login_url='/login')
