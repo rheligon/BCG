@@ -50,6 +50,7 @@ urlpatterns = patterns('',
 
     # INTRADAY
     url(r'^intraday/$', 'Matcher_WS.views.intraday', name='intraday'),
+    url(r'^transIntraday/((?P<cuenta>\w+)/)?$', 'Matcher_WS.views.transIntraday', name='transIntraday'),
     
     # Configuración (Sistema-Archivo)
     url(r'^conf/(?P<tipo>\w+)/$', 'Matcher_WS.views.configuracion', name='configuracion'),

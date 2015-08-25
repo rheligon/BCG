@@ -9,6 +9,12 @@ $( document ).ready(function() {
     
 });*/
 
+
+$( document ).ready(function() {
+           
+     $('#boton_go').attr("disabled", true);
+});
+
 $('#Cuenta-sel').change(function() {
     
     var cuentaId = $('#Cuenta-sel').val();
@@ -17,6 +23,7 @@ $('#Cuenta-sel').change(function() {
     if (cuentaId>=0){
         var codigoCuenta = $('#opt-'+cuentaId).attr("codigo");
         console.log(codigoCuenta)
+        $('a[name="boton_trans"]').attr('href','/transIntraday/'+cuentaId);
         $('#processing-modal').modal('toggle');
         buscarUltimaConciliacion(cuentaId)
     
@@ -32,6 +39,12 @@ $('#Cuenta-sel').change(function() {
         
         $('#sald_fin_corr').val("");
         $('#cdFinCorr').html("");
+
+        $('#sald_ini_conta').val("");
+        $('#cdIniConta').html("");
+        
+        $('#sald_ini_corr').val("");
+        $('#cdIniCorr').html("");
         
         $('#ced_corr_nodeb').val("");
         $('#deb_corr_noacr').val("");
@@ -43,6 +56,8 @@ $('#Cuenta-sel').change(function() {
 
         $('#sald_tot_corr').val("");  
         $('#cdTotalCorr').html("");
+
+        $('#boton_go').attr("disabled", true);
 
     }
 }); 
@@ -96,12 +111,17 @@ function buscarUltimaConciliacion(cuenta){
                     balanceFConta = json_data.balancefinalcontabilidad;
                     balanceFinalConta = intCommas(balanceFConta);
                     $('#sald_fin_conta').val(balanceFinalConta);
+                    $('#sald_ini_conta').val(balanceFinalConta);
                     $('#cdFinConta').html(data.cod[0]);
+                    $('#cdIniConta').html(data.cod[0]);
+                    
                     
                     balanceFCorr = json_data.balancefinalcorresponsal;
                     balanceFinalCorr = intCommas(balanceFCorr);
                     $('#sald_fin_corr').val(balanceFinalCorr);
+                    $('#sald_ini_corr').val(balanceFinalCorr);
                     $('#cdFinCorr').html(data.cod[1]);
+                    $('#cdIniCorr').html(data.cod[1]);
                     
                     credCorrNoDeb = json_data.totalcreditoscorresponsal;
                     credCorrNoDebF = intCommas(credCorrNoDeb);
@@ -131,6 +151,7 @@ function buscarUltimaConciliacion(cuenta){
 
                     $('#fecha_tran').html(data.fecha);
                     $('#fecha_actual').html(data.fechaActual);
+                    $('#boton_go').attr("disabled", false);
        
     
                 }else{
@@ -146,6 +167,12 @@ function buscarUltimaConciliacion(cuenta){
                     $('#sald_fin_corr').val("");
                     $('#cdFinCorr').html("");
                     
+                    $('#sald_ini_conta').val("");
+                    $('#cdIniConta').html("");
+                    
+                    $('#sald_ini_corr').val("");
+                    $('#cdIniCorr').html("");
+
                     $('#ced_corr_nodeb').val("");
                     $('#deb_corr_noacr').val("");
                     $('#ced_banco_nodeb').val("");
@@ -156,6 +183,7 @@ function buscarUltimaConciliacion(cuenta){
 
                     $('#sald_tot_corr').val("");  
                     $('#cdTotalCorr').html("");
+                    $('#boton_go').attr("disabled", true);
                 }
                 $('#processing-modal').modal('toggle');
             },

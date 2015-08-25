@@ -230,14 +230,17 @@
     </div>
 
     <ul class="nav nav-tabs col-md-12" id="seg-tab">
-        <li class="active"><a href="#smatcher-tab" data-toggle="tab">Servidor Match <i class="fa"></i></a></li>
-        <li><a href="#ldap-tab" data-toggle="tab">LDAP <i class="fa"></i></a></li>
-        <li><a href="#alerta-tab" data-toggle="tab">Alertas <i class="fa"></i></a></li>
+        <li class="active"><a href="#alerta-tab" data-toggle="tab">Alertas <i class="fa"></i></a></li>
+        <li><a href="#archive-tab" data-toggle="tab">Archive Matches Conf. <i class="fa"></i>
         <li><a href="#contr-tab" data-toggle="tab">Contraseñas <i class="fa"></i></a></li>
+        <li><a href="#intraday" data-toggle="tab">Intraday<i class="fa"></i></a></li>
+        <li><a href="#ldap-tab" data-toggle="tab">LDAP <i class="fa"></i></a></li>
+        <li><a href="#licencia-tab" data-toggle="tab">Licencia <i class="fa"></i></a></li>
+        </a></li>
         <li><a href="#log-tab" data-toggle="tab">Logs <i class="fa"></i></a></li>
         <li><a href="#msgSWIFT-tab" data-toggle="tab">Mensajes SWIFT <i class="fa"></i></a></li>
-        <li><a href="#licencia-tab" data-toggle="tab">Licencia <i class="fa"></i></a></li>
-        <li><a href="#archive-tab" data-toggle="tab">Archive Matches Conf. <i class="fa"></i></a></li>
+        <li ><a href="#smatcher-tab" data-toggle="tab">Servidor Match <i class="fa"></i></a></li>
+        
     </ul>
     <div class="tab-content col-md-12">
     <br/>
@@ -407,6 +410,19 @@
                 <label class="col-xs-3 control-label">Directorio Archive de Matches Confirmados:</label>
                 <div class="col-xs-5">
                     <input type="text" class="form-control" value="{{conf.dirarchiveconfirmados}}" name="archconfirm" pattern="^[A-Z]+\:\\[a-zA-Z0-9-_\.\'\(\)\&\%\$\#\!\¿\¡\[\]\{\}\,\;\\]+$" oninvalid="this.setCustomValidity('Introduzca un directirio válido. Por ejemplo: C:\\Matcher\\Ruta')" oninput="setCustomValidity('')" required/>
+                <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
+                <div class="help-block with-errors"></div>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="tab-pane" id="intraday">
+            
+            <div class="form-group has-feedback">
+                <label class="col-xs-3 control-label">Directorio Intraday:</label>
+                <div class="col-xs-5">
+                    <input type="text" class="form-control" value="{{conf.dirintraday}}" name="dirIntraday" pattern="^[A-Z]+\:\\[a-zA-Z0-9-_\.\'\(\)\&\%\$\#\!\¿\¡\[\]\{\}\,\;\\]+$" oninvalid="this.setCustomValidity('Introduzca un directirio válido. Por ejemplo: C:\\Matcher\\Ruta')" oninput="setCustomValidity('')" required/>
                 <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
                 <div class="help-block with-errors"></div>
                 </div>
