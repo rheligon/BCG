@@ -38,12 +38,22 @@
 {% block content %}
  <div class="wrap">
 	<div class="logo">
-		<p>OOPS! - URL ingresado no es válido</p>
+		{%if idioma == 0%}
+			<p>OOPS! - URL ingresado no es válido</p>
+		{%endif%}
+		{%if idioma == 1%}
+			<p>OOPS! - Invalid URL</p>
+		{%endif%}
 		<img src="{% static 'images/404.png'%}"/>
 		<br>
 		<br>
 		<div class="explicacion">
-			<p>Por favor, ingrese un url válido</p>
+			{%if idioma == 0%}
+				<p>Por favor, ingrese un url válido</p>
+			{%endif%}
+			{%if idioma == 1%}
+				<p>Enter a valid url please</p>
+			{%endif%}
 		</div>
 	</div>
  </div>	

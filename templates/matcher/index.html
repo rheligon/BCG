@@ -8,7 +8,12 @@
       <div class="jumbotron col-md-11" style="background-color:lightgray;">
         <div class="container">
           <div class="col-md-6">
+          {%if idioma == 0%}
             <h2>Bienvenido a Matcher:</h2>
+          {%endif%}
+          {%if idioma == 1%}
+            <h2>Welcome to Matcher:</h2>
+          {%endif%}
           </div>
           <div class="col-md-6">
             <h2 style="color:#337ab7">{{nombre}}</h2>
@@ -19,10 +24,20 @@
           <br>
           <br>
           <div class="col-md-6">
-            <h3>Gracias por usar matcher!</h3>
+            {%if idioma == 0%}
+              <h3>Gracias por usar matcher!</h3>
+            {%endif%}
+            {%if idioma == 1%}
+              <h3>Thank you for using matcher!</h3>
+            {%endif%}
           </div>
           <div class="col-md-6">
-            <p><a class="btn btn-primary btn-lg" href="http://www.bcg.com.ve" role="button">Aprenda más &raquo;</a></p>
+            {%if idioma == 0%}
+              <p><a class="btn btn-primary btn-lg" href="http://www.bcg.com.ve" role="button">Aprenda más &raquo;</a></p>
+            {%endif%}
+            {%if idioma == 1%}
+              <p><a class="btn btn-primary btn-lg" href="http://www.bcg.com.ve" role="button">Learn more &raquo;</a></p>
+            {%endif%}
           </div>
         </div>
       </div>
@@ -32,7 +47,12 @@
       <div class="col-md-12">
       {%if mensaje %}
         <h2 style="color:red">{{mensaje}}</h2>
-        <h5 style="color:red">Le recordamos que una vez que su licencia caduque los usuarios no podrán acceder al sistema. Por lo que le suguerimos contactar a BCG en la brevedad posible.</h5>
+        {%if idioma == 0%}
+          <h5 style="color:red">Le recordamos que una vez que su licencia caduque los usuarios no podrán acceder al sistema. Por lo que le suguerimos contactar a BCG en la brevedad posible.</h5>
+        {%endif%}
+        {%if idioma == 1%}
+          <h5 style="color:red">Please note that once your license expires users can not access the system. So we suggest contact BCG as soon as possible.</h5>
+        {%endif%}
       {%endif%}
       </div>
     </div>

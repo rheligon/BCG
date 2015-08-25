@@ -84,6 +84,7 @@ def test(request):
 @login_required(login_url='/login')
 def index(request):
 
+    idioma = Configuracion.objects.all()[0].idioma  
     mensaje = None
     licencia = Licencia.objects.all()[0]
     fecha_expira = str(licencia.fecha_expira)[:10]
@@ -94,13 +95,15 @@ def index(request):
     m2 = int (m2)
 
     if a1 == a2 and (m2 - m1) <= 1:
-        mensaje = "Su licencia vencerá en la fecha (YYYY-MM-DD): " + fecha_expira
+        if idioma == 0:
+            mensaje = "Su licencia vencerá en la fecha (YYYY-MM-DD): " + fecha_expira
+        else:
+            mensaje = "Your license will expire on (YYYY-MM-DD): " + fecha_expira
 
     username = request.user.username
     sesion = Sesion.objects.get(login=username)
     nombre = sesion.usuario_idusuario.nombres+" "+sesion.usuario_idusuario.apellidos
-
-    idioma = Configuracion.objects.all()[0].idioma    
+  
     context = {'idioma':idioma, 'ops':get_ops(request),'mensaje':mensaje,'ldap':get_ldap(request),'nombre':nombre}
     template = "matcher/index.html"
     return render(request, template, context)
@@ -108,6 +111,7 @@ def index(request):
 def usr_login(request):
     
     message = None
+    idioma = Configuracion.objects.all()[0].idioma
 
     expirarSesion(request)
     if request.method == 'POST':
@@ -135,12 +139,21 @@ def usr_login(request):
 
             if saltnuevo != salt or llave != hashp:   
                 
-                message ='Datos de licencia corruptos. Por favor contacte a BCG.'
+                if idioma == 0:
+                    message ='Datos de licencia corruptos. Por favor contacte a BCG.'
+
+                else:
+                    message ='Corrupt license data. Contact BCG please.'
+
                 return JsonResponse({'mens':message})
             
             elif fecha_expira < ahora :
 
-                message ='Su licencia a expirado. Por favor contacte a BCG.'
+                if idioma == 0:
+                    message ='Su licencia a expirado. Por favor contacte a BCG.'
+                else:
+                    message ='Your license has expired. Contact BCG please.'
+                
                 return JsonResponse({'mens':message})
 
             else:
@@ -204,8 +217,11 @@ def usr_login(request):
 
                     if logedcount >= num_usuarios and username != "SysAdminBCG":
 
-                        message ='Cantidad de usuarios concurrentes a tope. Por favor, cierre alguna otra sesión e intente nuevamente.'
-
+                        if idioma == 0:
+                            message ='Cantidad de usuarios concurrentes a tope. Por favor, cierre alguna otra sesión e intente nuevamente.'
+                        else:
+                            message ='Butt number of concurrent users. Close another session and try again please.'
+                        
                         # Para el log
                         terminal = request.META.get('COMPUTERNAME')
                         fechaHora = timenow()
@@ -247,8 +263,11 @@ def usr_login(request):
                         return JsonResponse({'mens':message})
 
                     else:
-                        message ='La combinacion de usuario y clave fue incorrecta.'
-
+                        if idioma == 0:
+                            message ='La combinacion de usuario y clave fue incorrecta.'
+                        else:
+                            message ='Incorrect user and password combination.'
+                        
                         # Para el log
                         terminal = request.META.get('COMPUTERNAME')
                         fechaHora = timenow()
@@ -263,8 +282,13 @@ def usr_login(request):
 
                 except Exception as e:
                     # Show a message  
-                    print (e)   
-                    message ='Ese usuario no existe en la base de datos.'
+                    print (e)
+
+                    if idioma == 0:   
+                        message ='Ese usuario no existe en la base de datos.'
+                    else:
+                        message ='User is not registered on date base.'
+
                     return JsonResponse({'mens':message}) 
 
     if request.method == 'GET':

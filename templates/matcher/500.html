@@ -38,12 +38,22 @@
 {% block content %}
  <div class="wrap">
 	<div class="logo">
-		<p>OOPS! - Error interno del servidor</p>
+		{%if idioma == 0%}
+			<p>OOPS! - Error interno del servidor</p>
+		{%endif%}
+		{%if idioma == 1%}
+			<p>OOPS! - Internal Server Error</p>
+		{%endif%}
 		<img src="{% static 'images/500.png'%}"/>
 		<br>
 		<br>
 		<div class="explicacion">
-			<p>Por favor, contacte al departamento de soporte</p>
+			{%if idioma == 0%}
+				<p>Por favor, contacte al departamento de soporte</p>
+			{%endif%}
+			{%if idioma == 1%}
+				<p>Contact technology department please</p>
+			{%endif%}
 		</div>
 	</div>
  </div>	

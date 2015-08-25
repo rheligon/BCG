@@ -38,12 +38,22 @@
 {% block content %}
  <div class="wrap">
 	<div class="logo">
-		<p>OOPS! - Solicitud incorrecta</p>
+		{%if idioma == 0%}
+			<p>OOPS! - Solicitud incorrecta</p>
+		{%endif%}
+		{%if idioma == 1%}
+			<p>OOPS! - Invalid Request</p>
+		{%endif%}
 		<img src="{% static 'images/400.png'%}"/>
 		<br>
 		<br>
 		<div class="explicacion">
-			<p>Los datos suministrados no son acordes con el protocolo HTTP</p>
+			{%if idioma == 0%}
+				<p>Los datos suministrados no son acordes con el protocolo HTTP</p>
+			{%endif%}
+			{%if idioma == 1%}
+				<p>Provided data are not consistent with the HTTP protocol</p>
+			{%endif%}
 		</div>
 	</div>
  </div>	
