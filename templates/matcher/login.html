@@ -19,17 +19,32 @@
               </br>
               <div class="form-signin login">
                     {% csrf_token %}
-                    <h2 class="form-signin-heading text-center">Inicie Sesión</h2>
-                    <label for="inputEmail" class="sr-only">Username</label>
-                    <input type="text" id="usernameID" name="username" value="" class="form-control" placeholder="Username" required autofocus/>
-                    <label for="inputPassword" class="sr-only">Password</label>
-                    <input type="password" id="passwordID" name="password" value="" class="form-control" placeholder="Password" required autofocus/>
-                    <div class="checkbox">
-                      <label>
-                        <input type="checkbox" value="remember-me"> Remember me
-                      </label>
-                    </div>
-                    <button class="btn btn-lg btn-primary btn-block" value="login" type="submit" id="loginButton" >Sign in</button>
+                    {%if idioma == 0%}
+                      <h2 class="form-signin-heading text-center">Inicie Sesión</h2>
+                      <label for="inputEmail" class="sr-only">Nombre de Usuario</label>
+                      <input type="text" id="usernameID" name="username" value="" class="form-control" placeholder="Username" required autofocus/>
+                      <label for="inputPassword" class="sr-only">Clave</label>
+                      <input type="password" id="passwordID" name="password" value="" class="form-control" placeholder="Password" required autofocus/>
+                      <div class="checkbox">
+                        <label>
+                          <input type="checkbox" value="remember-me"> Recordarme
+                        </label>
+                      </div>
+                      <button class="btn btn-lg btn-primary btn-block" value="login" type="submit" id="loginButton" >Iniciar</button>
+                    {%endif%}
+                    {%if idioma == 1%}
+                      <h2 class="form-signin-heading text-center">Sign in</h2>
+                      <label for="inputEmail" class="sr-only">Username</label>
+                      <input type="text" id="usernameID" name="username" value="" class="form-control" placeholder="Username" required autofocus/>
+                      <label for="inputPassword" class="sr-only">Password</label>
+                      <input type="password" id="passwordID" name="password" value="" class="form-control" placeholder="Password" required autofocus/>
+                      <div class="checkbox">
+                        <label>
+                          <input type="checkbox" value="remember-me"> Remember me
+                        </label>
+                      </div>
+                      <button class="btn btn-lg btn-primary btn-block" value="login" type="submit" id="loginButton" >Sign in</button>
+                    {%endif%}
               </div>
             </div>
         </div>
