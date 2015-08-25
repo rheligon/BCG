@@ -58,7 +58,12 @@
                 <div class="modal-body">
                     <div class="text-center">
                         <img src="{% static 'images/procesando.gif' %}" class="icon" />
-                        <h4>Procesando, por favor espere.</h4>
+                        {%if idioma == 0%}
+                          <h4>Procesando, por favor espere.</h4>
+                        {%endif%}
+                        {%if idioma == 1%}
+                          <h4>Processing, wait please.</h4>
+                        {%endif%}
                     </div>
                 </div>
             </div>

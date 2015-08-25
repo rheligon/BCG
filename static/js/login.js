@@ -1,6 +1,5 @@
 var csrftoken = $.cookie('csrftoken');
-var idioma = $('#idioma').val()
-console.log(idioma)
+var idioma = $('#idioma').val();
 
 //Verificaciones al cliquear boton de logear
 $('#loginButton').on('click', function () {
@@ -37,7 +36,11 @@ function login(user,pass){
             var mensaje = data.mens;
             $('#processing-modal').modal('toggle');
             if (mensaje === "Login exitoso"){
-                swal("OK", mensaje, "success");
+                if (idioma == 0) {
+                    swal("OK", mensaje, "success");
+                } else {
+                    swal("OK", "Successful Login", "success");
+                }
                 setTimeout(function(){
                     $(location).attr("href", '/');
                 },2000)

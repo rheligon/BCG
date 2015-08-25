@@ -21,7 +21,12 @@
             <div class="panel-heading">
                 <h4 class="panel-title">
                     <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne"><span class="glyphicon glyphicon-folder-close">
-                    </span>Inicio</a>
+                    {%if idioma == 0%}
+                        </span>Inicio</a>
+                    {%endif%}
+                    {%if idioma == 1%}
+                        </span>Start</a>
+                    {%endif%}
                 </h4>
             </div>
             <div id="collapseOne" class="panel-collapse collapse">
@@ -30,14 +35,24 @@
                         {% if 4 in ops %}
                         <tr>
                             <td>
-                                <span class="fa fa-clipboard text-primary"></span><a style="color:gray" href="{% url 'Matcher_WS.views.listar_cuentas'%}">Resumen Cuentas</a>
+                                {%if idioma == 0%}
+                                    <span class="fa fa-clipboard text-primary"></span><a style="color:gray" href="{% url 'Matcher_WS.views.listar_cuentas'%}">Resumen Cuentas</a>
+                                {%endif%}
+                                {%if idioma == 1%}
+                                    <span class="fa fa-clipboard text-primary"></span><a style="color:gray" href="{% url 'Matcher_WS.views.listar_cuentas'%}">Accounts Sumary</a>
+                                {%endif%}
                             </td>
                         </tr>
                         {% endif %}
                         {%if not ldap%}
                         <tr>
                             <td>
-                                <span class="fa fa-unlock-alt text-primary"></span><a style="color:gray" href="{% url 'Matcher_WS.views.cambioClave'%}">Cambiar Contraseña</a>
+                                {%if idioma == 0%}
+                                    <span class="fa fa-unlock-alt text-primary"></span><a style="color:gray" href="{% url 'Matcher_WS.views.cambioClave'%}">Cambiar Contraseña</a>
+                                {%endif%}
+                                {%if idioma == 1%}
+                                    <span class="fa fa-unlock-alt text-primary"></span><a style="color:gray" href="{% url 'Matcher_WS.views.cambioClave'%}">Change Password</a>
+                                {%endif%}
                             </td>
                         </tr>
                         {%endif%}
@@ -51,7 +66,12 @@
             <div class="panel-heading">
                 <h4 class="panel-title">
                     <a data-toggle="collapse" data-parent="#accordion" href="#collapseTwo"><span class="fa fa-refresh fa-lg">
-                    </span>Proc. Diario</a>
+                    {%if idioma == 0%}
+                        </span>Proc. Diario</a>
+                    {%endif%}
+                    {%if idioma == 1%}
+                        </span>Daily Processing</a>
+                    {%endif%}
                 </h4>
             </div>
             <div id="collapseTwo" class="panel-collapse collapse">
@@ -59,14 +79,24 @@
                     <table class="table">
                         <tr>
                             <td>
-                                <span class="fa fa-credit-card fa-lg text-warning"></span><a style="color:gray" href="{% url 'Matcher_WS.views.pd_estadoCuentas'%}">Edo. Cuenta</a>
+                                {%if idioma == 0%}
+                                    <span class="fa fa-credit-card fa-lg text-warning"></span><a style="color:gray" href="{% url 'Matcher_WS.views.pd_estadoCuentas'%}">Edo. Cuenta</a>
+                                {%endif%}
+                                {%if idioma == 1%}
+                                    <span class="fa fa-credit-card fa-lg text-warning"></span><a style="color:gray" href="{% url 'Matcher_WS.views.pd_estadoCuentas'%}">Statement Account</a>
+                                {%endif%}
                             </td>
                         </tr>
 
                         {% if 2 in ops %}
                         <tr>
                             <td>
-                                <span class="fa fa-stack-overflow fa-lg"></span><a style="color:gray" href="{% url 'Matcher_WS.views.pd_cargaAutomatica'%}">Carga Automática</a>
+                                {%if idioma == 0%}
+                                    <span class="fa fa-stack-overflow fa-lg"></span><a style="color:gray" href="{% url 'Matcher_WS.views.pd_cargaAutomatica'%}">Carga Automática</a>
+                                {%endif%}
+                                {%if idioma == 1%}
+                                    <span class="fa fa-stack-overflow fa-lg"></span><a style="color:gray" href="{% url 'Matcher_WS.views.pd_cargaAutomatica'%}">Automatic Input</a>
+                                {%endif%}
                             </td>
                         </tr>
                         {%endif%}
@@ -74,7 +104,12 @@
                         {% if 10 in ops %}
                         <tr>
                             <td>
-                                <span class="fa fa-pencil-square-o fa-lg"></span><a style="color:gray" href="{% url 'Matcher_WS.views.pd_cargaManual'%}">Carga Manual</a>
+                                {%if idioma == 0%}
+                                    <span class="fa fa-pencil-square-o fa-lg"></span><a style="color:gray" href="{% url 'Matcher_WS.views.pd_cargaManual'%}">Carga Manual</a>
+                                {%endif%}
+                                {%if idioma == 1%}
+                                    <span class="fa fa-pencil-square-o fa-lg"></span><a style="color:gray" href="{% url 'Matcher_WS.views.pd_cargaManual'%}">Manual Input</a>
+                                {%endif%}
                             </td>
                         </tr>
                         {%endif%}
@@ -89,28 +124,45 @@
 
                         <tr>
                             <td>
-                                <span class="fa fa-link fa-lg text-warning"></span><a style="color:gray" href="{% url 'Matcher_WS.views.pd_matchesPropuestos'%}">Matches Propuestos</a>
+                                {%if idioma == 0%}
+                                    <span class="fa fa-link fa-lg text-warning"></span><a style="color:gray" href="{% url 'Matcher_WS.views.pd_matchesPropuestos'%}">Matches Propuestos</a>
+                                {%endif%}
+                                {%if idioma == 1%}
+                                    <span class="fa fa-link fa-lg text-warning"></span><a style="color:gray" href="{% url 'Matcher_WS.views.pd_matchesPropuestos'%}">Proposed Matches</a>
+                                {%endif%}
                             </td>
                         </tr>
 
                         <tr>
                             <td>
-                                <span class="fa fa-chain-broken fa-lg text-danger"></span><a style="color:gray" href="{% url 'Matcher_WS.views.pd_partidasAbiertas'%}">Partidas Abiertas</a>
+                                {%if idioma == 0%}
+                                    <span class="fa fa-chain-broken fa-lg text-danger"></span><a style="color:gray" href="{% url 'Matcher_WS.views.pd_partidasAbiertas'%}">Partidas Abiertas</a>
+                                {%endif%}
+                                {%if idioma == 1%}
+                                    <span class="fa fa-chain-broken fa-lg text-danger"></span><a style="color:gray" href="{% url 'Matcher_WS.views.pd_partidasAbiertas'%}">Open Entries</a>
+                                {%endif%}
                             </td>
                         </tr>
                         <tr>
                             <td>
-                                <span class="fa fa-check-circle-o fa-lg text-success"></span><a style="color:gray" href="{% url 'Matcher_WS.views.pd_matchesConfirmados'%}">Matches Confirmados</a>
+                                {%if idioma == 0%}
+                                    <span class="fa fa-check-circle-o fa-lg text-success"></span><a style="color:gray" href="{% url 'Matcher_WS.views.pd_matchesConfirmados'%}">Matches Confirmados</a>
+                                {%endif%}
+                                {%if idioma == 1%}
+                                    <span class="fa fa-check-circle-o fa-lg text-success"></span><a style="color:gray" href="{% url 'Matcher_WS.views.pd_matchesConfirmados'%}">Confirmed Matches</a>
+                                {%endif%}    
                             </td>
                         </tr>
-                        
                         <tr>
                             <td>
-                                <span class="fa fa-file-text-o fa-lg"></span><a style="color:gray" href="{% url 'Matcher_WS.views.pd_conciliacion'%}">Reporte Conciliación</a>
+                                {%if idioma == 0%}
+                                    <span class="fa fa-file-text-o fa-lg"></span><a style="color:gray" href="{% url 'Matcher_WS.views.pd_conciliacion'%}">Reporte Conciliación</a>
+                                {%endif%}
+                                {%if idioma == 1%}
+                                    <span class="fa fa-file-text-o fa-lg"></span><a style="color:gray" href="{% url 'Matcher_WS.views.pd_conciliacion'%}">Reconciliation Report</a>
+                                {%endif%}
                             </td>
                         </tr>
-                        
-
                     </table>
                 </div>
             </div>
@@ -122,7 +174,12 @@
             <div class="panel-heading">
                 <h4 class="panel-title">
                     <a data-parent="#accordion" href="{% url 'Matcher_WS.views.reportes'%}"><span class="fa fa-bar-chart-o">
-                    </span>Reportes</a>
+                    {%if idioma == 0%}
+                        </span>Reportes</a>
+                    {%endif%}
+                    {%if idioma == 1%}
+                        </span>Reports</a>
+                    {%endif%}
                 </h4>
             </div>
         </div>
@@ -176,7 +233,12 @@
             <div class="panel-heading">
                 <h4 class="panel-title">
                     <a data-toggle="collapse" data-parent="#accordion" href="#collapseFive"><span class="fa fa-cogs">
-                    </span>Configuración</a>
+                    {%if idioma == 0%}
+                        </span>Configuración</a>
+                    {%endif%}
+                    {%if idioma == 1%}
+                        </span>Configuration</a>
+                    {%endif%}
                 </h4>
             </div>
             <div id="collapseFive" class="panel-collapse collapse">
@@ -185,7 +247,12 @@
                         {% if 29 in ops or 11 in ops%}
                         <tr>
                             <td>
-                                <span class="fa fa-wrench text-primary"></span><a style="color:gray" href="{% url 'Matcher_WS.views.configuracion' 'sis' %}">Conf. Sistema</a>
+                                {%if idioma == 0%}
+                                    <span class="fa fa-wrench text-primary"></span><a style="color:gray" href="{% url 'Matcher_WS.views.configuracion' 'sis' %}">Conf. Sistema</a>
+                                {%endif%}
+                                {%if idioma == 1%}
+                                    <span class="fa fa-wrench text-primary"></span><a style="color:gray" href="{% url 'Matcher_WS.views.configuracion' 'sis' %}">System Settings</a>
+                                {%endif%}
                             </td>
                         </tr>
                         {%endif%}
@@ -193,7 +260,12 @@
                         {% if 34 in ops %}
                         <tr>
                             <td>
-                                <span class="fa fa-folder-open text-warning"></span><a style="color:gray" href="{% url 'Matcher_WS.views.configuracion' 'arc'  %}">Formato Archivo</a>
+                                {%if idioma == 0%}
+                                    <span class="fa fa-folder-open text-warning"></span><a style="color:gray" href="{% url 'Matcher_WS.views.configuracion' 'arc'  %}">Formato Archivo</a>
+                                {%endif%}
+                                {%if idioma == 1%}
+                                    <span class="fa fa-folder-open text-warning"></span><a style="color:gray" href="{% url 'Matcher_WS.views.configuracion' 'arc'  %}">Data Format</a>
+                                {%endif%}
                             </td>
                         </tr>
                         {%endif%}
@@ -209,7 +281,12 @@
             <div class="panel-heading">
                 <h4 class="panel-title">
                     <a data-toggle="collapse" data-parent="#accordion" href="#collapseSix"><span class="fa fa-lock fa-lg">
-                    </span>Seguridad</a>
+                    {%if idioma == 0%}
+                        </span>Seguridad</a>
+                    {%endif%}
+                    {%if idioma == 1%}
+                        </span>Security</a>
+                    {%endif%}
                 </h4>
             </div>
             <div id="collapseSix" class="panel-collapse collapse">
@@ -218,7 +295,12 @@
                         {% if 14 in ops or 31 in ops or 32 in ops or 27 in ops%}
                         <tr>
                             <td>
-                                <span class="fa fa-users fa-lg text-primary"></span><a style="color:gray" href="{% url 'Matcher_WS.views.seg_Usuarios'%}">Usuarios</a>
+                                {%if idioma == 0%}
+                                    <span class="fa fa-users fa-lg text-primary"></span><a style="color:gray" href="{% url 'Matcher_WS.views.seg_Usuarios'%}">Usuarios</a>
+                                {%endif%}
+                                {%if idioma == 1%}
+                                    <span class="fa fa-users fa-lg text-primary"></span><a style="color:gray" href="{% url 'Matcher_WS.views.seg_Usuarios'%}">Users</a>
+                                {%endif%}
                             </td>
                         </tr>
                         {%endif%}
@@ -226,14 +308,24 @@
                         {% if 5 in ops %}
                         <tr>
                             <td>
-                                <span class="fa fa-th-list fa-lg text-primary"></span><a style="color:gray" href="{% url 'Matcher_WS.views.seg_Perfiles'%}">Perfiles</a>
+                                {%if idioma == 0%}
+                                    <span class="fa fa-th-list fa-lg text-primary"></span><a style="color:gray" href="{% url 'Matcher_WS.views.seg_Perfiles'%}">Perfiles</a>
+                                {%endif%}
+                                {%if idioma == 1%}
+                                    <span class="fa fa-th-list fa-lg text-primary"></span><a style="color:gray" href="{% url 'Matcher_WS.views.seg_Perfiles'%}">Profiles</a>
+                                {%endif%}
                             </td>
                         </tr>
                         {%endif%}
                         {% if 5 or 6 in ops %}
                         <tr>
                             <td>
-                                <span class="fa fa-credit-card fa-lg text-info"></span><a style="color:gray" href="{% url 'Matcher_WS.views.seg_licencia'%}">Licencia</a>
+                                {%if idioma == 0%}
+                                    <span class="fa fa-credit-card fa-lg text-info"></span><a style="color:gray" href="{% url 'Matcher_WS.views.seg_licencia'%}">Licencia</a>
+                                {%endif%}
+                                {%if idioma == 1%}
+                                    <span class="fa fa-credit-card fa-lg text-info"></span><a style="color:gray" href="{% url 'Matcher_WS.views.seg_licencia'%}">License</a>
+                                {%endif%}
                             </td>
                         </tr>
                         {%endif%}
@@ -264,7 +356,12 @@
             <div class="panel-heading">
                 <h4 class="panel-title">
                     <a data-toggle="collapse" data-parent="#accordion" href="#collapseSeven"><span class="fa fa-user">
-                    </span>Administración</a>
+                    {%if idioma == 0%}
+                        </span>Administración</a>
+                    {%endif%}
+                    {%if idioma == 1%}
+                        </span>Administration</a>
+                    {%endif%}
                 </h4>
             </div>
             <div id="collapseSeven" class="panel-collapse collapse">
@@ -273,7 +370,12 @@
                         {% if 21 in ops %}
                         <tr>
                             <td>
-                                <span class="fa fa-building-o fa-lg text-info"></span><a style="color:gray" href="{% url 'Matcher_WS.views.admin_bancos'%}">Bancos</a>
+                                {%if idioma == 0%}
+                                    <span class="fa fa-building-o fa-lg text-info"></span><a style="color:gray" href="{% url 'Matcher_WS.views.admin_bancos'%}">Bancos</a>
+                                {%endif%}
+                                {%if idioma == 1%}
+                                    <span class="fa fa-building-o fa-lg text-info"></span><a style="color:gray" href="{% url 'Matcher_WS.views.admin_bancos'%}">Banks</a>
+                                {%endif%}
                             </td>
                         </tr>
                         {%endif%}
@@ -281,7 +383,12 @@
                         {% if 28 in ops %}
                         <tr>
                             <td>
-                                <span class="fa fa-money fa-lg text-success"></span><a style="color:gray" href="{% url 'Matcher_WS.views.admin_monedas'%}">Monedas</a>
+                                {%if idioma == 0%}
+                                    <span class="fa fa-money fa-lg text-success"></span><a style="color:gray" href="{% url 'Matcher_WS.views.admin_monedas'%}">Monedas</a>
+                                {%endif%}
+                                {%if idioma == 1%}
+                                    <span class="fa fa-money fa-lg text-success"></span><a style="color:gray" href="{% url 'Matcher_WS.views.admin_monedas'%}">Currency</a>
+                                {%endif%}
                             </td>
                         </tr>
                         {%endif%}
@@ -289,7 +396,12 @@
                         {% if 23 in ops or 17 in ops or 6 in ops or 7 in ops or 12 in ops%}
                         <tr>
                             <td>
-                                <span class="fa fa-suitcase fa-lg text-warning"></span><a style="color:gray" href="{% url 'Matcher_WS.views.admin_cuentas'%}">Cuentas</a>
+                                {%if idioma == 0%}
+                                    <span class="fa fa-suitcase fa-lg text-warning"></span><a style="color:gray" href="{% url 'Matcher_WS.views.admin_cuentas'%}">Cuentas</a>
+                                {%endif%}
+                                {%if idioma == 1%}
+                                    <span class="fa fa-suitcase fa-lg text-warning"></span><a style="color:gray" href="{% url 'Matcher_WS.views.admin_cuentas'%}">Accounts</a>
+                                {%endif%}
                             </td>
                         </tr>
                         {%endif%}
@@ -305,7 +417,12 @@
                         {% if 19 in ops %}
                         <tr>
                             <td>
-                                <span class="fa fa-retweet fa-lg text-info"></span><a style="color:gray" href="{% url 'Matcher_WS.views.admin_reglas_transf'%}">Reglas de Transformación</a>
+                                {%if idioma == 0%}
+                                    <span class="fa fa-retweet fa-lg text-info"></span><a style="color:gray" href="{% url 'Matcher_WS.views.admin_reglas_transf'%}">Reglas de Transformación</a>
+                                {%endif%}
+                                {%if idioma == 1%}
+                                    <span class="fa fa-retweet fa-lg text-info"></span><a style="color:gray" href="{% url 'Matcher_WS.views.admin_reglas_transf'%}">Transformation Rules</a>
+                                {%endif%}
                             </td>
                         </tr>
                         {%endif%}
@@ -313,7 +430,12 @@
                         {% if 15 in ops %}
                         <tr>
                             <td>
-                                <span class="fa fa-key fa-lg text-warning"></span><a style="color:gray" href="{% url 'Matcher_WS.views.admin_crit_reglas'%}">Criterios y reglas del Sistema</a>
+                                {%if idioma == 0%}
+                                    <span class="fa fa-key fa-lg text-warning"></span><a style="color:gray" href="{% url 'Matcher_WS.views.admin_crit_reglas'%}">Criterios y reglas del Sistema</a>
+                                {%endif%}
+                                {%if idioma == 1%}
+                                    <span class="fa fa-key fa-lg text-warning"></span><a style="color:gray" href="{% url 'Matcher_WS.views.admin_crit_reglas'%}">Criterias and System Rules</a>
+                                {%endif%}
                             </td>
                         </tr>
                         {%endif%}
@@ -336,19 +458,34 @@
                     <table class="table">
                         <tr>
                             <td>
-                                <span class="fa fa-credit-card fa-lg text-info"></span><a style="color:gray" href="{% url 'Matcher_WS.views.SU_licencia'%}">Licencia</a>
+                                {%if idioma == 0%}
+                                    <span class="fa fa-credit-card fa-lg text-info"></span><a style="color:gray" href="{% url 'Matcher_WS.views.SU_licencia'%}">Licencia</a>
+                                {%endif%}
+                                {%if idioma == 1%}
+                                    <span class="fa fa-credit-card fa-lg text-info"></span><a style="color:gray" href="{% url 'Matcher_WS.views.SU_licencia'%}">License</a>
+                                {%endif%}
                             </td>
                         </tr>
 
                         <tr>
                             <td>
-                                <span class="fa fa-sitemap fa-lg text-danger"></span><a style="color:gray" href="{% url 'Matcher_WS.views.SU_modulos'%}">Módulos</a>
+                                {%if idioma == 0%}
+                                    <span class="fa fa-sitemap fa-lg text-danger"></span><a style="color:gray" href="{% url 'Matcher_WS.views.SU_modulos'%}">Módulos</a>
+                                {%endif%}
+                                {%if idioma == 1%}
+                                    <span class="fa fa-sitemap fa-lg text-danger"></span><a style="color:gray" href="{% url 'Matcher_WS.views.SU_modulos'%}">Modules</a>
+                                {%endif%}
                             </td>
                         </tr>
 
                         <tr>
                             <td>
-                                <span class="fa fa-legal fa-lg text-warning"></span><a style="color:gray" href="{% url 'Matcher_WS.views.SU_version'%}">Versión</a>
+                                {%if idioma == 0%}
+                                    <span class="fa fa-legal fa-lg text-warning"></span><a style="color:gray" href="{% url 'Matcher_WS.views.SU_version'%}">Versión</a>
+                                {%endif%}
+                                {%if idioma == 1%}
+                                    <span class="fa fa-legal fa-lg text-warning"></span><a style="color:gray" href="{% url 'Matcher_WS.views.SU_version'%}">Version</a>
+                                {%endif%}
                             </td>
                         </tr>
 
@@ -362,7 +499,12 @@
             <div class="panel-heading">
                 <h4 class="panel-title">
                     <a data-toggle="collapse" data-parent="#accordion" href="#collapseEight"><span class="fa fa-question-circle">
-                    </span>Ayuda</a>
+                    {%if idioma == 0%}
+                        </span>Ayuda</a>
+                    {%endif%}
+                    {%if idioma == 1%}
+                        </span>Help</a>
+                    {%endif%}
                 </h4>
             </div>
             <div id="collapseEight" class="panel-collapse collapse">
@@ -370,17 +512,32 @@
                     <table class="table">
                         <tr>
                             <td>
-                                <span class="fa fa-desktop fa-lg text-primary"></span><a style="color:gray" href="{% url 'Matcher_WS.views.manual_sistema'%}">Manual Sistema</a>
+                                {%if idioma == 0%}
+                                    <span class="fa fa-desktop fa-lg text-primary"></span><a style="color:gray" href="{% url 'Matcher_WS.views.manual_sistema'%}">Manual Sistema</a>
+                                {%endif%}
+                                {%if idioma == 1%}
+                                    <span class="fa fa-desktop fa-lg text-primary"></span><a style="color:gray" href="{% url 'Matcher_WS.views.manual_sistema'%}">System Manual</a>
+                                {%endif%}
                             </td>
                         </tr>
                         <tr>
                             <td>
-                                <span class="fa fa-file-text fa-lg text-primary"></span><a style="color:gray" href="{% url 'Matcher_WS.views.manual_usuario'%}">Manual de Usuario</a>
+                                {%if idioma == 0%}
+                                    <span class="fa fa-file-text fa-lg text-primary"></span><a style="color:gray" href="{% url 'Matcher_WS.views.manual_usuario'%}">Manual de Usuario</a>
+                                {%endif%}
+                                {%if idioma == 1%}
+                                    <span class="fa fa-file-text fa-lg text-primary"></span><a style="color:gray" href="{% url 'Matcher_WS.views.manual_usuario'%}">User Manual</a>
+                                {%endif%}
                             </td>
                         </tr>
                         <tr>
                             <td>
-                                <span class="fa fa-adn fa-lg text-primary"></span><a style="color:gray" href="{% url 'Matcher_WS.views.sobre_matcher'%}">Acerca de Matcher</a>
+                                {%if idioma == 0%}
+                                    <span class="fa fa-adn fa-lg text-primary"></span><a style="color:gray" href="{% url 'Matcher_WS.views.sobre_matcher'%}">Acerca de Matcher</a>
+                                {%endif%}
+                                {%if idioma == 1%}
+                                    <span class="fa fa-adn fa-lg text-primary"></span><a style="color:gray" href="{% url 'Matcher_WS.views.sobre_matcher'%}">About Matcher</a>
+                                {%endif%}
                             </td>
                         </tr>
                     </table>

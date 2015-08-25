@@ -3571,7 +3571,7 @@ def admin_bancos(request):
         bancos = BancoCorresponsal.objects.all()
 
         idioma = Configuracion.objects.all()[0].idioma    
-        context = {'idioma':idioma, 'bancos': bancos, 'idioma': get_idioma(), 'ops':get_ops(request),'ldap':get_ldap(request)}
+        context = {'idioma':idioma, 'bancos': bancos, 'ops':get_ops(request),'ldap':get_ldap(request)}
         template = "matcher/admin_bancos.html"
 
         return render(request, template, context)
