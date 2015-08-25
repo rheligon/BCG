@@ -175,7 +175,8 @@ class Configuracion(models.Model):
     dirprocesado99 = models.CharField(db_column='DirProcesado99', max_length=200, blank=True)  
     dirlicencia = models.CharField(db_column='DirLicencia', max_length=200, blank=True)  
     expiracion_sesion = models.IntegerField(db_column='ExpiraSesion', blank=True, null=True)
-
+    dirintraday = models.CharField(db_column='DirIntraday', max_length=200, blank=True)  
+    
     class Meta:
         db_table = 'Configuracion'
 
@@ -574,6 +575,36 @@ class Mt99(models.Model):
 
     class Meta:
         db_table = 'MT99'
+
+class Mt103(models.Model):
+    idmt103 = sqlserver_ado.fields.BigAutoField(db_column='idMT103', primary_key=True)  
+    ref_remitente = models.CharField(db_column='ref_remitente', max_length=16)  
+    ind_hora = models.TextField(db_column='ind_hora',null=True)  
+    tipo_op_banco = models.CharField(db_column='tipo_op_banco', max_length=4)  
+    cod_instruccion = models.TextField(db_column='cod_instruccion',null=True)  
+    tipo_transaccion = models.CharField(db_column='tipo_transaccion', max_length=3,null=True)  
+    fecha_moneda_monto = models.CharField(db_column='fecha_moneda_monto', max_length=24)  
+    moneda_monto = models.CharField(db_column='moneda_monto', max_length=18,null=True)  
+    tipo_cambio = models.CharField(db_column='tipo_cambio', max_length=12,null=True)  
+    cliente_ordenante = models.CharField(db_column='cliente_ordenante', max_length=200)  
+    institucion_emisor = models.CharField(db_column='institucion_emisor', max_length=55,null=True)  
+    institucion_ordenante = models.CharField(db_column='institucion_ordenante', max_length=200,null=True)  
+    corresponsal_remitente = models.CharField(db_column='corresponsal_remitente', max_length=200,null=True)  
+    corresponsal_receptor = models.CharField(db_column='corresponsal_receptor', max_length=200,null=True)  
+    institucion_reembolso = models.CharField(db_column='institucion_reembolso', max_length=200,null=True)  
+    institucion_intermediaria = models.CharField(db_column='institucion_intermediaria', max_length=200,null=True)  
+    cuenta_institucion = models.CharField(db_column='cuenta_institucion', max_length=200,null=True)  
+    cliente_beneficiario = models.CharField(db_column='cliente_beneficiario', max_length=200)  
+    info_remesa = models.CharField(db_column='info_remesa', max_length=200,null=True)  
+    detalle_cargos = models.CharField(db_column='detalle_cargos', max_length=3)  
+    cargos_remitente = models.TextField(db_column='cargos_remitente',null=True)  
+    cargos_receptor = models.CharField(db_column='cargos_receptor', max_length=18,null=True)  
+    info_remitente_a_receptor = models.CharField(db_column='info_remitente_a_receptor', max_length=250,null=True)
+    reporte_regulatorio = models.CharField(db_column='reporte_regulatorio', max_length=120,null=True)
+    cuenta = models.ForeignKey(Cuenta, db_column='cuenta', null=True)
+    
+    class Meta:
+        db_table = 'MT103'
 
 
 class Matchconfirmado(models.Model):
