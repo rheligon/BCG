@@ -2634,8 +2634,31 @@ def intraday(request):
 
             return JsonResponse({'fecha':fecha,'fechaActual':fechaActual, 'exito':exito, 'cuenta': json_cuenta, 'cons':json_cons, 'cod': cod})
 
-        
 
+@login_required(login_url='/login')
+def transIntraday(request,cuenta):       
+    
+    permisos = get_ops(request)
+    lista = [Opcion.objects.get(idopcion=p).funprincipal for p in permisos]
+    lista.sort()
+    lista = set(lista)
+
+    if not 16 in lista:
+        retour = custom_403(request)
+        return HttpResponseForbidden(retour)
+
+    expirarSesion(request)
+
+    cuentaId = Cuenta.objects.filter(idcuenta=cuenta)[0]
+    fecha = cuentaId.ultimafechaconciliacion.strftime("%d/%m/%Y")
+    fechaActual = datetime.now().strftime("%d/%m/%Y %H:%M %p")
+                
+               
+    
+    context = {'ops':get_ops(request),'cuenta':cuentaId,'fecha':fecha , 'fechaActual':fechaActual}
+    template = "matcher/transIntraday.html"
+
+    return render(request, template, context)
 
 @login_required(login_url='/login')
 def configuracion(request, tipo):
@@ -2719,6 +2742,7 @@ def configuracion(request, tipo):
                 t_ret_log = request.POST.get('t_ret_log')
                 arch = request.POST.get('arch')
                 archconfirm = request.POST.get('archconfirm')
+                dirIntraday = request.POST.get('dirIntraday')
                 dir_s_mt95 = request.POST.get('dir_s_mt95')
                 dir_c_mt96 = request.POST.get('dir_c_mt96')
                 dir_s_mt99 = request.POST.get('dir_s_mt99')
@@ -2737,9 +2761,11 @@ def configuracion(request, tipo):
                 # Buscar empresa y configuracion
                 conf = Configuracion.objects.all()[0]
 
-                # Asignar los cambios
-                arregloDir = [cont_carg,cont_procs,corr_carg,corr_procs,arch,dir_s_mt95,dir_c_mt96,dir_s_mt99,dir_c_mt99,dir_p_mt96,dir_p_mt99,archconfirm,dirlicencia]
+                #Crear directorios si no existen
+                arregloDir = [cont_carg,cont_procs,corr_carg,corr_procs,arch,dir_s_mt95,dir_c_mt96,dir_s_mt99,dir_c_mt99,dir_p_mt96,dir_p_mt99,archconfirm,dirlicencia,dirIntraday]
                 verificarDirectorio(arregloDir)
+
+                # Asignar los cambios
                 conf.archcontabilidadcarg = cont_carg
                 conf.archswiftcarg = corr_carg
                 conf.archcontabilidadproc = cont_procs
@@ -2760,6 +2786,7 @@ def configuracion(request, tipo):
                 conf.tiemporetentrazas = t_ret_log
                 conf.dirarchive = arch
                 conf.dirarchiveconfirmados = archconfirm
+                conf.dirintraday = dirIntraday
                 conf.dirsalida95 = dir_s_mt95
                 conf.dircarga96 = dir_c_mt96
                 conf.dirsalida99 = dir_s_mt99
