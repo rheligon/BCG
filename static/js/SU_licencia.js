@@ -47,6 +47,10 @@ $('#guardarCambiosButton').on('click', function () {
     var fecha = $('#expiracionLicencia').val();
     var fechaAux = $('#expiracionLicenciaAux').val();
     var usersAux = $('#numUserLicenciaAux').val();
+    console.log(numUsers);
+    console.log(usersAux);
+    console.log(fecha);
+    console.log(fechaAux);
 
     if (numUsers === ""){
         numUsers = usersAux;
@@ -60,60 +64,60 @@ $('#guardarCambiosButton').on('click', function () {
         if (fechaAux ===""){
             swal("Ups!","Debe seleccionar una fecha de expiración para la licencia.","error");
         }
-    } else 
-    {
-        var auxdate = new Date();
-        var dd = auxdate.getDate();
-        var mm = auxdate.getMonth()+1; //January is 0!
-        var yyyy = auxdate.getFullYear();
-        if(dd<10) {
-            dd='0'+dd
-        } 
-
-        if(mm<10) {
-            mm='0'+mm
-        }
-
-        var aux = fecha.split("/");
-        var day = "";
-        var month = "";
-        
-        if (parseInt(aux[0])<10){
-            day = '0'+aux[0];
-        } else {
-            day = aux[0];
-        }
-
-        if (parseInt(aux[1])<10){
-            month = '0'+aux[1];
-        } else {
-            month = aux[1];
-        }        
-
-        var fecha0 = day+"/"+month+"/"+aux[2];
-        fecha = aux[2]+"-"+month+"-"+day;
-        auxdate = yyyy+'-'+mm+'-'+dd;
-        fecha = new Date(fecha);
-        auxdate = new Date(auxdate);
-
-        if (fecha < auxdate){
-            swal("Ups!","La fecha seleccionada debe ser mayor a la fecha de hoy.","error");        
-        } else {
-
-            swal({
-                title: "",
-                text: "¿Seguro que desea guardar los cambios en la licencia?",
-                type: "warning",
-                showCancelButton: true,
-                confirmButtonText: "Ok"},
-                function(){
-                    $('#processing-modal').modal('toggle');
-                    //Llamar funcion de guardar cambios
-                    guardarCambios(numUsers,fecha0);
-                }
-            ); 
-        }
     }
+    
+    var auxdate = new Date();
+    var dd = auxdate.getDate();
+    var mm = auxdate.getMonth()+1; //January is 0!
+    var yyyy = auxdate.getFullYear();
+    if(dd<10) {
+        dd='0'+dd
+    } 
+
+    if(mm<10) {
+        mm='0'+mm
+    }
+
+    var aux = fecha.split("/");
+    var day = "";
+    var month = "";
+    
+    if (aux[0].length < 2 && parseInt(aux[0])<10){
+        day = '0'+aux[0];
+    } else {
+        day = aux[0];
+    }
+
+    if (aux[1].length < 2 && parseInt(aux[1])<10){
+        month = '0'+aux[1];
+    } else {
+        month = aux[1];
+    }        
+
+    var fecha0 = day+"/"+month+"/"+aux[2];
+    fecha = aux[2]+"-"+month+"-"+day;
+    auxdate = yyyy+'-'+mm+'-'+dd;
+    fecha = new Date(fecha);
+    auxdate = new Date(auxdate);
+
+    if (fecha < auxdate){
+        swal("Ups!","La fecha seleccionada debe ser mayor a la fecha de hoy.","error");        
+    } else {
+
+        swal({
+            title: "",
+            text: "¿Seguro que desea guardar los cambios en la licencia?",
+            type: "warning",
+            showCancelButton: true,
+            confirmButtonText: "Ok"},
+            function(){
+                $('#processing-modal').modal('toggle');
+                //Llamar funcion de guardar cambios
+                guardarCambios(numUsers,fecha0);
+            }
+        ); 
+    }
+
 });
 
 //Guardar Cambios en la base de datos 

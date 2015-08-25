@@ -563,7 +563,7 @@ $('#acptButton').on('click', function () {
         a_ldap = 0;
     };
 
-    if (a_perf>=0 && a_pass === a_pass2 && a_pass.length>0 && a_login.length>0 && a_login.length<=20 && a_nom.length>0 && a_nom.length<=20 && a_apell.length>0 && a_apell.length<=20 && a_ci.length>0 && a_ci.length<=20){
+    if (a_perf>=0 && ((a_ldap === 0 && a_pass.length>0) || a_ldap === 1 ) && a_pass === a_pass2 && a_login.length>0 && a_login.length<=20 && a_nom.length>0 && a_nom.length<=20 && a_apell.length>0 && a_apell.length<=20 && a_ci.length>0 && a_ci.length<=20){
         swal({   title: "",
              text: "Seguro que desea agregar el usuario "+ a_login +" ?",
              type: "warning",
