@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
   {% load staticfiles %}
-
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -21,7 +20,12 @@
 	{%block head%}
 	{%endblock%}
 	{%if user.is_authenticated %}
-	<h4 align="right">Usuario: {{user.username}} <span class="fa fa-user text-primary"></span><a style="color:gray"></a></h4>
+		{%if idioma == 0%}
+			<h4 align="right">Usuario: {{user.username}} <span class="fa fa-user text-primary"></span><a style="color:gray"></a></h4>
+		{%endif%}
+		{%if idioma == 1%}
+			<h4 align="right">User: {{user.username}} <span class="fa fa-user text-primary"></span><a style="color:gray"></a></h4>
+		{%endif%}
 	{%endif%}
   </head>
 

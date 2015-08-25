@@ -1,5 +1,15 @@
 var csrftoken = $.cookie('csrftoken');
-var t_conta = iniciar_tabla(idioma_tr);
+var idioma = $('#idioma').val();
+var idiomaAux = "";
+var msj ="";
+
+if (idioma == 0){
+    idiomaAux = "es"
+} else {
+    idiomaAux = "en"
+}
+
+var t_conta = iniciar_tabla(idiomaAux);
 
 /*
 $( document ).ready(function() {
@@ -68,7 +78,7 @@ function iniciar_tabla(idioma){
 };
 
 //Cambiar el idioma del date picker a español si este es el seleccionado
-if (idioma_tr==="es"){
+if (idiomaAux==="es"){
     $.extend($.fn.pickadate.defaults, {
       monthsFull: ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'],
       weekdaysShort: ['Dom', 'Lun', 'Mar', 'Mie', 'Jue', 'Vie', 'Sab'],
@@ -125,25 +135,44 @@ $('#boton-buscar').on('click', function () {
         var archivo = $('#selec_archivo').val();
         var codigoCuenta = $('#opt-'+cuentaId).attr("codigo");
         
-        if(fechaIni.length<1){ 
-            swal("Ups!", "Debe introducir la Fecha Inicial para la Búsqueda", "error");
-        }else if(fechaFin.length<1){ 
-            swal("Ups!", "Debe introducir la Fecha Final para la Búsqueda", "error");
-        }else if(archivo=="-1"){ 
-            swal("Ups!", "Debe Seleccionar el Archivo en el que se realizará la Búsqueda", "error");
+        if(fechaIni.length<1){
+            if (idioma === 0){ 
+                swal("Ups!", "Debe introducir la Fecha Inicial para la Búsqueda", "error");
+            } else {
+                swal("Ups!", "You must introduce initial date for search", "error");
+            }
+        }else if(fechaFin.length<1){
+            if (idioma === 0){ 
+                swal("Ups!", "Debe introducir la Fecha Final para la Búsqueda", "error");
+            } else {
+                swal("Ups!", "You must introduce final date for search", "error");
+            }
+        }else if(archivo=="-1"){
+            if (idioma === 0){ 
+                swal("Ups!", "Debe Seleccionar el Archivo en el que se realizará la Búsqueda", "error");
+            } else {
+                swal("Ups!", "You must select the search file", "error");
+            }
         }else{
             fecha1 = fechaStringtoDate(fechaIni);
             fecha2 = fechaStringtoDate(fechaFin);
             if(fecha1 > fecha2){
-                swal("Ups!", "La fecha Final no puede ser menor a la Fecha Inicial", "error");
+                if (idioma === 0){
+                    swal("Ups!", "La fecha Final no puede ser menor a la Fecha Inicial", "error");
+                } else {
+                    swal("Ups!", "Initial date can not be greater than final date", "error");
+                }
             }else{
                 $('#processing-modal').modal('toggle');
                 buscarEnArchivo(archivo,codigoCuenta,fechaIni,fechaFin);
             }
         }
     }else{
-        swal("Ups!", "Debe Seleccionar el Código de la Cuenta", "error");
-
+        if (idioma === 0){
+            swal("Ups!", "Debe Seleccionar el Código de la Cuenta", "error");
+        } else {
+            swal("Ups!", "You must select the code account", "error");
+        }
     }
 });
 
@@ -189,7 +218,11 @@ $('#boton-consulta').on('click', function () {
         $('#processing-modal').modal('toggle')
         consultar(codigoCuenta);
     }else{
-        swal("Ups!", "Debe Seleccionar el Código de la Cuenta", "error");
+        if (idioma === 0){
+            swal("Ups!", "Debe Seleccionar el Código de la Cuenta", "error");
+        } else {
+            swal("Ups!", "You must select the code account", "error");
+        }
     }
 });
 
@@ -203,8 +236,12 @@ $('#boton-ejecutar').on('click', function () {
         var fecha = $('#fecha-ejecutar').val()
         var fechaMinima =$('#minima_fecha').val()
 
-        if(fecha.length<1){ 
-            swal("Ups!", "Debe introducir la Fecha para ejecutar el proceso de Archive", "error");
+        if(fecha.length<1){
+            if (idioma === 0){ 
+                swal("Ups!", "Debe introducir la Fecha para ejecutar el proceso de Archive", "error");
+            } else {
+                swal("Ups!", "You must introduce the date for execute Archive process", "error");
+            }
         }else{
 
             //caso en que no se ha consultado la fecha minima
@@ -215,12 +252,21 @@ $('#boton-ejecutar').on('click', function () {
                 fecha1 = fechaStringtoDate(fechaMinima);
                 fecha2 = fechaStringtoDate(fecha);
                 if(fecha1 > fecha2){
-                    swal("Ups!", "La fecha Final no puede ser menor a la Fecha Mínima de Match", "error");
+                    if (idioma === 0){ 
+                        swal("Ups!", "La fecha Final no puede ser menor a la Fecha Mínima de Match", "error");
+                    } else {
+                        swal("Ups!", "Final date can not be less than Match nim date", "error");
+                    }
                 }else{
                     var $btn;
+                        if (idioma === 0){ 
+                                msj: "Seguro que desea crear el Archive para la Cuenta: " + codigoCuenta + " entre las fechas "+fechaMinima+" y " +fecha+ " ?";
+                             } else {
+                                msj: "Sure you want to create Archive for the account : " + codigoCuenta + " between dates "+fechaMinima+" and " +fecha+ " ?";
+                             }
                         swal({
                             title: "",
-                            text: "Seguro que desea crear el Archive para la Cuenta: " + codigoCuenta + " entre las fechas "+fechaMinima+" y " +fecha+ " ?",
+                            text: msj,
                             type: "warning",
                             showCancelButton: true,
                             confirmButtonText: "Ok"},
@@ -234,7 +280,11 @@ $('#boton-ejecutar').on('click', function () {
             }
         }
     }else{
-        swal("Ups!", "Debe Seleccionar el Código de la Cuenta", "error");
+        if (idioma === 0){ 
+            swal("Ups!", "Debe Seleccionar el Código de la Cuenta", "error");
+        } else {
+            swal("Ups!", "You must select the code account", "error");
+        }
     }
     
 });

@@ -38,12 +38,22 @@
 {% block content %}
  <div class="wrap">
 	<div class="logo">
-		<p>OOPS! - Permiso Denegado</p>
+		{%if idioma == 0%}
+			<p>OOPS! - Permiso Denegado</p>
+		{%endif%}
+		{%if idioma == 1%}
+			<p>OOPS! - Permission Denied</p>
+		{%endif%}
 		<img src="{% static 'images/403.png'%}"/>
 		<br>
 		<br>
 		<div class="explicacion">
-			<p>Usted no tiene los privilegios para acceder al url</p>
+			{%if idioma == 0%}
+				<p>Usted no tiene los privilegios para acceder al url</p>
+			{%endif%}
+			{%if idioma == 1%}
+				<p>You do not have the privileges to access the url</p>
+			{%endif%}
 		</div>
 	</div>
  </div>	

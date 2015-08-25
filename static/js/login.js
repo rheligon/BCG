@@ -1,5 +1,5 @@
 var csrftoken = $.cookie('csrftoken');
-
+var idioma = $('#idioma').val();
 
 //Verificaciones al cliquear boton de logear
 $('#loginButton').on('click', function () {
@@ -8,9 +8,17 @@ $('#loginButton').on('click', function () {
     var pass = $('#passwordID').val();
 
     if (user === ""){
-        swal("Ups!","Debe indicar su nombre de usuario","error");        
+        if (idioma === 0){
+            swal("Ups!","Debe indicar su nombre de usuario","error");
+        } else {
+            swal("Ups!","Indicate your username please","error");
+        }        
     } else if (pass === "" ) {
-        swal("Ups!","Debe indicar su contraseña","error"); 
+        if (idioma === 0){
+            swal("Ups!","Debe indicar su contraseña","error");
+        } else {
+            swal("Ups!","Indicate your password please","error");
+        } 
     } else {
         $('#processing-modal').modal('toggle');
         //Llamar funcion de creación del mensaje
@@ -28,7 +36,11 @@ function login(user,pass){
             var mensaje = data.mens;
             $('#processing-modal').modal('toggle');
             if (mensaje === "Login exitoso"){
-                swal("OK", mensaje, "success");
+                if (idioma == 0) {
+                    swal("OK", mensaje, "success");
+                } else {
+                    swal("OK", "Successful Login", "success");
+                }
                 setTimeout(function(){
                     $(location).attr("href", '/');
                 },2000)
@@ -39,7 +51,11 @@ function login(user,pass){
         error: function(jqXHR, error){ 
             alert(jqXHR.responseText) //debug
             $('#processing-modal').modal('toggle');
-            swal("Ups!", "Error al intentar ingresar", "error");
+            if (idioma === 0){
+                swal("Ups!", "Error al intentar ingresar", "error");
+            } else{
+                swal("Ups!", "Attempting enter error", "error");
+            }
         },
         dataType:'json',
         headers:{

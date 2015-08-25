@@ -170,9 +170,15 @@
         <div class="form-group">
             <label class="col-md-3 control-label" for="Idiom-sel">Idioma: </label>
             <div class="col-md-2">
-                <select id="Idiom-sel" name="Idiom-sel" class="form-control">
-                  <option value="0">Español</option>
-                  <option value="1">English</option>
+                <select id="Idiom-sel" name="Idiom-sel" selected="{{conf.idioma}}" class="form-control">
+                    {%if conf.idioma == 0%}
+                    <option value="0" selected>Español</option>
+                    <option value="1">English</option>
+                    {%endif%}
+                    {%if conf.idioma == 1%}
+                    <option value="0">Español</option>
+                    <option value="1" selected>English</option>
+                    {%endif%}
                 </select>
             </div>
         </div>
