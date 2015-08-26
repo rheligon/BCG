@@ -179,7 +179,6 @@ class Configuracion(models.Model):
     tiempointraday = models.IntegerField(db_column='TiempoIntraday', blank=True, null=True)
     dirintradaysalida = models.CharField(db_column='DirIntradaySalida', max_length=200, blank=True)
      
-    
     class Meta:
         db_table = 'Configuracion'
 

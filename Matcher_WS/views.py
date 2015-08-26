@@ -28,7 +28,7 @@ from Matcher_WS.Matcher_call import matcher, dma_millis
 from Matcher_WS.funciones_get import get_ops, get_cuentas, get_ci, get_idioma, get_bancos, get_archivosMT99, get_archivosMT96, get_codigos95,elimina_tildes, get_archivosLicencia,verificarDirectorio, get_ldap
 from Matcher_WS.generar_reporte import generarReporte, pdfView, xlsView
 from Matcher_WS.setConsolidado import setConsolidado
-from Matcher_WS.parsers import parseo942
+from Matcher_WS.parsers import parsearTipoMT,parseo103,parseo202,parseo942
 
 import time
 import os
@@ -2710,15 +2710,19 @@ def intraday(request):
         actn = request.POST.get('action')
 
         if actn == 'buscarConci':
+            msg = ""
+            res = ""
             cuenta_id = request.POST.get('cuenta')
             conciliacion = Conciliacionconsolidado.objects.filter(cuenta_idcuenta = cuenta_id)
             json_cons =""
+            exitoconci = False
             exito = False
+            exitoParseo = True
             fecha = ""
             fechaActual = ""
     
             if conciliacion:
-                exito =True
+                exitoconci =True
                 cons = conciliacion[0]
                 cuenta = cons.cuenta_idcuenta
                 fecha = cuenta.ultimafechaconciliacion.strftime("%d/%m/%Y")
@@ -2742,26 +2746,95 @@ def intraday(request):
                 cuenta = Cuenta.objects.filter(idcuenta=cuenta_id)[0]
                 cons = None
                 cod = ['C']*4
-                exito = False
+                exitoconci = False
 
             json_cuenta = serializers.serialize('json', [cuenta])
 
             archivos942 = ""
             
             obj = Configuracion.objects.all()[0]
-            directorio = obj.dirintraday +"\\MT942"
+            directorio = obj.dirintraday
+            directorioSalida = obj.dirintradaysalida
 
             try:
-                archivos942 = os.listdir(directorio)
+                archivos = os.listdir(directorio)
             except OSError:
                 os.makedirs(directorio)
-                archivos942 = os.listdir(directorio)
+                archivos = os.listdir(directorio)
             
-            for elem in archivos942:
-                parseo942(elem,directorio)
-                
+            for elem in archivos:
+                direct = directorio + "\\" + elem
+                if (not os.path.isdir(direct)):
+                    tipo = parsearTipoMT(elem,directorio)
+                    if (tipo[0] != "error"):
+                        print(tipo[0])
+                        exito = True
+                        if (tipo[0] == "103"):
+                            
+                            res = parseo103(elem,directorio)
 
-            return JsonResponse({'fecha':fecha,'fechaActual':fechaActual, 'exito':exito, 'cuenta': json_cuenta, 'cons':json_cons, 'cod': cod})
+                            if(res[0] == "True"):
+                            
+                                #Mover archivo a procesado
+                                pathsrc = direct 
+                                nuevo = directorioSalida +"\\MT" + tipo[0]  
+                                
+                                if not os.path.exists(nuevo):
+                                    os.makedirs(nuevo)
+                                
+                                pathdest = nuevo + '\\' + elem
+                                shutil.move(pathsrc,pathdest)
+                            else:
+                                exitoParseo = False
+                                msg = res[1]
+                                continue
+
+                        elif (tipo[0] == "202"):
+                            
+                            res = parseo202(elem,directorio)
+                            
+                            if(res[0] == "True"):
+                            
+                                #Mover archivo a procesado
+                                pathsrc = direct 
+                                nuevo = directorioSalida +"\\MT" + tipo[0]  
+                                
+                                if not os.path.exists(nuevo):
+                                    os.makedirs(nuevo)
+                                
+                                pathdest = nuevo + '\\' + elem
+                                shutil.move(pathsrc,pathdest)
+                            else:
+                                exitoParseo = False
+                                msg = res[1]
+                                continue
+
+                        elif (tipo[0] == "942"):
+                            
+                            res = parseo942(elem,directorio)
+                            
+                            if(res[0] == "True"):
+                            
+                                #Mover archivo a procesado
+                                pathsrc = direct 
+                                nuevo = directorioSalida +"\\MT" + tipo[0]  
+                                
+                                if not os.path.exists(nuevo):
+                                    os.makedirs(nuevo)
+                                
+                                pathdest = nuevo + '\\' + elem
+                                shutil.move(pathsrc,pathdest)
+                            else:
+                                exitoParseo = False
+                                msg = res[1]
+                                continue
+
+                    else:
+                        exito = False
+                        msg = tipo[1]
+                        break
+                
+            return JsonResponse({'exitoParseo':exitoParseo,'exitoconci':exitoconci,'msg':msg,'fecha':fecha,'fechaActual':fechaActual, 'exito':exito, 'cuenta': json_cuenta, 'cons':json_cons, 'cod': cod})
 
 
 @login_required(login_url='/login')
@@ -2782,9 +2855,9 @@ def transIntraday(request,cuenta):
     fecha = cuentaId.ultimafechaconciliacion.strftime("%d/%m/%Y")
     fechaActual = datetime.now().strftime("%d/%m/%Y %H:%M %p")
                 
-               
+    idioma = Configuracion.objects.all()[0].idioma    
     
-    context = {'ops':get_ops(request),'cuenta':cuentaId,'fecha':fecha , 'fechaActual':fechaActual}
+    context = {'idioma':idioma,'ops':get_ops(request),'cuenta':cuentaId,'fecha':fecha , 'fechaActual':fechaActual}
     template = "matcher/transIntraday.html"
 
     return render(request, template, context)
