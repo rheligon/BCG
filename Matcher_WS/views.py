@@ -28,6 +28,7 @@ from Matcher_WS.Matcher_call import matcher, dma_millis
 from Matcher_WS.funciones_get import get_ops, get_cuentas, get_ci, get_idioma, get_bancos, get_archivosMT99, get_archivosMT96, get_codigos95,elimina_tildes, get_archivosLicencia,verificarDirectorio, get_ldap
 from Matcher_WS.generar_reporte import generarReporte, pdfView, xlsView
 from Matcher_WS.setConsolidado import setConsolidado
+from Matcher_WS.parsers import parseo942
 
 import time
 import os
@@ -2690,6 +2691,7 @@ def intraday(request):
     lista = [Opcion.objects.get(idopcion=p).funprincipal for p in permisos]
     lista.sort()
     lista = set(lista)
+
     if not 16 in lista:
         retour = custom_403(request)
         return HttpResponseForbidden(retour)
@@ -2743,6 +2745,20 @@ def intraday(request):
                 exito = False
 
             json_cuenta = serializers.serialize('json', [cuenta])
+
+            archivos942 = ""
+            
+            obj = Configuracion.objects.all()[0]
+            directorio = obj.dirintraday +"\\MT942"
+
+            try:
+                archivos942 = os.listdir(directorio)
+            except OSError:
+                os.makedirs(directorio)
+                archivos942 = os.listdir(directorio)
+            
+            for elem in archivos942:
+                parseo942(elem,directorio)
                 
 
             return JsonResponse({'fecha':fecha,'fechaActual':fechaActual, 'exito':exito, 'cuenta': json_cuenta, 'cons':json_cons, 'cod': cod})
@@ -2856,6 +2872,8 @@ def configuracion(request, tipo):
                 arch = request.POST.get('arch')
                 archconfirm = request.POST.get('archconfirm')
                 dirIntraday = request.POST.get('dirIntraday')
+                dirIntradaySalida = request.POST.get('dirIntradaySalida')
+                tiempoIntraday = request.POST.get('tiempoAct')
                 dir_s_mt95 = request.POST.get('dir_s_mt95')
                 dir_c_mt96 = request.POST.get('dir_c_mt96')
                 dir_s_mt99 = request.POST.get('dir_s_mt99')
@@ -2875,7 +2893,7 @@ def configuracion(request, tipo):
                 conf = Configuracion.objects.all()[0]
 
                 #Crear directorios si no existen
-                arregloDir = [cont_carg,cont_procs,corr_carg,corr_procs,arch,dir_s_mt95,dir_c_mt96,dir_s_mt99,dir_c_mt99,dir_p_mt96,dir_p_mt99,archconfirm,dirlicencia,dirIntraday]
+                arregloDir = [cont_carg,cont_procs,corr_carg,corr_procs,arch,dir_s_mt95,dir_c_mt96,dir_s_mt99,dir_c_mt99,dir_p_mt96,dir_p_mt99,archconfirm,dirlicencia,dirIntraday,dirIntradaySalida]
                 verificarDirectorio(arregloDir)
 
                 # Asignar los cambios
@@ -2900,6 +2918,8 @@ def configuracion(request, tipo):
                 conf.dirarchive = arch
                 conf.dirarchiveconfirmados = archconfirm
                 conf.dirintraday = dirIntraday
+                conf.dirintradaysalida = dirIntradaySalida
+                conf.tiempointraday = tiempoIntraday
                 conf.dirsalida95 = dir_s_mt95
                 conf.dircarga96 = dir_c_mt96
                 conf.dirsalida99 = dir_s_mt99

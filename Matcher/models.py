@@ -175,7 +175,10 @@ class Configuracion(models.Model):
     dirprocesado99 = models.CharField(db_column='DirProcesado99', max_length=200, blank=True)  
     dirlicencia = models.CharField(db_column='DirLicencia', max_length=200, blank=True)  
     expiracion_sesion = models.IntegerField(db_column='ExpiraSesion', blank=True, null=True)
-    dirintraday = models.CharField(db_column='DirIntraday', max_length=200, blank=True)  
+    dirintraday = models.CharField(db_column='DirIntraday', max_length=200, blank=True)
+    tiempointraday = models.IntegerField(db_column='TiempoIntraday', blank=True, null=True)
+    dirintradaysalida = models.CharField(db_column='DirIntradaySalida', max_length=200, blank=True)
+     
     
     class Meta:
         db_table = 'Configuracion'
@@ -602,9 +605,51 @@ class Mt103(models.Model):
     info_remitente_a_receptor = models.CharField(db_column='info_remitente_a_receptor', max_length=250,null=True)
     reporte_regulatorio = models.CharField(db_column='reporte_regulatorio', max_length=120,null=True)
     cuenta = models.ForeignKey(Cuenta, db_column='cuenta', null=True)
+    remitente = models.CharField(db_column='remitente', max_length=12)  
+    receptor = models.CharField(db_column='receptor', max_length=12)  
     
     class Meta:
         db_table = 'MT103'
+
+class Mt202(models.Model):
+    idmt202 = sqlserver_ado.fields.BigAutoField(db_column='idMT202', primary_key=True)  
+    ref_transaccion = models.CharField(db_column='ref_transaccion', max_length=16)  
+    ref_relacion = models.CharField(db_column='ref_relacion', max_length=16)  
+    ind_hora = models.TextField(db_column='ind_hora',null=True)  
+    fecha_moneda_monto = models.CharField(db_column='fecha_moneda_monto', max_length=24)  
+    institucion_ordenante = models.CharField(db_column='institucion_ordenante', max_length=200,null=True)  
+    corresponsal_remitente = models.CharField(db_column='corresponsal_remitente', max_length=200,null=True)  
+    corresponsal_receptor = models.CharField(db_column='corresponsal_receptor', max_length=200,null=True)  
+    intermediario = models.CharField(db_column='intermediario', max_length=200,null=True)  
+    cuenta_institucion = models.CharField(db_column='cuenta_institucion', max_length=200,null=True)  
+    institucion_beneficiaria = models.CharField(db_column='institucion_beneficiaria', max_length=200)  
+    info_remitente_a_receptor = models.CharField(db_column='info_remitente_a_receptor', max_length=250,null=True)
+    cuenta = models.ForeignKey(Cuenta, db_column='cuenta', null=True)
+    remitente = models.CharField(db_column='remitente', max_length=12)  
+    receptor = models.CharField(db_column='receptor', max_length=12)  
+    
+    class Meta:
+        db_table = 'MT202'
+
+class Mt942(models.Model):
+    idmt942 = sqlserver_ado.fields.BigAutoField(db_column='idMT942', primary_key=True)  
+    ref_transaccion = models.CharField(db_column='ref_transaccion', max_length=16)  
+    ref_relacion = models.CharField(db_column='ref_relacion', max_length=16,null=True)  
+    id_cuenta = models.CharField(db_column='id_cuenta', max_length=35)  
+    edo_cuenta_secuencia = models.CharField(db_column='edo_cuenta_secuencia', max_length=11)  
+    limite_cd = models.CharField(db_column='limite_cd', max_length=19)  
+    limite_credito = models.CharField(db_column='limite_credito', max_length=19,null=True)  
+    fecha_hora = models.CharField(db_column='fecha_hora', max_length=15)  
+    info_owner = models.TextField(db_column='info_owner',null=True)  
+    total_debitos = models.CharField(db_column='total_debitos', max_length=23,null=True)  
+    total_creditos = models.CharField(db_column='total_creditos', max_length=23,null=True)  
+    info_owner_final = models.CharField(db_column='info_owner_final', max_length=450,null=True)  
+    cuenta = models.ForeignKey(Cuenta, db_column='cuenta', null=True)
+    remitente = models.CharField(db_column='remitente', max_length=12)  
+    receptor = models.CharField(db_column='receptor', max_length=12)  
+    
+    class Meta:
+        db_table = 'MT942'
 
 
 class Matchconfirmado(models.Model):
