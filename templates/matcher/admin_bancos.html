@@ -15,11 +15,18 @@
 {% block content %}
 
 <div class="table-responsive col-md-7">
+  <input type="text" id="idioma" value="{{idioma}}" hidden/>
     <table id="table-bancos" class="table table-bordered table-striped tabla">
         <thead>
             <tr>
-                <th>Código</th>
-                <th>Banco Corresponsal</th>
+                {%if idioma == 0%}
+                  <th>Código</th>
+                  <th>Banco Corresponsal</th>
+                {%endif%}
+                {%if idioma == 1%}
+                  <th>Code</th>
+                  <th>Correspondent Bank</th>
+                {%endif%}
             </tr>
         </thead>
         <tbody>
@@ -35,17 +42,32 @@
 
 <div class="col-md-5">
     <button type="button" id="addButton" data-loading-text="Cargando..." class="col-md-3 btn btn-success" autocomplete="off" data-toggle="modal" data-target="#add-banco-modal">
-        Agregar
+        {% if idioma == 0%}
+          Agregar
+        {%endif%}
+        {% if idioma == 1%}
+          Add
+        {%endif%}
     </button>
 </div>
 <div style="padding-top:1%;" class="col-md-5">
     <button type="button" id="delButton" data-loading-text="Cargando..." class="col-md-3 btn btn-danger" autocomplete="off">
-        Eliminar
+        {% if idioma == 0%}
+          Eliminar
+        {%endif%}
+        {% if idioma == 1%}
+          Delete
+        {%endif%}
     </button>
 </div>
 <div style="padding-top:1%;" class="col-md-5">
     <button type="button" id="updButton" data-loading-text="Cargando..." class="col-md-3 btn btn-primary" autocomplete="off">
-        Modificar
+        {% if idioma == 0%}
+          Modificar
+        {%endif%}
+        {% if idioma == 1%}
+          Modify
+        {%endif%}
     </button>
 </div>
 
@@ -54,24 +76,46 @@
     <form class="form-vertical">
     <fieldset>
         <!-- Form Name -->
-        <legend>Detalles:</legend>
+        {% if idioma == 0%}
+          <legend>Detalles:</legend>
 
-        <div class="row clearfix">
+          <div class="row clearfix">
 
-            <div class="form-group col-md-8 column">
-              <label class="control-label" for="Cod_banco">Código:</label>  
-              <div>
-                <input id="Cod_banco" name="Cod_banco" type="text" class="form-control input-md">
+              <div class="form-group col-md-8 column">
+                <label class="control-label" for="Cod_banco">Código:</label>  
+                <div>
+                  <input id="Cod_banco" name="Cod_banco" type="text" class="form-control input-md">
+                </div>
               </div>
-            </div>
 
-            <div class="form-group col-md-8 column">
-              <label class="control-label" for="Nom_banco">Nombre:</label>  
-              <div>
-                <input id="Nom_banco" name="Nom_banco" type="text" class="form-control input-md">
+              <div class="form-group col-md-8 column">
+                <label class="control-label" for="Nom_banco">Nombre:</label>  
+                <div>
+                  <input id="Nom_banco" name="Nom_banco" type="text" class="form-control input-md">
+                </div>
               </div>
-            </div>
-        </div>
+          </div>
+        {%endif%}
+        {% if idioma == 1%}
+          <legend>Details:</legend>
+
+          <div class="row clearfix">
+
+              <div class="form-group col-md-8 column">
+                <label class="control-label" for="Cod_banco">Code:</label>  
+                <div>
+                  <input id="Cod_banco" name="Cod_banco" type="text" class="form-control input-md">
+                </div>
+              </div>
+
+              <div class="form-group col-md-8 column">
+                <label class="control-label" for="Nom_banco">Name:</label>  
+                <div>
+                  <input id="Nom_banco" name="Nom_banco" type="text" class="form-control input-md">
+                </div>
+              </div>
+          </div>
+        {%endif%}
     </fieldset>
     </form>
 </div>
@@ -83,13 +127,32 @@
 
         <div class="modal-header">
           <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-          <h4 class="modal-title">Agregar un banco</h4>
+          <h4 class="modal-title">
+          {%if idioma == 0%}
+            Agregar un banco
+          {%endif%}
+          {%if idioma == 1%}
+            Add bank
+          {%endif%}
+          </h4>
         </div>
         <div class="modal-body">
           <div class="field">
-              <label for="add-banco-nombre">Nombre: </label>
+              <label for="add-banco-nombre">
+                {%if idioma == 0%}
+                  Nombre:
+                {%endif%}
+                {%if idioma == 1%}
+                  Name:
+                {%endif%}
+              </label>
               <div class="ui left labeled input">
-                  <input type="text" name="add-banco[nombre]" id="add-banco-nombre" placeholder="Nombre del banco" data-validation="[L>=3, L<=45]" data-validation-message="$ debe tener entre 3 y 45 caracteres." data-validation-regex="/^((?!admin).)*$/i" data-validation-regex-message="The word &quot;Admin&quot; no esta permitido en el $" data-toggle="popover" data-content="Puede usar letras y numeros.">
+                {%if idioma == 0%}
+                  <input type="text" name="add-banco[nombre]" id="add-banco-nombre" placeholder="Nombre del banco" data-validation="[L>=3, L<=45]" data-validation-message="$ debe tener entre 3 y 45 caracteres." data-validation-regex="/^((?!admin).)*$/i" data-validation-regex-message="La palabra &quot;Admin&quot; no esta permitida en el $" data-toggle="popover" data-content="Puede usar letras y numeros.">
+                {%endif%}
+                {%if idioma == 1%}
+                  <input type="text" name="add-banco[name]" id="add-banco-nombre" placeholder="Bank name" data-validation="[L>=3, L<=45]" data-validation-message="$ must have between 3 and 45 characters." data-validation-regex="/^((?!admin).)*$/i" data-validation-regex-message="The word &quot;Admin&quot; it is not allowed at $" data-toggle="popover" data-content="You can use numbers and letters only.">
+                {%endif%}
                   <div class="ui corner label">
                     <i class="asterisk icon">*</i>
                   </div>
@@ -97,9 +160,21 @@
           </div>
 
           <div class="field">
-              <label for="add-banco-codigo">Codigo: </label>
+              <label for="add-banco-codigo">
+              {%if idioma == 0%}
+                  Código:
+                {%endif%}
+                {%if idioma == 1%}
+                  Code:
+                {%endif%} 
+              </label>
               <div class="ui left labeled input">
-                  <input type="text" name="add-banco[codigo]" id="add-banco-codigo" placeholder="Codigo del banco" data-validation="[L>=2, L<=10]" data-validation-message="$ debe tener entre 2 y 10 caracteres." data-validation-regex="/^((?!admin).)*$/i" data-validation-regex-message="The word &quot;Admin&quot; no esta permitido en el $" data-toggle="popover" data-content="Puede usar letras y numeros."></input>
+                {%if idioma == 0%}
+                  <input type="text" name="add-banco[codigo]" id="add-banco-codigo" placeholder="Codigo del banco" data-validation="[L>=2, L<=10]" data-validation-message="$ debe tener entre 2 y 10 caracteres." data-validation-regex="/^((?!admin).)*$/i" data-validation-regex-message="La palabra &quot;Admin&quot; no esta permitida en el $" data-toggle="popover" data-content="Puede usar letras y numeros."></input>
+                {%endif%}
+                {%if idioma == 1%}
+                  <input type="text" name="add-banco[code]" id="add-banco-codigo" placeholder="Bank code" data-validation="[L>=2, L<=10]" data-validation-message="$ must have between 2 and 10 characters." data-validation-regex="/^((?!admin).)*$/i" data-validation-regex-message="The word &quot;Admin&quot; it is not allowed at $" data-toggle="popover" data-content="You can use numbers and letters only."></input>
+                {%endif%}
                   <div class="ui corner label">
                     <i class="asterisk icon">*</i>
                   </div>
@@ -107,8 +182,20 @@
           </div>
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
-          <input id="addb-submit" type="submit" class="btn btn-primary" value="Aceptar">
+          <button type="button" class="btn btn-default" data-dismiss="modal">
+          {%if idioma == 0%}
+            Cerrar
+          {%endif%}
+          {%if idioma == 1%}
+            Close
+          {%endif%}
+          </button>
+          {%if idioma == 0%}
+            <input id="addb-submit" type="submit" class="btn btn-primary" value="Aceptar">
+          {%endif%}
+          {%if idioma == 1%}
+            <input id="addb-submit" type="submit" class="btn btn-primary" value="Accept">
+          {%endif%}
         </div>
       </form>
     </div><!-- /.modal-content -->
@@ -122,7 +209,12 @@
             <div class="modal-body">
                 <div class="text-center">
                     <img src="{% static 'images/procesando.gif' %}" class="icon" />
-                    <h4>Procesando, por favor espere.</h4>
+                    {%if idioma == 0%}
+                      <h4>Procesando, por favor espere.</h4>
+                    {%endif%}
+                    {%if idioma == 1%}
+                      <h4>Processing, wait please.</h4>
+                    {%endif%}
                 </div>
             </div>
         </div>

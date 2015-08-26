@@ -3509,18 +3509,26 @@ def admin_bancos(request):
     expirarSesion(request)
     if request.method == 'POST':
         actn = request.POST.get('action')
+        idioma = Configuracion.objects.all()[0].idioma
 
         if actn == 'add':
             bancocod = request.POST.get('bancocod').upper()
             banconom = request.POST.get('banconom')
-            msg = "Banco agregado exitosamente."
+
+            if idioma == 0:
+                msg = "Banco agregado exitosamente."
+            else:
+                msg = "Successful aggregated bank."
 
             banco, creado = BancoCorresponsal.objects.get_or_create(codigo=bancocod, defaults={'nombre':banconom})
             
             if creado:
                 log(request,30,bancocod)
             else:
-                msg = "Ese banco ya existe en la Base de datos."
+                if idioma == 0:
+                    msg = "Ese banco ya existe en la Base de datos."
+                else:
+                    msg = "Bank already exist in data base."
 
             return JsonResponse({'msg': msg, 'bancoid': banco.idbanco, 'bancon': banco.nombre, 'bancoc': banco.codigo, 'creado': creado})
 
@@ -3528,17 +3536,27 @@ def admin_bancos(request):
             bancoid = request.POST.get('bancoid')
             bancocod = request.POST.get('bancocod').upper()
             banconom = request.POST.get('banconom')
-            msg = "Banco modificado exitosamente."
-
+            if idioma == 0:
+                msg = "Banco modificado exitosamente."
+            else:
+                msg = "Successful modified bank."
             try:
                 banco = BancoCorresponsal.objects.get(idbanco=bancoid)
             except BancoCorresponsal.DoesNotExist:
-                msg = "No se encontro el banco especificado, asegurese de hacer click en el banco a modificar."
+                if idioma == 0:
+                    msg = "No se encontro el banco especificado, asegurese de hacer click en el banco a modificar."
+                else:
+                    msg = "Bank not found, be sure to click a bank."
+                
                 return JsonResponse({'msg': msg, 'bancoid': bancoid, 'modif': False})
 
             bancoaux = BancoCorresponsal.objects.filter(codigo=bancocod)
             if (len(bancoaux)>0 and (bancoaux[0].idbanco != banco.idbanco)):
-                msg = "Ya existe un banco con ese codigo en la base de datos."
+                if idioma == 0:
+                    msg = "Ya existe un banco con ese codigo en la base de datos."
+                else:
+                    msg = "There is already a bank in the data base with this code."
+                
                 return JsonResponse({'msg': msg, 'bancoid': bancoaux[0].idbanco, 'bancon':bancoaux[0].nombre , 'bancoc':bancoaux[0].codigo, 'modif': False})
             
             banco.codigo = bancocod
@@ -3552,13 +3570,21 @@ def admin_bancos(request):
 
         elif actn == 'del':
 
-            msg = "Banco eliminado exitosamente."
+            if idioma == 0:
+                msg = "Banco eliminado exitosamente."
+            else:
+                msg = "Successful deleted bank."
+            
             bancoid = request.POST.get('bancoid')
 
             try:
                 banco = BancoCorresponsal.objects.get(idbanco=bancoid)
             except BancoCorresponsal.DoesNotExist:
-                msg = "No se encontro el banco especificado, asegurese de hacer click en el banco a eliminar."
+                if idioma == 0:
+                    msg = "No se encontro el banco especificado, asegurese de hacer click en el banco a eliminar."
+                else:
+                    msg = "Bank not found, be sure to click a bank."
+                 
                 return JsonResponse({'msg': msg, 'bancoid': bancoid, 'elim': False})
 
             #Para el log
@@ -3927,6 +3953,7 @@ def admin_archive(request):
     
     if request.method == 'POST':
         
+        idioma = Configuracion.objects.all()[0].idioma
         actn = request.POST.get('action')
         
         if actn == 'consultar':
@@ -3939,7 +3966,10 @@ def admin_archive(request):
             
             if (not consulta):
                 exito = False
-                msg = "No existen Matches Confirmados para esta cuenta"
+                if idioma == 0:
+                    msg = "No existen Matches Confirmados para esta cuenta"
+                else: 
+                    msg = "There are not confirmed matches for the account"
             else:
                 fechaMinima = consulta[0].fecha.strftime("%d/%m/%Y")
                 exito = True
@@ -4190,7 +4220,10 @@ def admin_archive(request):
                 info.close()
 
                 exito = False
-                msg = "Caracter inesperado, en la línea número " +str(contador+1)+ " del archivo " + archivo
+                if idioma == 0:
+                    msg = "Caracter inesperado, en la línea número " +str(contador+1)+ " del archivo " + archivo
+                else:
+                    msg = "Unexpected character, at the line " +str(contador+1)+ " of file " + archivo
                 
                 return JsonResponse({'exito':exito,'msg':msg})
 

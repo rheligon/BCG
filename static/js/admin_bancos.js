@@ -1,7 +1,15 @@
 //idioma_tr es una variable global definida en la pagina
-var tabla = iniciar_tabla(idioma_tr);
 var csrftoken = $.cookie('csrftoken');
+var idioma = $('#idioma').val();
+var idiomaAux = "";
+var msj ="";
 
+if (idioma == 0){
+    idiomaAux = "es"
+} else {
+    idiomaAux = "en"
+}
+var tabla = iniciar_tabla(idiomaAux);
 
 function iniciar_tabla(idioma){
 
@@ -63,8 +71,13 @@ $('#delButton').on('click', function () {
     var codB = $('#Cod_banco').val();
     var idB = $("#Id_banco").val();
     if (idB>=0){
+        if (idioma === 0){
+            msj = "Seguro que desea eliminar el banco "+ codB +" ?";
+        } else {
+            msj = "Sure you want delete bank "+ codB +" ?";
+        }
         swal({   title: "",
-             text: "Seguro que desea eliminar el banco "+ codB +" ?",
+             text: msj,
              type: "warning",
              showCancelButton: true,
              confirmButtonText: "Ok"},
@@ -75,7 +88,11 @@ $('#delButton').on('click', function () {
              }
              );
     }else{
-        swal("Ups!","Por favor seleccionar el banco a eliminar previamente.","error");
+        if (idioma === 0){
+            swal("Ups!","Por favor seleccionar el banco a eliminar previamente.","error");
+        } else {
+            swal("Ups!","Please select a bank for delete.","error");
+        }
     }
 
 })
@@ -141,8 +158,13 @@ $('#updButton').on('click', function () {
     var idB = $("#Id_banco").val();
 
     if (idB>=0){
+        if (idioma === 0){
+            msj = "Seguro que desea modificar el banco "+ codB +" ?";
+        } else {
+            msj = "Sure you want modify bank "+ codB +" ?";
+        }
         swal({   title: "",
-                 text: "Seguro que desea modificar el banco "+ codB +" ?",
+                 text: msj,
                  type: "warning",
                  showCancelButton: true,
                  confirmButtonText: "Ok"},
@@ -153,7 +175,11 @@ $('#updButton').on('click', function () {
                  }
                  );
     }else{
-        swal("Ups!","Por favor seleccionar el banco a modificar previamente.","error");
+        if (idioma === 0){
+            swal("Ups!","Por favor seleccionar el banco a modificar previamente.","error");
+        } else {
+            swal("Ups!","Please select a bank for modify.","error");
+        }
     }
 })
 
@@ -258,8 +284,13 @@ $('#form-add-bank').validate({
                             $btn.button('reset');
                         },
                         error: function(error){
+                            if (idioma === 0){
+                                msj = "Hubo un error, por favor verificar que los campos esten correctos e intente nuevamente.";
+                            } else {
+                                msj = "Error, verify fields and try again please.";
+                            }
                             swal({   title: "Ups!",
-                                         text: "Hubo un error, por favor verificar que los campos esten correctos e intente nuevamente.",
+                                         text: msj,
                                          type: "error",
                                          confirmButtonText: "Ok" });
                             $('#processing-modal').modal('toggle');
