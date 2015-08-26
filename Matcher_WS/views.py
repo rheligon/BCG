@@ -3636,6 +3636,7 @@ def admin_monedas(request):
     expirarSesion(request)
     if request.method == 'POST':
         actn = request.POST.get('action')
+        idioma = Configuracion.objects.all()[0].idioma 
 
         if actn == 'add':
             monedacod = request.POST.get('moncod').upper()
@@ -3654,17 +3655,29 @@ def admin_monedas(request):
             monedacod = request.POST.get('monedacod').upper()
             monedanom = request.POST.get('monedanom')
             monedacam = float(request.POST.get('monedacam'))
-            msg = "Moneda modificada exitosamente."
+
+            if idioma == 0:
+                msg = "Moneda modificada exitosamente."
+            else:
+                msg = "Successful modified currency."
 
             try:
                 moneda = Moneda.objects.get(idmoneda=monedaid)
             except Moneda.DoesNotExist:
-                msg = "No se encontro la moneda especificada, asegurese de hacer click en la moneda a modificar."
+                if idioma == 0:
+                    msg = "No se encontro la moneda especificada, asegurese de hacer click en la moneda a modificar."
+                else:
+                    msg = "Currency not found, be sure to click a currency first."
+                
                 return JsonResponse({'msg': msg, 'monedaid': monedaid, 'modif': False})
 
             monedaaux = Moneda.objects.filter(codigo=monedacod)
             if (len(monedaaux)>0 and (monedaaux[0].idmoneda != moneda.idmoneda)):
-                msg = "Ya existe una moneda con ese codigo en la base de datos."
+                if idioma == 0:
+                    msg = "Ya existe una moneda con ese codigo en la base de datos."
+                else:
+                    msg = "There is already a currency with that code in the data base."
+                
                 return JsonResponse({'msg': msg, 'monedaid': monedaaux[0].idmoneda, 'monnom':monedaaux[0].nombre , 'moncod':monedaaux[0].codigo, 'moncam':monedaaux[0].cambio_usd,'modif': False})
             
             moneda.codigo = monedacod
@@ -3679,13 +3692,21 @@ def admin_monedas(request):
 
         elif actn == 'del':
 
-            msg = "Moneda eliminada exitosamente."
+            if idioma == 0:
+                msg = "Moneda eliminada exitosamente."
+            else:
+                msg = "Successful deleted currency."
+
             monedaid = request.POST.get('monedaid')
 
             try:
                 moneda = Moneda.objects.get(idmoneda=monedaid)
             except Moneda.DoesNotExist:
-                msg = "No se encontro la moneda especificada, asegurese de hacer click en la moneda a eliminar previamente."
+                if idioma == 0:
+                    msg = "No se encontro la moneda especificada, asegurese de hacer click en la moneda a eliminar previamente."
+                else:
+                    msg = "Currency not found, be sure to click a currency first."
+                
                 return JsonResponse({'msg': msg, 'monedaid': monedaid, 'elim': False})
 
             #Para el log
@@ -3716,6 +3737,7 @@ def admin_cuentas(request):
     expirarSesion(request)
     if request.method == 'POST':
         actn = request.POST.get('action')
+        idioma = Configuracion.objects.all()[0].idioma 
 
         if actn == 'encaje_S':
             cuentaid = int(request.POST.get('cuentaid'))
@@ -3727,7 +3749,10 @@ def admin_cuentas(request):
             return JsonResponse(res_json, safe=False)
 
         if actn == 'encaje_add':
-            msg="Encaje agregado exitosamente."
+            if idioma == 0:
+                msg="Encaje agregado exitosamente."
+            else:
+                msg="Successful aggregated cash."
             cuentaid = int(request.POST.get('cuentaid'))
             monto = request.POST.get('monto')
             fechapost = request.POST.get('fecha')
@@ -3768,25 +3793,40 @@ def admin_cuentas(request):
             try:
                 criterio = CriteriosMatch.objects.get(pk=criterioid)
             except CriteriosMatch.DoesNotExist:
-                msg = "No se encontro el criterio especificado."
+                if idioma == 0:
+                    msg = "No se encontro el criterio especificado."
+                else:
+                    msg = "Criteria not found."
+                
                 return JsonResponse({'msg': msg, 'add': False})
 
             try:
                 banco = BancoCorresponsal.objects.get(pk=bancoid)
             except BancoCorresponsal.DoesNotExist:
-                msg = "No se encontro el banco especificado."
+                if idioma == 0:
+                    msg = "No se encontro el banco especificado."
+                else:
+                    msg = "Bank not found."
                 return JsonResponse({'msg': msg, 'add': False})
 
             try:
                 moneda = Moneda.objects.get(pk=monedaid)
             except Moneda.DoesNotExist:
-                msg = "No se encontro la moneda especificada."
+                if idioma == 0:
+                    msg = "No se encontro la moneda especificada."
+                else:
+                    msg = "Currency not found."
+                
                 return JsonResponse({'msg': msg, 'add': False})
 
             cuenta, creado = Cuenta.objects.get_or_create(codigo=codigo, defaults={'criterios_match_idcriterio':criterio, 'banco_corresponsal_idbanco': banco, 'moneda_idmoneda':moneda, 'ref_nostro':ref_nostro, 'ref_vostro':ref_vostro, 'descripcion':desc, 'estado':estado, 'tiempo_retension':tretencion, 'num_saltos':nsaltos, 'transaccion_giro':tgiro, 'intraday':intraday, 'correo_alertas':mailalertas, 'tipo_cta':tipo_cta, 'tipo_cargacont':tcargcont, 'tipo_carga_corr':tcargcorr, 'tipo_proceso':tproc})
             
             if not creado:
-                msg = "Ya existe un banco con ese codigo en la base de datos."
+                if idioma == 0:
+                    msg = "Ya existe un banco con ese codigo en la base de datos."
+                else:
+                    msg = "There ir alredy a bank in the data base with the introduced code."
+                
                 return JsonResponse({'msg': msg, 'add': False}) 
 
             #Se crean las alertas seleccionadas
@@ -3800,15 +3840,22 @@ def admin_cuentas(request):
 
                     AlertasCuenta.objects.create(alertas_idalertas=alerta,cuenta_idcuenta=cuenta,valor=valor)
 
-            msg = "Cuenta creada satisfactoriamente."
+            if idioma == 0:
+                msg = "Cuenta creada satisfactoriamente."
+            else:
+                msg = "Successful created account."
+            
             #Para el log
             log(request,21,codigo)
             return JsonResponse({'msg':msg, 'cuentaid':cuenta.pk ,'criterioid':criterioid, 'criterionom':criterio.nombre,'codigo':codigo, 'bancoid':bancoid, 'bancocod':banco.codigo ,'monedaid':monedaid, 'monedacod':moneda.codigo ,'ref_nostro':ref_nostro, 'ref_vostro':ref_vostro, 'desc':desc, 'estado':estado, 'tretencion':tretencion, 'nsaltos':nsaltos,'tgiro':tgiro,'intraday':intraday,'mailalertas':mailalertas,'tipo_cta':tipo_cta,'tcargcont':tcargcont,'tcargcorr':tcargcorr,'tproc':tproc, 'add': True})
 
         if actn == 'del':
             cuentaid = int(request.POST.get('cuentaid'))
-            msg = "Cuenta eliminada exitosamente."
-
+            if idioma == 0:
+                msg = "Cuenta eliminada exitosamente."
+            else:
+                msg = "Successful deleted account."
+            
             cuenta = Cuenta.objects.get(pk=cuentaid)
             #Para el log
             log(request,23,cuenta.codigo)            
@@ -3844,7 +3891,11 @@ def admin_cuentas(request):
                 cuentaobj = Cuenta.objects.filter(pk=cuentaid)
                 cuenta = cuentaobj[0]
             except Cuenta.DoesNotExist:
-                msg = "No se encontro la cuenta especificada."
+                if idioma == 0:
+                    msg = "No se encontro la cuenta especificada."
+                else:
+                    msg = "Account not found."
+                
                 return JsonResponse({'msg': msg, 'modif': False})
 
             # Obtener criterio para asignar a la cuenta
@@ -3852,7 +3903,11 @@ def admin_cuentas(request):
                 try:
                     criterio = CriteriosMatch.objects.get(pk=criterioid)
                 except CriteriosMatch.DoesNotExist:
-                    msg = "No se encontro el criterio especificado."
+                    if idioma == 0:
+                        msg = "No se encontro el criterio especificado."
+                    else:
+                        msg = "Criteria not found."
+                    
                     return JsonResponse({'msg': msg, 'modif': False})
 
             # Checkeo si el usuario tiene permitida la opcion de modif criterio
@@ -3869,7 +3924,11 @@ def admin_cuentas(request):
                     try:
                         banco = BancoCorresponsal.objects.get(pk=bancoid)
                     except CriteriosMatch.DoesNotExist:
-                        msg = "No se encontro el banco especificado."
+                        if idioma == 0:
+                            msg = "No se encontro el banco especificado."
+                        else:
+                            msg = "Bank not found."
+                        
                         return JsonResponse({'msg': msg, 'modif': False})
 
                     cuenta.banco_corresponsal_idbanco = banco
@@ -3879,7 +3938,11 @@ def admin_cuentas(request):
                     try:
                         moneda = Moneda.objects.get(pk=monedaid)
                     except Moneda.DoesNotExist:
-                        msg = "No se encontro la moneda especificada."
+                        if idioma == 0:
+                            msg = "No se encontro la moneda especificada."
+                        else:
+                            msg = "Currency not found."
+
                         return JsonResponse({'msg': msg, 'modif': False})
 
                     cuenta.moneda_idmoneda = moneda
@@ -3925,7 +3988,10 @@ def admin_cuentas(request):
 
                         AlertasCuenta.objects.create(alertas_idalertas=alerta,cuenta_idcuenta=cuenta,valor=valor)
 
-            msg = "Cuenta modificada satisfactoriamente."
+            if idioma == 0:
+                msg = "Cuenta modificada satisfactoriamente."
+            else:
+                msg = "Successful modified account."
 
             #Para el log
             log(request,22,cuenta.codigo)
@@ -4871,7 +4937,7 @@ def admin_crit_reglas(request):
                 if idioma == 0:
                     msg = "Hubo un error, por favor verificar que los campos esten correctos e intente nuevamente."
                 else:
-                    msg = "Error ocurred, verifi fields and try again please."
+                    msg = "Error occurred, verifi fields and try again please."
                 
                 return JsonResponse({'msg':msg, 'creado':False})
 

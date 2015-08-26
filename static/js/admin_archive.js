@@ -255,7 +255,7 @@ $('#boton-ejecutar').on('click', function () {
                     if (idioma === 0){ 
                         swal("Ups!", "La fecha Final no puede ser menor a la Fecha Mínima de Match", "error");
                     } else {
-                        swal("Ups!", "Final date can not be less than Match nim date", "error");
+                        swal("Ups!", "Final date can not be less than Match minimum date", "error");
                     }
                 }else{
                     var $btn;
@@ -370,7 +370,7 @@ function consultarEjecutar(cuenta){
                         if (idioma === 0){
                             swal("Ups!", "La fecha Final no puede ser menor a la Fecha Mínima de Match", "error");
                         } else {
-                            swal("Ups!", "Final date can not be greater than match min date.", "error");
+                            swal("Ups!", "Final date can not be greater than match minimum date.", "error");
                         }
                     }else{
                         $('#processing-modal').modal('toggle')
