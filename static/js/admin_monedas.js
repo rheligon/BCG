@@ -1,7 +1,20 @@
-//idioma_tr es una variable global definida en la pagina
-var tabla = iniciar_tabla(idioma_tr);
 var csrftoken = $.cookie('csrftoken');
+var idioma = $('#idioma').val();
+var idiomaAux = "";
+var msj ="";
+var titulo ="";
 
+if (idioma == 0){
+    idiomaAux = "es";
+    meses = "Meses";
+    dias = "Días";
+} else {
+    idiomaAux = "en";
+    meses = "Months";
+    dias = "Days";
+}
+
+var tabla = iniciar_tabla(idiomaAux);
 
 function iniciar_tabla(idioma){
 
@@ -85,8 +98,13 @@ $('#delButton').on('click', function () {
     var idM = $("#Id_moneda").val();
 
     if (idM>=0){
+        if (idioma === 0){
+            msj = "Seguro que desea eliminar la moneda "+codM+" ?";
+        } else {
+            msj = "Sure you want delete the currency "+codM+" ?";
+        }
         swal({   title: "",
-             text: "Seguro que desea eliminar la moneda "+codM+" ?",
+             text: msj,
              type: "warning",
              showCancelButton: true,
              confirmButtonText: "Ok"},
@@ -97,7 +115,11 @@ $('#delButton').on('click', function () {
              }
              );
     }else{
-        swal("Ups!","Por favor seleccionar una moneda a eliminar previamente.", "error");
+        if (idioma === 0){
+            swal("Ups!","Por favor seleccionar una moneda a eliminar previamente.", "error");
+        } else {
+            swal("Ups!","Select a currency please.", "error");
+        }
     }
 })
 
@@ -154,13 +176,26 @@ $('#updButton').on('click', function () {
 
     if(idM>=0){
         if (codM.length===0){
-            swal("Ups!", "Recuerde el codigo es obligatorio por lo que no debe estar vacío.", "info");
+            if (idioma === 0){
+                swal("Ups!", "Recuerde el codigo es obligatorio por lo que no debe estar vacío.", "info");
+            } else {
+                swal("Ups!", "Code field is mandatory.", "info");
+            }
         }else if (codM.length>3 || nomM.length>10){
+            if (idioma === 0){
                 swal("Ups!", "Recuerde el codigo y el nombre deben tener máximo 3 y 10 caracteres respectivamente", "info");
+            } else {
+                swal("Ups!", "Code and name fields must have 3 and 10 characters maximum.", "info");   
+            }
         }else{
+            if (idioma === 0){
+                msj = "Seguro que desea modificar la moneda "+ codM +" ?";
+            } else {
+                msj = "Sure you want modify the currency "+codM+" ?";
+            }
             swal({   
              title: "",
-             text: "Seguro que desea modificar la moneda "+ codM +" ?",
+             text: msj,
              type: "warning",
              showCancelButton: true,
              confirmButtonText: "Ok"
@@ -172,7 +207,11 @@ $('#updButton').on('click', function () {
              });
         }
     }else{
-        swal("Ups!","Por favor seleccionar la moneda a modificar previamente.","error");
+        if (idioma === 0) {
+            swal("Ups!","Por favor seleccionar la moneda a modificar previamente.","error");
+        } else {
+            swal("Ups!","Select a currency please.","error");    
+        }
     }
 })
 
@@ -235,13 +274,25 @@ $('#form-add-moneda').validate({
                                 var jRow = $("#tr-"+data.monedaid).append(td1,td2,td3);
 
                                 tabla.row.add(jRow).draw();
-                                swal({   title: "Exito!",
-                                         text: "Moneda agregada satisfactoriamente.",
+                                if (idioma === 0){
+                                    msj = "Moneda agregada satisfactoriamente.";
+                                    titulo = "Exito!";
+                                } else {
+                                    msj = "Sucessful aggregated currency.";
+                                    titulo = "Success";
+                                }
+                                swal({   title: titulo,
+                                         text: msj,
                                          type: "success",
                                          confirmButtonText: "Ok" });
                             }else{
+                                if (idioma === 0){
+                                    msj = "Ya esa Moneda existe en la Base de Datos";
+                                } else {
+                                    msj = "Currency alredy exist in data base.";
+                                }
                                 swal({   title: "",
-                                         text: "Ya esa Moneda existe en la Base de Datos",
+                                         text: msj,
                                          type: "warning",
                                          confirmButtonText: "Ok" });
                                 $("#Cod_moneda").val(data.moncod);
@@ -263,8 +314,13 @@ $('#form-add-moneda').validate({
                         },
                         error: function(jqXHR,error){
                             alert(jqXHR.responseText)
+                            if (idioma === 0){
+                                    msj = "Hubo un error, por favor verificar que los campos esten correctos e intente nuevamente.";
+                                } else {
+                                    msj = "Error occurred, verify fields and try again please.";
+                                }
                             swal({   title: "",
-                                     text: "Hubo un error, por favor verificar que los campos esten correctos e intente nuevamente.",
+                                     text: msj,
                                      type: "error",
                                      confirmButtonText: "Ok" });
                             $('#processing-modal').modal('toggle');

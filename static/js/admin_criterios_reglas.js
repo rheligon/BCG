@@ -335,7 +335,7 @@ $('#form-add-criterio').validate({
                             if (idioma === 0){
                                 msj = "Hubo un error, por favor verificar que los campos esten correctos e intente nuevamente.";
                             } else {
-                                msj = "Error ocurred, verify fields and try againg please.";
+                                msj = "Error occurred, verify fields and try againg please.";
                             }
                             swal({   title: "",
                                      text: msj,
