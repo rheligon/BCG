@@ -53,27 +53,27 @@ function iniciar_tabla(idioma){
 
         return $('#table-pa').DataTable({
             language: {
-                url: '/static/json/No-Filter-Tables-English.json'
+                url: '/static/json/English-tables.json'
             },
             "autoWidth": false,
-            "scrollCollapse": true,
             "scrollY": "350px",
-            "orderClasses": false,
+            "deferRender": true,
             "ordering":  false,
+            "paging": false,
             
             "columns": [
                 { "width": "11%" },//E/C
-                { "width": "4%" },//Pagina
+                { "width": "2%" },//Pagina
                 { "width": "11%" },//Fecha 
                 { "width": "5%" },//Tipo
                 { "width": "14%" },//Ref Nostro
                 { "width": "14%" },//Ref Vostro
-                { "width": "19%" },//Detalles
+                { "width": "21%" },//Detalles
                 { "width": "4%" },//C/D
                 { "width": "14%" },//Monto
                 { "width": "4%" }//S/L
               ]
-        })
+            })
     };
 };
 
