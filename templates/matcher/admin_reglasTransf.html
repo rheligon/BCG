@@ -13,9 +13,17 @@
 {%endblock%}
 
 {% block content %}
+<input type="text" id="idioma" value="{{idioma}}" hidden/>
 <!-- Select Basic -->
 <div class="form-group col-md-12">
-  <label class="col-md-3" for="Cuenta-sel">Seleccione una cuenta: </label>
+  <label class="col-md-3" for="Cuenta-sel">
+    {%if idioma == 0%}
+      Seleccione una cuenta: 
+    {%endif%}
+    {%if idioma == 1%}
+      Select an account: 
+    {%endif%}
+  </label>
   <div class="col-md-3">
     <select id="Cuenta-sel" name="Cuenta-sel" class="form-control">
       <option value="-1">----------</option>
@@ -28,13 +36,23 @@
   {% if 17 in ops %}
   <div class="col-md-3 col-md-push-2">
       <button type="button" id="addButton" data-loading-text="Cargando..." class="col-md-6 btn btn-success" autocomplete="off" data-toggle="modal" data-target="#add-regla-modal">
-          Agregar
+        {%if idioma == 0%}
+          Agregar 
+        {%endif%}
+        {%if idioma == 1%}
+          Add 
+        {%endif%}
       </button>
   </div>
 
   <div class="col-md-3 col-md-push-1">
       <button type="button" id="delButton" data-loading-text="Cargando..." class="col-md-6 btn btn-danger" autocomplete="off">
-          Eliminar
+        {%if idioma == 0%}
+          Eliminar 
+        {%endif%}
+        {%if idioma == 1%}
+          Delete 
+        {%endif%}
       </button>
   </div>
   {%endif%}
@@ -42,10 +60,24 @@
 
 <div class="row">
   <div style="text-align:center; width:35%" class="well well-sm col-md-4 col-md-push-3">
-    <h4>Contabilidad</h4>
+    <h4>
+      {%if idioma == 0%}
+        Contabilidad 
+      {%endif%}
+      {%if idioma == 1%}
+        Accounting 
+      {%endif%}
+    </h4>
   </div>
   <div style="text-align:center; width:37%" class="well well-sm col-md-4 col-md-push-3">
-    <h4>Corresponsal</h4>
+    <h4>
+      {%if idioma == 0%}
+        Corresponsal 
+      {%endif%}
+      {%if idioma == 1%}
+        Correspondent 
+      {%endif%}
+    </h4>
   </div>
 </div>
 
@@ -53,6 +85,7 @@
     <table id="table-reglas" class="table table-bordered table-striped tabla">
         <thead>
             <tr>
+              {%if idioma == 0%}
                 <th>Nombre</th>
                 <th>Tipo</th>
                 <th>Trans</th>
@@ -61,6 +94,17 @@
                 <th>Trans</th>
                 <th>Referencia</th>
                 <th>Máscara</th>
+              {%endif%}
+              {%if idioma == 1%}
+                <th>Name</th>
+                <th>Type</th>
+                <th>Trans</th>
+                <th>Reference</th>
+                <th>Mask</th>
+                <th>Trans</th>
+                <th>Reference</th>
+                <th>Mask</th>
+              {%endif%}
             </tr>
         </thead>
         <tbody id="tb-reglas">
@@ -74,11 +118,25 @@
     <fieldset>
 
     <!-- Form Name -->
-    <legend>Detalles:</legend>
+    <legend>
+      {%if idioma == 0%}
+        Detalles:
+      {%endif%}
+      {%if idioma == 1%}
+        Details:
+      {%endif%}
+    </legend>
 
     <!-- Text input-->
     <div class="form-group col-md-4">
-      <label class="col-md-3 control-label" for="nom-regla">Nombre: </label>  
+      <label class="col-md-3 control-label" for="nom-regla">
+        {%if idioma == 0%}
+          Nombre:
+        {%endif%}
+        {%if idioma == 1%}
+          Name:
+        {%endif%}
+      </label>  
       <div class="col-md-3">
       <input id="nom-regla" name="nom-regla" type="text" class="form-control input-md">
         
@@ -87,21 +145,42 @@
 
     <!-- Select Basic -->
     <div class="form-group col-md-4">
-      <label class="col-md-3 control-label" for="sel-tipo-regla">Tipo: </label>
+      <label class="col-md-3 control-label" for="sel-tipo-regla">
+        {%if idioma == 0%}
+          Tipo:
+        {%endif%}
+        {%if idioma == 1%}
+          Type:
+        {%endif%}
+      </label>
       <div class="col-md-3">
         <select id="sel-tipo-regla" name="sel-tipo-regla" class="form-control">
+        {%if idioma == 0%}  
           <option value="0">--------</option>
           <option value="1">1. Normal 1-1</option>
           <option value="2">2. Reverso Conta 2-0</option>
           <option value="3">3. Reverso Corres 0-2</option>
           <option value="4">4. n-m</option>
+        {%endif%}
+        {%if idioma == 1%}  
+          <option value="0">--------</option>
+          <option value="1">1. Regular 1-1</option>
+          <option value="2">2. Acct. Reverse 2-0</option>
+          <option value="3">3. Corr. Reverse 0-2</option>
+          <option value="4">4. n-m</option>
+        {%endif%}
         </select>
       </div>
     </div>
 
     <div class="col-md-3 col-md-push-1">
     <button type="button" id="updButton" data-loading-text="Cargando..." class="col-md-6 btn btn-primary" autocomplete="off">
+      {%if idioma == 0%}
         Modificar
+      {%endif%}
+      {%if idioma == 1%}
+        Modify
+      {%endif%}
     </button>
     </div>
     </fieldset>
@@ -119,11 +198,25 @@
     <fieldset>
 
     <!-- Form Name -->
-    <legend>Contabilidad</legend>
+    <legend>
+      {%if idioma == 0%}
+        Contabilidad:
+      {%endif%}
+      {%if idioma == 1%}
+        Accounting:
+      {%endif%}
+    </legend>
 
     <!-- Text input-->
     <div class="form-group">
-      <label class="col-md-4 control-label" for="trans-conta">Transacción: </label>  
+      <label class="col-md-4 control-label" for="trans-conta">
+        {%if idioma == 0%}
+          Transacción:
+        {%endif%}
+        {%if idioma == 1%}
+          Transaction:
+        {%endif%}
+      </label>  
       <div class="col-md-4">
       <input id="trans-conta" name="trans-conta" type="text" class="form-control input-md">
         
@@ -132,7 +225,14 @@
 
     <!-- Select Basic -->
     <div class="form-group">
-      <label class="col-md-4 control-label" for="sel-ref-conta">Referencia: </label>
+      <label class="col-md-4 control-label" for="sel-ref-conta">
+        {%if idioma == 0%}
+          Referencia:
+        {%endif%}
+        {%if idioma == 1%}
+          Reference:
+        {%endif%}
+      </label>
       <div class="col-md-4">
         <select id="sel-ref-conta" name="sel-ref-conta" class="form-control">
           <option value="0">--------</option>
@@ -144,7 +244,14 @@
 
     <!-- Text input-->
     <div class="form-group">
-      <label class="col-md-4 control-label" for="masc-conta">Máscara: </label>  
+      <label class="col-md-4 control-label" for="masc-conta">
+        {%if idioma == 0%}
+          Máscara:
+        {%endif%}
+        {%if idioma == 1%}
+          Mask:
+        {%endif%}
+      </label>  
       <div class="col-md-5">
       <input id="masc-conta" name="masc-conta" type="text" class="form-control input-md">
         
@@ -161,11 +268,25 @@
     <fieldset>
 
     <!-- Form Name -->
-    <legend>Corresponsal</legend>
+    <legend>
+      {%if idioma == 0%}
+        Corresponsal:
+      {%endif%}
+      {%if idioma == 1%}
+        Correspondent:
+      {%endif%}
+    </legend>
 
     <!-- Text input-->
     <div class="form-group">
-      <label class="col-md-4 control-label" for="trans-corr">Transacción: </label>  
+      <label class="col-md-4 control-label" for="trans-corr">
+        {%if idioma == 0%}
+          Transacción:
+        {%endif%}
+        {%if idioma == 1%}
+          Transaction:
+        {%endif%}
+      </label>  
       <div class="col-md-4">
       <input id="trans-corr" name="trans-conta" type="text" class="form-control input-md">
         
@@ -174,7 +295,14 @@
 
     <!-- Select Basic -->
     <div class="form-group">
-      <label class="col-md-4 control-label" for="sel-ref-corr">Referencia: </label>
+      <label class="col-md-4 control-label" for="sel-ref-corr">
+        {%if idioma == 0%}
+          Referencia:
+        {%endif%}
+        {%if idioma == 1%}
+          Reference:
+        {%endif%}
+      </label>
       <div class="col-md-4">
         <select id="sel-ref-corr" name="sel-ref-corr" class="form-control">
           <option value="0">--------</option>
@@ -186,7 +314,14 @@
 
     <!-- Text input-->
     <div class="form-group">
-      <label class="col-md-4 control-label" for="masc-corr">Máscara: </label>  
+      <label class="col-md-4 control-label" for="masc-corr">
+        {%if idioma == 0%}
+          Máscara:
+        {%endif%}
+        {%if idioma == 1%}
+          Mask:
+        {%endif%}
+      </label>  
       <div class="col-md-5">
       <input id="masc-corr" name="masc-corr" type="text" class="form-control input-md">
         
@@ -308,7 +443,12 @@
             <div class="modal-body">
                 <div class="text-center">
                     <img src="{% static 'images/procesando.gif' %}" class="icon" />
-                    <h4>Procesando, por favor espere.</h4>
+                    {%if idioma == 0%}
+                      <h4>Procesando, por favor espere.</h4>
+                    {%endif%}
+                    {%if idioma == 1%}
+                      <h4>Processing, wait please.</h4>
+                    {%endif%}
                 </div>
             </div>
         </div>
@@ -317,8 +457,6 @@
 {% endblock %}
 
 {% block script%}
-<script> //define el idioma de la tabla (es/en)
-         idioma_tr = "es" </script>
 <script src="{% static 'js/jquery.dataTables.min.js' %}" type="text/javascript"></script>
 <script src="{% static 'js/dataTables.bootstrap.js' %}" type="text/javascript"></script>
 <script src="{% static 'js/jquery-form-validation/jquery.validation.min.js' %}"></script>

@@ -1,6 +1,16 @@
-//idioma_tr es una variable global definida en la pagina
-var tabla = iniciar_tabla(idioma_tr);
 var csrftoken = $.cookie('csrftoken');
+var idioma = $('#idioma').val();
+var idiomaAux = "";
+var msj ="";
+var titulo ="";
+
+if (idioma == 0){
+    idiomaAux = "es";
+} else {
+    idiomaAux = "en";
+}
+
+var tabla = iniciar_tabla(idiomaAux);
 
 function iniciar_tabla(idioma){
 
