@@ -4831,9 +4831,14 @@ def admin_crit_reglas(request):
     expirarSesion(request)
     if request.method == 'POST':
         actn = request.POST.get('action')
+        idioma = Configuracion.objects.all()[0].idioma 
 
         if actn == 'add':
-            msg = "Criterio creado exitosamente."
+            if idioma == 0:
+                msg = "Criterio creado exitosamente."
+            else:
+                msg = "Successful created criteria."
+            
             criterionom = request.POST.get('criterionom')
             criteriomon1 = request.POST.get('criteriomon1')
             criteriomon2 = request.POST.get('criteriomon2')
@@ -4863,19 +4868,31 @@ def admin_crit_reglas(request):
                 log(request,27,criterionom)
 
             except:
-                msg = "Hubo un error, por favor verificar que los campos esten correctos e intente nuevamente."
+                if idioma == 0:
+                    msg = "Hubo un error, por favor verificar que los campos esten correctos e intente nuevamente."
+                else:
+                    msg = "Error ocurred, verifi fields and try again please."
+                
                 return JsonResponse({'msg':msg, 'creado':False})
 
             return JsonResponse({'msg':msg, 'criterioid':criterio.idcriterio,'criterionom':criterionom, 'criteriomon1':criteriomon1,'criteriomon2':criteriomon2,'criteriomon3':criteriomon3,'criterioF1':criterioF1,'criterioF2':criterioF2,'criterioF3':criterioF3,'criterioF4':criterioF4,'criterioF5':criterioF5, 'creado': True})
                 
         if actn == 'del':
-            msg = "Criterio eliminado exitosamente."
+            if idioma == 0:
+                msg = "Criterio eliminado exitosamente."
+            else:
+                msg = "Successful deleted criteria."
+            
             criterioid = request.POST.get('criterioid')
 
             try:
                 criterio = CriteriosMatch.objects.get(idcriterio=criterioid)
             except CriteriosMatch.DoesNotExist:
-                msg = "No se encontro el criterio especificado, asegurese de hacer click en el criterio a eliminar previamente."
+                if idioma == 0:
+                    msg = "No se encontro el criterio especificado, asegurese de hacer click en el criterio a eliminar previamente."
+                else:
+                    msg = "Criteria not found, be sure to click a criteria."
+                
                 return JsonResponse({'msg': msg, 'criterioid': criterioid, 'elim': False})
 
             #Para el log
@@ -4895,12 +4912,20 @@ def admin_crit_reglas(request):
             criterioF3 = request.POST.get('criterioF3')
             criterioF4 = request.POST.get('criterioF4')
             criterioF5 = request.POST.get('criterioF5')
-            msg = "Criterio modificado exitosamente."
+
+            if idioma == 0:
+                msg = "Criterio modificado exitosamente."
+            else:
+                msg = "Successful modified criteria."
 
             try:
                criterio = CriteriosMatch.objects.get(idcriterio=criterioid)
             except CriteriosMatch.DoesNotExist:
-                msg = "No se encontro el criterio especificado, asegurese de hacer click en el criterio a modificar."
+                if idioma == 0:
+                    msg = "No se encontro el criterio especificado, asegurese de hacer click en el criterio a modificar."
+                else:
+                    msg = "Criteria not found, be sure to click a criteria."
+                
                 return JsonResponse({'msg': msg, 'criterioid': criterioid, 'modif': False})
 
             criterio.nombre = criterionom
