@@ -13,11 +13,12 @@
 {%endblock%}
 
 {% block content %}
-
+<input type="text" id="idioma" value="{{idioma}}" hidden/>
 <div class="table-responsive col-md-10">
     <table id="table-criterios" class="table table-bordered table-striped tabla">
         <thead>
             <tr>
+              {%if idioma == 0%}
                 <th>Nombre</th>
                 <th>Monto 1</th>
                 <th>Monto 2</th>
@@ -27,6 +28,18 @@
                 <th>Fecha 3</th>
                 <th>Fecha 4</th>
                 <th>Fecha 5</th>
+              {%endif%}
+              {%if idioma == 1%}
+                <th>Name</th>
+                <th>Amount 1</th>
+                <th>Amount 2</th>
+                <th>Amount 3</th>
+                <th>Date 1</th>
+                <th>Date 2</th>
+                <th>Date 3</th>
+                <th>Date 4</th>
+                <th>Date 5</th>
+              {%endif%}
             </tr>
         </thead>
         <tbody>
@@ -49,17 +62,32 @@
 
 <div class="col-md-1">
     <button type="button" id="addButton" data-loading-text="Cargando..." class="btn btn-success" autocomplete="off" data-toggle="modal" data-target="#add-criterio-modal">
-        Agregar
+        {%if idioma == 0%}
+          Agregar
+        {%endif%}
+        {%if idioma == 1%}
+          Add
+        {%endif%}
     </button>
 </div>
 <div style="padding-top:1%;" class="col-md-2">
     <button type="button" id="delButton" data-loading-text="Cargando..." class="btn btn-danger" autocomplete="off">
-        Eliminar
+        {%if idioma == 0%}
+          Eliminar
+        {%endif%}
+        {%if idioma == 1%}
+          Delete
+        {%endif%}
     </button>
 </div>
 <div style="padding-top:1%;" class="col-md-2">
     <button type="button" id="updButton" data-loading-text="Cargando..." class="btn btn-primary" autocomplete="off">
-        Modificar
+        {%if idioma == 0%}
+          Modificar
+        {%endif%}
+        {%if idioma == 1%}
+          Modify
+        {%endif%}
     </button>
 </div>
 
@@ -69,19 +97,40 @@
     <form class="form-horizontal">
     <fieldset>
         <!-- Form Name -->
-        <legend>Detalles:</legend>
+        <legend>
+        {%if idioma == 0%}
+          Detalles:
+        {%endif%}
+        {%if idioma == 1%}
+          Details:
+        {%endif%}
+        </legend>
 
         <div class="row clearfix">
             
             <div class="form-group col-md-12">
-              <label class="col-md-12" for="Nom_criterio">Nombre:</label>  
+              <label class="col-md-12" for="Nom_criterio">
+                {%if idioma == 0%}
+                  Nombre:
+                {%endif%}
+                {%if idioma == 1%}
+                  Name:
+                {%endif%}
+              </label>  
               <div class="col-md-4">
                 <input id="Nom_criterio" name="Nom_criterio" type="text" class="form-control input-md">
               </div>
             </div>
             
             <div class="form-group col-md-12">
-              <label class="col-md-12">Diferencia de montos:</label>  
+              <label class="col-md-12">
+                {%if idioma == 1%}
+                  Amount Difference:
+                {%endif%}
+                {%if idioma == 0%}
+                  Diferencia de montos:
+                {%endif%}
+              </label>  
               <div class="col-md-2">
                 <input id="Mon1_criterio" name="Mon1_criterio" type="text" class="form-control input-md">
               </div>
@@ -94,7 +143,14 @@
             </div>
 
             <div class="form-group col-md-12">
-              <label class="col-md-12">Diferencia de Fechas:</label>  
+              <label class="col-md-12">
+                {%if idioma == 1%}
+                  Date Difference:
+                {%endif%}
+                {%if idioma == 0%}
+                  Diferencia de fechas:
+                {%endif%}
+              </label>  
               <div class="col-md-2">
                 <input id="F1_criterio" name="F1_criterio" type="text" class="form-control input-md">
               </div>
@@ -123,13 +179,32 @@
 
         <div class="modal-header">
           <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-          <h4 class="modal-title">Agregar un criterio</h4>
+          <h4 class="modal-title">
+          {%if idioma == 0%}
+                  Agregar un criterio:
+                {%endif%}
+                {%if idioma == 1%}
+                  Add criteria:
+                {%endif%}
+          </h4>
         </div>
         <div class="modal-body">
           <div class="field">
-              <label for="add-criterio-nombre">Nombre: </label>
+              <label for="add-criterio-nombre"> 
+                {%if idioma == 0%}
+                  Nombre:
+                {%endif%}
+                {%if idioma == 1%}
+                  Name:
+                {%endif%}
+              </label>
               <div class="ui left labeled input">
-                  <input type="text" name="add-criterio[nombre]" id="add-criterio-nombre" placeholder="Nombre del criterio" data-validation="[L>=1, L<=20]" data-validation-message="$ must be between 1 and 20 characters. No special characters allowed." data-validation-regex="/^((?!admin).)*$/i" data-validation-regex-message="The word &quot;Admin&quot; is not allowed in the $" data-toggle="popover" data-content="You can use letters and numbers, no space or special characters">
+                {%if idioma == 0%}
+                  <input type="text" name="add-criterio[nombre]" id="add-criterio-nombre" placeholder="Nombre del criterio" data-validation="[L>=1, L<=20]" data-validation-message="$ debe tener entre 1 y 20 caracteres. No se permiten caracteres especiales." data-validation-regex="/^((?!admin).)*$/i" data-validation-regex-message="La palabra &quot;Admin&quot; no está permitida en $" data-toggle="popover" data-content="Sólo puede usar numeros y letras">
+                {%endif%}
+                {%if idioma == 1%}
+                  <input type="text" name="add-criterio[name]" id="add-criterio-nombre" placeholder="Criteria name" data-validation="[L>=1, L<=20]" data-validation-message="$ must be between 1 and 20 characters. No special characters allowed." data-validation-regex="/^((?!admin).)*$/i" data-validation-regex-message="The word &quot;Admin&quot; is not allowed in the $" data-toggle="popover" data-content="You can use letters and numbers, no space or special characters">
+                {%endif%}
                   <div class="ui corner label">
                     <i class="asterisk icon">*</i>
                   </div>
@@ -137,72 +212,168 @@
           </div>
 
           <div class="field">
-              <label for="add-criterio-codigo">Monto 1: </label>
+              <label for="add-criterio-codigo">
+                {%if idioma == 0%}
+                  Monto 1:
+                {%endif%}
+                {%if idioma == 1%}
+                  Amount 1:
+                {%endif%}
+              </label>
               <div class="ui left labeled input">
-                  <input type="text" name="add-criterio[mon1]" id="add-criterio-mon1" placeholder="Monto 1 del criterio"  data-validation-regex="/^((?!admin).)*$/i" data-validation-regex-message="The word &quot;Admin&quot; is not allowed in the $" data-toggle="popover" data-content="You can use letters and numbers, no space or special characters"></input>
+               {%if idioma == 0%}
+                  <input type="text" name="add-criterio[monto1]" id="add-criterio-mon1" placeholder="Monto 1 del criterio"  data-validation-regex="/^((?!admin).)*$/i" data-validation-regex-message="La palabra &quot;Admin&quot; no está permitida en $" data-toggle="popover" data-content="Sólo puede usar numeros y letras"></input>
+                {%endif%}
+                {%if idioma == 1%}
+                  <input type="text" name="add-criterio[Amount1]" id="add-criterio-mon1" placeholder="Criteria amount 1"  data-validation-regex="/^((?!admin).)*$/i" data-validation-regex-message="The word &quot;Admin&quot; is not allowed in the $" data-toggle="popover" data-content="You can use letters and numbers, no space or special characters"></input>
+                {%endif%}
                   <div class="ui corner label">
                     <i class="asterisk icon">*</i>
                   </div>
               </div>
           </div>
           <div class="field">
-              <label for="add-criterio-codigo">Monto 2: </label>
+              <label for="add-criterio-codigo">
+                {%if idioma == 0%}
+                  Monto 2:
+                {%endif%}
+                {%if idioma == 1%}
+                  Amount 2:
+                {%endif%}
+              </label>
               <div class="ui left labeled input">
-                  <input type="text" name="add-criterio[mon2]" id="add-criterio-mon2" placeholder="Monto 2 del criterio"  data-validation-regex="/^((?!admin).)*$/i" data-validation-regex-message="The word &quot;Admin&quot; is not allowed in the $" data-toggle="popover" data-content="You can use letters and numbers, no space or special characters"></input>
+                {%if idioma == 0%}
+                  <input type="text" name="add-criterio[Monto2]" id="add-criterio-mon2" placeholder="Monto 2 del criterio"  data-validation-regex="/^((?!admin).)*$/i" data-validation-regex-message="La palabra &quot;Admin&quot; no está pérmitida en $" data-toggle="popover" data-content="Sólo puede usar numeros y letras"></input>
+                {%endif%}
+                {%if idioma == 1%}
+                  <input type="text" name="add-criterio[Amount2]" id="add-criterio-mon2" placeholder="Criteria amount 2"  data-validation-regex="/^((?!admin).)*$/i" data-validation-regex-message="The word &quot;Admin&quot; is not allowed in the $" data-toggle="popover" data-content="You can use letters and numbers, no space or special characters"></input>
+                {%endif%}
                   <div class="ui corner label">
                     <i class="asterisk icon">*</i>
                   </div>
               </div>
           </div>
           <div class="field">
-              <label for="add-criterio-codigo">Monto 3: </label>
+              <label for="add-criterio-codigo">
+                {%if idioma == 0%}
+                  Monto 3:
+                {%endif%}
+                {%if idioma == 1%}
+                  Amount 3:
+                {%endif%}
+              </label>
               <div class="ui left labeled input">
-                  <input type="text" name="add-criterio[mon3]" id="add-criterio-mon3" placeholder="Monto 3 del criterio"  data-validation-regex="/^((?!admin).)*$/i" data-validation-regex-message="The word &quot;Admin&quot; is not allowed in the $" data-toggle="popover" data-content="You can use letters and numbers, no space or special characters"></input>
+                {%if idioma == 0%}
+                  <input type="text" name="add-criterio[monto3]" id="add-criterio-mon3" placeholder="Monto 3 del criterio"  data-validation-regex="/^((?!admin).)*$/i" data-validation-regex-message="La palabra &quot;Admin&quot; no está permitida en $" data-toggle="popover" data-content="Sólo puede usar números y letras"></input>
+                {%endif%}
+                {%if idioma == 1%}
+                  <input type="text" name="add-criterio[Amount3]" id="add-criterio-mon3" placeholder="Criteria Amount 3"  data-validation-regex="/^((?!admin).)*$/i" data-validation-regex-message="The word &quot;Admin&quot; is not allowed in the $" data-toggle="popover" data-content="You can use letters and numbers, no space or special characters"></input>
+                {%endif%}
                   <div class="ui corner label">
                     <i class="asterisk icon">*</i>
                   </div>
               </div>
           </div>
           <div class="field">
-              <label for="add-criterio-codigo">Fecha 1: </label>
+              <label for="add-criterio-codigo">
+                {%if idioma == 0%}
+                  Fecha 1:
+                {%endif%}
+                {%if idioma == 1%}
+                  Date 1:
+                {%endif%}
+              </label>
               <div class="ui left labeled input">
-                  <input type="text" name="add-criterio[F1]" id="add-criterio-F1" placeholder="Fecha 1 del criterio"  data-validation-regex="/^((?!admin).)*$/i" data-validation-regex-message="The word &quot;Admin&quot; is not allowed in the $" data-toggle="popover" data-content="You can use letters and numbers, no space or special characters"></input>
+                {%if idioma == 0%}
+                  <input type="text" name="add-criterio[F1]" id="add-criterio-F1" placeholder="Fecha 1 del criterio"  data-validation-regex="/^((?!admin).)*$/i" data-validation-regex-message="La palabra &quot;Admin&quot; no está permitida en $" data-toggle="popover" data-content="Sólo puede usar números y letras"></input>
+                {%endif%}
+                {%if idioma == 1%}
+                  <input type="text" name="add-criterio[Date1]" id="add-criterio-F1" placeholder="Criteria date 1"  data-validation-regex="/^((?!admin).)*$/i" data-validation-regex-message="The word &quot;Admin&quot; is not allowed in the $" data-toggle="popover" data-content="You can use letters and numbers, no space or special characters"></input>
+                {%endif%}
                   <div class="ui corner label">
                     <i class="asterisk icon">*</i>
                   </div>
               </div>
           </div>
           <div class="field">
-              <label for="add-criterio-codigo">Fecha 2: </label>
+              <label for="add-criterio-codigo">
+                {%if idioma == 0%}
+                  Fecha 2:
+                {%endif%}
+                {%if idioma == 1%}
+                  Date 2:
+                {%endif%}
+              </label>
               <div class="ui left labeled input">
-                  <input type="text" name="add-criterio[F2]" id="add-criterio-F2" placeholder="Fecha 2 del criterio"  data-validation-regex="/^((?!admin).)*$/i" data-validation-regex-message="The word &quot;Admin&quot; is not allowed in the $" data-toggle="popover" data-content="You can use letters and numbers, no space or special characters"></input>
+                {%if idioma == 0%}
+                  <input type="text" name="add-criterio[F2]" id="add-criterio-F2" placeholder="Fecha 2 del criterio"  data-validation-regex="/^((?!admin).)*$/i" data-validation-regex-message="La palabra &quot;Admin&quot; no está permitida en $" data-toggle="popover" data-content="Sólo puede usar números y letras"></input>
+                {%endif%}
+                {%if idioma == 1%}
+                  <input type="text" name="add-criterio[Date2]" id="add-criterio-F2" placeholder="Criteria date 2"  data-validation-regex="/^((?!admin).)*$/i" data-validation-regex-message="The word &quot;Admin&quot; is not allowed in the $" data-toggle="popover" data-content="You can use letters and numbers, no space or special characters"></input>
+                {%endif%}
                   <div class="ui corner label">
                     <i class="asterisk icon">*</i>
                   </div>
               </div>
           </div>
           <div class="field">
-              <label for="add-criterio-codigo">Fecha 3: </label>
+              <label for="add-criterio-codigo">
+                {%if idioma == 0%}
+                  Fecha 3:
+                {%endif%}
+                {%if idioma == 1%}
+                  Date 3:
+                {%endif%}
+              </label>
               <div class="ui left labeled input">
-                  <input type="text" name="add-criterio[F3]" id="add-criterio-F3" placeholder="Fecha 3 del criterio"  data-validation-regex="/^((?!admin).)*$/i" data-validation-regex-message="The word &quot;Admin&quot; is not allowed in the $" data-toggle="popover" data-content="You can use letters and numbers, no space or special characters"></input>
+                {%if idioma == 0%}
+                  <input type="text" name="add-criterio[F3]" id="add-criterio-F3" placeholder="Fecha 3 del criterio"  data-validation-regex="/^((?!admin).)*$/i" data-validation-regex-message="La palabra &quot;Admin&quot; no está permitida en $" data-toggle="popover" data-content="Sólo puede usar números y letras"></input>
+                {%endif%}
+                {%if idioma == 1%}
+                  <input type="text" name="add-criterio[Date3]" id="add-criterio-F3" placeholder="Criteria date 3"  data-validation-regex="/^((?!admin).)*$/i" data-validation-regex-message="The word &quot;Admin&quot; is not allowed in the $" data-toggle="popover" data-content="You can use letters and numbers, no space or special characters"></input>
+                {%endif%}
                   <div class="ui corner label">
                     <i class="asterisk icon">*</i>
                   </div>
               </div>
           </div>
           <div class="field">
-              <label for="add-criterio-codigo">Fecha 4: </label>
+              <label for="add-criterio-codigo">
+                {%if idioma == 0%}
+                  Fecha 4:
+                {%endif%}
+                {%if idioma == 1%}
+                  Date 4:
+                {%endif%}
+              </label>
               <div class="ui left labeled input">
-                  <input type="text" name="add-criterio[F4]" id="add-criterio-F4" placeholder="Fecha 4 del criterio"  data-validation-regex="/^((?!admin).)*$/i" data-validation-regex-message="The word &quot;Admin&quot; is not allowed in the $" data-toggle="popover" data-content="You can use letters and numbers, no space or special characters"></input>
+                {%if idioma == 0%}
+                  <input type="text" name="add-criterio[F4]" id="add-criterio-F4" placeholder="Fecha 4 del criterio"  data-validation-regex="/^((?!admin).)*$/i" data-validation-regex-message="La palabra &quot;Admin&quot; no está permitida en $" data-toggle="popover" data-content="Sólo puede usar números y letras"></input>
+                {%endif%}
+                {%if idioma == 1%}
+                  <input type="text" name="add-criterio[Date4]" id="add-criterio-F4" placeholder="Criteria date 4"  data-validation-regex="/^((?!admin).)*$/i" data-validation-regex-message="The word &quot;Admin&quot; is not allowed in the $" data-toggle="popover" data-content="You can use letters and numbers, no space or special characters"></input>
+                {%endif%}
                   <div class="ui corner label">
                     <i class="asterisk icon">*</i>
                   </div>
               </div>
           </div>
           <div class="field">
-              <label for="add-criterio-codigo">Fecha 5: </label>
+              <label for="add-criterio-codigo">
+                {%if idioma == 0%}
+                  Fecha 5:
+                {%endif%}
+                {%if idioma == 1%}
+                  Date 5:
+                {%endif%}
+              </label>
               <div class="ui left labeled input">
-                  <input type="text" name="add-criterio[F5]" id="add-criterio-F5" placeholder="Fecha 5 del criterio"  data-validation-regex="/^((?!admin).)*$/i" data-validation-regex-message="The word &quot;Admin&quot; is not allowed in the $" data-toggle="popover" data-content="You can use letters and numbers, no space or special characters"></input>
+                {%if idioma == 0%}
+                  <input type="text" name="add-criterio[F5]" id="add-criterio-F5" placeholder="Fecha 5 del criterio"  data-validation-regex="/^((?!admin).)*$/i" data-validation-regex-message="La palabra &quot;Admin&quot; no está permitida en $" data-toggle="popover" data-content="Sólo puede usar números y letras"></input>
+                {%endif%}
+                {%if idioma == 1%}
+                  <input type="text" name="add-criterio[Date5]" id="add-criterio-F5" placeholder="Criteria date 5"  data-validation-regex="/^((?!admin).)*$/i" data-validation-regex-message="The word &quot;Admin&quot; is not allowed in the $" data-toggle="popover" data-content="You can use letters and numbers, no space or special characters"></input>
+                {%endif%}
                   <div class="ui corner label">
                     <i class="asterisk icon">*</i>
                   </div>
@@ -210,8 +381,20 @@
           </div>
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
-          <input id="addb-submit" type="submit" class="btn btn-primary" value="Aceptar">
+          <button type="button" class="btn btn-default" data-dismiss="modal">
+            {%if idioma == 0%}
+              Cerrar
+            {%endif%}
+            {%if idioma == 1%}
+              Close
+            {%endif%}
+          </button>
+          {%if idioma == 0%}
+            <input id="addb-submit" type="submit" class="btn btn-primary" value="Aceptar">
+          {%endif%}
+          {%if idioma == 1%}
+            <input id="addb-submit" type="submit" class="btn btn-primary" value="Accept">
+          {%endif%}
         </div>
       </form>
     </div><!-- /.modal-content -->
@@ -225,7 +408,12 @@
             <div class="modal-body">
                 <div class="text-center">
                     <img src="{% static 'images/procesando.gif' %}" class="icon" />
-                    <h4>Procesando, por favor espere.</h4>
+                    {%if idioma == 0%}
+                      <h4>Procesando, por favor espere.</h4>
+                    {%endif%}
+                    {%if idioma == 1%}
+                      <h4>Processing, wait please.</h4>
+                    {%endif%}
                 </div>
             </div>
         </div>
