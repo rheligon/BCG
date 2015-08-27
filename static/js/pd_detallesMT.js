@@ -1,6 +1,15 @@
 var csrftoken = $.cookie('csrftoken');
-var tabla_det = iniciar_tabla_detalle(idioma_tr);
-var tabla_det96 = iniciar_tabla_detalle96(idioma_tr);
+var idioma = $('#idioma').val();
+var idiomaAux = "";
+
+if (idioma == 0){
+    idiomaAux = "es";
+} else {
+    idiomaAux = "en";
+}
+
+var tabla_det = iniciar_tabla_detalle(idiomaAux);
+var tabla_det96 = iniciar_tabla_detalle96(idiomaAux);
 
 //inicializar la tabla de destalles
 function iniciar_tabla_detalle(idioma){

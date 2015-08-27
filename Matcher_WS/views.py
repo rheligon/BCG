@@ -2223,6 +2223,8 @@ def mtn96(request):
     if request.method == "POST":
 
         action = request.POST.get('action')
+        idioma = Configuracion.objects.all()[0].idioma 
+
         if action == "cargar":
 
             archivoCarga = request.POST.get('archivo96')
@@ -2273,7 +2275,10 @@ def mtn96(request):
                     if j%8 == 1:
                         opcion = line[:3]
                         if opcion != "[M]":
-                            mensaje = "Caracter inesperado en campo tipo, en la línea número " +str(i+auxCuenta+1)+ " del archivo"
+                            if idioma == 0:
+                                mensaje = "Caracter inesperado en campo tipo, en la línea número " +str(i+auxCuenta+1)+ " del archivo"
+                            else:
+                                mensaje = "Unexpected character in type field, file line No. " +str(i+auxCuenta+1)
                             #cerrar archivo
                             fo.close()
                             return JsonResponse({'mens':mensaje})
@@ -2281,14 +2286,20 @@ def mtn96(request):
                         tipoCargar = tipoCargar[:3].strip()
                         print("eeeeees: " + tipoCargar[-2:].strip())
                         if tipoCargar[-2:].strip() != "96":
-                            mensaje = "El tipo del mensaje no corresponde a un MTn96,error en la línea número " +str(i+auxCuenta+1)+ " del archivo"
+                            if idioma == 0:
+                                mensaje = "El tipo del mensaje no corresponde a un MTn96,error en la línea número " +str(i+auxCuenta+1)+ " del archivo"
+                            else:
+                                mensaje = "Message is not MTn96, error in file line No. " +str(i+auxCuenta+1)
                             #cerrar archivo
                             fo.close()
                             return JsonResponse({'mens':mensaje})
                     if j%8 == 2:
                         opcion = line[:3]
                         if opcion != "[S]":
-                            mensaje = "Caracter inesperado en campo bic del banco emisor, en la línea número " +str(i+auxCuenta+1)+ " del archivo"
+                            if idioma == 0:
+                                mensaje = "Caracter inesperado en campo bic del banco emisor, en la línea número " +str(i+auxCuenta+1)+ " del archivo"
+                            else:
+                                mensaje = "Unexpected character in field sender bank bic, error in file line No. " +str(i+auxCuenta+1)
                             #cerrar archivo
                             fo.close()
                             return JsonResponse({'mens':mensaje})
@@ -2298,7 +2309,10 @@ def mtn96(request):
                     if j%8 == 3:
                         opcion = line[:3]
                         if opcion != "[R]":
-                            mensaje = "Caracter inesperado en campo bic del banco receptor, en la línea número " +str(i+auxCuenta+1)+ " del archivo"
+                            if idioma == 0:
+                                mensaje = "Caracter inesperado en campo bic del banco receptor, en la línea número " +str(i+auxCuenta+1)+ " del archivo"
+                            else:
+                                mensaje = "Unexpected characet in field reciever bank bic, error in file line No. " +str(i+auxCuenta+1)      
                             #cerrar archivo
                             fo.close()
                             return JsonResponse({'mens':mensaje})
@@ -2306,14 +2320,20 @@ def mtn96(request):
                         largoaux = len(bancoR)-1
                         bancoR = bancoR[:largoaux]
                         if bancoR != reciver :
-                            mensaje = "Caracter inesperado en campo bic del banco receptor, en la línea número " +str(i+auxCuenta+1)+ " del archivo"
+                            if idioma == 0:
+                                mensaje = "Caracter inesperado en campo bic del banco receptor, en la línea número " +str(i+auxCuenta+1)+ " del archivo"
+                            else:
+                                mensaje = "Unexpected characet in field reciever bank bic, error in file line No. " +str(i+auxCuenta+1)      
                             #cerrar archivo
                             fo.close()
                             return JsonResponse({'mens':mensaje})
                     if j%8 == 4:
                         opcion = line[:4]
                         if opcion != "[20]":
-                            mensaje = "Caracter inesperado en campo referencia del mensaje,  en la línea número " +str(i+auxCuenta+1)+ " del archivo"
+                            if idioma == 0:
+                                mensaje = "Caracter inesperado en campo referencia del mensaje,  en la línea número " +str(i+auxCuenta+1)+ " del archivo"
+                            else:
+                                mensaje = "Unexpected characet in field message reference, error in file line No. " +str(i+auxCuenta+1)
                             #cerrar archivo
                             fo.close()
                             return JsonResponse({'mens':mensaje})
@@ -2321,7 +2341,10 @@ def mtn96(request):
                     if j%8 == 5:
                         opcion = line[:4]
                         if opcion != "[21]":
-                            mensaje = "Caracter inesperado en campo referencia del mensaje original,  en la línea número " +str(i+auxCuenta+1)+ " del archivo"
+                            if idioma == 0:
+                                mensaje = "Caracter inesperado en campo referencia del mensaje original,  en la línea número " +str(i+auxCuenta+1)+ " del archivo"
+                            else:
+                                mensaje = "Unexpected char in field original message reference, error in file line No. " +str(i+auxCuenta+1)    
                             #cerrar archivo
                             fo.close()
                             return JsonResponse({'mens':mensaje})
@@ -2330,14 +2353,20 @@ def mtn96(request):
                             consulta = Mt95.objects.filter(ref_relacion=refCargar).filter(codigo=refOrgCargar)[0]
                         except:
                             #no hay mensajes mt95 con esas referencias
-                            mensaje = "No se tienen registrados las referencias del mensaje que se encuentra en la línea número " +str(i+auxCuenta+1)+ " del archivo"
+                            if idioma == 0:
+                                mensaje = "No se tienen registrados las referencias del mensaje que se encuentra en la línea número " +str(i+auxCuenta+1)+ " del archivo"
+                            else:
+                                mensaje = "There are not registered references of message in file line No. " +str(i+auxCuenta+1)
                             #cerrar archivo
                             fo.close()
                             return JsonResponse({'mens':mensaje})
                     if j%8 == 6:
                         opcion = line[:4]
                         if opcion != "[76]":
-                            mensaje = "Caracter inesperado en codigo de respuesta del mensaje,  en la linea numero " +str(i+auxCuenta+1)+ " del archivo"
+                            if idioma == 0:
+                                mensaje = "Caracter inesperado en codigo de respuesta del mensaje,  en la linea numero " +str(i+auxCuenta+1)+ " del archivo"
+                            else:
+                                mensaje = "Unexpected character in field message response code, in the file line No. " +str(i+auxCuenta+1)
                             #cerrar archivo
                             fo.close()
                             return JsonResponse({'mens':mensaje})
@@ -2345,7 +2374,10 @@ def mtn96(request):
                         rc = int(respuestaCargar)
                         #codigo no esta entre los validos para swift
                         if rc < 0 or rc > 33:
-                            mensaje = "El código de respuesta, que se encuentra en la línea número " +str(i+auxCuenta+1)+ " del archivo no es válido"
+                            if idioma == 0:
+                                mensaje = "El código de respuesta, que se encuentra en la línea número " +str(i+auxCuenta+1)+ " del archivo no es válido"
+                            else:
+                                mensaje = "Response code, located in file line No. " +str(i+auxCuenta+1) + "is not valid"    
                             #cerrar archivo
                             fo.close()
                             return JsonResponse({'mens':mensaje})
@@ -2353,14 +2385,20 @@ def mtn96(request):
                         consultaCodigo96 = Codigo96.objects.filter(codigo=respuestaCargar)[0]
                         #no hay codigos mt96 con esas referencias
                         if consultaCodigo96 is None:
-                            mensaje = "No se tienen registrados los codigos del mensaje que se encuentra en la línea número " +str(i+auxCuenta+1)+ " del archivo"
+                            if idioma == 0:
+                                mensaje = "No se tienen registrados los codigos del mensaje que se encuentra en la línea número " +str(i+auxCuenta+1)+ " del archivo"
+                            else:
+                                mensaje = "There are not registered codes from message located in file line No. " +str(i+auxCuenta+1)    
                             #cerrar archivo
                             fo.close()
                             return JsonResponse({'mens':mensaje})
                     if j%8 == 7:
                         opcion = line[:5]
                         if opcion != "[77A]":
-                            mensaje = "Caracter inesperado en la forma narrativa de la respuesta,  en la linea numero " +str(i+auxCuenta+1)+ " del archivo"
+                            if idioma == 0:
+                                mensaje = "Caracter inesperado en la forma narrativa de la respuesta,  en la linea numero " +str(i+auxCuenta+1)+ " del archivo"
+                            else:
+                                mensaje = "Unexpected character in response narrative form, in the file line No. " +str(i+auxCuenta+1)
                             #cerrar archivo
                             fo.close()
                             return JsonResponse({'mens':mensaje})
@@ -2389,7 +2427,10 @@ def mtn96(request):
 
                         if line [:4] != "[79]" and line [:2] != "@@" :
 
-                            mensaje = "Caracter inesperado luego de la respuesta del mensaje,  en la linea numero " +str(i+auxCuenta+1)+ " del archivo"
+                            if idioma == 0:
+                                mensaje = "Caracter inesperado luego de la respuesta del mensaje,  en la linea numero " +str(i+auxCuenta+1)+ " del archivo"
+                            else:
+                                mensaje = "Unexpected character after message response, in the fili line No. " +str(i+auxCuenta+1)    
                             #cerrar archivo
                             fo.close()
                             return JsonResponse({'mens':mensaje})
@@ -2449,7 +2490,6 @@ def mtn96(request):
 
             # Se hacen los creates en la base de datos
             k=0
-            print("Esta antes del mt: ")
             for mt in mt95:
                 Mt96.objects.create(mt95_idmt95=mt95[k],codigo=codigos[k],codigo96_idcodigo96=codigos96[k], ref_relacion=refRelaciones[k],answer=respuestas[k], narrativa=narrativas[k], num_mt=numerosMT[k], fecha_msg_original=fechas[k],campo79 =campos79[k])
                 k+=1        
@@ -2483,6 +2523,7 @@ def mtn99(request):
 
     if request.method == "POST":
 
+        idioma = Configuracion.objects.all()[0].idioma
         # Variables traidas desde el html
         action = request.POST.get('action')
         banco = request.POST.get('banco99')
@@ -2597,7 +2638,10 @@ def mtn99(request):
                     if j%7 == 1:
                         opcion = line[:3]
                         if opcion != "[M]":
-                            mensaje = "Caracter inesperado en campo tipo, en la línea número " +str(i+auxCuenta+1)+ " del archivo"
+                            if idioma == 0:
+                                mensaje = "Caracter inesperado en campo tipo, en la línea número " +str(i+auxCuenta+1)+ " del archivo"
+                            else:
+                                mensaje = "Unexpected character in type field, in file line No. " +str(i+auxCuenta+1)
                             #cerrar archivo
                             fo.close()
                             return JsonResponse({'mens':mensaje})
@@ -2606,7 +2650,10 @@ def mtn99(request):
                     if j%7 == 2:
                         opcion = line[:3]
                         if opcion != "[S]":
-                            mensaje = "Caracter inesperado en campo bic del banco emisor, en la línea número " +str(i+auxCuenta+1)+ " del archivo"
+                            if idioma == 0:
+                                mensaje = "Caracter inesperado en campo bic del banco emisor, en la línea número " +str(i+auxCuenta+1)+ " del archivo"
+                            else:
+                                mensaje = "Unexpected character in sender bank bic fileds,in file line No. " +str(i+auxCuenta+1)
                             #cerrar archivo
                             fo.close()
                             return JsonResponse({'mens':mensaje})
@@ -2616,7 +2663,10 @@ def mtn99(request):
                     if j%7 == 3:
                         opcion = line[:3]
                         if opcion != "[R]":
-                            mensaje = "Caracter inesperado en campo bic del banco receptor, en la línea número " +str(i+auxCuenta+1)+ " del archivo"
+                            if idioma == 0:
+                                mensaje = "Caracter inesperado en campo bic del banco receptor, en la línea número " +str(i+auxCuenta+1)+ " del archivo"
+                            else:
+                                mensaje = "Unexpected character in reciever bank bic fileds,in file line No. " +str(i+auxCuenta+1)
                             #cerrar archivo
                             fo.close()
                             return JsonResponse({'mens':mensaje})
@@ -2624,14 +2674,20 @@ def mtn99(request):
                         largoaux = len(bancoR)-1
                         bancoR = bancoR[:largoaux]
                         if bancoR != reciver :
-                            mensaje = "Caracter inesperado en campo bic del banco receptor, en la línea número " +str(i+auxCuenta+1)+ " del archivo"
+                            if idioma == 0:
+                                mensaje = "Caracter inesperado en campo bic del banco receptor, en la línea número " +str(i+auxCuenta+1)+ " del archivo"
+                            else:
+                                mensaje = "Unexpected character in reciever bank bic fileds,in file line No. " +str(i+auxCuenta+1)
                             #cerrar archivo
                             fo.close()
                             return JsonResponse({'mens':mensaje})
                     if j%7 == 4:
                         opcion = line[:4]
                         if opcion != "[20]":
-                            mensaje = "Caracter inesperado en campo referencia del mensaje,  en la línea número " +str(i+auxCuenta+1)+ " del archivo"
+                            if idioma == 0:
+                                mensaje = "Caracter inesperado en campo referencia del mensaje,  en la línea número " +str(i+auxCuenta+1)+ " del archivo"
+                            else:
+                                mensaje = "Unexpected character in message reference field, in file line No. " +str(i+auxCuenta+1)
                             #cerrar archivo
                             fo.close()
                             return JsonResponse({'mens':mensaje})
@@ -2639,7 +2695,10 @@ def mtn99(request):
                     if j%7 == 5:
                         opcion = line[:4]
                         if opcion != "[21]":
-                            mensaje = "Caracter inesperado en campo referencia del mensaje original,  en la línea número " +str(i+auxCuenta+1)+ " del archivo"
+                            if idioma == 0:
+                                mensaje = "Caracter inesperado en campo referencia del mensaje original,  en la línea número " +str(i+auxCuenta+1)+ " del archivo"
+                            else:
+                                mensaje = "Unexpected character in original message reference field, in file line No. " +str(i+auxCuenta+1)
                             #cerrar archivo
                             fo.close()
                             return JsonResponse({'mens':mensaje})
@@ -2647,7 +2706,10 @@ def mtn99(request):
                     if j%7 == 6:
                         opcion = line[:4]
                         if opcion != "[79]":
-                            mensaje = "Caracter inesperado en la narrativa del mensaje,  en la linea numero " +str(i+auxCuenta+1)+ " del archivo"
+                            if idioma == 0:
+                                mensaje = "Caracter inesperado en la narrativa del mensaje,  en la linea numero " +str(i+auxCuenta+1)+ " del archivo"
+                            else:
+                                mensaje = "Unexpected character in narrative field, in file line No. " +str(i+auxCuenta+1)
                             #cerrar archivo
                             fo.close()
                             return JsonResponse({'mens':mensaje})
