@@ -8,16 +8,40 @@
 {%endblock%}
 
 {% block content %}
+<input type="text" id="idioma" value="{{idioma}}" hidden/>
 <div class="table-responsive col-md-10">
-  <legend>Cambiar Contraseña:</legend>
+  <legend>
+    {%if idioma == 0%}
+      Cambiar Contraseña:
+    {%endif%}
+    {%if idioma == 1%}
+      Password Change:
+    {%endif%}
+  </legend>
   <br>
   <div class="form-group has-feedback">
-    <label class="col-xs-3 control-label" >Clave:</label>
+    <label class="col-xs-3 control-label" >
+      {%if idioma == 0%}
+        Clave:
+      {%endif%}
+      {%if idioma == 1%}
+        Password:
+      {%endif%}
+    </label>
     <div class="col-xs-7">
-      <input type="password" id="clave1" name="clave1N"  class="form-control" placeholder="Por favor ingrese su nueva clave" required>
-      <p class="help-block" style="color:#0000ff">
-        La contraseña debe tener un mínimo de seis (6) caractéres de longitud. 
-      </p>
+      {%if idioma == 0%}
+        <input type="password" id="clave1" name="clave1N"  class="form-control" placeholder="Por favor ingrese su nueva clave" required>
+        <p class="help-block" style="color:#0000ff">
+          La contraseña debe tener un mínimo de seis (6) caracteres de longitud.
+        </p>
+      {%endif%}
+      {%if idioma == 1%}
+        <input type="password" id="clave1" name="clave1N"  class="form-control" placeholder="Introduce new password please" required>
+        <p class="help-block" style="color:#0000ff">
+          Password must have a minimum of six (6) characters long.
+        </p>
+      {%endif%} 
+      
     </div>
   </div>
   <br>
@@ -25,12 +49,27 @@
   <br>
   <br>
   <div class="form-group has-feedback">
-    <label class="col-xs-3 control-label" >Verificación:</label>
+    <label class="col-xs-3 control-label" >
+      {%if idioma == 0%}
+        Verificación:
+      {%endif%}
+      {%if idioma == 1%}
+        Verification:
+      {%endif%}
+    </label>
     <div class="col-xs-7">
-      <input type="password" id="clave2" name="clave2N"  class="form-control" placeholder="Por favor ingrese su clave nuevamente" required>
-      <p class="help-block" style="color:#0000ff">
-        La contraseña debe tener un mínimo de seis (6) caractéres de longitud. 
-      </p>
+      {%if idioma == 0%}
+        <input type="password" id="clave2" name="clave2N"  class="form-control" placeholder="Por favor ingrese su clave nuevamente" required>
+        <p class="help-block" style="color:#0000ff">
+          La contraseña debe tener un mínimo de seis (6) caracteres de longitud. 
+        </p>
+      {%endif%}
+      {%if idioma == 1%}
+        <input type="password" id="clave2" name="clave2N"  class="form-control" placeholder="Introduce new password again please" required>
+        <p class="help-block" style="color:#0000ff">
+          Password must have a minimum of six (6) characters long. 
+        </p>
+      {%endif%}
     </div>
   </div>
   <br>
@@ -38,7 +77,14 @@
   <br>
   <div class="form-group" style="margin-top: 15px;">
       <div class="col-xs-5 col-xs-offset-3">
-          <button id= "guardarButton" type="submit" class="col-md-4 btn btn-primary">Guardar</button>
+          <button id= "guardarButton" type="submit" class="col-md-4 btn btn-primary">
+            {%if idioma == 0%}
+              Guardar
+            {%endif%}
+            {%if idioma == 1%}
+              Save
+            {%endif%}
+          </button>
       </div>
   </div>
 
@@ -50,7 +96,12 @@
             <div class="modal-body">
                 <div class="text-center">
                     <img src="{% static 'images/procesando.gif' %}" class="icon" />
-                    <h4>Procesando, por favor espere.</h4>
+                    {%if idioma == 0%}
+                      <h4>Procesando, por favor espere.</h4>
+                    {%endif%}
+                    {%if idioma == 1%}
+                      <h4>Processing, wait please.</h4>
+                    {%endif%}
                 </div>
             </div>
         </div>

@@ -2,7 +2,6 @@ var csrftoken = $.cookie('csrftoken');
 var idioma = $('#idioma').val();
 var idiomaAux = "";
 var msj ="";
-var titulo ="";
 
 if (idioma == 0){
     idiomaAux = "es";
@@ -143,7 +142,11 @@ $('#updButton').on('click', function () {
             error: function(jqXHR, error){
                 alert(jqXHR.responseText) //debug
                 $('#processing-modal').modal('toggle');
-                swal("Ups!", "Hubo un error modificando la regla especificada.", "error");
+                if (idioma === 0){
+                    swal("Ups!", "Hubo un error modificando la regla especificada.", "error");
+                } else {
+                    swal("Ups!", "Error occurred modifying the rule.", "error");   
+                }
             },
             dataType:'json',
             headers:{
@@ -167,8 +170,13 @@ $('#updButton').on('click', function () {
     var a_masc_corr = $('#masc-corr').val();
 
     if (cuenta_id>=0 && regla_id>=0){
+        if (idioma === 0){
+            msj = "Seguro que desea modificar la regla "+ a_nom +" ?";
+        } else {
+            msj = "Sure you want modify the rule "+ a_nom +" ?";
+        }
         swal({   title: "",
-                 text: "Seguro que desea modificar la regla "+ a_nom +" ?",
+                 text: msj,
                  type: "warning",
                  showCancelButton: true,
                  confirmButtonText: "Ok"},
@@ -180,9 +188,17 @@ $('#updButton').on('click', function () {
                  );
     }else{
         if(cuenta_id<0){
-            swal("Ups!", "Acuerdese de seleccionar una cuenta primero", "error");
+            if (idioma === 0){
+                swal("Ups!", "Acuerdese de seleccionar una cuenta primero", "error");
+            } else {
+                swal("Ups!", "Select an account first please.", "error");
+            }
         }else{
-            swal("Ups!", "Acuerdese de seleccionar una regla primero", "error");
+            if (idioma === 0){
+                swal("Ups!", "Acuerdese de seleccionar una regla primero", "error");
+            } else {
+                swal("Ups!", "Select a rule first please.", "error");
+            }
         }
     }
 })
@@ -229,7 +245,11 @@ $('#delButton').on('click', function () {
             error: function(jqXHR, error){
                 alert(jqXHR.responseText) //debug
                 $('#processing-modal').modal('toggle');
-                swal("Ups!", "Hubo un error modificando la regla especificada.", "error");
+                if (idioma === 0){
+                    swal("Ups!", "Hubo un error modificando la regla especificada.", "error");
+                } else {
+                    swal("Ups!", "Error occurred modifying the rule.", "error");
+                }
             },
             dataType:'json',
             headers:{
@@ -244,8 +264,13 @@ $('#delButton').on('click', function () {
     var regla_id = $("#Id-regla").val();
                 
     if (cuenta_id>=0 && regla_id>=0){
+        if (idioma === 0){
+            msj = "Seguro que desea eliminar la regla "+ a_nom +" ?";
+        } else {
+            msj = "Sure you want delete the rule "+ a_nom +" ?";
+        }
         swal({   title: "",
-                 text: "Seguro que desea eliminar la regla "+ a_nom +" ?",
+                 text: msj,
                  type: "warning",
                  showCancelButton: true,
                  confirmButtonText: "Ok"},
@@ -257,9 +282,17 @@ $('#delButton').on('click', function () {
                  );
     }else{
         if (cuenta_id<0){
-            swal("Ups!", "Acuerdese de seleccionar una cuenta primero", "error");
+           if (idioma === 0){
+                swal("Ups!", "Acuerdese de seleccionar una cuenta primero", "error");
+            } else {
+                swal("Ups!", "Select an account first please.", "error");
+            }
         }else{
-            swal("Ups!", "Acuerdese de seleccionar una regla primero", "error");
+            if (idioma === 0){
+                swal("Ups!", "Acuerdese de seleccionar una regla primero", "error");
+            } else {
+                swal("Ups!", "Select a rule first please.", "error");
+            }
         }
     }
 })
@@ -363,8 +396,13 @@ $('#form-add-regla').validate({
                         },
                         error: function(jqXHR, error){
                             alert(jqXHR.responseText) //debug
+                            if (idioma === 0){
+                                msj = "Hubo un error, por favor verificar que los campos esten correctos e intente nuevamente.";
+                            } else {
+                                msj = "Error occured, verify fileds and try again please.";
+                            }
                             swal({   title: "Ups!",
-                                         text: "Hubo un error, por favor verificar que los campos esten correctos e intente nuevamente.",
+                                         text: msj,
                                          type: "error",
                                          confirmButtonText: "Ok" });
                             $('#processing-modal').modal('toggle');
@@ -392,7 +430,11 @@ $('#form-add-regla').validate({
                 var cuenta_id = $('#Cuenta-sel').val();
 
                 if (cuenta_id<0){
-                    swal("Ups!", "Acuerdese de seleccionar una cuenta primero", "error");
+                    if (idioma === 0){
+                        swal("Ups!", "Acuerdese de seleccionar una cuenta primero", "error");
+                    } else {
+                        swal("Ups!", "Select an account first please.", "error");
+                    }
                     $('#processing-modal').modal('toggle');
                     $btn.button('reset');
                 }else{
@@ -476,7 +518,11 @@ function reglas(cuentaId){
         error: function(jqXHR, error){
             alert(jqXHR.responseText) //debug
             $('#processing-modal').modal('toggle');
-            swal("Ups!", "Hubo un error buscando la cuenta especificada.", "error");
+            if (idioma === 0){
+                swal("Ups!", "Hubo un error buscando la cuenta especificada.", "error");
+            } else {
+                swal("Ups!", "Error occurred looking for the account.", "error");
+            }
         },
         dataType:'json',
         headers:{

@@ -343,6 +343,7 @@ def cambioClave(request):
 
     if request.method == 'POST':
 
+        idioma = Configuracion.objects.all()[0].idioma 
         clave = request.POST.get('clave')
         newp = make_password(clave, hasher='pbkdf2_sha1')
         x, x, salt, hashp = newp.split("$")
@@ -354,9 +355,17 @@ def cambioClave(request):
             actual.pass_field = hashp
             actual.estado = "Activo"
             actual.save()
-            msg = "Contraseña actualizada exitosamente"
+
+            if idioma == 0:
+                msg = "Contraseña actualizada exitosamente"
+            else:
+                msg = "Successful updated password"
+
         except:
-            msg = "Error al tratar de encontrar el usuario especificado."
+            if idioma == 0:
+                msg = "Error al tratar de encontrar el usuario especificado."
+            else:
+                msg = "Error occurred, user not found."
             return JsonResponse({'mens': msg})    
 
         #Para las tablas propias de django
@@ -2877,6 +2886,7 @@ def configuracion(request, tipo):
 
     expirarSesion(request)
     if request.method == 'POST':
+        idioma = Configuracion.objects.all()[0].idioma 
 
         if tipo == "sis":
             tipoconf = request.POST.get('conf_form_name')
@@ -3042,12 +3052,20 @@ def configuracion(request, tipo):
                 formcarsep = request.POST.get('formcarsep')
                 formtipo = request.POST.get('formtipo')
                 formcampsel = request.POST.get('formcampsel')
-                msg = "Formato creado exitosamente."
+
+                if idioma == 0:
+                    msg = "Formato creado exitosamente."
+                else:
+                    msg = "Successful created format."
 
                 try:
                     cuenta = Cuenta.objects.get(pk=formcuenta)
                 except Cuenta.DoesNotExist:
-                    msg = "No se encontro la cuenta especificada, asegurese de elegir una cuenta primero."
+                    if idioma == 0:
+                        msg = "No se encontro la cuenta especificada, asegurese de elegir una cuenta primero."
+                    else:
+                        msg = "Account not found, be sure select an account first."
+                    
                     return JsonResponse({'msg': msg, 'add': False})
 
                 formato =  Formatoarchivo.objects.create(cuenta_idcuenta = cuenta, nombre = formnom, separador = formcarsep, tipo = formtipo, formato=formcampsel)
@@ -3056,12 +3074,20 @@ def configuracion(request, tipo):
 
             elif actn == "del":
                 formid = request.POST.get('formid')
-                msg = "Formato eliminado exitosamente."
+
+                if idioma == 0: 
+                    msg = "Formato eliminado exitosamente."
+                else:
+                    msg = "Successful deleted format."
 
                 try:
                     formato = Formatoarchivo.objects.get(idformato=formid)
                 except Formatoarchivo.DoesNotExist:
-                    msg = "No se encontro el formato especificado, asegurese de hacer click en el formato de archivo a eliminar." 
+                    if idioma == 0:
+                        msg = "No se encontro el formato especificado, asegurese de hacer click en el formato de archivo a eliminar." 
+                    else:
+                        msg = "Format not found, be sure to click a format first." 
+                        
                     return JsonResponse({'msg': msg, 'formid': formid, 'elim': False})
 
                 formato.delete()
@@ -3075,12 +3101,18 @@ def configuracion(request, tipo):
                 formtipo = request.POST.get('formtipo')
                 formcampsel = request.POST.get('formcampsel')
 
-                msg = "Formato modificado exitosamente."
+                if idioma == 0: 
+                    msg = "Formato modificado exitosamente."
+                else:
+                    msg = "Successful modified format."
                 
                 try:
                     formato = Formatoarchivo.objects.get(idformato=formid)
                 except Formatoarchivo.DoesNotExist:
-                    msg = "No se encontro el formato especificado, asegurese de hacer click en el formato de archivo a modificar." 
+                    if idioma == 0:
+                        msg = "No se encontro el formato especificado, asegurese de hacer click en el formato de archivo a eliminar." 
+                    else:
+                        msg = "Format not found, be sure to click a format first."
                     return JsonResponse({'msg': msg, 'formid': formid, 'modif': False})
  
                 formato.nombre = formnom
@@ -3093,26 +3125,30 @@ def configuracion(request, tipo):
 
     if request.method == 'GET':
 
+        idioma = Configuracion.objects.all()[0].idioma 
         if tipo == "sis":
             template = "matcher/conf_sistema.html"
             empresa = Empresa.objects.all()
             conf = Configuracion.objects.all()
-
-            idioma = Configuracion.objects.all()[0].idioma    
+   
             context = {'idioma':idioma, 'empresa': empresa[0], 'conf': conf[0], 'ops':get_ops(request),'ldap':get_ldap(request)}
             return render(request, template, context)
 
         if tipo == "arc":
             template = "matcher/conf_archivo.html"
-            campos_disp = ['Nro. Cuenta *','Nro. Estado de Cuenta','Moneda', 'Fecha *','Credito/Débito Partida', 'Monto *', 'Tipo Transacción *', 'Ref. Nostro', 'Ref. Vostro', 'Detalle', 'Saldo *', 'Credito/Débito Saldo']
+            if idioma == 0:
+                campos_disp = ['Nro. Cuenta *','Nro. Estado de Cuenta','Moneda', 'Fecha *','Credito/Débito Partida', 'Monto *', 'Tipo Transacción *', 'Ref. Nostro', 'Ref. Vostro', 'Detalle', 'Saldo *', 'Credito/Débito Saldo']
+            else:
+                campos_disp = ['Account No. *','Acct. Statement No.','Currency', 'Date *','Credit/Debit Entries', 'Amount *', 'Transaction Type *', 'Nostro Ref.', 'Vostro Ref.', 'Details', 'Balance *', 'Credit/Debit Balance']
+             
             archivos = Formatoarchivo.objects.all()
             cuentas = Cuenta.objects.all()
+            
             # ARREGLAR
             if request.method == 'POST':
                 form = request.POST
                 print (form)
-
-            idioma = Configuracion.objects.all()[0].idioma    
+  
             context = {'idioma':idioma, 'archivos':archivos, 'cuentas':cuentas, 'campos_disp':campos_disp, 'ops':get_ops(request),'ldap':get_ldap(request)}
             return render(request, template, context)
         
@@ -4865,6 +4901,7 @@ def admin_reglas_transf(request):
     if request.method == 'POST':
         
         actn = request.POST.get('action')
+        idioma = Configuracion.objects.all()[0].idioma
 
         if actn == 'sel':
             cuentaid = int(request.POST.get('cuentaid'))
@@ -4885,12 +4922,20 @@ def admin_reglas_transf(request):
             selrefcorr = request.POST.get("selrefcorr")
             mascconta = request.POST.get("mascconta")
             masccorr = request.POST.get("masccorr")
-            msg = "Regla creada exitosamente"
+
+            if idioma == 0:
+                msg = "Regla creada exitosamente"
+            else:
+                msg = "Successful created rule"
 
             try:
                 cuenta = Cuenta.objects.get(pk=cuentaid)
             except Cuenta.DoesNotExist:
-                msg = "No se encontro la cuenta especificada."
+                if idioma == 0:
+                    msg = "No se encontro la cuenta especificada."
+                else:
+                    msg = "Account not found."
+
                 return JsonResponse({'msg': msg, 'add': False})
 
             regla =  ReglaTransformacion.objects.create(nombre = nombre, cuenta_idcuenta = cuenta, transaccion_corresponsal = transcorr, ref_corresponsal = selrefcorr, mascara_corresponsal = masccorr, transaccion_contabilidad = transconta, ref_contabilidad = selrefconta, mascara_contabilidad = mascconta, tipo = tipo)
@@ -4902,12 +4947,21 @@ def admin_reglas_transf(request):
 
         if actn == 'del':
             reglaid = request.POST.get("reglaid")
-            msg = "Regla eliminada exitosamente"
+
+            if idioma == 0:
+                msg = "Regla eliminada exitosamente"
+            else:
+                msg = "Successful deleted rule."
 
             try:
                 regla = ReglaTransformacion.objects.get(pk=reglaid)
             except ReglaTransformacion.DoesNotExist:
-                msg = "Regla no encontrada, por favor seleccione primero una regla"
+                
+                if idioma == 0:
+                    msg = "Regla no encontrada, por favor seleccione primero una regla"
+                else:
+                    msg = "Rule not found, select a rule first please."
+
                 return JsonResponse ({'msg':msg, 'elim':False})
             
             #Para el log
@@ -4919,7 +4973,11 @@ def admin_reglas_transf(request):
 
         if actn == 'upd':
 
-            msg = 'Regla modificada exitosamente'
+            if idioma == 0:
+                msg = 'Regla modificada exitosamente'
+            else:
+                msg = 'Successful modified rule'
+            
             reglaid = request.POST.get("reglaid")
             nombre = request.POST.get("nombre")
             tipo = request.POST.get("tipo")
@@ -4933,7 +4991,11 @@ def admin_reglas_transf(request):
             try:
                 regla = ReglaTransformacion.objects.get(pk=reglaid)
             except ReglaTransformacion.DoesNotExist:
-                msg = "No se encontro la regla especificada, asegurese de hacer click en la regla a modificar previamente."
+                if idioma == 0:
+                    msg = "No se encontro la regla especificada, asegurese de hacer click en la regla a modificar previamente."
+                else:
+                    msg = "Rule not found, be sure to click a rule first please."
+                
                 return JsonResponse({'msg': msg, 'reglaid': reglaid, 'modif': False})
         
             regla.nombre = nombre

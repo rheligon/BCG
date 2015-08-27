@@ -1,4 +1,6 @@
 var csrftoken = $.cookie('csrftoken');	
+var idioma = $('#idioma').val();
+var msj ="";
 
 //Resetear campos del formulario cuando se esconde
 $('.modal:not(.modal-static)').on('hidden.bs.modal', function(){
@@ -343,8 +345,13 @@ $('#delButton').on('click', function () {
     var form_elim = $('ul[type="archivo"] > li.active');
 
     if (form_elim.length > 0){
+        if (idioma === 0){
+            msj = "Seguro que desea eliminar el formato "+ form_elim.attr("nombre") +" ?";
+        } else {
+            msj = "Sure you want delete format "+ form_elim.attr("nombre") +" ?";
+        }
         swal({   title: "",
-             text: "Seguro que desea eliminar el formato "+ form_elim.attr("nombre") +" ?",
+             text: msj,
              type: "warning",
              showCancelButton: true,
              confirmButtonText: "Ok"},
@@ -424,9 +431,13 @@ $('#updButton').on('click', function () {
                 }
             }
         });
-
+        if (idioma === 0){
+            msj = "Seguro que desea modificar el formato "+ formNom +" ?";
+        } else {
+            msj = "Sure you want modify format "+ formNom +" ?";
+        }
         swal({   title: "",
-                 text: "Seguro que desea modificar el formato "+ formNom +" ?",
+                 text: msj,
                  type: "warning",
                  showCancelButton: true,
                  confirmButtonText: "Ok"},
@@ -437,6 +448,10 @@ $('#updButton').on('click', function () {
                  }
                  );
     }else{
-        swal("","Por favor seleccionar un formato primero","error");
+        if (idioma === 0){
+            swal("","Por favor seleccionar un formato primero","error");
+        } else {
+            swal("","Select a format first please","error");
+        }
     }
 })
