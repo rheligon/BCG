@@ -1,3 +1,5 @@
+from Matcher.models import *
+
 def sumaLineas(arreglo):
 	total = 0
 	for numero in arreglo:
@@ -67,33 +69,17 @@ def parseo103(archivo,directorio):
 	fechaValor32A = ""
 	tipoCambio36 = ""
 	moneda33B = ""
-	clienteOrd50A = ""
-	clienteOrd50F = ""
-	clienteOrd50K = ""
+	clienteOrd50a = ""
 	instEmisor51A = ""
-	instOrd52A = ""
-	instOrd52D = ""
-	emisorCorr53A = ""
-	emisorCorr53B = ""
-	emisorCorr53D = ""
-	receptorCorr54A = ""
-	receptorCorr54B = ""
-	receptorCorr54D = ""
-	instReemb55A = ""
-	instReemb55B = ""
-	instReemb55D = ""
-	instInter56A = ""
-	instInter56C = ""
-	instInter56D = ""
-	instCuenta57A = ""
-	instCuenta57B = ""
-	instCuenta57C = ""
-	instCuenta57D = ""
-	clienteBene59 = ""
-	clienteBene59A = ""
-	clienteBene59F = ""
+	instOrd52a = ""
+	emisorCorr53a = ""
+	receptorCorr54a = ""
+	instReemb55a = ""
+	instInter56a = ""
+	instCuenta57a = ""
+	clienteBene59a = ""
 	infoRemesa70 = ""
-	detallesCarg71a = ""
+	detallesCarg71A = ""
 	infoEmisor72 = ""
 	cargosEmisor71F = ""
 	cargosReceptor71G = ""
@@ -185,7 +171,7 @@ def parseo103(archivo,directorio):
 
 			while(opcion == "[23E]"):
 				
-				codInst23E = contenidoLinea[5:]
+				codInst23E = codInst23E + contenidoLinea[5:] +";"
 				print ("[23E]: ",codInst23E)
 				lineaAct += 1
 				contador += 1
@@ -251,47 +237,47 @@ def parseo103(archivo,directorio):
 				msg = "Caracter inesperado, en la línea número " +str(contador+1)+ " del archivo " + archivo
 				return ("error", msg)
 			elif(opcion1 == "[50A]"): 
-				clienteOrd50A = contenidoLinea[5:]
+				clienteOrd50a = opcion1 + contenidoLinea[5:]
 				contenidoLinea = lines[contador+1]
 				opcion = contenidoLinea[:5]
 				opcion0 = contenidoLinea[:4]
 				while (opcion != "[51A]" and opcion != "[52A]" and opcion != "[52D]" and opcion != "[53A]" and opcion != "[53B]" and opcion != "[53D]" and opcion != "[54A]" and opcion != "[54B]" and opcion != "[54D]" and opcion != "[55A]" and opcion != "[55B]" and opcion != "[55D]" and opcion != "[56A]" and opcion != "[56C]" and opcion != "[56D]" and opcion != "[57A]" and opcion != "[57B]" and opcion != "[57C]" and opcion != "[57D]" and opcion0 != "[59]" and opcion != "[59A]" and opcion != "[59F]"):
-					clienteOrd50A = clienteOrd50A+"\n"+contenidoLinea
+					clienteOrd50a = clienteOrd50a+"\n"+contenidoLinea
 					lineaAct += 1
 					contador += 1
 					opcionales +=1
 					contenidoLinea = lines[contador+1]
 					opcion = contenidoLinea[:5]
 					opcion0 = contenidoLinea[:4]
-				print ("[50A]: ",clienteOrd50A)
+				print ("[50A]: ",clienteOrd50a)
 			elif(opcion1 == "[50F]"): 
-				clienteOrd50F = contenidoLinea[5:]
+				clienteOrd50a = opcion1 + contenidoLinea[5:]
 				contenidoLinea = lines[contador+1]
 				opcion = contenidoLinea[:5]
 				opcion0 = contenidoLinea[:4]
 				while (opcion != "[51A]" and opcion != "[52A]" and opcion != "[52D]" and opcion != "[53A]" and opcion != "[53B]" and opcion != "[53D]" and opcion != "[54A]" and opcion != "[54B]" and opcion != "[54D]" and opcion != "[55A]" and opcion != "[55B]" and opcion != "[55D]" and opcion != "[56A]" and opcion != "[56C]" and opcion != "[56D]" and opcion != "[57A]" and opcion != "[57B]" and opcion != "[57C]" and opcion != "[57D]" and opcion0 != "[59]" and opcion != "[59A]" and opcion != "[59F]"):
-					clienteOrd50F = clienteOrd50F+"\n"+contenidoLinea
+					clienteOrd50a = clienteOrd50a+"\n"+contenidoLinea
 					lineaAct += 1
 					contador += 1
 					opcionales +=1
 					contenidoLinea = lines[contador+1]
 					opcion = contenidoLinea[:5]
 					opcion0 = contenidoLinea[:4]
-				print ("[50F]: ",clienteOrd50F)
+				print ("[50F]: ",clienteOrd50a)
 			elif(opcion1 == "[50K]"): 
-				clienteOrd50K = contenidoLinea[5:]
+				clienteOrd50a = opcion1 + contenidoLinea[5:]
 				contenidoLinea = lines[contador+1]
 				opcion = contenidoLinea[:5]
 				opcion0 = contenidoLinea[:4]
 				while (opcion != "[51A]" and opcion != "[52A]" and opcion != "[52D]" and opcion != "[53A]" and opcion != "[53B]" and opcion != "[53D]" and opcion != "[54A]" and opcion != "[54B]" and opcion != "[54D]" and opcion != "[55A]" and opcion != "[55B]" and opcion != "[55D]" and opcion != "[56A]" and opcion != "[56C]" and opcion != "[56D]" and opcion != "[57A]" and opcion != "[57B]" and opcion != "[57C]" and opcion != "[57D]" and opcion0 != "[59]" and opcion != "[59A]" and opcion != "[59F]"):
-					clienteOrd50K = clienteOrd50K+"\n"+contenidoLinea
+					clienteOrd50a = clienteOrd50a+"\n"+contenidoLinea
 					lineaAct += 1
 					contador += 1
 					opcionales +=1
 					contenidoLinea = lines[contador+1]
 					opcion = contenidoLinea[:5]
 					opcion0 = contenidoLinea[:4]
-				print ("[50K]: ",clienteOrd50K)
+				print ("[50K]: ",clienteOrd50a)
 			
 		if (lineaAct == (8 + opcionales)):
 			opcion = contenidoLinea[:5]
@@ -306,7 +292,7 @@ def parseo103(archivo,directorio):
 					contenidoLinea = lines[contador+1]
 					opcion2 = contenidoLinea[:5]
 					opcion3 = contenidoLinea[:4]
-					while (opcion3 != "[59]" and opcion2 != "[59A]" and opcion2 != "[59F]" and opcion2 != "[52A]" and opcion2 != "[52D]" and opcion2 != "[53A]" and opcion2 != "[53B]" and opcion2 != "[53D]" and opcion2 != "[54A]" and opcion2 != "[54B]" and opcion2 != "[54D]" and opcion2 != "[55A]" and opcion2 != "[55B]" and opcion2 != "[55D]" and opcion2 != "[56A]" and opcion2 != "[56C]" and opcion2 != "[56D]" and opcion2 != "[57A]" and opcion2 != "[57B]" and opcion2 != "[57C]" and opcion2 != "[57D]"):
+					while ( opcion2 != "[52A]" and opcion2 != "[52D]" and opcion2 != "[53A]" and opcion2 != "[53B]" and opcion2 != "[53D]" and opcion2 != "[54A]" and opcion2 != "[54B]" and opcion2 != "[54D]" and opcion2 != "[55A]" and opcion2 != "[55B]" and opcion2 != "[55D]" and opcion2 != "[56A]" and opcion2 != "[56C]" and opcion2 != "[56D]" and opcion2 != "[57A]" and opcion2 != "[57B]" and opcion2 != "[57C]" and opcion2 != "[57D]" and opcion3 != "[59]" and opcion2 != "[59A]" and opcion2 != "[59F]"):
 						instEmisor51A = instEmisor51A+"\n"+contenidoLinea
 						lineaAct += 1
 						contador += 1
@@ -316,269 +302,269 @@ def parseo103(archivo,directorio):
 						opcion3 = contenidoLinea[:4]
 					print ("[51A]: ",instEmisor51A)
 				if (opcion == "[52A]"):
-					instOrd52A = contenidoLinea[5:]
+					instOrd52a = opcion + contenidoLinea[5:]
 					cuantos = 1
 					contenidoLinea = lines[contador+1]
 					opcion2 = contenidoLinea[:5]
 					opcion3 = contenidoLinea[:4]
-					while (opcion3 != "[59]" and opcion2 != "[59A]" and opcion2 != "[59F]" and opcion2 != "[53A]" and opcion2 != "[53B]" and opcion2 != "[53D]" and opcion2 != "[54A]" and opcion2 != "[54B]" and opcion2 != "[54D]" and opcion2 != "[55A]" and opcion2 != "[55B]" and opcion2 != "[55D]" and opcion2 != "[56A]" and opcion2 != "[56C]" and opcion2 != "[56D]" and opcion2 != "[57A]" and opcion2 != "[57B]" and opcion2 != "[57C]" and opcion2 != "[57D]"):
-						instOrd52A = instOrd52A+"\n"+contenidoLinea
+					while ( opcion2 != "[53A]" and opcion2 != "[53B]" and opcion2 != "[53D]" and opcion2 != "[54A]" and opcion2 != "[54B]" and opcion2 != "[54D]" and opcion2 != "[55A]" and opcion2 != "[55B]" and opcion2 != "[55D]" and opcion2 != "[56A]" and opcion2 != "[56C]" and opcion2 != "[56D]" and opcion2 != "[57A]" and opcion2 != "[57B]" and opcion2 != "[57C]" and opcion2 != "[57D]" and opcion3 != "[59]" and opcion2 != "[59A]" and opcion2 != "[59F]"):
+						instOrd52a = instOrd52a+"\n"+contenidoLinea
 						lineaAct += 1
 						contador += 1
 						opcionales +=1
 						contenidoLinea = lines[contador+1]
 						opcion2 = contenidoLinea[:5]
 						opcion3 = contenidoLinea[:4]
-					print ("[52A]: ",instOrd52A)
+					print ("[52A]: ",instOrd52a)
 				if (opcion == "[52D]"):
-					instOrd52D = contenidoLinea[5:]
+					instOrd52a =  opcion + contenidoLinea[5:]
 					contenidoLinea = lines[contador+1]
 					opcion2 = contenidoLinea[:5]
 					opcion3 = contenidoLinea[:4]
-					while (opcion3 != "[59]" and opcion2 != "[59A]" and opcion2 != "[59F]" and opcion2 != "[53A]" and opcion2 != "[53B]" and opcion2 != "[53D]" and opcion2 != "[54A]" and opcion2 != "[54B]" and opcion2 != "[54D]" and opcion2 != "[55A]" and opcion2 != "[55B]" and opcion2 != "[55D]" and opcion2 != "[56A]" and opcion2 != "[56C]" and opcion2 != "[56D]" and opcion2 != "[57A]" and opcion2 != "[57B]" and opcion2 != "[57C]" and opcion2 != "[57D]"):
-						instOrd52D = instOrd52D+"\n"+contenidoLinea
+					while ( opcion2 != "[53A]" and opcion2 != "[53B]" and opcion2 != "[53D]" and opcion2 != "[54A]" and opcion2 != "[54B]" and opcion2 != "[54D]" and opcion2 != "[55A]" and opcion2 != "[55B]" and opcion2 != "[55D]" and opcion2 != "[56A]" and opcion2 != "[56C]" and opcion2 != "[56D]" and opcion2 != "[57A]" and opcion2 != "[57B]" and opcion2 != "[57C]" and opcion2 != "[57D]" and opcion3 != "[59]" and opcion2 != "[59A]" and opcion2 != "[59F]"):
+						instOrd52a = instOrd52a+"\n"+contenidoLinea
 						lineaAct += 1
 						contador += 1
 						opcionales +=1
 						contenidoLinea = lines[contador+1]
 						opcion2 = contenidoLinea[:5]
 						opcion3 = contenidoLinea[:4]
-					print ("[52D]: ",instOrd52D)
+					print ("[52D]: ",instOrd52a)
 				if (opcion == "[53A]"):
-					emisorCorr53A = contenidoLinea[5:]
+					emisorCorr53a = opcion + contenidoLinea[5:]
 					cuantos = 2
 					contenidoLinea = lines[contador+1]
 					opcion2 = contenidoLinea[:5]
 					opcion3 = contenidoLinea[:4]
-					while (opcion3 != "[59]" and opcion2 != "[59A]" and opcion2 != "[59F]" and opcion2 != "[54A]" and opcion2 != "[54B]" and opcion2 != "[54D]" and opcion2 != "[55A]" and opcion2 != "[55B]" and opcion2 != "[55D]" and opcion2 != "[56A]" and opcion2 != "[56C]" and opcion2 != "[56D]" and opcion2 != "[57A]" and opcion2 != "[57B]" and opcion2 != "[57C]" and opcion2 != "[57D]"):
-						emisorCorr53A = emisorCorr53A+"\n"+contenidoLinea
+					while ( opcion2 != "[54A]" and opcion2 != "[54B]" and opcion2 != "[54D]" and opcion2 != "[55A]" and opcion2 != "[55B]" and opcion2 != "[55D]" and opcion2 != "[56A]" and opcion2 != "[56C]" and opcion2 != "[56D]" and opcion2 != "[57A]" and opcion2 != "[57B]" and opcion2 != "[57C]" and opcion2 != "[57D]" and opcion3 != "[59]" and opcion2 != "[59A]" and opcion2 != "[59F]"):
+						emisorCorr53a = emisorCorr53a+"\n"+contenidoLinea
 						lineaAct += 1
 						contador += 1
 						opcionales +=1
 						contenidoLinea = lines[contador+1]
 						opcion2 = contenidoLinea[:5]
 						opcion3 = contenidoLinea[:4]
-					print ("[53A]: ",emisorCorr53A)
+					print ("[53A]: ",emisorCorr53a)
 				if (opcion == "[53B]"):
-					emisorCorr53B = contenidoLinea[5:]
+					emisorCorr53a = opcion + contenidoLinea[5:]
 					cuantos = 1
 					contenidoLinea = lines[contador+1]
 					opcion2 = contenidoLinea[:5]
 					opcion3 = contenidoLinea[:4]
-					while (opcion3 != "[59]" and opcion2 != "[59A]" and opcion2 != "[59F]" and opcion2 != "[54A]" and opcion2 != "[54B]" and opcion2 != "[54D]" and opcion2 != "[55A]" and opcion2 != "[55B]" and opcion2 != "[55D]" and opcion2 != "[56A]" and opcion2 != "[56C]" and opcion2 != "[56D]" and opcion2 != "[57A]" and opcion2 != "[57B]" and opcion2 != "[57C]" and opcion2 != "[57D]"):
-						emisorCorr53B = emisorCorr53B+"\n"+contenidoLinea
+					while ( opcion2 != "[54A]" and opcion2 != "[54B]" and opcion2 != "[54D]" and opcion2 != "[55A]" and opcion2 != "[55B]" and opcion2 != "[55D]" and opcion2 != "[56A]" and opcion2 != "[56C]" and opcion2 != "[56D]" and opcion2 != "[57A]" and opcion2 != "[57B]" and opcion2 != "[57C]" and opcion2 != "[57D]" and opcion3 != "[59]" and opcion2 != "[59A]" and opcion2 != "[59F]"):
+						emisorCorr53a = emisorCorr53a+"\n"+contenidoLinea
 						lineaAct += 1
 						contador += 1
 						opcionales +=1
 						contenidoLinea = lines[contador+1]
 						opcion2 = contenidoLinea[:5]
 						opcion3 = contenidoLinea[:4]
-					print ("[53B]: ",emisorCorr53B)
+					print ("[53B]: ",emisorCorr53a)
 				if (opcion == "[53D]"):
-					emisorCorr53D = contenidoLinea[5:]
+					emisorCorr53a = opcion + contenidoLinea[5:]
 					contenidoLinea = lines[contador+1]
 					opcion2 = contenidoLinea[:5]
 					opcion3 = contenidoLinea[:4]
-					while (opcion3 != "[59]" and opcion2 != "[59A]" and opcion2 != "[59F]" and opcion2 != "[54A]" and opcion2 != "[54B]" and opcion2 != "[54D]" and opcion2 != "[55A]" and opcion2 != "[55B]" and opcion2 != "[55D]" and opcion2 != "[56A]" and opcion2 != "[56C]" and opcion2 != "[56D]" and opcion2 != "[57A]" and opcion2 != "[57B]" and opcion2 != "[57C]" and opcion2 != "[57D]"):
-						emisorCorr53D = emisorCorr53D+"\n"+contenidoLinea
+					while ( opcion2 != "[54A]" and opcion2 != "[54B]" and opcion2 != "[54D]" and opcion2 != "[55A]" and opcion2 != "[55B]" and opcion2 != "[55D]" and opcion2 != "[56A]" and opcion2 != "[56C]" and opcion2 != "[56D]" and opcion2 != "[57A]" and opcion2 != "[57B]" and opcion2 != "[57C]" and opcion2 != "[57D]" and opcion3 != "[59]" and opcion2 != "[59A]" and opcion2 != "[59F]"):
+						emisorCorr53a = emisorCorr53a+"\n"+contenidoLinea
 						lineaAct += 1
 						contador += 1
 						opcionales +=1
 						contenidoLinea = lines[contador+1]
 						opcion2 = contenidoLinea[:5]
 						opcion3 = contenidoLinea[:4]
-					print ("[53D]: ",emisorCorr53D)
+					print ("[53D]: ",emisorCorr53a)
 				if (opcion == "[54A]"):
-					receptorCorr54A = contenidoLinea[5:]
+					receptorCorr54a = opcion + contenidoLinea[5:]
 					cuantos = 2
 					contenidoLinea = lines[contador+1]
 					opcion2 = contenidoLinea[:5]
 					opcion3 = contenidoLinea[:4]
-					while (opcion3 != "[59]" and opcion2 != "[59A]" and opcion2 != "[59F]" and opcion2 != "[55A]" and opcion2 != "[55B]" and opcion2 != "[55D]" and opcion2 != "[56A]" and opcion2 != "[56C]" and opcion2 != "[56D]" and opcion2 != "[57A]" and opcion2 != "[57B]" and opcion2 != "[57C]" and opcion2 != "[57D]"):
-						receptorCorr54A = receptorCorr54A+"\n"+contenidoLinea
+					while ( opcion2 != "[55A]" and opcion2 != "[55B]" and opcion2 != "[55D]" and opcion2 != "[56A]" and opcion2 != "[56C]" and opcion2 != "[56D]" and opcion2 != "[57A]" and opcion2 != "[57B]" and opcion2 != "[57C]" and opcion2 != "[57D]" and opcion3 != "[59]" and opcion2 != "[59A]" and opcion2 != "[59F]"):
+						receptorCorr54a = receptorCorr54a+"\n"+contenidoLinea
 						lineaAct += 1
 						contador += 1
 						opcionales +=1
 						contenidoLinea = lines[contador+1]
 						opcion2 = contenidoLinea[:5]
 						opcion3 = contenidoLinea[:4]
-					print ("[54A]: ",receptorCorr54A)
+					print ("[54A]: ",receptorCorr54a)
 				if (opcion == "[54B]"):
-					receptorCorr54B = contenidoLinea[5:]
+					receptorCorr54a = opcion + contenidoLinea[5:]
 					cuantos = 1
 					contenidoLinea = lines[contador+1]
 					opcion2 = contenidoLinea[:5]
 					opcion3 = contenidoLinea[:4]
-					while (opcion3 != "[59]" and opcion2 != "[59A]" and opcion2 != "[59F]" and opcion2 != "[55A]" and opcion2 != "[55B]" and opcion2 != "[55D]" and opcion2 != "[56A]" and opcion2 != "[56C]" and opcion2 != "[56D]" and opcion2 != "[57A]" and opcion2 != "[57B]" and opcion2 != "[57C]" and opcion2 != "[57D]"):
-						receptorCorr54B = receptorCorr54B+"\n"+contenidoLinea
+					while ( opcion2 != "[55A]" and opcion2 != "[55B]" and opcion2 != "[55D]" and opcion2 != "[56A]" and opcion2 != "[56C]" and opcion2 != "[56D]" and opcion2 != "[57A]" and opcion2 != "[57B]" and opcion2 != "[57C]" and opcion2 != "[57D]" and opcion3 != "[59]" and opcion2 != "[59A]" and opcion2 != "[59F]"):
+						receptorCorr54a = receptorCorr54a+"\n"+contenidoLinea
 						lineaAct += 1
 						contador += 1
 						opcionales +=1
 						contenidoLinea = lines[contador+1]
 						opcion2 = contenidoLinea[:5]
 						opcion3 = contenidoLinea[:4]
-					print ("[54B]: ",receptorCorr54B)
+					print ("[54B]: ",receptorCorr54a)
 				if (opcion == "[54D]"):
-					receptorCorr54D = contenidoLinea[5:]
+					receptorCorr54a = opcion + contenidoLinea[5:]
 					contenidoLinea = lines[contador+1]
 					opcion2 = contenidoLinea[:5]
 					opcion3 = contenidoLinea[:4]
-					while (opcion3 != "[59]" and opcion2 != "[59A]" and opcion2 != "[59F]" and opcion2 != "[55A]" and opcion2 != "[55B]" and opcion2 != "[55D]" and opcion2 != "[56A]" and opcion2 != "[56C]" and opcion2 != "[56D]" and opcion2 != "[57A]" and opcion2 != "[57B]" and opcion2 != "[57C]" and opcion2 != "[57D]"):
-						receptorCorr54D = receptorCorr54D+"\n"+contenidoLinea
+					while ( opcion2 != "[55A]" and opcion2 != "[55B]" and opcion2 != "[55D]" and opcion2 != "[56A]" and opcion2 != "[56C]" and opcion2 != "[56D]" and opcion2 != "[57A]" and opcion2 != "[57B]" and opcion2 != "[57C]" and opcion2 != "[57D]" and opcion3 != "[59]" and opcion2 != "[59A]" and opcion2 != "[59F]" ):
+						receptorCorr54a = receptorCorr54a+"\n"+contenidoLinea
 						lineaAct += 1
 						contador += 1
 						opcionales +=1
 						contenidoLinea = lines[contador+1]
 						opcion2 = contenidoLinea[:5]
 						opcion3 = contenidoLinea[:4]
-					print ("[54D]: ",receptorCorr54D)
+					print ("[54D]: ",receptorCorr54a)
 				if (opcion == "[55A]"):
-					instReemb55A = contenidoLinea[5:]
+					instReemb55a = opcion + contenidoLinea[5:]
 					cuantos = 2
 					contenidoLinea = lines[contador+1]
 					opcion2 = contenidoLinea[:5]
 					opcion3 = contenidoLinea[:4]
-					while (opcion3 != "[59]" and opcion2 != "[59A]" and opcion2 != "[59F]" and opcion2 != "[56A]" and opcion2 != "[56C]" and opcion2 != "[56D]" and opcion2 != "[57A]" and opcion2 != "[57B]" and opcion2 != "[57C]" and opcion2 != "[57D]"):
-						instReemb55A = instReemb55A+"\n"+contenidoLinea
+					while ( opcion2 != "[56A]" and opcion2 != "[56C]" and opcion2 != "[56D]" and opcion2 != "[57A]" and opcion2 != "[57B]" and opcion2 != "[57C]" and opcion2 != "[57D]" and opcion3 != "[59]" and opcion2 != "[59A]" and opcion2 != "[59F]"):
+						instReemb55a = instReemb55a+"\n"+contenidoLinea
 						lineaAct += 1
 						contador += 1
 						opcionales +=1
 						contenidoLinea = lines[contador+1]
 						opcion2 = contenidoLinea[:5]
 						opcion3 = contenidoLinea[:4]
-					print ("[55A]: ",instReemb55A)
+					print ("[55A]: ",instReemb55a)
 				if (opcion == "[55B]"):
-					instReemb55B = contenidoLinea[5:]
+					instReemb55a = opcion + contenidoLinea[5:]
 					cuantos = 1
 					contenidoLinea = lines[contador+1]
 					opcion2 = contenidoLinea[:5]
 					opcion3 = contenidoLinea[:4]
-					while (opcion3 != "[59]" and opcion2 != "[59A]" and opcion2 != "[59F]" and opcion2 != "[56A]" and opcion2 != "[56C]" and opcion2 != "[56D]" and opcion2 != "[57A]" and opcion2 != "[57B]" and opcion2 != "[57C]" and opcion2 != "[57D]"):
-						instReemb55B = instReemb55B+"\n"+contenidoLinea
+					while ( opcion2 != "[56A]" and opcion2 != "[56C]" and opcion2 != "[56D]" and opcion2 != "[57A]" and opcion2 != "[57B]" and opcion2 != "[57C]" and opcion2 != "[57D]" and opcion3 != "[59]" and opcion2 != "[59A]" and opcion2 != "[59F]"):
+						instReemb55a = instReemb55a+"\n"+contenidoLinea
 						lineaAct += 1
 						contador += 1
 						opcionales +=1
 						contenidoLinea = lines[contador+1]
 						opcion2 = contenidoLinea[:5]
 						opcion3 = contenidoLinea[:4]
-					print ("[55B]: ",instReemb55B)
+					print ("[55B]: ",instReemb55a)
 				if (opcion == "[55D]"):
-					instReemb55D = contenidoLinea[5:]
+					instReemb55a = opcion + contenidoLinea[5:]
 					contenidoLinea = lines[contador+1]
 					opcion2 = contenidoLinea[:5]
 					opcion3 = contenidoLinea[:4]
-					while (opcion3 != "[59]" and opcion2 != "[59A]" and opcion2 != "[59F]" and opcion2 != "[56A]" and opcion2 != "[56C]" and opcion2 != "[56D]" and opcion2 != "[57A]" and opcion2 != "[57B]" and opcion2 != "[57C]" and opcion2 != "[57D]"):
-						instReemb55D = instReemb55D+"\n"+contenidoLinea
+					while ( opcion2 != "[56A]" and opcion2 != "[56C]" and opcion2 != "[56D]" and opcion2 != "[57A]" and opcion2 != "[57B]" and opcion2 != "[57C]" and opcion2 != "[57D]" and opcion3 != "[59]" and opcion2 != "[59A]" and opcion2 != "[59F]"):
+						instReemb55a = instReemb55a+"\n"+contenidoLinea
 						lineaAct += 1
 						contador += 1
 						opcionales +=1
 						contenidoLinea = lines[contador+1]
 						opcion2 = contenidoLinea[:5]
 						opcion3 = contenidoLinea[:4]
-					print ("[55D]: ",instReemb55D)
+					print ("[55D]: ",instReemb55a)
 				if (opcion == "[56A]"):
-					instInter56A = contenidoLinea[5:]
+					instInter56a = opcion + contenidoLinea[5:]
 					cuantos = 2
 					contenidoLinea = lines[contador+1]
 					opcion2 = contenidoLinea[:5]
 					opcion3 = contenidoLinea[:4]
-					while (opcion3 != "[59]" and opcion2 != "[59A]" and opcion2 != "[59F]" and opcion2 != "[57A]" and opcion2 != "[57B]" and opcion2 != "[57C]" and opcion2 != "[57D]"):
-						instInter56A = instInter56A+"\n"+contenidoLinea
+					while ( opcion2 != "[57A]" and opcion2 != "[57B]" and opcion2 != "[57C]" and opcion2 != "[57D]" and opcion3 != "[59]" and opcion2 != "[59A]" and opcion2 != "[59F]"):
+						instInter56a = instInter56a+"\n"+contenidoLinea
 						lineaAct += 1
 						contador += 1
 						opcionales +=1
 						contenidoLinea = lines[contador+1]
 						opcion2 = contenidoLinea[:5]
 						opcion3 = contenidoLinea[:4]
-					print ("[56A]: ",instInter56A)
+					print ("[56A]: ",instInter56a)
 				if (opcion == "[56C]"):
-					instInter56C = contenidoLinea[5:]
+					instInter56a = opcion + contenidoLinea[5:]
 					cuantos = 1
 					contenidoLinea = lines[contador+1]
 					opcion2 = contenidoLinea[:5]
 					opcion3 = contenidoLinea[:4]
-					while (opcion3 != "[59]" and opcion2 != "[59A]" and opcion2 != "[59F]" and opcion2 != "[57A]" and opcion2 != "[57B]" and opcion2 != "[57C]" and opcion2 != "[57D]"):
-						instInter56C = instInter56C+"\n"+contenidoLinea
+					while ( opcion2 != "[57A]" and opcion2 != "[57B]" and opcion2 != "[57C]" and opcion2 != "[57D]" and opcion3 != "[59]" and opcion2 != "[59A]" and opcion2 != "[59F]" ):
+						instInter56a = instInter56a+"\n"+contenidoLinea
 						lineaAct += 1
 						contador += 1
 						opcionales +=1
 						contenidoLinea = lines[contador+1]
 						opcion2 = contenidoLinea[:5]
 						opcion3 = contenidoLinea[:4]
-					print ("[56C]: ",instInter56C)
+					print ("[56C]: ",instInter56a)
 				if (opcion == "[56D]"):
-					instInter56D = contenidoLinea[5:]
+					instInter56a = opcion + contenidoLinea[5:]
 					contenidoLinea = lines[contador+1]
 					opcion2 = contenidoLinea[:5]
 					opcion3 = contenidoLinea[:4]
-					while (opcion3 != "[59]" and opcion2 != "[59A]" and opcion2 != "[59F]" and opcion2 != "[57A]" and opcion2 != "[57B]" and opcion2 != "[57C]" and opcion2 != "[57D]"):
-						instInter56D = instInter56D+"\n"+contenidoLinea
+					while (opcion2 != "[57A]" and opcion2 != "[57B]" and opcion2 != "[57C]" and opcion2 != "[57D]" and opcion3 != "[59]" and opcion2 != "[59A]" and opcion2 != "[59F]"):
+						instInter56a = instInter56a+"\n"+contenidoLinea
 						lineaAct += 1
 						contador += 1
 						opcionales +=1
 						contenidoLinea = lines[contador+1]
 						opcion2 = contenidoLinea[:5]
 						opcion3 = contenidoLinea[:4]
-					print ("[56D]: ",instInter56D)
+					print ("[56D]: ",instInter56a)
 				if (opcion == "[57A]"):
-					instCuenta57A = contenidoLinea[5:]
+					instCuenta57a = opcion + contenidoLinea[5:]
 					cuantos = 3
 					contenidoLinea = lines[contador+1]
 					opcion2 = contenidoLinea[:5]
 					opcion3 = contenidoLinea[:4]
 					while (opcion3 != "[59]" and opcion2 != "[59A]" and opcion2 != "[59F]"):
-						instCuenta57A = instCuenta57A+"\n"+contenidoLinea
+						instCuenta57a = instCuenta57a+"\n"+contenidoLinea
 						lineaAct += 1
 						contador += 1
 						opcionales +=1
 						contenidoLinea = lines[contador+1]
 						opcion2 = contenidoLinea[:5]
 						opcion3 = contenidoLinea[:4]
-					print ("[57A]: ",instCuenta57A)
+					print ("[57A]: ",instCuenta57a)
 				if (opcion == "[57B]"):
-					instCuenta57B = contenidoLinea[5:]
+					instCuenta57a = opcion + contenidoLinea[5:]
 					cuantos = 2
 					contenidoLinea = lines[contador+1]
 					opcion2 = contenidoLinea[:5]
 					opcion3 = contenidoLinea[:4]
 					while (opcion3 != "[59]" and opcion2 != "[59A]" and opcion2 != "[59F]"):
-						instCuenta57B = instCuenta57B+"\n"+contenidoLinea
+						instCuenta57a = instCuenta57a+"\n"+contenidoLinea
 						lineaAct += 1
 						contador += 1
 						opcionales +=1
 						contenidoLinea = lines[contador+1]
 						opcion2 = contenidoLinea[:5]
 						opcion3 = contenidoLinea[:4]
-					print ("[57B]: ",instCuenta57B)
+					print ("[57B]: ",instCuenta57a)
 				if (opcion == "[57C]"):
-					instCuenta57C = contenidoLinea[5:]
+					instCuenta57a = opcion + contenidoLinea[5:]
 					cuantos = 1
 					contenidoLinea = lines[contador+1]
 					opcion2 = contenidoLinea[:5]
 					opcion3 = contenidoLinea[:4]
 					while (opcion3 != "[59]" and opcion2 != "[59A]" and opcion2 != "[59F]"):
-						instCuenta57C = instCuenta57C+"\n"+contenidoLinea
+						instCuenta57a = instCuenta57a+"\n"+contenidoLinea
 						lineaAct += 1
 						contador += 1
 						opcionales +=1
 						contenidoLinea = lines[contador+1]
 						opcion2 = contenidoLinea[:5]
 						opcion3 = contenidoLinea[:4]
-					print ("[57C]: ",instCuenta57C)
+					print ("[57C]: ",instCuenta57a)
 				if (opcion == "[57D]"):
-					instCuenta57D = contenidoLinea[5:]
+					instCuenta57a = opcion + contenidoLinea[5:]
 					contenidoLinea = lines[contador+1]
 					opcion2 = contenidoLinea[:5]
 					opcion3 = contenidoLinea[:4]
 					while (opcion3 != "[59]" and opcion2 != "[59A]" and opcion2 != "[59F]"):
-						instCuenta57D = instCuenta57D+"\n"+contenidoLinea
+						instCuenta57a = instCuenta57a+"\n"+contenidoLinea
 						lineaAct += 1
 						contador += 1
 						opcionales +=1
 						contenidoLinea = lines[contador+1]
 						opcion2 = contenidoLinea[:5]
 						opcion3 = contenidoLinea[:4]
-					print ("[57D]: ",instCuenta57D)
+					print ("[57D]: ",instCuenta57a)
 				indice = verificarOps0.index(opcion)
 				sumaT = cuantos + indice + 1
 				verificarOps0 = verificarOps0[sumaT:]
@@ -594,47 +580,47 @@ def parseo103(archivo,directorio):
 				msg = "Caracter inesperado, en la línea número " +str(contador+1)+ " del archivo " + archivo
 				return ("error", msg)
 			elif (opcion == "[59A]"): 
-				clienteBene59A = contenidoLinea[5:]
+				clienteBene59a = opcion + contenidoLinea[5:]
 				contenidoLinea = lines[contador+1]
 				opcion2 = contenidoLinea[:4]
 				opcion3 = contenidoLinea[:5]
 				while (opcion2 != "[70]" and opcion3 != "[71A]"):
-					clienteBene59A = clienteBene59A+"\n"+contenidoLinea
+					clienteBene59a = clienteBene59a+"\n"+contenidoLinea
 					lineaAct += 1
 					contador += 1
 					opcionales +=1
 					contenidoLinea = lines[contador+1]
 					opcion2 = contenidoLinea[:4]
 					opcion3 = contenidoLinea[:5]
-				print ("[59A]: ",clienteBene59A)
+				print ("[59A]: ",clienteBene59a)
 			elif (opcion == "[59F]"): 
-				clienteBene59F = contenidoLinea[5:]
+				clienteBene59a = opcion + contenidoLinea[5:]
 				contenidoLinea = lines[contador+1]
 				opcion2 = contenidoLinea[:4]
 				opcion3 = contenidoLinea[:5]
 				while (opcion2 != "[70]" and opcion3 != "[71A]"):
-					clienteBene59F = clienteBene59F+"\n"+contenidoLinea
+					clienteBene59a = clienteBene59a+"\n"+contenidoLinea
 					lineaAct += 1
 					contador += 1
 					opcionales +=1
 					contenidoLinea = lines[contador+1]
 					opcion2 = contenidoLinea[:4]
 					opcion3 = contenidoLinea[:5]
-				print ("[59F]: ",clienteBene59F)
+				print ("[59F]: ",clienteBene59a)
 			elif (opcion0 == "[59]"): 
-				clienteBene59 = contenidoLinea[4:]
+				clienteBene59a = opcion0 + contenidoLinea[4:]
 				contenidoLinea = lines[contador+1]
 				opcion2 = contenidoLinea[:4]
 				opcion3 = contenidoLinea[:5]
 				while (opcion2 != "[70]" and opcion3 != "[71A]"):
-					clienteBene59 = clienteBene59+"\n"+contenidoLinea
+					clienteBene59a = clienteBene59a+"\n"+contenidoLinea
 					lineaAct += 1
 					contador += 1
 					opcionales +=1
 					contenidoLinea = lines[contador+1]
 					opcion2 = contenidoLinea[:4]
 					opcion3 = contenidoLinea[:5]
-				print ("[59]: ",clienteBene59)
+				print ("[59]: ",clienteBene59a)
 	        
 	 
 		if (lineaAct == (9 + opcionales)):
@@ -664,8 +650,8 @@ def parseo103(archivo,directorio):
 				msg = "Caracter inesperado, en la línea número " +str(contador+1)+ " del archivo " + archivo
 				return ("error", msg)
 			else: 
-				detallesCarg71a = contenidoLinea[5:]
-				print ("[71A]: ",detallesCarg71a)
+				detallesCarg71A = contenidoLinea[5:]
+				print ("[71A]: ",detallesCarg71A)
 
 		if (lineaAct == (10 + opcionales)):
 			opcion0 = contenidoLinea[:4]
@@ -674,7 +660,7 @@ def parseo103(archivo,directorio):
 
 			while(opcion1 == "[71F]"):
 				
-				cargosEmisor71F = contenidoLinea[5:]
+				cargosEmisor71F = cargosEmisor71F + contenidoLinea[5:] + ";"
 				print ("[71F]: ",cargosEmisor71F)
 				lineaAct += 1
 				contador += 1
@@ -697,16 +683,16 @@ def parseo103(archivo,directorio):
 				if (opcion0 == "[72]"):
 					infoEmisor72 = contenidoLinea[4:]
 					contenidoLinea = lines[contador+1]
-					opcion3 = contenidoLinea[:3]
+					opcion3 = contenidoLinea[:2]
 					opcion2 = contenidoLinea[:5]
 					
-					while (opcion3 != "@@" and opcion2 != "[77B]"):
+					while (opcion2 != "[77B]" and opcion3 != "@@" ):
 						infoEmisor72 = infoEmisor72+"\n"+contenidoLinea
 						lineaAct += 1
 						contador += 1
 						opcionales +=1
 						contenidoLinea = lines[contador+1]
-						opcion3 = contenidoLinea[:3]
+						opcion3 = contenidoLinea[:2]
 						opcion2 = contenidoLinea[:5]
 					
 					print ("[72]: ",infoEmisor72)
@@ -717,14 +703,14 @@ def parseo103(archivo,directorio):
 				if (opcion1 == "[77B]"):
 					reporteReg77B = contenidoLinea[5:]
 					contenidoLinea = lines[contador+1]
-					opcion3 = contenidoLinea[:3]
+					opcion3 = contenidoLinea[:2]
 					while (opcion3 != "@@"):
 						reporteReg77B = reporteReg77B+"\n"+contenidoLinea
 						lineaAct += 1
 						contador += 1
 						opcionales +=1
 						contenidoLinea = lines[contador+1]
-						opcion3 = contenidoLinea[:3]
+						opcion3 = contenidoLinea[:2]
 					print ("[77B]: ",reporteReg77B)
 				#if (opcion1 == "[77T]"):
 					#contenido77T = contenidoLinea[5:]
@@ -754,13 +740,42 @@ def parseo103(archivo,directorio):
 				opcionales = 0
 
 		if (finMensaje):
+			cuenta = Cuenta.objects.filter(banco_corresponsal_idbanco__codigo = receptorR) 
+			if cuenta:
+				mensaje = Mt103.objects.create(remitente = emisorS,receptor = receptorR, ref_remitente = emisorRef20,ind_hora = timeId13C,tipo_op_banco = codigoBank23B,cod_instruccion = codInst23E,tipo_transaccion = tipoTrans26T, fecha_moneda_monto = fechaValor32A,moneda_monto = moneda33B,tipo_cambio = tipoCambio36,cliente_ordenante = clienteOrd50a, institucion_emisor = instEmisor51A,institucion_ordenante = instOrd52a,corresponsal_remitente = emisorCorr53a, corresponsal_receptor = receptorCorr54a, institucion_reembolso = instReemb55a, institucion_intermediaria = instInter56a, cuenta_institucion = instCuenta57a,cliente_beneficiario = clienteBene59a,info_remesa = infoRemesa70,detalle_cargos = detallesCarg71A,info_remitente_a_receptor = infoEmisor72,cargos_remitente = cargosEmisor71F, cargos_receptor = cargosReceptor71G,reporte_regulatorio = reporteReg77B, cuenta = cuenta[0])
+			else:
+				print("Preguntar que hacer si llega un mensaje que no es para ti!!!!!")
+			emisorS = ""
+			receptorR = ""
+			emisorRef20 = ""
+			timeId13C = ""
+			codigoBank23B = ""
+			codInst23E = ""
+			tipoTrans26T = ""
+			fechaValor32A = ""
+			tipoCambio36 = ""
+			moneda33B = ""
+			clienteOrd50a = ""
+			instEmisor51A = ""
+			instOrd52a = ""
+			emisorCorr53a = ""
+			receptorCorr54a = ""
+			instReemb55a = ""
+			instInter56a = ""
+			instCuenta57a = ""
+			clienteBene59a = ""
+			infoRemesa70 = ""
+			detallesCarg71A = ""
+			infoEmisor72 = ""
+			cargosEmisor71F = ""
+			cargosReceptor71G = ""
+			reporteReg77B = ""
 			finMensaje = False		
 
 		lineaAct += 1
 		contador += 1
 
-		#mensaje = MT103.create(remitente = emisorS,receptor = receptorR, ref_remitente = emisorRef20,ind_hora = timeId13C )
-
+		
 	#cerrar archivo
 	info.close()
 	return ("True","")
@@ -787,6 +802,7 @@ def parseo202(archivo,directorio):
 	opcional = False
 	finMensaje = False
 	contenidoLinea = ""
+
 	mensajeTipoM = ""
 	emisorS = ""
 	receptorR = ""
@@ -794,22 +810,13 @@ def parseo202(archivo,directorio):
 	refRel21 = ""
 	timeId13C = ""
 	fechaValor32A = "" 
-	instOrd52A = ""
-	instOrd52D = ""
-	emisorCorr53A = ""
-	emisorCorr53B = ""
-	emisorCorr53D = ""
-	receptorCorr54A = ""
-	receptorCorr54B = ""
-	receptorCorr54D = ""
-	instInter56A = ""
-	instInter56D = ""
-	instCuenta57A = ""
-	instCuenta57B = ""
-	instCuenta57D = ""
-	instBene58A = ""
-	instBene58D = ""
-
+	instOrd52a = ""
+	emisorCorr53a = ""
+	receptorCorr54a = ""
+	instInter56a = ""
+	instCuenta57a = ""
+	instBene58a = ""
+	receptorInfo72 =""
 	cuantos = 0
 
 
@@ -884,7 +891,7 @@ def parseo202(archivo,directorio):
 			opcion = contenidoLinea[:5]  
 			
 			while(opcion == "[13C]"):
-				timeId13C = contenidoLinea[5:]
+				timeId13C = timeId13C + contenidoLinea[5:] + ";"
 				print ("[13C]: ",timeId13C)
 				lineaAct += 1
 				contador += 1
@@ -908,52 +915,169 @@ def parseo202(archivo,directorio):
 					msg = "Caracter inesperado, en la línea número " +str(contador+1)+ " del archivo " + archivo
 					return ("error", msg)
 				if (opcion == "[52A]"):
-					instOrd52A = contenidoLinea[5:]
+					instOrd52a = opcion + contenidoLinea[5:]
 					cuantos = 1
-					print ("[52A]: ",instOrd52A)
+					contenidoLinea = lines[contador+1]
+					opcion2 = contenidoLinea[:5]
+					while (opcion2 != "[53A]" and opcion2 != "[53B]" and opcion2 != "[53D]" and opcion2 != "[54A]" and opcion2 != "[54B]" and opcion2 != "[54D]" and opcion2 != "[56A]" and opcion2 != "[56D]" and opcion2 != "[57A]" and opcion2 != "[57B]" and opcion2 != "[57D]" and opcion2 != "[58A]" and opcion2 != "[58D]"):
+						instOrd52a = instOrd52a+"\n"+contenidoLinea
+						lineaAct += 1
+						contador += 1
+						opcionales +=1
+						contenidoLinea = lines[contador+1]
+						opcion2 = contenidoLinea[:5]
+					print ("[52A]: ",instOrd52a)
 				if (opcion == "[52D]"):
-					instOrd52D = contenidoLinea[5:]
-					print ("[52D]: ",instOrd52D)
+					instOrd52a = opcion + contenidoLinea[5:]
+					contenidoLinea = lines[contador+1]
+					opcion2 = contenidoLinea[:5]
+					while (opcion2 != "[53A]" and opcion2 != "[53B]" and opcion2 != "[53D]" and opcion2 != "[54A]" and opcion2 != "[54B]" and opcion2 != "[54D]" and opcion2 != "[56A]" and opcion2 != "[56D]" and opcion2 != "[57A]" and opcion2 != "[57B]" and opcion2 != "[57D]" and opcion2 != "[58A]" and opcion2 != "[58D]"):
+						instOrd52a = instOrd52a+"\n"+contenidoLinea
+						lineaAct += 1
+						contador += 1
+						opcionales +=1
+						contenidoLinea = lines[contador+1]
+						opcion2 = contenidoLinea[:5]
+					print ("[52D]: ",instOrd52a)
 				if (opcion == "[53A]"):
-					emisorCorr53A = contenidoLinea[5:]
+					emisorCorr53a = opcion + contenidoLinea[5:]
 					cuantos = 2
-					print ("[53A]: ",emisorCorr53A)
+					contenidoLinea = lines[contador+1]
+					opcion2 = contenidoLinea[:5]
+					while (opcion2 != "[54A]" and opcion2 != "[54B]" and opcion2 != "[54D]" and opcion2 != "[56A]" and opcion2 != "[56D]" and opcion2 != "[57A]" and opcion2 != "[57B]" and opcion2 != "[57D]" and opcion2 != "[58A]" and opcion2 != "[58D]"):
+						emisorCorr53a = emisorCorr53a+"\n"+contenidoLinea
+						lineaAct += 1
+						contador += 1
+						opcionales +=1
+						contenidoLinea = lines[contador+1]
+						opcion2 = contenidoLinea[:5]
+					print ("[53A]: ",emisorCorr53a)
 				if (opcion == "[53B]"):
-					emisorCorr53B = contenidoLinea[5:]
+					emisorCorr53a = opcion + contenidoLinea[5:]
 					cuantos = 1
-					print ("[53B]: ",emisorCorr53B)
+					contenidoLinea = lines[contador+1]
+					opcion2 = contenidoLinea[:5]
+					while (opcion2 != "[54A]" and opcion2 != "[54B]" and opcion2 != "[54D]" and opcion2 != "[56A]" and opcion2 != "[56D]" and opcion2 != "[57A]" and opcion2 != "[57B]" and opcion2 != "[57D]" and opcion2 != "[58A]" and opcion2 != "[58D]"):
+						emisorCorr53a = emisorCorr53a+"\n"+contenidoLinea
+						lineaAct += 1
+						contador += 1
+						opcionales +=1
+						contenidoLinea = lines[contador+1]
+						opcion2 = contenidoLinea[:5]
+					print ("[53B]: ",emisorCorr53a)
 				if (opcion == "[53D]"):
-					emisorCorr53D = contenidoLinea[5:]
-					print ("[53D]: ",emisorCorr53D)
+					emisorCorr53a = opcion + contenidoLinea[5:]
+					contenidoLinea = lines[contador+1]
+					opcion2 = contenidoLinea[:5]
+					while (opcion2 != "[54A]" and opcion2 != "[54B]" and opcion2 != "[54D]" and opcion2 != "[56A]" and opcion2 != "[56D]" and opcion2 != "[57A]" and opcion2 != "[57B]" and opcion2 != "[57D]" and opcion2 != "[58A]" and opcion2 != "[58D]"):
+						emisorCorr53a = emisorCorr53a+"\n"+contenidoLinea
+						lineaAct += 1
+						contador += 1
+						opcionales +=1
+						contenidoLinea = lines[contador+1]
+						opcion2 = contenidoLinea[:5]
+					print ("[53D]: ",emisorCorr53a)
 				if (opcion == "[54A]"):
-					receptorCorr54A = contenidoLinea[5:]
+					receptorCorr54a = opcion + contenidoLinea[5:]
 					cuantos = 2
-					print ("[54A]: ",receptorCorr54A)
+					contenidoLinea = lines[contador+1]
+					opcion2 = contenidoLinea[:5]
+					while (opcion2 != "[56A]" and opcion2 != "[56D]" and opcion2 != "[57A]" and opcion2 != "[57B]" and opcion2 != "[57D]" and opcion2 != "[58A]" and opcion2 != "[58D]"):
+						receptorCorr54a = receptorCorr54a+"\n"+contenidoLinea
+						lineaAct += 1
+						contador += 1
+						opcionales +=1
+						contenidoLinea = lines[contador+1]
+						opcion2 = contenidoLinea[:5]
+					print ("[54A]: ",receptorCorr54a)
 				if (opcion == "[54B]"):
-					receptorCorr54B = contenidoLinea[5:]
+					receptorCorr54a = opcion + contenidoLinea[5:]
 					cuantos = 1
-					print ("[54B]: ",receptorCorr54B)
+					contenidoLinea = lines[contador+1]
+					opcion2 = contenidoLinea[:5]
+					while (opcion2 != "[56A]" and opcion2 != "[56D]" and opcion2 != "[57A]" and opcion2 != "[57B]" and opcion2 != "[57D]" and opcion2 != "[58A]" and opcion2 != "[58D]"):
+						receptorCorr54a = receptorCorr54a+"\n"+contenidoLinea
+						lineaAct += 1
+						contador += 1
+						opcionales +=1
+						contenidoLinea = lines[contador+1]
+						opcion2 = contenidoLinea[:5]
+					print ("[54B]: ",receptorCorr54a)
 				if (opcion == "[54D]"):
-					receptorCorr54D = contenidoLinea[5:]
-					print ("[54D]: ",receptorCorr54D)
+					receptorCorr54a = opcion + contenidoLinea[5:]
+					contenidoLinea = lines[contador+1]
+					opcion2 = contenidoLinea[:5]
+					while (opcion2 != "[56A]" and opcion2 != "[56D]" and opcion2 != "[57A]" and opcion2 != "[57B]" and opcion2 != "[57D]" and opcion2 != "[58A]" and opcion2 != "[58D]"):
+						receptorCorr54a = receptorCorr54a+"\n"+contenidoLinea
+						lineaAct += 1
+						contador += 1
+						opcionales +=1
+						contenidoLinea = lines[contador+1]
+						opcion2 = contenidoLinea[:5]
+					print ("[54D]: ",receptorCorr54a)
 				if (opcion == "[56A]"):
-					instInter56A = contenidoLinea[5:]
+					instInter56a = opcion + contenidoLinea[5:]
 					cuantos = 1
-					print ("[56A]: ",instInter56A)
+					contenidoLinea = lines[contador+1]
+					opcion2 = contenidoLinea[:5]
+					while (opcion2 != "[57A]" and opcion2 != "[57B]" and opcion2 != "[57D]" and opcion2 != "[58A]" and opcion2 != "[58D]"):
+						instInter56a = instInter56a+"\n"+contenidoLinea
+						lineaAct += 1
+						contador += 1
+						opcionales +=1
+						contenidoLinea = lines[contador+1]
+						opcion2 = contenidoLinea[:5]
+					print ("[56A]: ",instInter56a)
 				if (opcion == "[56D]"):
-					instInter56D = contenidoLinea[5:]
-					print ("[56D]: ",instInter56D)
+					instInter56a = opcion + contenidoLinea[5:]
+					contenidoLinea = lines[contador+1]
+					opcion2 = contenidoLinea[:5]
+					while (opcion2 != "[57A]" and opcion2 != "[57B]" and opcion2 != "[57D]" and opcion2 != "[58A]" and opcion2 != "[58D]"):
+						instInter56a = instInter56a+"\n"+contenidoLinea
+						lineaAct += 1
+						contador += 1
+						opcionales +=1
+						contenidoLinea = lines[contador+1]
+						opcion2 = contenidoLinea[:5]
+					print ("[56D]: ",instInter56a)
 				if (opcion == "[57A]"):
-					instCuenta57A = contenidoLinea[5:]
+					instCuenta57a = opcion + contenidoLinea[5:]
 					cuantos = 2
-					print ("[57A]: ",instCuenta57A)
+					contenidoLinea = lines[contador+1]
+					opcion2 = contenidoLinea[:5]
+					while (opcion2 != "[58A]" and opcion2 != "[58D]"):
+						instCuenta57a = instCuenta57a+"\n"+contenidoLinea
+						lineaAct += 1
+						contador += 1
+						opcionales +=1
+						contenidoLinea = lines[contador+1]
+						opcion2 = contenidoLinea[:5]
+					print ("[57A]: ",instCuenta57a)
 				if (opcion == "[57B]"):
-					instCuenta57B = contenidoLinea[5:]
+					instCuenta57a = opcion + contenidoLinea[5:]
 					cuantos = 1
-					print ("[57B]: ",instCuenta57B)
+					contenidoLinea = lines[contador+1]
+					opcion2 = contenidoLinea[:5]
+					while (opcion2 != "[58A]" and opcion2 != "[58D]"):
+						instCuenta57a = instCuenta57a+"\n"+contenidoLinea
+						lineaAct += 1
+						contador += 1
+						opcionales +=1
+						contenidoLinea = lines[contador+1]
+						opcion2 = contenidoLinea[:5]
+					print ("[57B]: ",instCuenta57a)
 				if (opcion == "[57D]"):
-					instCuenta57D = contenidoLinea[5:]
-					print ("[57D]: ",instCuenta57D)
+					instCuenta57a = opcion + contenidoLinea[5:]
+					contenidoLinea = lines[contador+1]
+					opcion2 = contenidoLinea[:5]
+					while (opcion2 != "[58A]" and opcion2 != "[58D]"):
+						instCuenta57a = instCuenta57a+"\n"+contenidoLinea
+						lineaAct += 1
+						contador += 1
+						opcionales +=1
+						contenidoLinea = lines[contador+1]
+						opcion2 = contenidoLinea[:5]
+					print ("[57D]: ",instCuenta57a)
 				indice = verificarOps.index(opcion)
 				sumaT = cuantos + indice + 1
 				verificarOps = verificarOps[sumaT:]
@@ -969,11 +1093,36 @@ def parseo202(archivo,directorio):
 				msg = "Caracter inesperado, en la línea número " +str(contador+1)+ " del archivo " + archivo
 				return ("error", msg)
 			elif(opcion == "[58A]"): 
-				instBene58A = contenidoLinea[5:]
-				print ("[58A]: ",instBene58A)
+				instBene58a = opcion + contenidoLinea[5:]
+				contenidoLinea = lines[contador+1]
+				opcion3 = contenidoLinea[:2]
+				opcion2 = contenidoLinea[:4]
+				
+				while (opcion2 != "[72]" and opcion3 != "@@"):
+					instBene58a = instBene58a+"\n"+contenidoLinea
+					lineaAct += 1
+					contador += 1
+					opcionales +=1
+					contenidoLinea = lines[contador+1]
+					opcion3 = contenidoLinea[:2]
+					opcion2 = contenidoLinea[:4]
+
+				print ("[58A]: ",instBene58a)
 			elif(opcion == "[58D]"): 
-				instBene58D = contenidoLinea[5:]
-				print ("[58D]: ",instBene58D)
+				instBene58a = opcion + contenidoLinea[5:]
+				contenidoLinea = lines[contador+1]
+				opcion3 = contenidoLinea[:2]
+				opcion2 = contenidoLinea[:4]
+				
+				while (opcion2 != "[72]" and opcion3 != "@@"):
+					instBene58a = instBene58a+"\n"+contenidoLinea
+					lineaAct += 1
+					contador += 1
+					opcionales +=1
+					contenidoLinea = lines[contador+1]
+					opcion3 = contenidoLinea[:2]
+					opcion2 = contenidoLinea[:4]
+				print ("[58D]: ",instBene58a)
 
 		if (lineaAct == (8 + opcionales)):
 			opcion = contenidoLinea[:4]
@@ -981,6 +1130,17 @@ def parseo202(archivo,directorio):
 			for opc in range(0,1):
 				if (opcion == "[72]"):
 					receptorInfo72 = contenidoLinea[4:]
+					contenidoLinea = lines[contador+1]
+					opcion3 = contenidoLinea[:2]
+					
+					while (opcion3 != "@@"):
+						receptorInfo72 = receptorInfo72+"\n"+contenidoLinea
+						lineaAct += 1
+						contador += 1
+						opcionales +=1
+						contenidoLinea = lines[contador+1]
+						opcion3 = contenidoLinea[:2]
+						opcion2 = contenidoLinea[:4]
 					print ("[72]: ",receptorInfo72)
 					lineaAct += 1
 					contador += 1
@@ -1001,6 +1161,26 @@ def parseo202(archivo,directorio):
 		
 		if (finMensaje):
 			print("Fin del mensaje")
+			print(receptorR)
+			cuenta = Cuenta.objects.filter(banco_corresponsal_idbanco__codigo = receptorR) 
+			if cuenta:
+				mensaje = Mt202.objects.create(remitente = emisorS,receptor = receptorR, ref_transaccion = emisorRef20,ref_relacion = refRel21,ind_hora = timeId13C, fecha_moneda_monto = fechaValor32A,institucion_ordenante = instOrd52a,corresponsal_remitente = emisorCorr53a, corresponsal_receptor = receptorCorr54a,intermediario = instInter56a, cuenta_institucion = instCuenta57a,institucion_beneficiaria = instBene58a,info_remitente_a_receptor = receptorInfo72, cuenta = cuenta[0])
+			else:
+				print("Preguntar que hacer si llega un mensaje que no es para ti!!!!!")
+			
+			emisorS = ""
+			receptorR = ""
+			emisorRef20 = ""
+			refRel21 = ""
+			timeId13C = ""
+			fechaValor32A = "" 
+			instOrd52a = ""
+			emisorCorr53a = ""
+			receptorCorr54a = ""
+			instInter56a = ""
+			instCuenta57a = ""
+			instBene58a = ""
+			receptorInfo72 =""
 			finMensaje = False				
 
 		lineaAct += 1
@@ -1034,6 +1214,7 @@ def parseo942(archivo,directorio):
 	es86 = False 
 	contenidoLinea = ""
 	mensajeTipoM = ""
+	anterior = ""
 	emisorS = ""
 	receptorR = ""
 	numRefTrans20 = ""
@@ -1043,8 +1224,7 @@ def parseo942(archivo,directorio):
 	limiteIndicador34F = ""
 	limiteIndicadorOpcional34F = ""
 	fechaIndicador13D = ""
-	lineaDec61 = ""
-	infoTitular86 = ""
+	lineaDec61_86 = ""
 	infoTitularOp86 = ""
 	entradasDeb90D = ""
 	entradasCred90C = ""
@@ -1185,12 +1365,16 @@ def parseo942(archivo,directorio):
 			verificarOps = ["[90D]","[90C]","[86]"]
 
 			while(opcion1 == "[61]" or opcion1 == "[86]"):
+				if anterior and opcion1 == "[86]":
+					lineaDec61_86 = lineaDec61_86 + "$" +contenidoLinea[4:] + ";"
+					anterior = False 
+				if anterior and opcion1 == "[61]":
+				 	lineaDec61_86 = lineaDec61_86 + ";"
+				 	anterior = True
 				if (opcion1 == "[61]"):
-					lineaDec61 = contenidoLinea[5:]
-					print ("[61]: ",lineaDec61)
-				if (opcion1 == "[86]"):
-					infoTitular86 = contenidoLinea[5:]
-					print ("[86]: ",infoTitular86)
+					lineaDec61_86 = lineaDec61_86 + contenidoLinea[4:]
+					anterior = True
+				print ("[61]: ",lineaDec61_86)
 				lineaAct += 1
 				contador += 1
 				opcionales += 1
@@ -1199,7 +1383,7 @@ def parseo942(archivo,directorio):
 				opcion1 = contenidoLinea[:4]
 				opcion2 = contenidoLinea[:5]
 
-			while(opcion1 == "[86]" or opcion2 == "[90D]" or opcion2 == "[90C]"):
+			while(opcion2 == "[90D]" or opcion2 == "[90C]" or opcion1 == "[86]"):
 				if (opcion1 == "[86]"):
 					es86 = True
 				if (es86):			
@@ -1212,6 +1396,17 @@ def parseo942(archivo,directorio):
 						return ("error", msg)
 				if(opcion1 == "[86]"):
 					infoTitularOp86 = contenidoLinea[4:]
+					contenidoLinea = lines[contador+1]
+					opcion3 = contenidoLinea[:2]
+					
+					while (opcion3 != "@@"):
+						infoTitularOp86 = infoTitularOp86+"\n"+contenidoLinea
+						lineaAct += 1
+						contador += 1
+						opcionales +=1
+						contenidoLinea = lines[contador+1]
+						opcion3 = contenidoLinea[:2]
+						opcion2 = contenidoLinea[:4]
 					print ("[86]",infoTitularOp86)
 				if(opcion2 == "[90D]"):
 					entradasDeb90D = contenidoLinea[5:]
@@ -1245,6 +1440,20 @@ def parseo942(archivo,directorio):
 				opcionales = 0
 
 		if (finMensaje):
+			anterior = ""
+			emisorS = ""
+			receptorR = ""
+			numRefTrans20 = ""
+			refRel21 = ""
+			idCuenta25 = "" 
+			numEstado28c = ""
+			limiteIndicador34F = ""
+			limiteIndicadorOpcional34F = ""
+			fechaIndicador13D = ""
+			lineaDec61_86 = ""
+			infoTitularOp86 = ""
+			entradasDeb90D = ""
+			entradasCred90C = ""
 			finMensaje = False
 		
 		lineaAct += 1

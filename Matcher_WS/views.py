@@ -2776,14 +2776,14 @@ def intraday(request):
                             if(res[0] == "True"):
                                 print("True")
                                 #Mover archivo a procesado
-                                #pathsrc = direct 
-                                #nuevo = directorioSalida +"\\MT" + tipo[0]  
+                                pathsrc = direct 
+                                nuevo = directorioSalida +"\\MT" + tipo[0]  
                                 
-                                #if not os.path.exists(nuevo):
-                                #    os.makedirs(nuevo)
+                                if not os.path.exists(nuevo):
+                                    os.makedirs(nuevo)
                                 
-                                #pathdest = nuevo + '\\' + elem
-                                #shutil.move(pathsrc,pathdest)
+                                pathdest = nuevo + '\\' + elem
+                                shutil.move(pathsrc,pathdest)
                             else:
                                 exitoParseo = False
                                 msg = res[1]
@@ -2797,14 +2797,14 @@ def intraday(request):
                                 print("True")
                                 
                                 #Mover archivo a procesado
-                                #pathsrc = direct 
-                                #nuevo = directorioSalida +"\\MT" + tipo[0]  
+                                pathsrc = direct 
+                                nuevo = directorioSalida +"\\MT" + tipo[0]  
                                 
-                                #if not os.path.exists(nuevo):
-                                #    os.makedirs(nuevo)
+                                if not os.path.exists(nuevo):
+                                    os.makedirs(nuevo)
                                 
-                                #pathdest = nuevo + '\\' + elem
-                                #shutil.move(pathsrc,pathdest)
+                                pathdest = nuevo + '\\' + elem
+                                shutil.move(pathsrc,pathdest)
                             else:
                                 exitoParseo = False
                                 msg = res[1]
