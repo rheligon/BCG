@@ -343,6 +343,7 @@ def cambioClave(request):
 
     if request.method == 'POST':
 
+        idioma = Configuracion.objects.all()[0].idioma 
         clave = request.POST.get('clave')
         newp = make_password(clave, hasher='pbkdf2_sha1')
         x, x, salt, hashp = newp.split("$")
@@ -354,9 +355,17 @@ def cambioClave(request):
             actual.pass_field = hashp
             actual.estado = "Activo"
             actual.save()
-            msg = "Contraseña actualizada exitosamente"
+
+            if idioma == 0:
+                msg = "Contraseña actualizada exitosamente"
+            else:
+                msg = "Successful updated password"
+
         except:
-            msg = "Error al tratar de encontrar el usuario especificado."
+            if idioma == 0:
+                msg = "Error al tratar de encontrar el usuario especificado."
+            else:
+                msg = "Error occurred, user not found."
             return JsonResponse({'mens': msg})    
 
         #Para las tablas propias de django
@@ -520,6 +529,7 @@ def pd_cargaAutomatica(request):
 
     expirarSesion(request)
     if request.method == 'POST':
+        idioma = Configuracion.objects.all()[0].idioma    
         actn = request.POST.get('action')
         msg = ""
 
@@ -559,7 +569,11 @@ def pd_cargaAutomatica(request):
                             if cta is not None:
                                 tipoarch = cta.tipo_cargacont
                                 if tipoarch == 2:
-                                    msgcta = '$La cuenta posee como formato el ; pero se esta tratando de leer un archivo MT950'
+                                    if idioma == 0:
+                                        msgcta = '$La cuenta posee como formato el ; pero se esta tratando de leer un archivo MT950'
+                                    else:
+                                        msgcta = '$Account has format ; but it is trying to read a MT950 file'
+                                    
                                     cta = None
                                     incorrecto = True
 
@@ -630,10 +644,10 @@ def pd_cargaAutomatica(request):
 
                 else:
                     # Es un archivo punto y coma
-                    edc_l,msgpc = leer_punto_coma(ncta,'conta',f)
+                    edc_l,msgpc = leer_punto_coma(ncta,'conta',f,idioma)
 
             # En esta identacion ya se termino de leer el archivo, se procede a validar
-            msg,cod = validar_archivo(edc_l,'conta')
+            msg,cod = validar_archivo(edc_l,'conta',idioma)
 
             if msgpc!="":
                 msg = msg+msgpc
@@ -688,7 +702,11 @@ def pd_cargaAutomatica(request):
                                     if formato != 0:
                                         cta = None
                                         incorrecto = True
-                                        msgcta = '$La cuenta posee como formato el ; pero se esta tratando de leer un archivo MT950'
+                                        if idioma == 0:
+                                            msgcta = '$La cuenta posee como formato el ; pero se esta tratando de leer un archivo MT950'
+                                        else:
+                                            msgcta = '$Account has format ; but it is trying to read a MT950 file'
+                                    
 
                                 if cta is not None and not incorrecto:
                                     esta, ult_edc = edc_l.esta(cta.ref_vostro)
@@ -768,10 +786,10 @@ def pd_cargaAutomatica(request):
                             prevLine = line
                     else:
                         # Es un archivo punto y coma
-                        edc_l,msgpc = leer_punto_coma(ncta,'corr',f)
+                        edc_l,msgpc = leer_punto_coma(ncta,'corr',f,idioma)
 
                 # En esta identacion ya se termino de leer el archivo
-                msg,cod = validar_archivo(edc_l,'corr')
+                msg,cod = validar_archivo(edc_l,'corr',idioma)
 
                 if msgpc!="":
                     msg = msgpc+msg
@@ -788,7 +806,10 @@ def pd_cargaAutomatica(request):
                 print (e)
 
         if actn == 'cargconta':
-            msg = "Archivo cargado con exito"
+            if idioma == 0:
+                msg = "Archivo cargado con exito"
+            else:
+                msg = "Successful loaded file"
             edcl_json = request.POST.get('edcl')
             filename = request.POST.get('filename')
             edcl = jsonpickle.decode(edcl_json)
@@ -840,7 +861,10 @@ def pd_cargaAutomatica(request):
             return JsonResponse({'exito':True, 'msg':msg})
 
         if actn == 'cargcorr':
-            msg = "Archivo cargado con exito"
+            if idioma == 0:
+                msg = "Archivo cargado con exito"
+            else:
+                msg = "Successful loaded file"
             filename = request.POST.get('filename')
             edcl_json = request.POST.get('edcl')
             edcl = jsonpickle.decode(edcl_json)
@@ -2214,6 +2238,8 @@ def mtn96(request):
     if request.method == "POST":
 
         action = request.POST.get('action')
+        idioma = Configuracion.objects.all()[0].idioma 
+
         if action == "cargar":
 
             archivoCarga = request.POST.get('archivo96')
@@ -2264,7 +2290,10 @@ def mtn96(request):
                     if j%8 == 1:
                         opcion = line[:3]
                         if opcion != "[M]":
-                            mensaje = "Caracter inesperado en campo tipo, en la línea número " +str(i+auxCuenta+1)+ " del archivo"
+                            if idioma == 0:
+                                mensaje = "Caracter inesperado en campo tipo, en la línea número " +str(i+auxCuenta+1)+ " del archivo"
+                            else:
+                                mensaje = "Unexpected character in type field, file line No. " +str(i+auxCuenta+1)
                             #cerrar archivo
                             fo.close()
                             return JsonResponse({'mens':mensaje})
@@ -2272,14 +2301,20 @@ def mtn96(request):
                         tipoCargar = tipoCargar[:3].strip()
                         print("eeeeees: " + tipoCargar[-2:].strip())
                         if tipoCargar[-2:].strip() != "96":
-                            mensaje = "El tipo del mensaje no corresponde a un MTn96,error en la línea número " +str(i+auxCuenta+1)+ " del archivo"
+                            if idioma == 0:
+                                mensaje = "El tipo del mensaje no corresponde a un MTn96,error en la línea número " +str(i+auxCuenta+1)+ " del archivo"
+                            else:
+                                mensaje = "Message is not MTn96, error in file line No. " +str(i+auxCuenta+1)
                             #cerrar archivo
                             fo.close()
                             return JsonResponse({'mens':mensaje})
                     if j%8 == 2:
                         opcion = line[:3]
                         if opcion != "[S]":
-                            mensaje = "Caracter inesperado en campo bic del banco emisor, en la línea número " +str(i+auxCuenta+1)+ " del archivo"
+                            if idioma == 0:
+                                mensaje = "Caracter inesperado en campo bic del banco emisor, en la línea número " +str(i+auxCuenta+1)+ " del archivo"
+                            else:
+                                mensaje = "Unexpected character in field sender bank bic, error in file line No. " +str(i+auxCuenta+1)
                             #cerrar archivo
                             fo.close()
                             return JsonResponse({'mens':mensaje})
@@ -2289,7 +2324,10 @@ def mtn96(request):
                     if j%8 == 3:
                         opcion = line[:3]
                         if opcion != "[R]":
-                            mensaje = "Caracter inesperado en campo bic del banco receptor, en la línea número " +str(i+auxCuenta+1)+ " del archivo"
+                            if idioma == 0:
+                                mensaje = "Caracter inesperado en campo bic del banco receptor, en la línea número " +str(i+auxCuenta+1)+ " del archivo"
+                            else:
+                                mensaje = "Unexpected characet in field reciever bank bic, error in file line No. " +str(i+auxCuenta+1)      
                             #cerrar archivo
                             fo.close()
                             return JsonResponse({'mens':mensaje})
@@ -2297,14 +2335,20 @@ def mtn96(request):
                         largoaux = len(bancoR)-1
                         bancoR = bancoR[:largoaux]
                         if bancoR != reciver :
-                            mensaje = "Caracter inesperado en campo bic del banco receptor, en la línea número " +str(i+auxCuenta+1)+ " del archivo"
+                            if idioma == 0:
+                                mensaje = "Caracter inesperado en campo bic del banco receptor, en la línea número " +str(i+auxCuenta+1)+ " del archivo"
+                            else:
+                                mensaje = "Unexpected characet in field reciever bank bic, error in file line No. " +str(i+auxCuenta+1)      
                             #cerrar archivo
                             fo.close()
                             return JsonResponse({'mens':mensaje})
                     if j%8 == 4:
                         opcion = line[:4]
                         if opcion != "[20]":
-                            mensaje = "Caracter inesperado en campo referencia del mensaje,  en la línea número " +str(i+auxCuenta+1)+ " del archivo"
+                            if idioma == 0:
+                                mensaje = "Caracter inesperado en campo referencia del mensaje,  en la línea número " +str(i+auxCuenta+1)+ " del archivo"
+                            else:
+                                mensaje = "Unexpected characet in field message reference, error in file line No. " +str(i+auxCuenta+1)
                             #cerrar archivo
                             fo.close()
                             return JsonResponse({'mens':mensaje})
@@ -2312,7 +2356,10 @@ def mtn96(request):
                     if j%8 == 5:
                         opcion = line[:4]
                         if opcion != "[21]":
-                            mensaje = "Caracter inesperado en campo referencia del mensaje original,  en la línea número " +str(i+auxCuenta+1)+ " del archivo"
+                            if idioma == 0:
+                                mensaje = "Caracter inesperado en campo referencia del mensaje original,  en la línea número " +str(i+auxCuenta+1)+ " del archivo"
+                            else:
+                                mensaje = "Unexpected char in field original message reference, error in file line No. " +str(i+auxCuenta+1)    
                             #cerrar archivo
                             fo.close()
                             return JsonResponse({'mens':mensaje})
@@ -2321,14 +2368,20 @@ def mtn96(request):
                             consulta = Mt95.objects.filter(ref_relacion=refCargar).filter(codigo=refOrgCargar)[0]
                         except:
                             #no hay mensajes mt95 con esas referencias
-                            mensaje = "No se tienen registrados las referencias del mensaje que se encuentra en la línea número " +str(i+auxCuenta+1)+ " del archivo"
+                            if idioma == 0:
+                                mensaje = "No se tienen registrados las referencias del mensaje que se encuentra en la línea número " +str(i+auxCuenta+1)+ " del archivo"
+                            else:
+                                mensaje = "There are not registered references of message in file line No. " +str(i+auxCuenta+1)
                             #cerrar archivo
                             fo.close()
                             return JsonResponse({'mens':mensaje})
                     if j%8 == 6:
                         opcion = line[:4]
                         if opcion != "[76]":
-                            mensaje = "Caracter inesperado en codigo de respuesta del mensaje,  en la linea numero " +str(i+auxCuenta+1)+ " del archivo"
+                            if idioma == 0:
+                                mensaje = "Caracter inesperado en codigo de respuesta del mensaje,  en la linea numero " +str(i+auxCuenta+1)+ " del archivo"
+                            else:
+                                mensaje = "Unexpected character in field message response code, in the file line No. " +str(i+auxCuenta+1)
                             #cerrar archivo
                             fo.close()
                             return JsonResponse({'mens':mensaje})
@@ -2336,7 +2389,10 @@ def mtn96(request):
                         rc = int(respuestaCargar)
                         #codigo no esta entre los validos para swift
                         if rc < 0 or rc > 33:
-                            mensaje = "El código de respuesta, que se encuentra en la línea número " +str(i+auxCuenta+1)+ " del archivo no es válido"
+                            if idioma == 0:
+                                mensaje = "El código de respuesta, que se encuentra en la línea número " +str(i+auxCuenta+1)+ " del archivo no es válido"
+                            else:
+                                mensaje = "Response code, located in file line No. " +str(i+auxCuenta+1) + "is not valid"    
                             #cerrar archivo
                             fo.close()
                             return JsonResponse({'mens':mensaje})
@@ -2344,14 +2400,20 @@ def mtn96(request):
                         consultaCodigo96 = Codigo96.objects.filter(codigo=respuestaCargar)[0]
                         #no hay codigos mt96 con esas referencias
                         if consultaCodigo96 is None:
-                            mensaje = "No se tienen registrados los codigos del mensaje que se encuentra en la línea número " +str(i+auxCuenta+1)+ " del archivo"
+                            if idioma == 0:
+                                mensaje = "No se tienen registrados los codigos del mensaje que se encuentra en la línea número " +str(i+auxCuenta+1)+ " del archivo"
+                            else:
+                                mensaje = "There are not registered codes from message located in file line No. " +str(i+auxCuenta+1)    
                             #cerrar archivo
                             fo.close()
                             return JsonResponse({'mens':mensaje})
                     if j%8 == 7:
                         opcion = line[:5]
                         if opcion != "[77A]":
-                            mensaje = "Caracter inesperado en la forma narrativa de la respuesta,  en la linea numero " +str(i+auxCuenta+1)+ " del archivo"
+                            if idioma == 0:
+                                mensaje = "Caracter inesperado en la forma narrativa de la respuesta,  en la linea numero " +str(i+auxCuenta+1)+ " del archivo"
+                            else:
+                                mensaje = "Unexpected character in response narrative form, in the file line No. " +str(i+auxCuenta+1)
                             #cerrar archivo
                             fo.close()
                             return JsonResponse({'mens':mensaje})
@@ -2380,7 +2442,10 @@ def mtn96(request):
 
                         if line [:4] != "[79]" and line [:2] != "@@" :
 
-                            mensaje = "Caracter inesperado luego de la respuesta del mensaje,  en la linea numero " +str(i+auxCuenta+1)+ " del archivo"
+                            if idioma == 0:
+                                mensaje = "Caracter inesperado luego de la respuesta del mensaje,  en la linea numero " +str(i+auxCuenta+1)+ " del archivo"
+                            else:
+                                mensaje = "Unexpected character after message response, in the fili line No. " +str(i+auxCuenta+1)    
                             #cerrar archivo
                             fo.close()
                             return JsonResponse({'mens':mensaje})
@@ -2440,7 +2505,6 @@ def mtn96(request):
 
             # Se hacen los creates en la base de datos
             k=0
-            print("Esta antes del mt: ")
             for mt in mt95:
                 Mt96.objects.create(mt95_idmt95=mt95[k],codigo=codigos[k],codigo96_idcodigo96=codigos96[k], ref_relacion=refRelaciones[k],answer=respuestas[k], narrativa=narrativas[k], num_mt=numerosMT[k], fecha_msg_original=fechas[k],campo79 =campos79[k])
                 k+=1        
@@ -2474,6 +2538,7 @@ def mtn99(request):
 
     if request.method == "POST":
 
+        idioma = Configuracion.objects.all()[0].idioma
         # Variables traidas desde el html
         action = request.POST.get('action')
         banco = request.POST.get('banco99')
@@ -2588,7 +2653,10 @@ def mtn99(request):
                     if j%7 == 1:
                         opcion = line[:3]
                         if opcion != "[M]":
-                            mensaje = "Caracter inesperado en campo tipo, en la línea número " +str(i+auxCuenta+1)+ " del archivo"
+                            if idioma == 0:
+                                mensaje = "Caracter inesperado en campo tipo, en la línea número " +str(i+auxCuenta+1)+ " del archivo"
+                            else:
+                                mensaje = "Unexpected character in type field, in file line No. " +str(i+auxCuenta+1)
                             #cerrar archivo
                             fo.close()
                             return JsonResponse({'mens':mensaje})
@@ -2597,7 +2665,10 @@ def mtn99(request):
                     if j%7 == 2:
                         opcion = line[:3]
                         if opcion != "[S]":
-                            mensaje = "Caracter inesperado en campo bic del banco emisor, en la línea número " +str(i+auxCuenta+1)+ " del archivo"
+                            if idioma == 0:
+                                mensaje = "Caracter inesperado en campo bic del banco emisor, en la línea número " +str(i+auxCuenta+1)+ " del archivo"
+                            else:
+                                mensaje = "Unexpected character in sender bank bic fileds,in file line No. " +str(i+auxCuenta+1)
                             #cerrar archivo
                             fo.close()
                             return JsonResponse({'mens':mensaje})
@@ -2607,7 +2678,10 @@ def mtn99(request):
                     if j%7 == 3:
                         opcion = line[:3]
                         if opcion != "[R]":
-                            mensaje = "Caracter inesperado en campo bic del banco receptor, en la línea número " +str(i+auxCuenta+1)+ " del archivo"
+                            if idioma == 0:
+                                mensaje = "Caracter inesperado en campo bic del banco receptor, en la línea número " +str(i+auxCuenta+1)+ " del archivo"
+                            else:
+                                mensaje = "Unexpected character in reciever bank bic fileds,in file line No. " +str(i+auxCuenta+1)
                             #cerrar archivo
                             fo.close()
                             return JsonResponse({'mens':mensaje})
@@ -2615,14 +2689,20 @@ def mtn99(request):
                         largoaux = len(bancoR)-1
                         bancoR = bancoR[:largoaux]
                         if bancoR != reciver :
-                            mensaje = "Caracter inesperado en campo bic del banco receptor, en la línea número " +str(i+auxCuenta+1)+ " del archivo"
+                            if idioma == 0:
+                                mensaje = "Caracter inesperado en campo bic del banco receptor, en la línea número " +str(i+auxCuenta+1)+ " del archivo"
+                            else:
+                                mensaje = "Unexpected character in reciever bank bic fileds,in file line No. " +str(i+auxCuenta+1)
                             #cerrar archivo
                             fo.close()
                             return JsonResponse({'mens':mensaje})
                     if j%7 == 4:
                         opcion = line[:4]
                         if opcion != "[20]":
-                            mensaje = "Caracter inesperado en campo referencia del mensaje,  en la línea número " +str(i+auxCuenta+1)+ " del archivo"
+                            if idioma == 0:
+                                mensaje = "Caracter inesperado en campo referencia del mensaje,  en la línea número " +str(i+auxCuenta+1)+ " del archivo"
+                            else:
+                                mensaje = "Unexpected character in message reference field, in file line No. " +str(i+auxCuenta+1)
                             #cerrar archivo
                             fo.close()
                             return JsonResponse({'mens':mensaje})
@@ -2630,7 +2710,10 @@ def mtn99(request):
                     if j%7 == 5:
                         opcion = line[:4]
                         if opcion != "[21]":
-                            mensaje = "Caracter inesperado en campo referencia del mensaje original,  en la línea número " +str(i+auxCuenta+1)+ " del archivo"
+                            if idioma == 0:
+                                mensaje = "Caracter inesperado en campo referencia del mensaje original,  en la línea número " +str(i+auxCuenta+1)+ " del archivo"
+                            else:
+                                mensaje = "Unexpected character in original message reference field, in file line No. " +str(i+auxCuenta+1)
                             #cerrar archivo
                             fo.close()
                             return JsonResponse({'mens':mensaje})
@@ -2638,7 +2721,10 @@ def mtn99(request):
                     if j%7 == 6:
                         opcion = line[:4]
                         if opcion != "[79]":
-                            mensaje = "Caracter inesperado en la narrativa del mensaje,  en la linea numero " +str(i+auxCuenta+1)+ " del archivo"
+                            if idioma == 0:
+                                mensaje = "Caracter inesperado en la narrativa del mensaje,  en la linea numero " +str(i+auxCuenta+1)+ " del archivo"
+                            else:
+                                mensaje = "Unexpected character in narrative field, in file line No. " +str(i+auxCuenta+1)
                             #cerrar archivo
                             fo.close()
                             return JsonResponse({'mens':mensaje})
@@ -2877,6 +2963,7 @@ def configuracion(request, tipo):
 
     expirarSesion(request)
     if request.method == 'POST':
+        idioma = Configuracion.objects.all()[0].idioma 
 
         if tipo == "sis":
             tipoconf = request.POST.get('conf_form_name')
@@ -3042,12 +3129,20 @@ def configuracion(request, tipo):
                 formcarsep = request.POST.get('formcarsep')
                 formtipo = request.POST.get('formtipo')
                 formcampsel = request.POST.get('formcampsel')
-                msg = "Formato creado exitosamente."
+
+                if idioma == 0:
+                    msg = "Formato creado exitosamente."
+                else:
+                    msg = "Successful created format."
 
                 try:
                     cuenta = Cuenta.objects.get(pk=formcuenta)
                 except Cuenta.DoesNotExist:
-                    msg = "No se encontro la cuenta especificada, asegurese de elegir una cuenta primero."
+                    if idioma == 0:
+                        msg = "No se encontro la cuenta especificada, asegurese de elegir una cuenta primero."
+                    else:
+                        msg = "Account not found, be sure select an account first."
+                    
                     return JsonResponse({'msg': msg, 'add': False})
 
                 formato =  Formatoarchivo.objects.create(cuenta_idcuenta = cuenta, nombre = formnom, separador = formcarsep, tipo = formtipo, formato=formcampsel)
@@ -3056,12 +3151,20 @@ def configuracion(request, tipo):
 
             elif actn == "del":
                 formid = request.POST.get('formid')
-                msg = "Formato eliminado exitosamente."
+
+                if idioma == 0: 
+                    msg = "Formato eliminado exitosamente."
+                else:
+                    msg = "Successful deleted format."
 
                 try:
                     formato = Formatoarchivo.objects.get(idformato=formid)
                 except Formatoarchivo.DoesNotExist:
-                    msg = "No se encontro el formato especificado, asegurese de hacer click en el formato de archivo a eliminar." 
+                    if idioma == 0:
+                        msg = "No se encontro el formato especificado, asegurese de hacer click en el formato de archivo a eliminar." 
+                    else:
+                        msg = "Format not found, be sure to click a format first." 
+                        
                     return JsonResponse({'msg': msg, 'formid': formid, 'elim': False})
 
                 formato.delete()
@@ -3075,12 +3178,18 @@ def configuracion(request, tipo):
                 formtipo = request.POST.get('formtipo')
                 formcampsel = request.POST.get('formcampsel')
 
-                msg = "Formato modificado exitosamente."
+                if idioma == 0: 
+                    msg = "Formato modificado exitosamente."
+                else:
+                    msg = "Successful modified format."
                 
                 try:
                     formato = Formatoarchivo.objects.get(idformato=formid)
                 except Formatoarchivo.DoesNotExist:
-                    msg = "No se encontro el formato especificado, asegurese de hacer click en el formato de archivo a modificar." 
+                    if idioma == 0:
+                        msg = "No se encontro el formato especificado, asegurese de hacer click en el formato de archivo a eliminar." 
+                    else:
+                        msg = "Format not found, be sure to click a format first."
                     return JsonResponse({'msg': msg, 'formid': formid, 'modif': False})
  
                 formato.nombre = formnom
@@ -3093,26 +3202,30 @@ def configuracion(request, tipo):
 
     if request.method == 'GET':
 
+        idioma = Configuracion.objects.all()[0].idioma 
         if tipo == "sis":
             template = "matcher/conf_sistema.html"
             empresa = Empresa.objects.all()
             conf = Configuracion.objects.all()
-
-            idioma = Configuracion.objects.all()[0].idioma    
+   
             context = {'idioma':idioma, 'empresa': empresa[0], 'conf': conf[0], 'ops':get_ops(request),'ldap':get_ldap(request)}
             return render(request, template, context)
 
         if tipo == "arc":
             template = "matcher/conf_archivo.html"
-            campos_disp = ['Nro. Cuenta *','Nro. Estado de Cuenta','Moneda', 'Fecha *','Credito/Débito Partida', 'Monto *', 'Tipo Transacción *', 'Ref. Nostro', 'Ref. Vostro', 'Detalle', 'Saldo *', 'Credito/Débito Saldo']
+            if idioma == 0:
+                campos_disp = ['Nro. Cuenta *','Nro. Estado de Cuenta','Moneda', 'Fecha *','Credito/Débito Partida', 'Monto *', 'Tipo Transacción *', 'Ref. Nostro', 'Ref. Vostro', 'Detalle', 'Saldo *', 'Credito/Débito Saldo']
+            else:
+                campos_disp = ['Account No. *','Acct. Statement No.','Currency', 'Date *','Credit/Debit Entries', 'Amount *', 'Transaction Type *', 'Nostro Ref.', 'Vostro Ref.', 'Details', 'Balance *', 'Credit/Debit Balance']
+             
             archivos = Formatoarchivo.objects.all()
             cuentas = Cuenta.objects.all()
+            
             # ARREGLAR
             if request.method == 'POST':
                 form = request.POST
                 print (form)
-
-            idioma = Configuracion.objects.all()[0].idioma    
+  
             context = {'idioma':idioma, 'archivos':archivos, 'cuentas':cuentas, 'campos_disp':campos_disp, 'ops':get_ops(request),'ldap':get_ldap(request)}
             return render(request, template, context)
         
@@ -4865,6 +4978,7 @@ def admin_reglas_transf(request):
     if request.method == 'POST':
         
         actn = request.POST.get('action')
+        idioma = Configuracion.objects.all()[0].idioma
 
         if actn == 'sel':
             cuentaid = int(request.POST.get('cuentaid'))
@@ -4885,12 +4999,20 @@ def admin_reglas_transf(request):
             selrefcorr = request.POST.get("selrefcorr")
             mascconta = request.POST.get("mascconta")
             masccorr = request.POST.get("masccorr")
-            msg = "Regla creada exitosamente"
+
+            if idioma == 0:
+                msg = "Regla creada exitosamente"
+            else:
+                msg = "Successful created rule"
 
             try:
                 cuenta = Cuenta.objects.get(pk=cuentaid)
             except Cuenta.DoesNotExist:
-                msg = "No se encontro la cuenta especificada."
+                if idioma == 0:
+                    msg = "No se encontro la cuenta especificada."
+                else:
+                    msg = "Account not found."
+
                 return JsonResponse({'msg': msg, 'add': False})
 
             regla =  ReglaTransformacion.objects.create(nombre = nombre, cuenta_idcuenta = cuenta, transaccion_corresponsal = transcorr, ref_corresponsal = selrefcorr, mascara_corresponsal = masccorr, transaccion_contabilidad = transconta, ref_contabilidad = selrefconta, mascara_contabilidad = mascconta, tipo = tipo)
@@ -4902,12 +5024,21 @@ def admin_reglas_transf(request):
 
         if actn == 'del':
             reglaid = request.POST.get("reglaid")
-            msg = "Regla eliminada exitosamente"
+
+            if idioma == 0:
+                msg = "Regla eliminada exitosamente"
+            else:
+                msg = "Successful deleted rule."
 
             try:
                 regla = ReglaTransformacion.objects.get(pk=reglaid)
             except ReglaTransformacion.DoesNotExist:
-                msg = "Regla no encontrada, por favor seleccione primero una regla"
+                
+                if idioma == 0:
+                    msg = "Regla no encontrada, por favor seleccione primero una regla"
+                else:
+                    msg = "Rule not found, select a rule first please."
+
                 return JsonResponse ({'msg':msg, 'elim':False})
             
             #Para el log
@@ -4919,7 +5050,11 @@ def admin_reglas_transf(request):
 
         if actn == 'upd':
 
-            msg = 'Regla modificada exitosamente'
+            if idioma == 0:
+                msg = 'Regla modificada exitosamente'
+            else:
+                msg = 'Successful modified rule'
+            
             reglaid = request.POST.get("reglaid")
             nombre = request.POST.get("nombre")
             tipo = request.POST.get("tipo")
@@ -4933,7 +5068,11 @@ def admin_reglas_transf(request):
             try:
                 regla = ReglaTransformacion.objects.get(pk=reglaid)
             except ReglaTransformacion.DoesNotExist:
-                msg = "No se encontro la regla especificada, asegurese de hacer click en la regla a modificar previamente."
+                if idioma == 0:
+                    msg = "No se encontro la regla especificada, asegurese de hacer click en la regla a modificar previamente."
+                else:
+                    msg = "Rule not found, be sure to click a rule first please."
+                
                 return JsonResponse({'msg': msg, 'reglaid': reglaid, 'modif': False})
         
             regla.nombre = nombre

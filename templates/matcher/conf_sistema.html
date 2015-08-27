@@ -12,13 +12,41 @@
     margin-top: 15px;
 }
 </style>
-
+<input type="text" id="idioma" value="{{idioma}}" hidden/>
 {% if 29 in ops %}
-<legend>Configuracion por Empresa:</legend>
+<legend>
+    {%if idioma == 0%}
+        Configuración por Empresa:
+    {%endif%}
+    {%if idioma == 1%}
+        Company Settings:
+    {%endif%} 
+</legend>
 <ul class="nav nav-tabs" id="emp-tab">
-    <li class="active"><a href="#datos-tab" data-toggle="tab">Datos Generales <i class="fa"></i></a></li>
-    <li><a href="#nomen-tab" data-toggle="tab">Nomenclatura <i class="fa"></i></a></li>
-    <li><a href="#conc-tab" data-toggle="tab">Conciliación <i class="fa"></i></a></li>
+    <li class="active"><a href="#datos-tab" data-toggle="tab">
+        {%if idioma == 0%}
+            Datos Generales
+        {%endif%}
+        {%if idioma == 1%}
+            General Information
+        {%endif%}
+    <i class="fa"></i></a></li>
+    <li><a href="#nomen-tab" data-toggle="tab">
+        {%if idioma == 0%}
+            Nomenclatura
+        {%endif%}
+        {%if idioma == 1%}
+            Nomenclature
+        {%endif%}
+    <i class="fa"></i></a></li>
+    <li><a href="#conc-tab" data-toggle="tab">
+        {%if idioma == 0%}
+            Conciliación
+        {%endif%}
+        {%if idioma == 1%}
+            Reconciliation
+        {%endif%}
+    <i class="fa"></i></a></li>
 </ul>
 
 <form id="ConfEmpForm" method="POST" class="form-horizontal" role="form" data-toggle="validator">
@@ -27,7 +55,14 @@
     <div class="tab-content">
         <div class="tab-pane active" id="datos-tab">
             <div class="form-group has-feedback">
-                <label for="emp-nombre" class="col-xs-3 control-label">Nombre</label>
+                <label for="emp-nombre" class="col-xs-3 control-label">
+                    {%if idioma == 0%}
+                        Nombre:
+                    {%endif%}
+                    {%if idioma == 1%}
+                        Name:
+                    {%endif%}
+                </label>
                 <div class="col-xs-5">
                     <input id="emp-nombre" type="text" class="form-control" value="{{empresa.nombre}}" name="nombre" required>
                     <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
@@ -36,7 +71,14 @@
             </div>
 
             <div class="form-group has-feedback">
-                <label class="col-xs-3 control-label">Grupo Financiero</label>
+                <label class="col-xs-3 control-label">
+                    {%if idioma == 0%}
+                        Grupo Financiero:
+                    {%endif%}
+                    {%if idioma == 1%}
+                        Financial Group:
+                    {%endif%}
+                </label>
                 <div class="col-xs-5">
                     <input type="text" class="form-control" value="{{empresa.nombregrupo}}" name="g_fin" required>
                     <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
@@ -45,7 +87,14 @@
             </div>
 
             <div class="form-group has-feedback">
-                <label class="col-xs-3 control-label">Dirección</label>
+                <label class="col-xs-3 control-label">
+                    {%if idioma == 0%}
+                        Dirección:
+                    {%endif%}
+                    {%if idioma == 1%}
+                        Address:
+                    {%endif%}
+                </label>
                 <div class="col-xs-5">
                     <input type="text" class="form-control" value="{{empresa.direccion}}" name="dir" required/>
                     <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
@@ -75,7 +124,14 @@
 
 
             <div class="form-group has-feedback">
-                <label class="col-xs-3 control-label">País:</label>
+                <label class="col-xs-3 control-label">
+                    {%if idioma == 0%}
+                        País:
+                    {%endif%}
+                    {%if idioma == 1%}
+                        Country:
+                    {%endif%}
+                </label>
                 <div class="col-xs-5">
                     <input type="text" class="form-control" value="{{empresa.pais}}" name="pais" required/>
                     <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
@@ -86,7 +142,14 @@
 
         <div class="tab-pane" id="nomen-tab">
             <div class="form-group has-feedback">
-                <label class="col-xs-3 control-label">Créditos Contabilidad:</label>
+                <label class="col-xs-3 control-label">
+                    {%if idioma == 0%}
+                        Créditos Contabilidad:
+                    {%endif%}
+                    {%if idioma == 1%}
+                       Accounting Credits:
+                    {%endif%}
+                </label>
                 <div class="col-xs-5">
                     <input type="text" class="form-control" value="{{empresa.creditoscontabilidad}}" name="c_conta" required/>
                     <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
@@ -95,7 +158,14 @@
             </div>
             
             <div class="form-group has-feedback">
-                <label class="col-xs-3 control-label">Débitos Contabilidad:</label>
+                <label class="col-xs-3 control-label">
+                    {%if idioma == 0%}
+                        Débitos Contabilidad:
+                    {%endif%}
+                    {%if idioma == 1%}
+                       Accounting Debits:
+                    {%endif%}
+                </label>
                 <div class="col-xs-5">
                     <input type="text" class="form-control" value="{{empresa.debitoscontabilidad}}" name="d_conta" required/>
                     <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
@@ -104,7 +174,14 @@
             </div>
 
             <div class="form-group has-feedback">
-                <label class="col-xs-3 control-label">Créditos Corresponsal:</label>
+                <label class="col-xs-3 control-label">
+                    {%if idioma == 0%}
+                        Créditos Corresponsal:
+                    {%endif%}
+                    {%if idioma == 1%}
+                       Correspondent Credits:
+                    {%endif%}
+                </label>
                 <div class="col-xs-5">
                     <input type="text" class="form-control" value="{{empresa.creditoscorresponsal}}" name="c_corr" required/>
                     <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
@@ -113,7 +190,14 @@
             </div>
 
             <div class="form-group has-feedback">
-                <label class="col-xs-3 control-label">Débitos Corresponsal:</label>
+                <label class="col-xs-3 control-label">
+                    {%if idioma == 0%}
+                        Débitos Corresponsal:
+                    {%endif%}
+                    {%if idioma == 1%}
+                       Correspondent Debits:
+                    {%endif%}
+                </label>
                 <div class="col-xs-5">
                     <input type="text" class="form-control" value="{{empresa.debitoscorresponsal}}" name="d_corr" required/>
                     <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
@@ -124,7 +208,14 @@
 
         <div class="tab-pane" id="conc-tab">
             <div class="form-group has-feedback">
-                <label class="col-xs-3 control-label">Persona que Autoriza la Conciliación:</label>
+                <label class="col-xs-3 control-label">
+                    {%if idioma == 0%}
+                        Persona que Autoriza la Conciliación:
+                    {%endif%}
+                    {%if idioma == 1%}
+                       Person who Authorizes Reconciliation:
+                    {%endif%}
+                </label>
                 <div class="col-xs-5">
                     <input type="text" class="form-control" value="{{empresa.autorizadopor}}" name="p_aut" required/>
                     <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
@@ -133,7 +224,14 @@
             </div>
 
             <div class="form-group has-feedback">
-                <label class="col-xs-3 control-label">Persona que Firma la Conciliación:</label>
+                <label class="col-xs-3 control-label">
+                    {%if idioma == 0%}
+                        Persona que Firma la Conciliación:
+                    {%endif%}
+                    {%if idioma == 1%}
+                       Person who Signs Reconciliation:
+                    {%endif%}
+                </label>
                 <div class="col-xs-5">
                     <input type="text" class="form-control" value="{{empresa.firmadopor}}" name="p_fir" required/>
                     <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
@@ -142,7 +240,14 @@
             </div>
 
             <div class="form-group has-feedback">
-                <label class="col-xs-3 control-label">Cargo:</label>
+                <label class="col-xs-3 control-label">
+                    {%if idioma == 0%}
+                        Cargo:
+                    {%endif%}
+                    {%if idioma == 1%}
+                       Occupation:
+                    {%endif%}
+                </label>
                 <div class="col-xs-5">
                     <input type="text" class="form-control" value="{{empresa.cargofirmante}}" name="cargo" required/>
                     <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
@@ -154,21 +259,49 @@
 
     <div class="form-group" style="margin-top: 15px;">
         <div class="col-xs-5 col-xs-offset-3">
-            <button type="submit" class="btn btn-success">Aceptar</button>
-            <p onclick="goBack()" class="btn btn-danger">Cancelar</p>
+            <button type="submit" class="btn btn-success">
+                {%if idioma == 0%}
+                    Aceptar
+                {%endif%}
+                {%if idioma == 1%}
+                   Accept
+                {%endif%}
+            </button>
+            <p onclick="goBack()" class="btn btn-danger">
+                {%if idioma == 0%}
+                    Cancelar
+                {%endif%}
+                {%if idioma == 1%}
+                   Cancel
+                {%endif%}
+            </p>
         </div>
     </div>
 </form>
 {%endif%}
 
 {% if 11 in ops %}
-<legend>Configuracion General y de Seguridad:</legend>
+<legend>
+    {%if idioma == 0%}
+        Configuración General y de Seguridad:
+    {%endif%}
+    {%if idioma == 1%}
+       General and Security Settings:
+    {%endif%}
+</legend>
 <form id="ConfSegForm" method="POST" class="form-horizontal" data-toggle="validator">
     {% csrf_token %}
     <input name="conf_form_name" value="conf_gral" hidden>
     <div class="col-md-10 well">
         <div class="form-group">
-            <label class="col-md-3 control-label" for="Idiom-sel">Idioma: </label>
+            <label class="col-md-3 control-label" for="Idiom-sel">
+                {%if idioma == 0%}
+                    Idioma:
+                {%endif%}
+                {%if idioma == 1%}
+                   Language:
+                {%endif%}
+            </label>
             <div class="col-md-2">
                 <select id="Idiom-sel" name="Idiom-sel" selected="{{conf.idioma}}" class="form-control">
                     {%if conf.idioma == 0%}
@@ -183,11 +316,23 @@
             </div>
         </div>
         <div >
-            <label class="col-xs-3 control-label">Expiración de Sesión:</label>
+            <label class="col-xs-3 control-label">
+                {%if idioma == 0%}
+                    Expiración de Sesión:
+                {%endif%}
+                {%if idioma == 1%}
+                   Session Expiration:
+                {%endif%}
+            </label>
             <div class="col-xs-3">
                 <input type="text" class="form-control" value="{{conf.expiracion_sesion}}" name="expiracion" id="expiracionid" onkeypress='return solonumero(event)' onkeyup='return solonumero(event)' required />
                 <p class="help-block">
-                    Tiempo en Minutos.
+                    {%if idioma == 0%}
+                        Tiempo en Minutos.
+                    {%endif%}
+                    {%if idioma == 1%}
+                        Time on minutes.
+                    {%endif%}
                 </p>
             </div>
         </div>
@@ -196,7 +341,14 @@
         <br>
         <br>
         <div class="form-group has-feedback">
-            <label class="col-xs-3 control-label">Contabilidad cargados:</label>
+            <label class="col-xs-3 control-label">
+                {%if idioma == 0%}
+                    Contabilidad Cargados:
+                {%endif%}
+                {%if idioma == 1%}
+                   Loaded Accounting:
+                {%endif%}
+            </label>
             <div class="col-xs-5">
                 <input type="text" class="form-control" value="{{conf.archcontabilidadcarg}}" name="cont_carg"  pattern="^[A-Z]+\:\\[a-zA-Z0-9-_\.\'\(\)\&\%\$\#\!\¿\¡\[\]\{\}\,\;\\]+$" oninvalid="this.setCustomValidity('Introduzca un directirio válido. Por ejemplo: C:\\Matcher\\Ruta')" oninput="setCustomValidity('')" required/>
                 <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
@@ -204,7 +356,14 @@
             </div>
         </div>
         <div class="form-group has-feedback">
-            <label class="col-xs-3 control-label">Corresponsal Cargados:</label>
+            <label class="col-xs-3 control-label">
+                {%if idioma == 0%}
+                    Corresponsal Cargados:
+                {%endif%}
+                {%if idioma == 1%}
+                   Loaded Correspondet:
+                {%endif%}
+            </label>
             <div class="col-xs-5">
                 <input type="text" class="form-control" value="{{conf.archswiftcarg}}" name="corr_carg" pattern="^[A-Z]+\:\\[a-zA-Z0-9-_\.\'\(\)\&\%\$\#\!\¿\¡\[\]\{\}\,\;\\]+$" oninvalid="this.setCustomValidity('Introduzca un directirio válido. Por ejemplo: C:\\Matcher\\Ruta')" oninput="setCustomValidity('')" required/>
                 <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
@@ -212,7 +371,14 @@
             </div>
         </div>
         <div class="form-group has-feedback">
-            <label class="col-xs-3 control-label">Contabilidad Procesados:</label>
+            <label class="col-xs-3 control-label">
+                {%if idioma == 0%}
+                    Contabilidad Procesados:
+                {%endif%}
+                {%if idioma == 1%}
+                   Processed Accounting:
+                {%endif%}
+            </label>
             <div class="col-xs-5">
                 <input type="text" class="form-control" value="{{conf.archcontabilidadproc}}" name="cont_procs" pattern="^[A-Z]+\:\\[a-zA-Z0-9-_\.\'\(\)\&\%\$\#\!\¿\¡\[\]\{\}\,\;\\]+$" oninvalid="this.setCustomValidity('Introduzca un directirio válido. Por ejemplo: C:\\Matcher\\Ruta')" oninput="setCustomValidity('')" required/>
                 <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
@@ -220,7 +386,14 @@
             </div>
         </div>
         <div class="form-group has-feedback">
-            <label class="col-xs-3 control-label">Corresponsal Procesados:</label>
+            <label class="col-xs-3 control-label">
+                {%if idioma == 0%}
+                    Corresponsal Procesados:
+                {%endif%}
+                {%if idioma == 1%}
+                   Processed Correspondent:
+                {%endif%}
+            </label>
             <div class="col-xs-5">
                 <input type="text" class="form-control" value="{{conf.archswiftproc}}" name="corr_procs" pattern="^[A-Z]+\:\\[a-zA-Z0-9-_\.\'\(\)\&\%\$\#\!\¿\¡\[\]\{\}\,\;\\]+$" oninvalid="this.setCustomValidity('Introduzca un directirio válido. Por ejemplo: C:\\Matcher\\Ruta')" oninput="setCustomValidity('')" required/>
                 <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
@@ -230,16 +403,58 @@
     </div>
 
     <ul class="nav nav-tabs col-md-12" id="seg-tab">
-        <li class="active"><a href="#alerta-tab" data-toggle="tab">Alertas <i class="fa"></i></a></li>
-        <li><a href="#archive-tab" data-toggle="tab">Archive Matches Conf. <i class="fa"></i>
-        <li><a href="#contr-tab" data-toggle="tab">Contraseñas <i class="fa"></i></a></li>
+        <li class="active"><a href="#alerta-tab" data-toggle="tab">
+            {%if idioma == 0%}
+                Alertas
+            {%endif%}
+            {%if idioma == 1%}
+               Alerts
+            {%endif%}
+        <i class="fa"></i></a></li>
+        <li><a href="#archive-tab" data-toggle="tab">
+            {%if idioma == 0%}
+                Archive Matches Conf.
+            {%endif%}
+            {%if idioma == 1%}
+               Conf. Matches Archive
+            {%endif%}
+        <i class="fa"></i>
+        <li><a href="#contr-tab" data-toggle="tab">
+            {%if idioma == 0%}
+                Contraseñas
+            {%endif%}
+            {%if idioma == 1%}
+               Passwords
+            {%endif%}
+        <i class="fa"></i></a></li>
         <li><a href="#intraday" data-toggle="tab">Intraday<i class="fa"></i></a></li>
         <li><a href="#ldap-tab" data-toggle="tab">LDAP <i class="fa"></i></a></li>
-        <li><a href="#licencia-tab" data-toggle="tab">Licencia <i class="fa"></i></a></li>
+        <li><a href="#licencia-tab" data-toggle="tab">
+            {%if idioma == 0%}
+                Licencia
+            {%endif%}
+            {%if idioma == 1%}
+               License
+            {%endif%}
+        <i class="fa"></i></a></li>
         </a></li>
         <li><a href="#log-tab" data-toggle="tab">Logs <i class="fa"></i></a></li>
-        <li><a href="#msgSWIFT-tab" data-toggle="tab">Mensajes SWIFT <i class="fa"></i></a></li>
-        <li ><a href="#smatcher-tab" data-toggle="tab">Servidor Match <i class="fa"></i></a></li>
+        <li><a href="#msgSWIFT-tab" data-toggle="tab">
+            {%if idioma == 0%}
+                Mensajes SWIFT
+            {%endif%}
+            {%if idioma == 1%}
+               SWIFT Messages
+            {%endif%}
+        <i class="fa"></i></a></li>
+        <li ><a href="#smatcher-tab" data-toggle="tab">
+            {%if idioma == 0%}
+                Servidor Match
+            {%endif%}
+            {%if idioma == 1%}
+               Match Server
+            {%endif%}
+        <i class="fa"></i></a></li>
         
     </ul>
     <div class="tab-content col-md-12">
@@ -255,7 +470,14 @@
             </div>
 
             <div class="form-group has-feedback">
-                <label class="col-xs-3 control-label">Puerto:</label>
+                <label class="col-xs-3 control-label">
+                    {%if idioma == 0%}
+                        Puerto:
+                    {%endif%}
+                    {%if idioma == 1%}
+                       Port:
+                    {%endif%}
+                </label>
                 <div class="col-xs-5">
                     <input type="text" class="form-control" value="{{conf.matcherpuerto}}" name="m-puerto" pattern="^[0-9]{1,5}$" oninvalid="this.setCustomValidity('Introduzca un puero válido. Por ejemplo: 1234')" oninput="setCustomValidity('')" onkeypress='return solonumero(event)' onkeyup='return solonumero(event)' required/>
                     <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
@@ -275,7 +497,14 @@
             </div>
 
             <div class="form-group has-feedback">
-                <label class="col-xs-3 control-label">Puerto:</label>
+                <label class="col-xs-3 control-label">
+                    {%if idioma == 0%}
+                        Puerto:
+                    {%endif%}
+                    {%if idioma == 1%}
+                       Port:
+                    {%endif%}
+                </label>
                 <div class="col-xs-5">
                     <input type="text" class="form-control" value="{{conf.ldap_puerto}}" name="ldap_puerto" pattern="^[0-9]{1,5}$" oninvalid="this.setCustomValidity('Introduzca un puero válido. Por ejemplo: 1234')" oninput="setCustomValidity('')" onkeypress='return solonumero(event)' onkeyup='return solonumero(event)' required/>
                     <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
@@ -284,7 +513,14 @@
             </div>
 
             <div class="form-group">
-                <label class="col-xs-3 control-label">Dominio:</label>
+                <label class="col-xs-3 control-label">
+                    {%if idioma == 0%}
+                        Dominio:
+                    {%endif%}
+                    {%if idioma == 1%}
+                       Domain:
+                    {%endif%}
+                </label>
                 <div class="col-xs-5">
                     <input type="text" class="form-control" value="{{conf.ldap_dominio}}" name="ldap_dominio" />
                 </div>
@@ -294,7 +530,14 @@
         <div class="tab-pane" id="alerta-tab">
 
             <div class="form-group has-feedback">
-                <label class="col-xs-3 control-label">Servidor de Correos:</label>
+                <label class="col-xs-3 control-label">
+                    {%if idioma == 0%}
+                        Servidor de Correos:
+                    {%endif%}
+                    {%if idioma == 1%}
+                       Mail server:
+                    {%endif%}
+                </label>
                 <div class="col-xs-5">
                     <input type="text" class="form-control" value="{{conf.alertasservidor}}" name="a-mail" />
                     <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
@@ -304,7 +547,14 @@
 
 
             <div class="form-group has-feedback">
-                <label class="col-xs-3 control-label">Puerto:</label>
+                <label class="col-xs-3 control-label">
+                    {%if idioma == 0%}
+                        Puerto:
+                    {%endif%}
+                    {%if idioma == 1%}
+                       Port:
+                    {%endif%}
+                </label>
                 <div class="col-xs-5">
                     <input type="text" class="form-control" value="{{conf.alertaspuerto}}" name="a-puerto" pattern="^[0-9]{1,5}$" oninvalid="this.setCustomValidity('Introduzca un puero válido. Por ejemplo: 1234')" oninput="setCustomValidity('')" onkeypress='return solonumero(event)' onkeyup='return solonumero(event)'/>
                     <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
@@ -314,7 +564,14 @@
 
 
             <div class="form-group has-feedback">
-                <label class="col-xs-3 control-label">Usuario:</label>
+                <label class="col-xs-3 control-label">
+                    {%if idioma == 0%}
+                        Usuario:
+                    {%endif%}
+                    {%if idioma == 1%}
+                       User:
+                    {%endif%}
+                </label>
                 <div class="col-xs-5">
                     <input type="text" class="form-control" value="{{conf.alertasusuario}}" name="a-usrn" />
                     <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
@@ -324,7 +581,14 @@
 
 
             <div class="form-group has-feedback">
-                <label class="col-xs-3 control-label">Contraseña:</label>
+                <label class="col-xs-3 control-label">
+                    {%if idioma == 0%}
+                        Contraseña:
+                    {%endif%}
+                    {%if idioma == 1%}
+                       Password:
+                    {%endif%}
+                </label>
                 <div class="col-xs-5">
                     <input type="password" class="form-control" value="{{conf.alertaspass}}" name="a-contr" />
                     <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
@@ -335,15 +599,36 @@
 
         <div class="tab-pane" id="log-tab">
             <div class="form-group">
-                <label class="col-xs-3 control-label">Tiempo de Retención de Logs:</label>
+                <label class="col-xs-3 control-label">
+                    {%if idioma == 0%}
+                        Tiempo de Retención de Logs:
+                    {%endif%}
+                    {%if idioma == 1%}
+                       Logs Retention:
+                    {%endif%}
+                </label>
                 <div class="input-group col-xs-5">
                     <input type="text" class="form-control" value="{{conf.tiemporetentrazas}}" name="t_ret_log" />
-                    <span class="input-group-addon" id="basic-addon2">Meses</span>
+                    <span class="input-group-addon" id="basic-addon2">
+                        {%if idioma == 0%}
+                            Meses
+                        {%endif%}
+                        {%if idioma == 1%}
+                           Months
+                        {%endif%}
+                    </span>
                 </div>
             </div>
             
             <div class="form-group has-feedback">
-                <label class="col-xs-3 control-label">Directorio de Archive:</label>
+                <label class="col-xs-3 control-label">
+                    {%if idioma == 0%}
+                        Directorio de Archive:
+                    {%endif%}
+                    {%if idioma == 1%}
+                       Archive Directory:
+                    {%endif%}
+                </label>
                 <div class="col-xs-5">
                     <input type="text" class="form-control" value="{{conf.dirarchive}}" name="arch" pattern="^[A-Z]+\:\\[a-zA-Z0-9-_\.\'\(\)\&\%\$\#\!\¿\¡\[\]\{\}\,\;\\]+$" oninvalid="this.setCustomValidity('Introduzca un directirio válido. Por ejemplo: C:\\Matcher\\Ruta')" oninput="setCustomValidity('')" />
                 <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
@@ -355,7 +640,14 @@
 
         <div class="tab-pane" id="msgSWIFT-tab">
             <div class="form-group has-feedback">
-                <label class="col-xs-3 control-label">Directorio de Salida Mtn95:</label>
+                <label class="col-xs-3 control-label">
+                    {%if idioma == 0%}
+                        Directorio de Salida MTn95:
+                    {%endif%}
+                    {%if idioma == 1%}
+                       Exit Directory MTn95:
+                    {%endif%}
+                </label>
                 <div class="col-xs-5">
                     <input type="text" class="form-control" value="{{conf.dirsalida95}}" name="dir_s_mt95" pattern="^[A-Z]+\:\\[a-zA-Z0-9-_\.\'\(\)\&\%\$\#\!\¿\¡\[\]\{\}\,\;\\]+$" oninvalid="this.setCustomValidity('Introduzca un directirio válido. Por ejemplo: C:\\Matcher\\Ruta')" oninput="setCustomValidity('')" required/>
                 <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
@@ -363,7 +655,14 @@
                 </div>
             </div>
             <div class="form-group has-feedback">
-                <label class="col-xs-3 control-label">Directorio de Carga Mtn96:</label>
+                <label class="col-xs-3 control-label">
+                    {%if idioma == 0%}
+                        Directorio de Carga MTn96:
+                    {%endif%}
+                    {%if idioma == 1%}
+                        Load Directory MTn96:
+                    {%endif%}
+                </label>
                 <div class="col-xs-5">
                     <input type="text" class="form-control" value="{{conf.dircarga96}}" name="dir_c_mt96" pattern="^[A-Z]+\:\\[a-zA-Z0-9-_\.\'\(\)\&\%\$\#\!\¿\¡\[\]\{\}\,\;\\]+$" oninvalid="this.setCustomValidity('Introduzca un directirio válido. Por ejemplo: C:\\Matcher\\Ruta')" oninput="setCustomValidity('')" required/>
                 <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
@@ -371,7 +670,14 @@
                 </div>
             </div>
             <div class="form-group has-feedback">
-                <label class="col-xs-3 control-label">Directorio de Salida Mtn99:</label>
+                <label class="col-xs-3 control-label">
+                    {%if idioma == 0%}
+                        Directorio de Salida MTn99:
+                    {%endif%}
+                    {%if idioma == 1%}
+                       Exit Directory MTn99:
+                    {%endif%}
+                </label>
                 <div class="col-xs-5">
                     <input type="text" class="form-control" value="{{conf.dirsalida99}}" name="dir_s_mt99" pattern="^[A-Z]+\:\\[a-zA-Z0-9-_\.\'\(\)\&\%\$\#\!\¿\¡\[\]\{\}\,\;\\]+$" oninvalid="this.setCustomValidity('Introduzca un directirio válido. Por ejemplo: C:\\Matcher\\Ruta')" oninput="setCustomValidity('')" required/>
                 <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
@@ -379,7 +685,14 @@
                 </div>
             </div>
             <div class="form-group has-feedback">
-                <label class="col-xs-3 control-label">Directorio de Carga Mtn99:</label>
+                <label class="col-xs-3 control-label">
+                    {%if idioma == 0%}
+                        Directorio de Carga MTn99:
+                    {%endif%}
+                    {%if idioma == 1%}
+                        Load Directory MTn99:
+                    {%endif%}
+                </label>
                 <div class="col-xs-5">
                     <input type="text" class="form-control" value="{{conf.dircarga99}}" name="dir_c_mt99" pattern="^[A-Z]+\:\\[a-zA-Z0-9-_\.\'\(\)\&\%\$\#\!\¿\¡\[\]\{\}\,\;\\]+$" oninvalid="this.setCustomValidity('Introduzca un directirio válido. Por ejemplo: C:\\Matcher\\Ruta')" oninput="setCustomValidity('')" required/>
                 <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
@@ -387,7 +700,14 @@
                 </div>
             </div>
             <div class="form-group has-feedback">
-                <label class="col-xs-3 control-label">Directorio de Procesados Mtn96:</label>
+                <label class="col-xs-3 control-label">
+                    {%if idioma == 0%}
+                        Directorio de Procesados MTn96:
+                    {%endif%}
+                    {%if idioma == 1%}
+                        Processed Directory MTn96:
+                    {%endif%}
+                </label>
                 <div class="col-xs-5">
                     <input type="text" class="form-control" value="{{conf.dirprocesado96}}" name="dir_p_mt96" pattern="^[A-Z]+\:\\[a-zA-Z0-9-_\.\'\(\)\&\%\$\#\!\¿\¡\[\]\{\}\,\;\\]+$" oninvalid="this.setCustomValidity('Introduzca un directirio válido. Por ejemplo: C:\\Matcher\\Ruta')" oninput="setCustomValidity('')" required/>
                 <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
@@ -395,7 +715,14 @@
                 </div>
             </div>
             <div class="form-group has-feedback">
-                <label class="col-xs-3 control-label">Directorio de Procesados Mtn99:</label>
+                <label class="col-xs-3 control-label">
+                    {%if idioma == 0%}
+                        Directorio de Procesados MTn99:
+                    {%endif%}
+                    {%if idioma == 1%}
+                        Processed Directory MTn99:
+                    {%endif%}
+                </label>
                 <div class="col-xs-5">
                     <input type="text" class="form-control" value="{{conf.dirprocesado99}}" name="dir_p_mt99" pattern="^[A-Z]+\:\\[a-zA-Z0-9-_\.\'\(\)\&\%\$\#\!\¿\¡\[\]\{\}\,\;\\]+$" oninvalid="this.setCustomValidity('Introduzca un directirio válido. Por ejemplo: C:\\Matcher\\Ruta')" oninput="setCustomValidity('')" required/>
                 <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
@@ -407,7 +734,14 @@
         <div class="tab-pane" id="archive-tab">
             
             <div class="form-group has-feedback">
-                <label class="col-xs-3 control-label">Directorio Archive de Matches Confirmados:</label>
+                <label class="col-xs-3 control-label">
+                    {%if idioma == 0%}
+                        Directorio Archive de Matches Confirmados:
+                    {%endif%}
+                    {%if idioma == 1%}
+                        Conf. Matches Archive Directory:
+                    {%endif%}
+                </label>
                 <div class="col-xs-5">
                     <input type="text" class="form-control" value="{{conf.dirarchiveconfirmados}}" name="archconfirm" pattern="^[A-Z]+\:\\[a-zA-Z0-9-_\.\'\(\)\&\%\$\#\!\¿\¡\[\]\{\}\,\;\\]+$" oninvalid="this.setCustomValidity('Introduzca un directirio válido. Por ejemplo: C:\\Matcher\\Ruta')" oninput="setCustomValidity('')" required/>
                 <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
@@ -420,7 +754,14 @@
         <div class="tab-pane" id="intraday">
             
             <div class="form-group has-feedback">
-                <label class="col-xs-3 control-label">Directorio Intraday (Entrada):</label>
+                <label class="col-xs-3 control-label">
+                    {%if idioma == 0%}
+                        Directorio de Intraday (Entrada):
+                    {%endif%}
+                    {%if idioma == 1%}
+                        Intraday In Directory:
+                    {%endif%}
+                </label>
                 <div class="col-xs-5">
                     <input type="text" class="form-control" value="{{conf.dirintraday}}" name="dirIntraday" pattern="^[A-Z]+\:\\[a-zA-Z0-9-_\.\'\(\)\&\%\$\#\!\¿\¡\[\]\{\}\,\;\\]+$" oninvalid="this.setCustomValidity('Introduzca un directirio válido. Por ejemplo: C:\\Matcher\\Ruta')" oninput="setCustomValidity('')" required/>
                 <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
@@ -429,7 +770,14 @@
             </div>
 
             <div class="form-group has-feedback">
-                <label class="col-xs-3 control-label">Directorio Intraday (Salida):</label>
+                <label class="col-xs-3 control-label">
+                    {%if idioma == 0%}
+                        Directorio de Intraday (Salida):
+                    {%endif%}
+                    {%if idioma == 1%}
+                        Intraday Exit Directory:
+                    {%endif%}
+                </label>
                 <div class="col-xs-5">
                     <input type="text" class="form-control" value="{{conf.dirintradaysalida}}" name="dirIntradaySalida" pattern="^[A-Z]+\:\\[a-zA-Z0-9-_\.\'\(\)\&\%\$\#\!\¿\¡\[\]\{\}\,\;\\]+$" oninvalid="this.setCustomValidity('Introduzca un directirio válido. Por ejemplo: C:\\Matcher\\Ruta')" oninput="setCustomValidity('')" required/>
                 <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
@@ -438,11 +786,23 @@
             </div>
 
             <div >
-            <label class="col-xs-3 control-label">Tiempo de Actualización:</label>
+            <label class="col-xs-3 control-label">
+                {%if idioma == 0%}
+                    Tiempo de Actualización:
+                {%endif%}
+                {%if idioma == 1%}
+                    Update Time:
+                {%endif%}
+            </label>
             <div class="col-xs-3">
                 <input type="text" class="form-control" value="{{conf.tiempointraday}}" name="tiempoAct" id="tiempoActId" onkeypress='return solonumero(event)' onkeyup='return solonumero(event)' required />
                 <p class="help-block">
-                    Tiempo en Minutos.
+                    {%if idioma == 0%}
+                        Tiempo en Minutos.
+                    {%endif%}
+                    {%if idioma == 1%}
+                        Time on minutes.
+                    {%endif%}
                 </p>
             </div>
         </div>
@@ -452,7 +812,14 @@
         <div class="tab-pane" id="licencia-tab">
             
             <div class="form-group has-feedback">
-                <label class="col-xs-3 control-label">Directorio para carga de licencia:</label>
+                <label class="col-xs-3 control-label">
+                     {%if idioma == 0%}
+                        Directorio para Carga de Licencia:
+                    {%endif%}
+                    {%if idioma == 1%}
+                        License Load Directory:
+                    {%endif%}
+                </label>
                 <div class="col-xs-5">
                     <input type="text" class="form-control" value="{{conf.dirlicencia}}" name="dirlicencia" pattern="^[A-Z]+\:\\[a-zA-Z0-9-_\.\'\(\)\&\%\$\#\!\¿\¡\[\]\{\}\,\;\\]+$" oninvalid="this.setCustomValidity('Introduzca un directirio válido. Por ejemplo: C:\\Matcher\\Ruta')" oninput="setCustomValidity('')" required/>
                 <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
@@ -465,17 +832,38 @@
 
         <div class="tab-pane" id="contr-tab">
             <div class="form-group">
-                <label class="col-xs-3 control-label">Tiempo de Caducidad:</label>
+                <label class="col-xs-3 control-label">
+                    {%if idioma == 0%}
+                        Tiempo de Caducidad:
+                    {%endif%}
+                    {%if idioma == 1%}
+                        Password Expiration:
+                    {%endif%}
+                </label>
                 <div class="input-group col-xs-5">
                     <input type="text" class="form-control" value="{{conf.caducidad}}" name="t_cad"/>
                     <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
                     <div class="help-block with-errors"></div>
-                    <span class="input-group-addon" id="basic-addon2">Días</span>
+                    <span class="input-group-addon" id="basic-addon2">
+                        {%if idioma == 0%}
+                            Días
+                        {%endif%}
+                        {%if idioma == 1%}
+                            Days
+                        {%endif%}
+                    </span>
                 </div>
             </div>
             
             <div class="form-group has-feedback">
-                <label class="col-xs-3 control-label">Longitud Mínima:</label>
+                <label class="col-xs-3 control-label">
+                    {%if idioma == 0%}
+                        Longitud Mínima:
+                    {%endif%}
+                    {%if idioma == 1%}
+                        Minimun Length:
+                    {%endif%}
+                </label>
                 <div class="col-xs-5">
                     <input type="text" class="form-control" value="{{conf.longitud_minima}}" name="long_min" oninvalid="this.setCustomValidity('Introduzca la longitud mínima para las contraseñas')" oninput="setCustomValidity('')" onkeypress='return solonumero(event)' onkeyup='return solonumero(event)'required/>
                     <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
@@ -484,7 +872,14 @@
             </div>
 
             <div class="form-group has-feedback">
-                <label class="col-xs-3 control-label">Número de Intentos Fallidos:</label>
+                <label class="col-xs-3 control-label">
+                    {%if idioma == 0%}
+                        Número de Intentos fallidos:
+                    {%endif%}
+                    {%if idioma == 1%}
+                        Max. Failed Logins:
+                    {%endif%}
+                </label>
                 <div class="col-xs-5">
                     <input type="text" class="form-control" value="{{conf.num_intentos}}" name="num_fall" oninvalid="this.setCustomValidity('Introduzca el número de intentos fallidos para las contraseñas')" oninput="setCustomValidity('')" onkeypress='return solonumero(event)' onkeyup='return solonumero(event)'required/>
                     <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
@@ -493,15 +888,36 @@
             </div>
 
             <div class="form-group">
-                <label class="col-xs-3 control-label">Recordar las Últimas:</label>
+                <label class="col-xs-3 control-label">
+                    {%if idioma == 0%}
+                        Recordar las últimas:
+                    {%endif%}
+                    {%if idioma == 1%}
+                        History Control:
+                    {%endif%}
+                </label>
                 <div class="input-group col-xs-5">
                     <input type="text" class="form-control" value="{{conf.num_passrecordar}}" name="rec_ult" />
-                    <span class="input-group-addon" id="basic-addon2">Contraseñas</span>
+                    <span class="input-group-addon" id="basic-addon2">
+                        {%if idioma == 0%}
+                            Contraseñas
+                        {%endif%}
+                        {%if idioma == 1%}
+                            Passwords
+                        {%endif%}
+                    </span>
                 </div>
             </div>
 
             <div class="form-group">
-                <label class="col-xs-3 control-label">Caracteres Obligatorios:</label>
+                <label class="col-xs-3 control-label">
+                    {%if idioma == 0%}
+                        Caracteres Obligatorios:
+                    {%endif%}
+                    {%if idioma == 1%}
+                        Mandatory Characters:
+                    {%endif%}
+                </label>
                 <div class="input-group col-xs-5">
                     <div class="checkbox col-md-6">
                       <label class="col-xs-12 control-label">
@@ -510,7 +926,13 @@
                         {% else %}
                             <input name="ce" type="checkbox" value="1" checked>
                         {% endif %}
-                        Caracteres Especiales</label>
+                        {%if idioma == 0%}
+                            Caracteres Especiales
+                        {%endif%}
+                        {%if idioma == 1%}
+                            Special Characters
+                        {%endif%}    
+                    </label>
                     </div>
                     <div class="checkbox col-md-6">
                       <label class="col-xs-3 control-label">
@@ -519,7 +941,13 @@
                         {% else %}
                             <input name="may" type="checkbox" value="2" checked>
                         {% endif %}
-                        Mayúsculas</label>
+                        {%if idioma == 0%}
+                            Mayúsculas
+                        {%endif%}
+                        {%if idioma == 1%}
+                            Capital letters
+                        {%endif%} 
+                        </label>
                     </div>
                     <div class="col-md-12">
                         <div class="checkbox col-md-6">
@@ -529,7 +957,13 @@
                         {% else %}
                             <input name="num" type="checkbox" value="3" checked>
                         {% endif %}
-                        Numéricos</label>
+                        {%if idioma == 0%}
+                            Numéricos
+                        {%endif%}
+                        {%if idioma == 1%}
+                            Numbers
+                        {%endif%} 
+                        </label>
                         </div>
                         <div class="checkbox col-md-6">
                           <label class="col-xs-3 control-label">
@@ -538,7 +972,13 @@
                         {% else %}
                             <input name="alf" type="checkbox" value="4" checked>
                         {% endif %}
-                        Alfabéticos</label>
+                        {%if idioma == 0%}
+                            Alfabéticos
+                        {%endif%}
+                        {%if idioma == 1%}
+                            Alphabetic
+                        {%endif%} 
+                        </label>
                         </div>
                     </div>
                 </div>
@@ -549,8 +989,22 @@
 
     <div class="form-group" style="margin-top: 15px;">
         <div class="col-xs-5 col-xs-offset-3">
-            <button type="submit" class="btn btn-success">Aceptar</button>
-            <p onclick="goBack()" class="btn btn-danger">Cancelar</p>
+            <button type="submit" class="btn btn-success">
+            {%if idioma == 0%}
+                Aceptar
+            {%endif%}
+            {%if idioma == 1%}
+                Accept
+            {%endif%} 
+            </button>
+            <p onclick="goBack()" class="btn btn-danger">
+            {%if idioma == 0%}
+                Cancelar
+            {%endif%}
+            {%if idioma == 1%}
+                Cancel
+            {%endif%} 
+            </p>
         </div>
     </div>
 </form>
@@ -565,7 +1019,13 @@
 
 <script>
 function goBack() {
-    var msg = "Seguro que desea cancelar?",
+    var idioma = $('#idioma').val();
+    if (idioma ===0){
+        var msg = "Seguro que desea cancelar?";
+    } else {
+        var msg = "Sure you want cancel?";
+    }
+    
         r = confirm(msg);
         
     if (r == true) {

@@ -11,7 +11,15 @@
 {%endblock%}
 
 {% block content %}
-<h1>Formato Archivo</h1>
+<input type="text" id="idioma" value="{{idioma}}" hidden/>
+<h1>
+  {%if idioma == 0%}
+    Formato Archivo
+  {%endif%}
+  {%if idioma == 1%}
+    Data Format
+  {%endif%}
+</h1>
 
 <div class="container">
     <br />
@@ -38,21 +46,36 @@
             <div class="col-md-12">
                 <div>
                     <button type="button" id="addButton" data-loading-text="Cargando..." class="col-md-3 btn btn-success" autocomplete="off" data-toggle="modal" data-target="#add-formato-modal">
-                        Agregar
+                        {%if idioma == 0%}
+                          Agregar
+                        {%endif%}
+                        {%if idioma == 1%}
+                          Add
+                        {%endif%}
                     </button>
                 </div>
             </div>
             <div class="col-md-12">
                 <div style="padding-top:5%;">
                     <button type="button" id="delButton" data-loading-text="Cargando..." class="col-md-3 btn btn-danger" autocomplete="off">
-                        Eliminar
+                        {%if idioma == 0%}
+                          Eliminar
+                        {%endif%}
+                        {%if idioma == 1%}
+                          Delete
+                        {%endif%}
                     </button>
                 </div>
             </div>
             <div class="col-md-12">
                 <div style="padding-top:5%;">
                     <button type="button" id="updButton" data-loading-text="Cargando..." class="col-md-3 btn btn-primary" autocomplete="off">
-                        Modificar
+                        {%if idioma == 0%}
+                          Modificar
+                        {%endif%}
+                        {%if idioma == 1%}
+                          Modify
+                        {%endif%}
                     </button>
                 </div>
             </div>
@@ -63,11 +86,25 @@
                 <fieldset>
 
                 <!-- Form Name -->
-                <legend>Detalles Formato</legend>
+                <legend>
+                  {%if idioma == 0%}
+                    Detalles Formato
+                  {%endif%}
+                  {%if idioma == 1%}
+                     Format Details
+                  {%endif%}
+                </legend>
 
                 <!-- Text input-->
                 <div class="form-group">
-                  <label class="col-md-4 control-label" for="cuentaform">Cuenta:</label>  
+                  <label class="col-md-4 control-label" for="cuentaform">
+                    {%if idioma == 0%}
+                      Cuenta:
+                    {%endif%}
+                    {%if idioma == 1%}
+                      Account:
+                    {%endif%}
+                  </label>  
                   <div class="col-md-5">
                   <input id="cuentaform" name="cuentaform" type="text" placeholder="" class="form-control input-md">
                     
@@ -76,16 +113,37 @@
 
                 <!-- Text input-->
                 <div class="form-group">
-                  <label class="col-md-4 control-label" for="nomform">Nombre Formato:</label>  
+                  <label class="col-md-4 control-label" for="nomform">
+                    {%if idioma == 0%}
+                      Nombre Formato:
+                    {%endif%}
+                    {%if idioma == 1%}
+                      Format Name:
+                    {%endif%}
+                  </label>  
                   <div class="col-md-8">
                   <input id="nomform" name="nomform" type="text" placeholder="" class="form-control input-md">
-                  <span class="help-block">Ej.: Carga Banco1</span>  
+                  <span class="help-block">
+                    {%if idioma == 0%}
+                      Ejemplo: Carga Banco1
+                    {%endif%}
+                    {%if idioma == 1%}
+                      Example: Bank1 Load
+                    {%endif%}
+                  </span>  
                   </div>
                 </div>
 
                 <!-- Select Basic -->
                 <div class="form-group">
-                  <label class="col-md-5 control-label" for="carsep">Caracter separador:</label>
+                  <label class="col-md-5 control-label" for="carsep">
+                    {%if idioma == 0%}
+                      Caracter separador:
+                    {%endif%}
+                    {%if idioma == 1%}
+                      Separator character:
+                    {%endif%}
+                  </label>
                   <div class="col-md-3">
                     <select id="carsep" name="carsep" class="form-control">
                       <option value=";">;</option>
@@ -99,18 +157,35 @@
 
                 <!-- Multiple Radios -->
                 <div class="form-group">
-                  <label class="col-md-4 control-label" for="tipo">Tipo:</label>
+                  <label class="col-md-4 control-label" for="tipo">
+                    {%if idioma == 0%}
+                      Tipo:
+                    {%endif%}
+                    {%if idioma == 1%}
+                      Type:
+                    {%endif%}
+                  </label>
                   <div class="col-md-4">
                   <div class="radio">
                     <label for="tipo-0">
                       <input type="radio" name="tipo" id="L" value="L">
-                      Contabilidad
+                      {%if idioma == 0%}
+                        Contabilidad:
+                      {%endif%}
+                      {%if idioma == 1%}
+                        Accounting:
+                      {%endif%}
                     </label>
                     </div>
                   <div class="radio">
                     <label for="tipo-1">
                       <input type="radio" name="tipo" id="S" value="S">
-                      Corresponsal
+                      {%if idioma == 0%}
+                        Corresponsal:
+                      {%endif%}
+                      {%if idioma == 1%}
+                        Correspondent:
+                      {%endif%}
                     </label>
                     </div>
                   </div>
@@ -128,7 +203,14 @@
             <div class="well text-right">
                 <div class="row">
                     <div class="col-md-12" style="text-align:center;">
-                            <h4>Campos Disponibles</h4>
+                            <h4>
+                              {%if idioma == 0%}
+                                Campos Disponibles:
+                              {%endif%}
+                              {%if idioma == 1%}
+                                Available Fields:
+                              {%endif%}
+                            </h4>
                     </div>
                     <div class="col-md-3 pull-right">
                         <div class="btn-group">
@@ -167,7 +249,14 @@
             <div class="well text-right">
                 <div class="row">
                     <div class="col-md-12" style="text-align:center;">
-                         <h4>Campos Seleccionados</h4>
+                         <h4>
+                           {%if idioma == 0%}
+                              Campos Seleccioandos:
+                            {%endif%}
+                            {%if idioma == 1%}
+                              Selected Fields:
+                            {%endif%}
+                         </h4>
                     </div>
 
                     <div class="col-md-3 pull-right">
@@ -194,7 +283,14 @@
 
         <div class="modal-header">
           <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-          <h2 class="modal-title">Agregar un formato</h2>
+          <h2 class="modal-title">
+            {%if idioma == 0%}
+              Agregar un Formato:
+            {%endif%}
+            {%if idioma == 1%}
+              Add Format:
+            {%endif%}
+          </h2>
         </div>
         <div class="modal-body">
             <div class="row">
@@ -202,12 +298,26 @@
                 
                 <div class="col-md-9 well">
                     <!-- Form Name -->
-                    <legend>Detalles Formato</legend>
+                    <legend>
+                      {%if idioma == 0%}
+                        Detalles de Formato
+                      {%endif%}
+                      {%if idioma == 1%}
+                        Format Details
+                      {%endif%}
+                    </legend>
                     <div class="row">
                         <div class="col-md-6">
                             <!-- Select Basic -->
                             <div class="form-group col-md-12">
-                              <label class="col-md-4 control-label" for="cuentasformmodal">Cuenta:</label>
+                              <label class="col-md-4 control-label" for="cuentasformmodal">
+                                {%if idioma == 0%}
+                                  Cuenta:
+                                {%endif%}
+                                {%if idioma == 1%}
+                                  Account:
+                                {%endif%}
+                              </label>
                               <div class="col-md-6">
                                 <select id="cuentasformmodal" name="cuentasformmodal" class="form-control">
                                   <option id="opt-00" value="-1">--------------</option>
@@ -220,17 +330,38 @@
 
                             <!-- Text input-->
                             <div class="form-group col-md-12">
-                              <label class="col-md-4 control-label" for="nomformmodal">Nombre Formato:</label>  
+                              <label class="col-md-4 control-label" for="nomformmodal">
+                                {%if idioma == 0%}
+                                  Nombre Formato:
+                                {%endif%}
+                                {%if idioma == 1%}
+                                  Format Name:
+                                {%endif%}
+                              </label>  
                               <div class="col-md-8">
                               <input id="nomformmodal" name="nomformmodal" type="text" placeholder="" class="form-control input-md">
-                              <span class="help-block">Ej.: Carga Banco1</span>  
+                              <span class="help-block">
+                                {%if idioma == 0%}
+                                  Ejemplo: Carga Banco1
+                                {%endif%}
+                                {%if idioma == 1%}
+                                  Example: Bank1 Load
+                                {%endif%}
+                              </span>  
                               </div>
                             </div>
                         </div>
 
                         <!-- Select Basic -->
                         <div class="form-group col-md-6">
-                          <label class="col-md-4 control-label" for="carsepmodal">Caracter separador:</label>
+                          <label class="col-md-4 control-label" for="carsepmodal">
+                            {%if idioma == 0%}
+                              Caracter Separador:
+                            {%endif%}
+                            {%if idioma == 1%}
+                              Separaton character:
+                            {%endif%}
+                          </label>
                           <div class="col-md-3">
                             <select id="carsepmodal" name="carsepmodal" class="form-control">
                               <option value=";">;</option>
@@ -244,18 +375,35 @@
 
                         <!-- Multiple Radios -->
                         <div class="form-group col-md-6">
-                          <label class="col-md-4 control-label" for="tipo">Tipo:</label>
+                          <label class="col-md-4 control-label" for="tipo">
+                            {%if idioma == 0%}
+                              Tipo:
+                            {%endif%}
+                            {%if idioma == 1%}
+                              Type:
+                            {%endif%}
+                          </label>
                           <div class="col-md-3">
                               <div class="radio">
                                 <label for="tipo-0">
                                   <input type="radio" class="radio-modal" name="tipo" id="tipo-0" value="L" checked="checked">
-                                  Contabilidad
+                                  {%if idioma == 0%}
+                                    Contabilidad:
+                                  {%endif%}
+                                  {%if idioma == 1%}
+                                    Accounting:
+                                  {%endif%}
                                 </label>
                               </div>
                               <div class="radio">
                                 <label for="tipo-1">
                                   <input type="radio" class="radio-modal" name="tipo" id="tipo-1" value="S">
-                                  Corresponsal
+                                  {%if idioma == 0%}
+                                    Corresponsal:
+                                  {%endif%}
+                                  {%if idioma == 1%}
+                                    Correspondent:
+                                  {%endif%}
                                 </label>
                               </div>
                           </div>
@@ -267,7 +415,14 @@
                     <div class="well text-right">
                         <div class="row">
                             <div class="col-md-12" style="text-align:center;">
-                                    <h4>Campos Disponibles</h4>
+                                    <h4>
+                                      {%if idioma == 0%}
+                                        Campos Disponibles:
+                                      {%endif%}
+                                      {%if idioma == 1%}
+                                        Available Fields:
+                                      {%endif%}
+                                    </h4>
                             </div>
                             <div class="col-md-3 pull-right">
                                 <div class="btn-group">
@@ -306,7 +461,14 @@
                     <div class="well text-right">
                         <div class="row">
                             <div class="col-md-12" style="text-align:center;">
-                                 <h4>Campos Seleccionados</h4>
+                                 <h4>
+                                    {%if idioma == 0%}
+                                      Campos Seleccioandos:
+                                    {%endif%}
+                                    {%if idioma == 1%}
+                                      Selected Fields:
+                                    {%endif%}
+                                 </h4>
                             </div>
 
                             <div class="col-md-3 pull-right">
@@ -322,7 +484,14 @@
             </div>
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+          <button type="button" class="btn btn-default" data-dismiss="modal">
+            {%if idioma == 0%}
+              Cancelar
+            {%endif%}
+            {%if idioma == 1%}
+              Cancel
+            {%endif%}
+          </button>
           <input id="addfa-submit" type="submit" class="btn btn-primary" value="Submit">
         </div>
       </form>
@@ -337,7 +506,12 @@
             <div class="modal-body">
                 <div class="text-center">
                     <img src="{% static 'images/procesando.gif' %}" class="icon" />
-                    <h4>Procesando, por favor espere.</h4>
+                    {%if idioma == 0%}
+                      <h4>Procesando, por favor espere.</h4>
+                    {%endif%}
+                    {%if idioma == 1%}
+                      <h4>Processing, wait please.</h4>
+                    {%endif%}
                 </div>
             </div>
         </div>

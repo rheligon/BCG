@@ -1,6 +1,3 @@
-//idioma_tr es una variable global definida en la pagina
-var tabla_edc = iniciar_tabla_edc(idioma_tr);
-var tabla_det = iniciar_tabla_det(idioma_tr);
 var csrftoken = $.cookie('csrftoken');
 var prev_a; //Ultimo archivo seleccionado
 var prev_a_edc; //Ultimo balance seleccionado
@@ -9,6 +6,17 @@ var prev_acc; //Accion a realizar al confirmar
 var prev_edcl_j; //Ultimo json recibido al previsualizar
 var cargar = true; //variable para saber si se carga o no
 var filename; //Nombre del archivo elegido
+var idioma = $('#idioma').val();
+var idiomaAux = "";
+var msj ="";
+
+if (idioma == 0){
+    idiomaAux = "es"
+} else {
+    idiomaAux = "en"
+}
+var tabla_edc = iniciar_tabla_edc(idiomaAux);
+var tabla_det = iniciar_tabla_det(idiomaAux);
 
 function iniciar_tabla_edc(idioma){
 
@@ -170,7 +178,11 @@ $('#confButton').on('click', function () {
         $('#processing-modal').modal('toggle');
         confirmar(prev_edcl_j,prev_acc);
     }else{
-        swal("Ups!", "Previsualice el archivo a cargar previamente.", "error");
+        if (idioma === 0){
+            swal("Ups!", "Previsualice el archivo a cargar previamente.", "error");
+        } else {
+            swal("Ups!", "You must select and preview a file first.", "error");
+        }
     }
 });
 
@@ -193,13 +205,16 @@ function previsualizar(archivo,accion){
                 if (msg[i]!=""){
                     if (cod[i-1] === '3'){
                         //Salto de numero edc
-                        ignorar = confirm(msg[i]+".\nDesea ignorarlo?");
-
+                        if (idioma === 0){
+                            ignorar = confirm(msg[i]+".\nDesea ignorarlo?");
+                        } else {
+                            ignorar = confirm(msg[i]+".\nDo you want to ignore it?");
+                        }
                     }else if (cod[i-1] === '1'){
                         //Balance inicial no coincide con ult cargado (impedir carga)
                         cargar = false;
                         alert(msg[i]);
-                        
+
                     }else{
                         alert(msg[i]);
                     }
@@ -237,8 +252,8 @@ function previsualizar(archivo,accion){
                         var montof = parseFloat(json_data.edcl[i].pagsBal[j].final.monto.replace(',','.'));
 
                         var td4 = '<td>' + (j+1) + '</td>';
-                        var td5 = '<td>' + json_data.edcl[i].pagsBal[j].MoFi+' '+ fechai +' '+json_data.edcl[i].pagsBal[j].inicial.DoC+' '+ $.formatNumber(montoi,{locale:idioma_tr})+'</td>';
-                        var td6 = '<td>' + json_data.edcl[i].pagsBal[j].MoFf+' '+ fechaf +' '+json_data.edcl[i].pagsBal[j].final.DoC+' '+ $.formatNumber(montof,{locale:idioma_tr}) +'</td>';
+                        var td5 = '<td>' + json_data.edcl[i].pagsBal[j].MoFi+' '+ fechai +' '+json_data.edcl[i].pagsBal[j].inicial.DoC+' '+ $.formatNumber(montoi,{locale:idiomaAux})+'</td>';
+                        var td6 = '<td>' + json_data.edcl[i].pagsBal[j].MoFf+' '+ fechaf +' '+json_data.edcl[i].pagsBal[j].final.DoC+' '+ $.formatNumber(montof,{locale:idiomaAux}) +'</td>';
         
         
                         $('#table-edc > tbody').append('<tr class="text-center" id ="tr-'+cod_cta+"-"+i+j+'"></tr>');
@@ -258,7 +273,11 @@ function previsualizar(archivo,accion){
         error: function(q,error){
             alert(q.responseText) //debug
             $('#processing-modal').modal('toggle');
-            swal("Ups!", "Hubo un error procesando el archivo especificado.", "error");
+            if (idioma === 0){
+                swal("Ups!", "Hubo un error procesando el archivo especificado.", "error");
+            } else {
+                swal("Ups!", "Error occurred trying to process the file.", "error");
+            }
         },
         dataType:'json',
         headers:{
@@ -303,7 +322,7 @@ $('#table-edc').on('click','a', function(event) {
             var td2 = '<td>' + (i+1) + '</td>';
             var td3 = '<td>' + fecha + '</td>';
             var td4 = '<td>' + transferencias[pag][i].trans.DoC + '</td>';
-            var td5 = '<td>' + $.formatNumber(monto,{locale:idioma_tr}) + '</td>';
+            var td5 = '<td>' + $.formatNumber(monto,{locale:idiomaAux}) + '</td>';
             var td6 = '<td>' + transferencias[pag][i].trans.tipo + '</td>';
             var td7 = '<td>' + transferencias[pag][i].trans.refNostro + '</td>';
             var td8 = '<td>' + vacio(transferencias[pag][i].trans.refVostro) + '</td>';
@@ -346,7 +365,11 @@ function confirmar(edcl,accion){
         error: function(q,error){
             alert(q.responseText) //debug
             $('#processing-modal').modal('toggle');
-            swal("Ups!", "Hubo un error procesando el archivo especificado.", "error");
+            if (idioma === 0){
+                swal("Ups!", "Hubo un error procesando el archivo especificado.", "error");
+            } else {
+                swal("Ups!", "Error occurred trying to process the file.", "error");
+            }
         },
         dataType:'json',
         headers:{

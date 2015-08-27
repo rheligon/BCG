@@ -10,14 +10,23 @@
 {%endblock%}
 
 {% block content %}
+<input type="text" id="idioma" value="{{idioma}}" hidden/>
 <div class="table-responsive col-md-10">
     <table id="table-cuentas" class="table table-bordered table-striped tabla">
         <thead>
             <tr>
-                <th>Código cuenta</th>
-                <th>Banco</th>
-                <th>Última Conciliación</th>
-                <th>Último Historico</th>
+                {%if idioma == 0%}
+                    <th>Código cuenta</th>
+                    <th>Banco</th>
+                    <th>Última Conciliación</th>
+                    <th>Último Historico</th>
+                {%endif%}
+                {%if idioma == 1%}
+                    <th>Account Code</th>
+                    <th>Bank</th>
+                    <th>Last Reconciliation</th>
+                    <th>Last Hitoric</th>
+                {%endif%}
             </tr>
         </thead>
         <tbody>
@@ -41,7 +50,15 @@
 <script src="{% static 'js/dataTables.bootstrap.js' %}" type="text/javascript"></script>
 
 <script type="text/javascript">
-iniciar_tabla("es");
+var idioma = $('#idioma').val();
+var idiomaAux = "";
+
+if (idioma == 0){
+    idiomaAux = "es"
+} else {
+    idiomaAux = "en"
+}
+iniciar_tabla(idiomaAux);
 
 function iniciar_tabla(idioma){
 

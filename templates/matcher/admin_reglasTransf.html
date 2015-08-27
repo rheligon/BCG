@@ -340,13 +340,32 @@
 
         <div class="modal-header">
           <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-          <h4 class="modal-title">Agregar una regla</h4>
+          <h4 class="modal-title">
+            {%if idioma == 0%}
+              Agregar una regla
+            {%endif%}
+            {%if idioma == 1%}
+              Add rule
+            {%endif%}
+          </h4>
         </div>
         <div class="modal-body">
           <div class="field">
-              <label for="add-regla-nombre">Nombre: </label>
+              <label for="add-regla-nombre">
+                {%if idioma == 0%}
+                  Nombre:
+                {%endif%}
+                {%if idioma == 1%}
+                  Name:
+                {%endif%}
+              </label>
               <div class="ui left labeled input">
-                  <input type="text" name="add-regla[nombre]" id="add-regla-nombre" placeholder="Nombre de la regla" data-validation="[L>=1, L<=20]" data-validation-message="$ must be between 1 and 20 characters. No special characters allowed." data-validation-regex="/^((?!admin).)*$/i" data-validation-regex-message="The word &quot;Admin&quot; is not allowed in the $" data-toggle="popover" data-content="You can use letters and numbers, no space or special characters">
+                {%if idioma == 0%}
+                  <input type="text" name="add-regla[nombre]" id="add-regla-nombre" placeholder="Nombre de la regla" data-validation="[L>=1, L<=20]" data-validation-message="$ debe tener entre 1 y  20 caracteres. Sin caracteres especiales." data-validation-regex="/^((?!admin).)*$/i" data-validation-regex-message="La palabra &quot;Admin&quot; no está permitida en $" data-toggle="popover" data-content="Sólo puede usar números y letras">
+                {%endif%}
+                {%if idioma == 1%}
+                  <input type="text" name="add-regla[Name]" id="add-regla-nombre" placeholder="Rule name" data-validation="[L>=1, L<=20]" data-validation-message="$ must be between 1 and 20 characters. No special characters allowed." data-validation-regex="/^((?!admin).)*$/i" data-validation-regex-message="The word &quot;Admin&quot; is not allowed in the $" data-toggle="popover" data-content="You can use letters and numbers, no space or special characters">
+                {%endif%}
                   <div class="ui corner label">
                     <i class="asterisk icon">*</i>
                   </div>
@@ -354,21 +373,48 @@
           </div>
 
           <div class="field">
-              <label for="add-regla-tipo">Tipo: </label>
+              <label for="add-regla-tipo">
+                {%if idioma == 0%}
+                  Tipo:
+                {%endif%}
+                {%if idioma == 1%}
+                  Type:
+                {%endif%}
+              </label>
               <div class="ui left labeled input">                  
                   <select id="add-regla-tipo" name="add-regla[tipo]" class="col-md-6 form-control">
+                  {%if idioma == 0%}
                     <option value="1">1. Normal 1-1</option>
                     <option value="2">2. Reverso Conta 2-0</option>
                     <option value="3">3. Reverso Corr 0-2</option>
                     <option value="4">4. n-m</option>
+                  {%endif%}
+                  {%if idioma == 1%}
+                    <option value="1">1. Regular 1-1</option>
+                    <option value="2">2. Acct. Reverse 2-0</option>
+                    <option value="3">3. Corr. Reverse 0-2</option>
+                    <option value="4">4. n-m</option>
+                  {%endif%}
                   </select>
               </div>
           </div>
 
           <div class="field">
-              <label for="add-regla-trancont">Transacción Contabilidad: </label>
+              <label for="add-regla-trancont">
+                {%if idioma == 0%}
+                  Transacción Contabilidad:
+                {%endif%}
+                {%if idioma == 1%}
+                  Accounting Transaction:
+                {%endif%}
+              </label>
               <div class="ui left labeled input">
-                  <input type="text" name="add-regla[trancont]" id="add-regla-trancont" placeholder="Transacción contabilidad de la regla" data-validation="[OPTIONAL,L<=20]" data-validation-message="$ must be between 0 and 20 characters. No special characters allowed." data-validation-regex="/^((?!admin).)*$/i" data-validation-regex-message="The word &quot;Admin&quot; is not allowed in the $" data-toggle="popover" data-content="You can use letters and numbers, no space or special characters"></input>
+                {%if idioma == 0%}
+                  <input type="text" name="add-regla[trancont]" id="add-regla-trancont" placeholder="Transacción contabilidad de la regla" data-validation="[OPTIONAL,L<=20]" data-validation-message="$ debe tener entre 0 y 20 caracteres. Sin caracteres especiales." data-validation-regex="/^((?!admin).)*$/i" data-validation-regex-message="La palabra &quot;Admin&quot; no está permitida en $" data-toggle="popover" data-content="Sólo puede usar números y letras."></input>
+                {%endif%}
+                {%if idioma == 1%}
+                  <input type="text" name="add-regla[trancont]" id="add-regla-trancont" placeholder="Rule accounting transaction" data-validation="[OPTIONAL,L<=20]" data-validation-message="$ must be between 0 and 20 characters. No special characters allowed." data-validation-regex="/^((?!admin).)*$/i" data-validation-regex-message="The word &quot;Admin&quot; is not allowed in the $" data-toggle="popover" data-content="You can use letters and numbers, no space or special characters"></input>
+                {%endif%}
                   <div class="ui corner label">
                     <i class="asterisk icon">*</i>
                   </div>
@@ -376,9 +422,21 @@
           </div>
 
           <div class="field">
-              <label for="add-regla-refcont">Referencia Contabilidad: </label>
+              <label for="add-regla-refcont">
+                {%if idioma == 0%}
+                  Referencia Contabilidad:
+                {%endif%}
+                {%if idioma == 1%}
+                  Accounting Reference:
+                {%endif%}
+              </label>
               <div class="ui left labeled input">
-                  <input type="text" name="add-regla[refcont]" id="add-regla-refcont" placeholder="Referencia de la regla en la contabilidad" data-validation="[OPTIONAL, L<=20]" data-validation-message="$ must be between 0 and 20 characters. No special characters allowed." data-validation-regex="/^((?!admin).)*$/i" data-validation-regex-message="The word &quot;Admin&quot; is not allowed in the $" data-toggle="popover" data-content="You can use letters and numbers, no space or special characters"></input>
+                {%if idioma == 0%}
+                  <input type="text" name="add-regla[refcont]" id="add-regla-refcont" placeholder="Referencia de la regla en la contabilidad" data-validation="[OPTIONAL, L<=20]" data-validation-message="$ debe tener entre 0 y 20 caracteres. Sin caracteres especiales." data-validation-regex="/^((?!admin).)*$/i" data-validation-regex-message="La palabra &quot;Admin&quot; no está permitida en $" data-toggle="popover" data-content="Sólo puede usar números y letras."></input>
+                {%endif%}
+                {%if idioma == 1%}
+                  <input type="text" name="add-regla[refcont]" id="add-regla-refcont" placeholder="Rule accounting reference" data-validation="[OPTIONAL, L<=20]" data-validation-message="$ must be between 0 and 20 characters. No special characters allowed." data-validation-regex="/^((?!admin).)*$/i" data-validation-regex-message="The word &quot;Admin&quot; is not allowed in the $" data-toggle="popover" data-content="You can use letters and numbers, no space or special characters"></input>
+                {%endif%}
                   <div class="ui corner label">
                     <i class="asterisk icon">*</i>
                   </div>
@@ -386,9 +444,21 @@
           </div>
 
                     <div class="field">
-              <label for="add-regla-masccont">Máscara Contabilidad: </label>
+              <label for="add-regla-masccont">
+                {%if idioma == 0%}
+                  Máscara Contabilidad:
+                {%endif%}
+                {%if idioma == 1%}
+                  Accounting Mask:
+                {%endif%}
+              </label>
               <div class="ui left labeled input">
-                  <input type="text" name="add-regla[masccont]" id="add-regla-masccont" placeholder="Máscara de la regla sobre contabilidad" data-validation="[OPTIONAL, L<=20]" data-validation-message="$ must be between 0 and 20 characters. No special characters allowed." data-validation-regex="/^((?!admin).)*$/i" data-validation-regex-message="The word &quot;Admin&quot; is not allowed in the $" data-toggle="popover" data-content="You can use letters and numbers, no space or special characters"></input>
+                {%if idioma == 0%}
+                  <input type="text" name="add-regla[masccont]" id="add-regla-masccont" placeholder="Máscara de la regla sobre contabilidad" data-validation="[OPTIONAL, L<=20]" data-validation-message="$ debe tener entre 0 y 20 caracteres. Sin caracteres especiales." data-validation-regex="/^((?!admin).)*$/i" data-validation-regex-message="La palabra &quot;Admin&quot; no está permitida en $" data-toggle="popover" data-content="Sólo puede usar números y letras"></input>
+                {%endif%}
+                {%if idioma == 1%}
+                  <input type="text" name="add-regla[contmask]" id="add-regla-masccont" placeholder="Rule accounting mask" data-validation="[OPTIONAL, L<=20]" data-validation-message="$ must be between 0 and 20 characters. No special characters allowed." data-validation-regex="/^((?!admin).)*$/i" data-validation-regex-message="The word &quot;Admin&quot; is not allowed in the $" data-toggle="popover" data-content="You can use letters and numbers, no space or special characters"></input>
+                {%endif%}
                   <div class="ui corner label">
                     <i class="asterisk icon">*</i>
                   </div>
@@ -396,18 +466,42 @@
           </div>
 
           <div class="field">
-              <label for="add-regla-trancorr">Transacción Corresponsal: </label>
+              <label for="add-regla-trancorr">
+                {%if idioma == 0%}
+                  Transacción Corresponsal:
+                {%endif%}
+                {%if idioma == 1%}
+                  Correspondent Transaction:
+                {%endif%}
+              </label>
               <div class="ui left labeled input">
-                  <input type="text" name="add-regla[trancorr]" id="add-regla-trancorr" placeholder="Transacción corresponsal de regla" data-validation="[OPTIONAL, L<=20]" data-validation-message="$ must be between 0 and 20 characters. No special characters allowed." data-validation-regex="/^((?!admin).)*$/i" data-validation-regex-message="The word &quot;Admin&quot; is not allowed in the $" data-toggle="popover" data-content="You can use letters and numbers, no space or special characters"></input>
+                {%if idioma == 0%}
+                  <input type="text" name="add-regla[trancorr]" id="add-regla-trancorr" placeholder="Transacción corresponsal de regla" data-validation="[OPTIONAL, L<=20]" data-validation-message="$ debe tener entre 0 y  20 caracteres. Sin caracteres especiales." data-validation-regex="/^((?!admin).)*$/i" data-validation-regex-message="La palabra &quot;Admin&quot; no está permitida en $" data-toggle="popover" data-content="Sólo puede usar números y letras."></input>
+                {%endif%}
+                {%if idioma == 1%}
+                  <input type="text" name="add-regla[corrtran]" id="add-regla-trancorr" placeholder="Rule correspondent transaction" data-validation="[OPTIONAL, L<=20]" data-validation-message="$ must be between 0 and 20 characters. No special characters allowed." data-validation-regex="/^((?!admin).)*$/i" data-validation-regex-message="The word &quot;Admin&quot; is not allowed in the $" data-toggle="popover" data-content="You can use letters and numbers, no space or special characters"></input>
+                {%endif%}
                   <div class="ui corner label">
                     <i class="asterisk icon">*</i>
                   </div>
               </div>
           </div>
           <div class="field">
-              <label for="add-regla-refcorr">Referencia Corresponsal: </label>
+              <label for="add-regla-refcorr">
+                {%if idioma == 0%}
+                  Referencia Corresponsal:
+                {%endif%}
+                {%if idioma == 1%}
+                  Correspondent Reference:
+                {%endif%}
+              </label>
               <div class="ui left labeled input">
-                  <input type="text" name="add-regla[refcorr]" id="add-regla-refcorr" placeholder="Referencia de la regla sobre el corresponsal" data-validation="[OPTIONAL, L<=20]" data-validation-message="$ must be between 0 and 20 characters. No special characters allowed." data-validation-regex="/^((?!admin).)*$/i" data-validation-regex-message="The word &quot;Admin&quot; is not allowed in the $" data-toggle="popover" data-content="You can use letters and numbers, no space or special characters"></input>
+                {%if idioma == 0%}
+                  <input type="text" name="add-regla[refcorr]" id="add-regla-refcorr" placeholder="Referencia de la regla sobre el corresponsal" data-validation="[OPTIONAL, L<=20]" data-validation-message="$ debe tener entre 0 y 20 caracteres. Sin caracteres especiales." data-validation-regex="/^((?!admin).)*$/i" data-validation-regex-message="La palabra &quot;Admin&quot; no está permirida en $" data-toggle="popover" data-content="Sólo puede usar números y letras."></input>
+                {%endif%}
+                {%if idioma == 1%}
+                  <input type="text" name="add-regla[corrref]" id="add-regla-refcorr" placeholder="Rule correspondent reference" data-validation="[OPTIONAL, L<=20]" data-validation-message="$ must be between 0 and 20 characters. No special characters allowed." data-validation-regex="/^((?!admin).)*$/i" data-validation-regex-message="The word &quot;Admin&quot; is not allowed in the $" data-toggle="popover" data-content="You can use letters and numbers, no space or special characters"></input>
+                {%endif%}
                   <div class="ui corner label">
                     <i class="asterisk icon">*</i>
                   </div>
@@ -415,9 +509,21 @@
           </div>
 
                     <div class="field">
-              <label for="add-regla-masccorr">Máscara Contabilidad: </label>
+              <label for="add-regla-masccorr">
+                {%if idioma == 0%}
+                  Máscara Corresponsal:
+                {%endif%}
+                {%if idioma == 1%}
+                  Correspondent Mask:
+                {%endif%}
+              </label>
               <div class="ui left labeled input">
-                  <input type="text" name="add-regla[masccorr]" id="add-regla-masccorr" placeholder="Máscara de la regla sobre el corresponsal" data-validation="[OPTIONAL, L<=20]" data-validation-message="$ must be between 0 and 20 characters. No special characters allowed." data-validation-regex="/^((?!admin).)*$/i" data-validation-regex-message="The word &quot;Admin&quot; is not allowed in the $" data-toggle="popover" data-content="You can use letters and numbers, no space or special characters"></input>
+                {%if idioma == 0%}
+                  <input type="text" name="add-regla[masccorr]" id="add-regla-masccorr" placeholder="Máscara de la regla sobre el corresponsal" data-validation="[OPTIONAL, L<=20]" data-validation-message="$ debe tener entre 0 y 20 caracteres. Sin caracteres especiales." data-validation-regex="/^((?!admin).)*$/i" data-validation-regex-message="La palabra &quot;Admin&quot; no está permitida en $" data-toggle="popover" data-content="Sólo puede usar números y letras."></input>
+                {%endif%}
+                {%if idioma == 1%}
+                  <input type="text" name="add-regla[corrmask]" id="add-regla-masccorr" placeholder="Rule correspondent mask" data-validation="[OPTIONAL, L<=20]" data-validation-message="$ must be between 0 and 20 characters. No special characters allowed." data-validation-regex="/^((?!admin).)*$/i" data-validation-regex-message="The word &quot;Admin&quot; is not allowed in the $" data-toggle="popover" data-content="You can use letters and numbers, no space or special characters"></input>
+                {%endif%}
                   <div class="ui corner label">
                     <i class="asterisk icon">*</i>
                   </div>
@@ -426,8 +532,20 @@
 
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
-          <input id="addr-submit" type="submit" class="btn btn-primary" value="Aceptar">
+          <button type="button" class="btn btn-default" data-dismiss="modal">
+            {%if idioma == 0%}
+              Cerrar
+            {%endif%}
+            {%if idioma == 1%}
+              Close
+            {%endif%}
+          </button>
+          {%if idioma == 0%}
+            <input id="addr-submit" type="submit" class="btn btn-primary" value="Aceptar">
+          {%endif%}
+          {%if idioma == 1%}
+              <input id="addr-submit" type="submit" class="btn btn-primary" value="Accept">
+          {%endif%}
         </div>
       </form>
     </div><!-- /.modal-content -->
