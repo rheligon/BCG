@@ -28,9 +28,16 @@ li {
 {%endblock%}
 
 {% block content %}
-
+<input type="text" id="idioma" value="{{idioma}}" hidden/>
 <div class="well col-md-5">
-  <legend>Contabilidad</legend>
+  <legend>
+    {%if idioma == 0%}
+      Contabilidad
+    {%endif%}
+    {%if idioma == 1%}
+      Accounting
+    {%endif%}
+  </legend>
 
   <div class="col-md-5">
     <ul class="archivos">
@@ -43,7 +50,12 @@ li {
   <div class="col-md-7 col-md-push-3">
     <div>
         <button type="button" id="prevContaButton" data-loading-text="Cargando..." class="col-md-7 btn btn-primary" autocomplete="off">
-            Pre-visualizar
+            {%if idioma == 0%}
+              Previsualizar
+            {%endif%}
+            {%if idioma == 1%}
+              Preview
+            {%endif%}
         </button>
     </div>
   </div>
@@ -52,7 +64,14 @@ li {
 <div class="col-md-1"></div>
 
 <div class="well col-md-5">
-  <legend>Corresponsal</legend>
+  <legend>
+    {%if idioma == 0%}
+      Corresponsal
+    {%endif%}
+    {%if idioma == 1%}
+      Correspondent
+    {%endif%}
+  </legend>
 
   <div class="col-md-5">
     <ul class="archivos">
@@ -65,7 +84,12 @@ li {
   <div class="col-md-7 col-md-push-3">
     <div>
         <button type="button" id="prevCorrButton" data-loading-text="Cargando..." class="col-md-7 btn btn-primary" autocomplete="off">
-            Pre-visualizar
+            {%if idioma == 0%}
+              Previsualizar
+            {%endif%}
+            {%if idioma == 1%}
+              Preview
+            {%endif%}
         </button>
     </div>
   </div>
@@ -75,16 +99,33 @@ li {
 
 
 <div class="well table-responsive col-md-12">
-<legend>Detalles:</legend>
+<legend>
+  {%if idioma == 0%}
+    Detalles:
+  {%endif%}
+  {%if idioma == 1%}
+    Details:
+  {%endif%}
+</legend>
     <table id="table-edc" class="table table-bordered table-striped tabla">
         <thead>
             <tr>
+              {%if idioma == 0%}
                 <th>Código Cuenta</th>
                 <th>Origen</th>
                 <th>Edo. Cuenta</th>
                 <th>Página</th>
                 <th>Saldo Inicial</th>
                 <th>Saldo Final</th>
+              {%endif%}
+              {%if idioma == 1%}
+                <th>Account Code</th>
+                <th>Source</th>
+                <th>Acc. Statemet</th>
+                <th>Page</th>
+                <th>Initial Balance</th>
+                <th>Final Balance</th>
+              {%endif%}
             </tr>
         </thead>
         <tbody>
@@ -93,10 +134,18 @@ li {
 </div>
 
 <div class="well table-responsive col-md-12">
-  <legend>Detalle Transacciones:</legend>
+  <legend>
+    {%if idioma == 0%}
+     Detalles Transacciones:
+    {%endif%}
+    {%if idioma == 1%}
+      Transactions Details:
+    {%endif%}
+  </legend>
     <table id="table-detalle" class="table table-bordered table-striped tabla">
         <thead>
             <tr>
+              {%if idioma == 0%}
                 <th>Edo. Cuenta</th>
                 <th>Num. Trans</th>
                 <th>Fecha Valor</th>
@@ -106,6 +155,18 @@ li {
                 <th>Ref Nostro</th>
                 <th>Ref Vostro</th>
                 <th>Descripcion</th>
+              {%endif%}
+              {%if idioma == 1%}
+                <th>Acc. Statement</th>
+                <th>Trans. No.</th>
+                <th>Value Date</th>
+                <th>C/D</th>
+                <th>Amount</th>
+                <th>Type</th>
+                <th>Nostro Ref.</th>
+                <th>Vostro Ref.</th>
+                <th>Description</th>
+              {%endif%}
             </tr>
         </thead>
         <tbody>
@@ -114,7 +175,12 @@ li {
   <div class="col-md-3 pull-right">
     <div>
         <button type="button" id="confButton" data-loading-text="Cargando..." class="col-md-7 btn btn-primary" autocomplete="off">
-            Confirmar
+            {%if idioma == 0%}
+             Confirmar
+            {%endif%}
+            {%if idioma == 1%}
+              Confirm
+            {%endif%}
         </button>
     </div>
   </div>
@@ -128,7 +194,12 @@ li {
             <div class="modal-body">
                 <div class="text-center">
                     <img src="{% static 'images/procesando.gif' %}" class="icon" />
-                    <h4>Procesando, por favor espere.</h4>
+                    {%if idioma == 0%}
+                      <h4>Procesando, por favor espere.</h4>
+                    {%endif%}
+                    {%if idioma == 1%}
+                      <h4>Processing, wait please.</h4>
+                    {%endif%}
                 </div>
             </div>
         </div>
@@ -137,8 +208,6 @@ li {
 {% endblock %}
 
 {% block script%}
-<script> //define el idioma de la tabla (es/en)
-         idioma_tr = "es" </script>
 <script src="{% static 'js/jquery.dataTables.min.js' %}" type="text/javascript"></script>
 <script src="{% static 'js/dataTables.bootstrap.js' %}" type="text/javascript"></script>
 <script src="{% static 'js/sweet-alert.min.js' %}"></script>

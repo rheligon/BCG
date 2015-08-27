@@ -165,11 +165,12 @@ def leer_linea_corr(line):
         return ("$", line)
 
 
-def leer_punto_coma(ncta,origen,f):
+def leer_punto_coma(ncta,origen,f,idm):
     #Numero de cuenta, origen, archivo
     edc_l = edc_list()
     msg = ""
     incorrecto = False
+    idioma = idm
 
     try:
         if origen == 'conta':
@@ -177,7 +178,10 @@ def leer_punto_coma(ncta,origen,f):
             # Se verifica que el tipo de archivo sea el adecuado
             tipoarch = cta.tipo_cargacont
             if tipoarch != 2:
-                msg = '$La cuenta posee como formato el MT950 pero se esta tratando de leer un archivo ;'
+                if idioma == 0:
+                    msg = '$La cuenta posee como formato el MT950 pero se esta tratando de leer un archivo ;'
+                else:
+                    msg = '$Account has format ; but it is trying to read a MT950 file'
                 cta = None
                 formato = None
                 incorrecto = True
@@ -188,7 +192,10 @@ def leer_punto_coma(ncta,origen,f):
             tipoarch = cta.tipo_carga_corr
             
             if tipoarch != 1:
-                msg = '$La cuenta posee como formato el MT950 pero se esta tratando de leer un archivo ;'
+                if idioma == 0:
+                    msg = '$La cuenta posee como formato el MT950 pero se esta tratando de leer un archivo ;'
+                else:
+                    msg = '$Account has format ; but it is trying to read a MT950 file'
                 cta = None
                 formato = None
                 incorrecto = True
@@ -327,17 +334,24 @@ def leer_punto_coma(ncta,origen,f):
                 edc_l.add_trans(edc,tran,0)
 
     if formato is None and cta is not None and not incorrecto:
-        msg = msg+"$La cuenta no posee formato definido"
+        if idioma == 0:
+            msg = msg+"$La cuenta no posee formato definido"
+        else:
+            msg = msg+"$Account has not definite format"
 
     if cta is None and not incorrecto:
-        msg = msg+"$La cuenta no se encuentra registrada"
+        if idioma == 0:
+            msg = msg+"$La cuenta no se encuentra registrada"
+        else:
+            msg = msg+"$Account is not registered"
 
     return edc_l,msg
 
-def validar_archivo(edc_l,origen):
+def validar_archivo(edc_l,origen,idm):
     msg = ''
     cod = []
     auxedcl = edc_list()
+    idioma = idm
 
     for edc in edc_l:
 
@@ -351,7 +365,10 @@ def validar_archivo(edc_l,origen):
         except:
             # No existe la cuenta
             cta = None
-            aux = "$Debe registrar la Cuenta "+str(edc.cod25)+" antes de cargar el Edo. de Cuenta."
+            if idioma == 0:
+                aux = "$Debe registrar la Cuenta "+str(edc.cod25)+" antes de cargar el Edo. de Cuenta."
+            else:
+                aux = "$Account "+str(edc.cod25)+" must be registered before load acccount statement."
             msg = msg + aux
             cod.append('2')
 
@@ -396,13 +413,19 @@ def validar_archivo(edc_l,origen):
                 num2 = float(edc.pagsBal[0].inicial["monto"].replace(',','.'))
 
                 if num1 != num2:
-                    aux = "$El balance inicial del estado de cuenta no coincide con el ultimo cargado"
+                    if idioma == 0:
+                        aux = "$El balance inicial del estado de cuenta no coincide con el ultimo cargado"
+                    else:
+                        aux = "$Initial balance of account statement doesn't match with last loaded"
                     msg = msg + aux
                     cod.append('1')
 
                 # Validacion salto edc
                 if int(edc.cod28c) != int(ultedc.codigo)+1:
-                    aux = "$Hay un salto en la numeracion de los estados de cuenta para la cuenta: "+str(edc.cod25)
+                    if idioma == 0:
+                        aux = "$Hay un salto en la numeracion de los estados de cuenta para la cuenta: "+str(edc.cod25)
+                    else:
+                        aux = "$There is a gap in the numbering of the Acct. Statement. : "+str(edc.cod25)
                     msg = msg + aux
                     cod.append('3')
 
@@ -411,7 +434,10 @@ def validar_archivo(edc_l,origen):
                 fecha_verif = datetime(int("20"+fecha[0]), int(fecha[1]), int(fecha[2]))
                 
                 if ultedc.codigo == edc.cod28c and ultedc.fecha_final == fecha_verif:
-                    msg = msg + "$El archivo ya se encuentra cargado."
+                    if idioma == 0:
+                        msg = msg + "$El archivo ya se encuentra cargado."
+                    else:
+                        msg = msg + "$File is alreday loaded."    
                     cod.append('5')
 
         # Validacion suma balances
@@ -433,7 +459,10 @@ def validar_archivo(edc_l,origen):
                         balini = balini - float(trans.trans["monto"].replace(",","."))
 
             if ("%.2f" % abs(balini)) != ("%.2f" % balfin):
-                msg = msg + "$Hay un error en los balances pag: "+str(i+1)
+                if idioma == 0:
+                    msg = msg + "$Hay un error en los balances pag: "+str(i+1)
+                else:
+                    msg = msg + "$There is an error on balances, page: "+str(i+1)
                 cod.append('4')
 
         #Guardar el edc anterior

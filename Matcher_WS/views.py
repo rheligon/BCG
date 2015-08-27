@@ -529,6 +529,7 @@ def pd_cargaAutomatica(request):
 
     expirarSesion(request)
     if request.method == 'POST':
+        idioma = Configuracion.objects.all()[0].idioma    
         actn = request.POST.get('action')
         msg = ""
 
@@ -568,7 +569,11 @@ def pd_cargaAutomatica(request):
                             if cta is not None:
                                 tipoarch = cta.tipo_cargacont
                                 if tipoarch == 2:
-                                    msgcta = '$La cuenta posee como formato el ; pero se esta tratando de leer un archivo MT950'
+                                    if idioma == 0:
+                                        msgcta = '$La cuenta posee como formato el ; pero se esta tratando de leer un archivo MT950'
+                                    else:
+                                        msgcta = '$Account has format ; but it is trying to read a MT950 file'
+                                    
                                     cta = None
                                     incorrecto = True
 
@@ -639,10 +644,10 @@ def pd_cargaAutomatica(request):
 
                 else:
                     # Es un archivo punto y coma
-                    edc_l,msgpc = leer_punto_coma(ncta,'conta',f)
+                    edc_l,msgpc = leer_punto_coma(ncta,'conta',f,idioma)
 
             # En esta identacion ya se termino de leer el archivo, se procede a validar
-            msg,cod = validar_archivo(edc_l,'conta')
+            msg,cod = validar_archivo(edc_l,'conta',idioma)
 
             if msgpc!="":
                 msg = msg+msgpc
@@ -697,7 +702,11 @@ def pd_cargaAutomatica(request):
                                     if formato != 0:
                                         cta = None
                                         incorrecto = True
-                                        msgcta = '$La cuenta posee como formato el ; pero se esta tratando de leer un archivo MT950'
+                                        if idioma == 0:
+                                            msgcta = '$La cuenta posee como formato el ; pero se esta tratando de leer un archivo MT950'
+                                        else:
+                                            msgcta = '$Account has format ; but it is trying to read a MT950 file'
+                                    
 
                                 if cta is not None and not incorrecto:
                                     esta, ult_edc = edc_l.esta(cta.ref_vostro)
@@ -777,10 +786,10 @@ def pd_cargaAutomatica(request):
                             prevLine = line
                     else:
                         # Es un archivo punto y coma
-                        edc_l,msgpc = leer_punto_coma(ncta,'corr',f)
+                        edc_l,msgpc = leer_punto_coma(ncta,'corr',f,idioma)
 
                 # En esta identacion ya se termino de leer el archivo
-                msg,cod = validar_archivo(edc_l,'corr')
+                msg,cod = validar_archivo(edc_l,'corr',idioma)
 
                 if msgpc!="":
                     msg = msgpc+msg
@@ -797,7 +806,10 @@ def pd_cargaAutomatica(request):
                 print (e)
 
         if actn == 'cargconta':
-            msg = "Archivo cargado con exito"
+            if idioma == 0:
+                msg = "Archivo cargado con exito"
+            else:
+                msg = "Successful loaded file"
             edcl_json = request.POST.get('edcl')
             filename = request.POST.get('filename')
             edcl = jsonpickle.decode(edcl_json)
@@ -849,7 +861,10 @@ def pd_cargaAutomatica(request):
             return JsonResponse({'exito':True, 'msg':msg})
 
         if actn == 'cargcorr':
-            msg = "Archivo cargado con exito"
+            if idioma == 0:
+                msg = "Archivo cargado con exito"
+            else:
+                msg = "Successful loaded file"
             filename = request.POST.get('filename')
             edcl_json = request.POST.get('edcl')
             edcl = jsonpickle.decode(edcl_json)
