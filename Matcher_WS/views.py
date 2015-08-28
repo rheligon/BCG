@@ -2939,13 +2939,39 @@ def transIntraday(request,cuenta):
 
     expirarSesion(request)
 
+    m103 = None
+    m202 = None
+    m942 = None
+    arregloMensajes = []
     cuentaId = Cuenta.objects.filter(idcuenta=cuenta)[0]
     fecha = cuentaId.ultimafechaconciliacion.strftime("%d/%m/%Y")
     fechaActual = datetime.now().strftime("%d/%m/%Y %H:%M %p")
                 
-    idioma = Configuracion.objects.all()[0].idioma    
+    idioma = Configuracion.objects.all()[0].idioma
+
+    mensajes = MensajesIntraday.objects.filter(cuenta=cuenta).order_by('fecha_entrada')
+
+    if mensajes:
+        for mensaje in mensajes:
+            if mensaje.tipo == "103":
+                try:
+                    m103 = Mt103.objects.get(mensaje_intraday=mensaje.idmensaje) 
+                    arregloMensajes.append(m103)
+                except:
+                    print("no")
+            if mensaje.tipo == "202":
+                try:
+                    m202 = Mt202.objects.get(mensaje_intraday=mensaje.idmensaje) 
+                    arregloMensajes.append(m202)
+                except:
+                    print("no")    
+            if mensaje.tipo == "942":
+                m942 = Mt942.objects.get(mensaje_intraday=mensaje.idmensaje) 
+                if m942:
+                    arregloMensajes.append(m942)
+                
     
-    context = {'idioma':idioma,'ops':get_ops(request),'cuenta':cuentaId,'fecha':fecha , 'fechaActual':fechaActual}
+    context = {'mensajes':arregloMensajes,'idioma':idioma,'ops':get_ops(request),'cuenta':cuentaId,'fecha':fecha , 'fechaActual':fechaActual}
     template = "matcher/transIntraday.html"
 
     return render(request, template, context)
