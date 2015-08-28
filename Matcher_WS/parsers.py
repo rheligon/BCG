@@ -1,10 +1,15 @@
 from Matcher.models import *
+from datetime import datetime, date, time, timedelta
+
 
 def sumaLineas(arreglo):
 	total = 0
 	for numero in arreglo:
 		total += numero
 	return total	
+
+def timenow():
+    return datetime.now().replace(microsecond=0)
 
 def parsearTipoMT(archivo,directorio):
 	tipo = ""
@@ -67,6 +72,8 @@ def parseo103(archivo,directorio):
 	codInst23E = ""
 	tipoTrans26T = ""
 	fechaValor32A = ""
+	moneda32A = ""
+	monto32A = ""
 	tipoCambio36 = ""
 	moneda33B = ""
 	clienteOrd50a = ""
@@ -84,6 +91,7 @@ def parseo103(archivo,directorio):
 	cargosEmisor71F = ""
 	cargosReceptor71G = ""
 	reporteReg77B = ""
+	fecha_entrada = ""
 	#contenido77T = ""
 
 	cuantos = 0
@@ -196,7 +204,11 @@ def parseo103(archivo,directorio):
 				msg = "Caracter inesperado, en la línea número " +str(contador+1)+ " del archivo " + archivo
 				return ("error", msg)
 			else: 
-				fechaValor32A = contenidoLinea[5:]
+				fechaValor32A = contenidoLinea[5:11]
+				fechaValor32A = datetime.strptime(fechaValor32A, "%y%m%d").date()
+				fechaValor32A = fechaValor32A.strftime("%d/%m/%Y")
+				moneda32A = contenidoLinea[11:14]
+				monto32A = contenidoLinea[14:]
 				print ("[32A]: ",fechaValor32A)
 
 		if (lineaAct == (7 + opcionales)):
@@ -742,7 +754,9 @@ def parseo103(archivo,directorio):
 		if (finMensaje):
 			cuenta = Cuenta.objects.filter(banco_corresponsal_idbanco__codigo = receptorR) 
 			if cuenta:
-				mensaje = Mt103.objects.create(remitente = emisorS,receptor = receptorR, ref_remitente = emisorRef20,ind_hora = timeId13C,tipo_op_banco = codigoBank23B,cod_instruccion = codInst23E,tipo_transaccion = tipoTrans26T, fecha_moneda_monto = fechaValor32A,moneda_monto = moneda33B,tipo_cambio = tipoCambio36,cliente_ordenante = clienteOrd50a, institucion_emisor = instEmisor51A,institucion_ordenante = instOrd52a,corresponsal_remitente = emisorCorr53a, corresponsal_receptor = receptorCorr54a, institucion_reembolso = instReemb55a, institucion_intermediaria = instInter56a, cuenta_institucion = instCuenta57a,cliente_beneficiario = clienteBene59a,info_remesa = infoRemesa70,detalle_cargos = detallesCarg71A,info_remitente_a_receptor = infoEmisor72,cargos_remitente = cargosEmisor71F, cargos_receptor = cargosReceptor71G,reporte_regulatorio = reporteReg77B, cuenta = cuenta[0])
+				fecha_entrada = timenow()
+				mensaje_intra = MensajesIntraday.objects.create(tipo = "103",cuenta = cuenta[0],fecha_entrada=fecha_entrada) 
+				mensaje = Mt103.objects.create(mensaje_intraday = mensaje_intra,fecha_valor = fechaValor32A, moneda = moneda32A,monto = monto32A, remitente = emisorS,receptor = receptorR, ref_remitente = emisorRef20,ind_hora = timeId13C,tipo_op_banco = codigoBank23B,cod_instruccion = codInst23E,tipo_transaccion = tipoTrans26T, moneda_monto = moneda33B,tipo_cambio = tipoCambio36,cliente_ordenante = clienteOrd50a, institucion_emisor = instEmisor51A,institucion_ordenante = instOrd52a,corresponsal_remitente = emisorCorr53a, corresponsal_receptor = receptorCorr54a, institucion_reembolso = instReemb55a, institucion_intermediaria = instInter56a, cuenta_institucion = instCuenta57a,cliente_beneficiario = clienteBene59a,info_remesa = infoRemesa70,detalle_cargos = detallesCarg71A,info_remitente_a_receptor = infoEmisor72,cargos_remitente = cargosEmisor71F, cargos_receptor = cargosReceptor71G,reporte_regulatorio = reporteReg77B)
 			else:
 				print("Preguntar que hacer si llega un mensaje que no es para ti!!!!!")
 			emisorS = ""
@@ -753,6 +767,8 @@ def parseo103(archivo,directorio):
 			codInst23E = ""
 			tipoTrans26T = ""
 			fechaValor32A = ""
+			moneda32A = ""
+			monto32A = ""
 			tipoCambio36 = ""
 			moneda33B = ""
 			clienteOrd50a = ""
@@ -770,6 +786,7 @@ def parseo103(archivo,directorio):
 			cargosEmisor71F = ""
 			cargosReceptor71G = ""
 			reporteReg77B = ""
+			fecha_entrada = ""
 			finMensaje = False		
 
 		lineaAct += 1
@@ -809,7 +826,9 @@ def parseo202(archivo,directorio):
 	emisorRef20 = ""
 	refRel21 = ""
 	timeId13C = ""
-	fechaValor32A = "" 
+	fechaValor32A = ""
+	moneda32A = ""
+	monto32A = ""
 	instOrd52a = ""
 	emisorCorr53a = ""
 	receptorCorr54a = ""
@@ -817,6 +836,7 @@ def parseo202(archivo,directorio):
 	instCuenta57a = ""
 	instBene58a = ""
 	receptorInfo72 =""
+	fecha_entrada = ""
 	cuantos = 0
 
 
@@ -903,7 +923,11 @@ def parseo202(archivo,directorio):
 				msg = "Caracter inesperado, en la línea número " +str(contador+1)+ " del archivo " + archivo
 				return ("error", msg)
 			else: 
-				fechaValor32A = contenidoLinea[5:]
+				fechaValor32A = contenidoLinea[5:11]
+				fechaValor32A = datetime.strptime(fechaValor32A, "%y%m%d").date()
+				fechaValor32A = fechaValor32A.strftime("%d/%m/%Y")
+				moneda32A = contenidoLinea[11:14]
+				monto32A = contenidoLinea[14:]
 				print ("[32A]: ",fechaValor32A)
 
 		if (lineaAct == (7 + opcionales)):
@@ -1164,7 +1188,11 @@ def parseo202(archivo,directorio):
 			print(receptorR)
 			cuenta = Cuenta.objects.filter(banco_corresponsal_idbanco__codigo = receptorR) 
 			if cuenta:
-				mensaje = Mt202.objects.create(remitente = emisorS,receptor = receptorR, ref_transaccion = emisorRef20,ref_relacion = refRel21,ind_hora = timeId13C, fecha_moneda_monto = fechaValor32A,institucion_ordenante = instOrd52a,corresponsal_remitente = emisorCorr53a, corresponsal_receptor = receptorCorr54a,intermediario = instInter56a, cuenta_institucion = instCuenta57a,institucion_beneficiaria = instBene58a,info_remitente_a_receptor = receptorInfo72, cuenta = cuenta[0])
+				fecha_entrada = timenow()
+				print(fecha_entrada)
+				print(type(fecha_entrada))
+				mensaje_intra = MensajesIntraday.objects.create(tipo = "202",cuenta = cuenta[0],fecha_entrada=fecha_entrada) 
+				mensaje = Mt202.objects.create(mensaje_intraday = mensaje_intra,fecha_valor = fechaValor32A, moneda = moneda32A,monto = monto32A,remitente = emisorS,receptor = receptorR, ref_transaccion = emisorRef20,ref_relacion = refRel21,ind_hora = timeId13C, institucion_ordenante = instOrd52a,corresponsal_remitente = emisorCorr53a, corresponsal_receptor = receptorCorr54a,intermediario = instInter56a, cuenta_institucion = instCuenta57a,institucion_beneficiaria = instBene58a,info_remitente_a_receptor = receptorInfo72)
 			else:
 				print("Preguntar que hacer si llega un mensaje que no es para ti!!!!!")
 			
@@ -1173,7 +1201,9 @@ def parseo202(archivo,directorio):
 			emisorRef20 = ""
 			refRel21 = ""
 			timeId13C = ""
-			fechaValor32A = "" 
+			fechaValor32A = ""
+			moneda32A = ""
+			monto32A = ""
 			instOrd52a = ""
 			emisorCorr53a = ""
 			receptorCorr54a = ""
@@ -1181,6 +1211,7 @@ def parseo202(archivo,directorio):
 			instCuenta57a = ""
 			instBene58a = ""
 			receptorInfo72 =""
+			fecha_entrada = ""
 			finMensaje = False				
 
 		lineaAct += 1
