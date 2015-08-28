@@ -178,7 +178,7 @@ $('#confButton').on('click', function () {
         $('#processing-modal').modal('toggle');
         confirmar(prev_edcl_j,prev_acc);
     }else{
-        if (idioma === 0){
+        if (idioma == 0){
             swal("Ups!", "Previsualice el archivo a cargar previamente.", "error");
         } else {
             swal("Ups!", "You must select and preview a file first.", "error");
@@ -205,7 +205,7 @@ function previsualizar(archivo,accion){
                 if (msg[i]!=""){
                     if (cod[i-1] === '3'){
                         //Salto de numero edc
-                        if (idioma === 0){
+                        if (idioma == 0){
                             ignorar = confirm(msg[i]+".\nDesea ignorarlo?");
                         } else {
                             ignorar = confirm(msg[i]+".\nDo you want to ignore it?");
@@ -245,8 +245,13 @@ function previsualizar(archivo,accion){
                     for (var j=0; j<pags; j++){
 
                         var td1 = '<td><a edc="'+edo_cta+'" index_edc="'+i+'" pag="'+j+'">' + cod_cta + '</a></td>';
-                        var fechai = json_data.edcl[i].pagsBal[j].inicial.fecha.match(/.{1,2}/g).reverse().join('/');
-                        var fechaf = json_data.edcl[i].pagsBal[j].final.fecha.match(/.{1,2}/g).reverse().join('/');
+                        if (idioma == 0){
+                            var fechai = json_data.edcl[i].pagsBal[j].inicial.fecha.match(/.{1,2}/g).reverse().join('/');
+                            var fechaf = json_data.edcl[i].pagsBal[j].final.fecha.match(/.{1,2}/g).reverse().join('/');
+                        } else {
+                            var fechai = json_data.edcl[i].pagsBal[j].inicial.fecha.match(/.{1,2}/g).join('/');
+                            var fechaf = json_data.edcl[i].pagsBal[j].final.fecha.match(/.{1,2}/g).join('/');
+                        }
                         //Se cambia la , por . en los montos para poder formatearlo luego
                         var montoi = parseFloat(json_data.edcl[i].pagsBal[j].inicial.monto.replace(',','.'));
                         var montof = parseFloat(json_data.edcl[i].pagsBal[j].final.monto.replace(',','.'));
@@ -273,7 +278,7 @@ function previsualizar(archivo,accion){
         error: function(q,error){
             alert(q.responseText) //debug
             $('#processing-modal').modal('toggle');
-            if (idioma === 0){
+            if (idioma == 0){
                 swal("Ups!", "Hubo un error procesando el archivo especificado.", "error");
             } else {
                 swal("Ups!", "Error occurred trying to process the file.", "error");
@@ -314,8 +319,11 @@ $('#table-edc').on('click','a', function(event) {
     if (transferencias[pag] != undefined){
         for (var i=0;i<transferencias[pag].length;i++){
             //Se saca la fecha, se divide cada dos caracteres, se voltea y se une con /
-            var fecha = transferencias[pag][i].trans.fecha.match(/.{1,2}/g).reverse().join('/');
-            
+            if (idioma == 0) {
+                var fecha = transferencias[pag][i].trans.fecha.match(/.{1,2}/g).reverse().join('/');
+            } else {
+                var fecha = transferencias[pag][i].trans.fecha.match(/.{1,2}/g).join('/');    
+            }
             //Se cambia la , por . en los montos para poder formatearlo luego
             var monto = parseFloat(transferencias[pag][i].trans.monto.replace(',','.'));
 
@@ -365,7 +373,7 @@ function confirmar(edcl,accion){
         error: function(q,error){
             alert(q.responseText) //debug
             $('#processing-modal').modal('toggle');
-            if (idioma === 0){
+            if (idioma == 0){
                 swal("Ups!", "Hubo un error procesando el archivo especificado.", "error");
             } else {
                 swal("Ups!", "Error occurred trying to process the file.", "error");

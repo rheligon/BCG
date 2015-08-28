@@ -83,7 +83,7 @@ $('#delButton').on('click', function () {
     var idC = $("#Id_criterio").val();
 
     if (idC>=0){
-        if (idioma === 0){
+        if (idioma == 0){
             msj = "Seguro que desea eliminar el criterio '"+ nomC +"' ?";
         } else {
             msj = "Sure you want delete criteria '"+ nomC +"' ?";
@@ -100,7 +100,7 @@ $('#delButton').on('click', function () {
              }
              );
     }else{
-        if (idioma === 0){
+        if (idioma == 0){
             swal("Ups!", "Por favor seleccionar el criterio a eliminar previamente.","error");
         } else {
             swal("Ups!", "Select criteria please.","error");
@@ -173,13 +173,13 @@ $('#updButton').on('click', function () {
     if (idC>=0){
 
         if (nomC.length===0 || nomC.length>20){
-                if (idioma === 0){
+                if (idioma == 0){
                     swal("Ups!", "Recuerde que el nombre es obligatorio y debe tener máximo 20 caracteres", "info");
                 }  else {
                     swal("Ups!", "Select criteria please.","error");
                 }
         }else{
-            if (idioma === 0){
+            if (idioma == 0){
                 msj = "Seguro que desea modificar el criterio '"+ nomC +"' con los campos de la seccion de detalles?";
             } else {
                 msj = "Sure you want modify criteria '"+ nomC +"' with the introduced details?";
@@ -197,7 +197,7 @@ $('#updButton').on('click', function () {
                  );
         }
     }else{
-        if (idioma === 0){
+        if (idioma == 0){
             swal("Ups!", "Por favor seleccionar el criterio a modificar previamente.","error");
         } else {
             swal("Ups!", "Select criteria please.","error");
@@ -332,7 +332,7 @@ $('#form-add-criterio').validate({
                             $btn.button('reset');
                         },
                         error: function(error){
-                            if (idioma === 0){
+                            if (idioma == 0){
                                 msj = "Hubo un error, por favor verificar que los campos esten correctos e intente nuevamente.";
                             } else {
                                 msj = "Error occurred, verify fields and try againg please.";

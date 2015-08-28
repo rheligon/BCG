@@ -15,17 +15,32 @@
 {%endblock%}
 
 {% block content %}
+<input type="text" id="idioma" value="{{idioma}}" hidden/>
 <style> form {padding-bottom: 1%;} #table-div-conta, #table-div-corr {padding-top: 1%;}</style>
 
 
 
 <form class="form-inline">
-  <legend><h2>Carga Manual</h2></legend> 
+  <legend><h2>
+    {%if idioma == 0%}
+      Carga Manual
+    {%endif%}
+    {%if idioma == 1%}
+      Manual Input
+    {%endif%}
+  </h2></legend> 
 <fieldset>
     <div class="row clearfix">
       <!-- Select Basic -->
       <div class="form-group col-md-3 ">
-        <label class="control-label" for="Cuenta-sel">Código Cuenta: </label>
+        <label class="control-label" for="Cuenta-sel">
+          {%if idioma == 0%}
+            Código Cuenta
+          {%endif%}
+          {%if idioma == 1%}
+            Account Code
+          {%endif%}
+        </label>
         <div>
           <select id="Cuenta-sel" name="Cuenta-sel" class="form-control">
             <option value="-1">----------</option>
@@ -37,7 +52,14 @@
       </div>
       <!-- Text input-->
       <div class="form-group col-md-4">
-        <label class="control-label" for="cta_nostro">No. Cta. Nostro: </label>  
+        <label class="control-label" for="cta_nostro">
+          {%if idioma == 0%}
+            No. Cta. Nostro:
+          {%endif%}
+          {%if idioma == 1%}
+            Nostro Acc. No.:
+          {%endif%}
+        </label>  
         <div>
         <input id="cta_nostro" name="cta_nostro" type="text" placeholder="" class="form-control input-md" style="width:80%" readonly>
         </div>
@@ -45,7 +67,14 @@
 
       <!-- Text input-->
       <div class="form-group col-md-4">
-        <label class="control-label" for="cta_vostro">No. Cta Vostro:</label>  
+        <label class="control-label" for="cta_vostro">
+          {%if idioma == 0%}
+            No. Cta. Vostro:
+          {%endif%}
+          {%if idioma == 1%}
+            Vostro Acc. No.:
+          {%endif%}
+        </label>  
         <div>
         <input id="cta_vostro" name="cta_vostro" type="text" placeholder="" class="form-control input-md" style="width:80%" readonly>
 
@@ -55,7 +84,14 @@
     
     <div class="row clearfix">
       <div class="form-group col-md-3">
-        <label class="control-label" for="banco">Banco: </label>  
+        <label class="control-label" for="banco">
+          {%if idioma == 0%}
+            Banco:
+          {%endif%}
+          {%if idioma == 1%}
+            Bank:
+          {%endif%}
+        </label>  
         <div>
         <input id="banco" name="banco" type="text" placeholder="" class="form-control input-md" style="width:80%" readonly>
         </div>
@@ -65,19 +101,34 @@
         <div class="form-group col-md-2"> 
           <label class="radio-inline">
             <input type="radio" name="radiocuenta" id="cont-radio" value="C">
-            Contabilidad
+            {%if idioma == 0%}
+              Contabilidad
+            {%endif%}
+            {%if idioma == 1%}
+              Accounting
+            {%endif%}
           </label> 
         </div>
         <div class="form-group col-md-2"> 
           <label class="radio-inline">
             <input type="radio" name="radiocuenta" id="corr-radio" value="S">
-            Corresponsal
+            {%if idioma == 0%}
+              Corresponsal
+            {%endif%}
+            {%if idioma == 1%}
+              Correspondent
+            {%endif%}
           </label>
         </div>
       </div>
       <div class="form-group col-md-3">
       <button type="button" id="boton-nuevo" data-loading-text="Cargando..." class="col-md-5 btn btn-primary" autocomplete="off">
-        Nuevo
+        {%if idioma == 0%}
+          Nuevo
+        {%endif%}
+        {%if idioma == 1%}
+          New
+        {%endif%}
       </button>
     </div>
   </div>
@@ -89,13 +140,27 @@
 <fieldset>
 
 <!-- Form Name -->
-<legend>Último Edo. Cuenta</legend>
+<legend>
+  {%if idioma == 0%}
+    Último Edo. Cuenta
+  {%endif%}
+  {%if idioma == 1%}
+    Last Acc. Statement
+  {%endif%}
+</legend>
 <div class="row clearfix">
   <div class="col-md-12">
 
     <!-- Text input-->
     <div class="form-group col-md-3">
-      <label class="control-label" for="edo-cuenta">Edo. Cuenta:</label>  
+      <label class="control-label" for="edo-cuenta">
+        {%if idioma == 0%}
+          Edo. Cuenta:
+        {%endif%}
+        {%if idioma == 1%}
+          Acc. Statement:
+        {%endif%}
+      </label>  
       <div>
         <input id="edo-cuenta" name="edo-cuenta" type="text" placeholder="" class="form-control input-md" readonly>
       </div>
@@ -103,7 +168,14 @@
 
     <!-- Text input-->
     <div class="form-group col-md-3">
-      <label class="control-label" for="fecha-manual">Fecha: </label>  
+      <label class="control-label" for="fecha-manual">
+        {%if idioma == 0%}
+          Fecha:
+        {%endif%}
+        {%if idioma == 1%}
+          Date:
+        {%endif%}
+      </label>  
       <div>
       <input id="fecha-manual" name="fecha-manual" type="text" placeholder="" class="form-control input-md" readonly>
       </div>
@@ -111,7 +183,14 @@
 
     <!-- Prepended text-->
     <div class="form-group col-md-3">
-      <label class="control-label" for="saldo-manual">Saldo Final: </label>
+      <label class="control-label" for="saldo-manual">
+        {%if idioma == 0%}
+          Saldo Inicial:
+        {%endif%}
+        {%if idioma == 1%}
+          Initial Balance:
+        {%endif%}
+      </label>
       <div>
         <div class="input-group">
           <span id="saldo-manual-cd" class="input-group-addon"></span>
@@ -134,13 +213,27 @@
 <fieldset>
 
 <!-- Form Name -->
-<legend><h2>Nuevo Edo. Cuenta</h2></legend>
+<legend><h2>
+  {%if idioma == 0%}
+    Nuevo Edo. Cuenta:
+  {%endif%}
+  {%if idioma == 1%}
+    New Acc. Statement:
+  {%endif%}
+</h2></legend>
 <div class="row clearfix">
   <div class="col-md-12">
 
     <!-- Text input-->
     <div class="form-group col-md-3">
-      <label class="control-label" for="edo-cuenta-nuevo">Edo. Cuenta:</label>   
+      <label class="control-label" for="edo-cuenta-nuevo">
+        {%if idioma == 0%}
+          Edo. Cuenta:
+        {%endif%}
+        {%if idioma == 1%}
+          Acc. Statement:
+        {%endif%}
+      </label>   
         <div class="input-group">
           <input id="edo-cuenta-nuevo" name="edo-cuenta-nuevo" type="text" placeholder="" class="form-control input-md" maxlength="18" onkeypress='return solonumero(event)' onkeyup='return solonumero(event)' readonly>
           <span class="input-group-addon">/</span>
@@ -150,7 +243,14 @@
 
     <!-- Text input-->
     <div class="form-group col-md-3">
-      <label class="control-label" for="fecha-manual-nuevo1">Fecha Inicial: </label>  
+      <label class="control-label" for="fecha-manual-nuevo1">
+        {%if idioma == 0%}
+          Fecha Inicial:
+        {%endif%}
+        {%if idioma == 1%}
+          Initial Date:
+        {%endif%}
+      </label>  
       <div id ="fmn1">
       <input id="fecha-manual-nuevo1" name="fecha-manual-nuevo1" type="text" placeholder="" class="form-control input-md" readonly>
       </div>
@@ -158,7 +258,14 @@
 
     <!-- Prepended text-->
     <div class="form-group col-md-4">
-      <label class="datepicker" for="saldo-manual-nuevo1">Saldo Inicial: </label>
+      <label class="datepicker" for="saldo-manual-nuevo1">
+        {%if idioma == 0%}
+          Saldo Inicial:
+        {%endif%}
+        {%if idioma == 1%}
+          Initial Balance:
+        {%endif%}
+      </label>
       <div>
         <div id="after" class="input-group">
           <span id="saldo-manual-cd-nuevo1" class="input-group-addon"></span>
@@ -181,7 +288,14 @@
 
     <!-- Text input-->
     <div class="form-group col-md-3">
-      <label class="control-label" for="fecha-manual-nuevo2">Fecha Final: </label>  
+      <label class="control-label" for="fecha-manual-nuevo2">
+        {%if idioma == 0%}
+          Fecha Final:
+        {%endif%}
+        {%if idioma == 1%}
+          Final Date:
+        {%endif%}
+      </label>  
       <div id ="fmn2">
       <input id="fecha-manual-nuevo2" name="fecha-manual-nuevo2" type="text" placeholder="" class="form-control input-md" readonly>
       </div>
@@ -189,7 +303,14 @@
 
     <!-- Prepended text-->
     <div class="form-group col-md-4">
-      <label class="control-label" for="saldo-manual-nuevo2">Saldo Final: </label>
+      <label class="control-label" for="saldo-manual-nuevo2">
+        {%if idioma == 0%}
+          Saldo Final:
+        {%endif%}
+        {%if idioma == 1%}
+          Final Balance:
+        {%endif%}
+      </label>
       <div>
         <div class="input-group">
           <span id="saldo-manual-cd-nuevo2" class="input-group-addon"></span>
@@ -212,13 +333,27 @@
 <fieldset>
 
 <!-- Form Name -->
-<legend>Nueva Transacción</legend>
+<legend>
+  {%if idioma == 0%}
+    Nueva Transacción
+  {%endif%}
+  {%if idioma == 1%}
+    New Trasaction
+  {%endif%}
+</legend>
 <div class="row clearfix">
   <div class="col-md-12">
 
     <!-- Text input-->
     <div class="form-group col-md-2">
-      <label class="control-label">Fecha Valor:</label>
+      <label class="control-label">
+        {%if idioma == 0%}
+          Fecha Valor:
+        {%endif%}
+        {%if idioma == 1%}
+          Value Date:
+        {%endif%}
+      </label>
       <div>
         <input id="fecha-valor" class="form-control" style="width:80%;background-color:white">
       </div>
@@ -226,7 +361,14 @@
 
     <!-- Text input-->
     <div class="form-group col-md-2">
-      <label class="control-label">Fecha Entr.:</label>
+      <label class="control-label">
+        {%if idioma == 0%}
+          Fecha Entr.:
+        {%endif%}
+        {%if idioma == 1%}
+          In Date:
+        {%endif%}
+      </label>
       <div>
         <input  id="fecha-entrada" class="form-control" style="width:80%;background-color:white">
       </div>
@@ -247,14 +389,28 @@
     </div>
 
     <div class="form-group col-md-2">
-      <label class="control-label">Monto:<span></span></label>
+      <label class="control-label">
+        {%if idioma == 0%}
+          Monto:
+        {%endif%}
+        {%if idioma == 1%}
+          Amount:
+        {%endif%}
+      <span></span></label>
       <div>
         <input onkeypress='return numero(event)' onkeyup='return numero(event)' id="monto-tran" class="form-control" style="width:90%">
       </div>
     </div>
 
     <div class="form-group col-md-2">
-      <label class="control-label">Tipo:</label>
+      <label class="control-label">
+        {%if idioma == 0%}
+          Tipo:
+        {%endif%}
+        {%if idioma == 1%}
+          Type:
+        {%endif%}
+      </label>
       <div>
         <input id="tipo-tran" class="form-control" style="width:80%" maxlength="4">
       </div>
@@ -262,7 +418,12 @@
     <br>
     <div class="form-group col-md-3">
       <a href="#tabla-detalle"><button type="button" id="boton-agregar" data-loading-text="Cargando..." class="col-md-5 btn btn-primary" autocomplete="off" >
-        Agregar
+        {%if idioma == 0%}
+          Agregar
+        {%endif%}
+        {%if idioma == 1%}
+          Add
+        {%endif%}
       </button></a>
     </div>
     
@@ -273,21 +434,42 @@
 <div class="row clearfix">
   <div class="col-md-12">
     <div class="form-group col-md-3">
-      <label class="control-label">Ref. Nostro:</label>
+      <label class="control-label">
+        {%if idioma == 0%}
+          Ref. Nostro:
+        {%endif%}
+        {%if idioma == 1%}
+          Nostro Ref.:
+        {%endif%}
+      </label>
       <div>
         <input id="nostro-tran" class="form-control" style="width:80%" maxlength="16">
       </div>
     </div>
 
     <div class="form-group col-md-3">
-      <label class="control-label">Ref. Vostro:</label>
+      <label class="control-label">
+        {%if idioma == 0%}
+          Ref. Vostro:
+        {%endif%}
+        {%if idioma == 1%}
+          Vostro Ref.:
+        {%endif%}
+      </label>
       <div>
         <input id="vostro-tran" class="form-control" style="width:80%" maxlength="16">
       </div>
     </div>
 
     <div class="form-group col-md-3">
-      <label class="control-label">Detalle:</label>
+      <label class="control-label">
+        {%if idioma == 0%}
+          Detalle:
+        {%endif%}
+        {%if idioma == 1%}
+          Details:
+        {%endif%}
+      </label>
       <div>
         <input id="detalle-tran" class="form-control" style="width:80%" maxlength="34">
       </div>
@@ -301,7 +483,14 @@
 </form >
 
 <!--Tabla--> 
-<legend style="color:#2e6da4">Detalle Transacciones</legend>
+<legend style="color:#2e6da4">
+  {%if idioma == 0%}
+    Detalles Transacciones:
+  {%endif%}
+  {%if idioma == 1%}
+    Transactions Details:
+  {%endif%}
+</legend>
 
 <div ="row" id="tabla-detalle">
   <div style="padding-bottom:1%;" class="col-md-3 pull-right">
@@ -313,6 +502,7 @@
             <table id="table-conta" class="table table-bordered table-striped tabla">
                 <thead>
                     <tr>
+                      {%if idioma == 0%}
                         <th>Edo. Cuenta</th>
                         <th>Num.Trans</th>
                         <th>Fecha Valor</th>
@@ -322,6 +512,18 @@
                         <th>Ref Nostro</th>
                         <th>Ref Vostro</th>
                         <th>Descripción</th>
+                      {%endif%}
+                      {%if idioma == 1%}
+                        <th>Acc. Statement</th>
+                        <th>Trans No.</th>
+                        <th>Value Date</th>
+                        <th>C/D</th>
+                        <th>Amount</th>
+                        <th>Type</th>
+                        <th>Nostro Ref.</th>
+                        <th>Vostro Ref.</th>
+                        <th>Description</th>
+                      {%endif%}
                     </tr>
                 </thead>
                 <tbody id="tb-conta">
@@ -334,7 +536,12 @@
 
 <div class="form-group col-md-3">
       <a href="#tabla-detalle"><button type="button" id="boton-procesar" data-loading-text="Cargando..." class="col-md-5 btn btn-success" autocomplete="off" >
-        Procesar
+        {%if idioma == 0%}
+          Procesar
+        {%endif%}
+        {%if idioma == 1%}
+          Process
+        {%endif%}
       </button></a>
     </div>
 
@@ -345,7 +552,12 @@
             <div class="modal-body">
                 <div class="text-center">
                     <img src="{% static 'images/procesando.gif' %}" class="icon" />
-                    <h4>Procesando, por favor espere.</h4>
+                    {%if idioma == 0%}
+                      <h4>Procesando, por favor espere.</h4>
+                    {%endif%}
+                    {%if idioma == 1%}
+                      <h4>Processing, wait please.</h4>
+                    {%endif%}
                 </div>
             </div>
         </div>
@@ -356,10 +568,6 @@
 {% endblock %}
 
 {% block script%}
-<script> 
-    //define el idioma de la tabla (es/en)
-    idioma_tr = "es"
-</script>
 <script src="{% static 'js/jquery.dataTables.min.js' %}" type="text/javascript"></script>
 <script src="{% static 'js/dataTables.bootstrap.js' %}" type="text/javascript"></script>
 <script src="{% static 'js/jquery-form-validation/jquery.validation.min.js' %}"></script>

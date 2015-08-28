@@ -407,7 +407,7 @@ function reglasT(cuentaId){
         },
         error: function(error){
             $('#processing-modal').modal('toggle');
-            if (idioma === 0){
+            if (idioma == 0){
                 swal("Ups!", "Hubo un error buscando las reglas de la cuenta especificada.", "error");
             } else {
                 swal("Ups!", "Error occurred looking account rules.", "error");
@@ -455,7 +455,7 @@ function encaje_s(cuentaId){
         },
         error: function(error){
             $('#processing-modal').modal('toggle');
-            if (idioma === 0){
+            if (idioma == 0){
                 swal("Ups!", "Hubo un error buscando el encaje de la cuenta especificada.", "error");
             } else {
                 swal("Ups!", "Error occurred looking for account cash.", "error");
@@ -496,7 +496,7 @@ function encaje_add(cuentaId,monto,fecha){
         },
         error: function(error){
             $('#processing-modal').modal('toggle');
-            if (idioma === 0){
+            if (idioma == 0){
                 swal("Ups!", "Hubo un error agregando el encaje en la cuenta especificada.", "error");
             } else {
                 swal("Ups!", "Error occurred adding account cash.", "error");
@@ -523,19 +523,19 @@ $('#acptencajeButton').on('click', function (event) {
         encaje_add(cuentaid,monto,fecha);
     }else{
         if (cuentaid<0){
-            if (idioma === 0 ){
+            if (idioma == 0 ){
                 swal("Ups!","Por favor seleccione una cuenta primero.","error");
             } else {
                 swal("Ups!","Select an account first please.","error");
             }
         }else if (monto.length===0){
-            if (idioma === 0 ){
+            if (idioma == 0 ){
                 swal("Ups!","Por favor introduzca un monto.","error");
             } else {
                 swal("Ups!","Itroduce an amount please.","error");
             }
         }else if (fecha.length===0){
-            if (idioma === 0 ){
+            if (idioma == 0 ){
                 swal("Ups!","Por favor introduzca una fecha primero.","error");
             } else {
                 swal("Ups!","Itroduce a date please.","error");
@@ -575,7 +575,7 @@ $('#delButton').on('click', function () {
             },
             error: function(jqXHR, error){
                 $('#processing-modal').modal('toggle');
-                if (idioma === 0){
+                if (idioma == 0){
                     swal("Ups!", "Hubo un error modificando la regla especificada.", "error");
                 } else {
                     swal("Ups!", "Error occurred modifying the rule.", "error");
@@ -592,7 +592,7 @@ $('#delButton').on('click', function () {
     var idC = $("#Id_cuenta").val();
     var codC = $("#"+idC).attr("cod");
     if (idC>=0){
-        if (idioma === 0){
+        if (idioma == 0){
             msj = "Seguro que desea eliminar la cuenta "+ codC +" ?"
         } else {
             msj = "Sure you want delete the account "+ codC +" ?"
@@ -609,7 +609,7 @@ $('#delButton').on('click', function () {
              }
              );
     }else{
-        if (idioma === 0){
+        if (idioma == 0){
             swal("Ups!","Por favor seleccionar la cuenta a eliminar previamente.","error");
         } else {
             swal("Ups!","Select an account first please.","error");
@@ -758,7 +758,7 @@ $('#acptButton').on('click', function () {
             error: function(jqXHR, error){
                 alert(jqXHR.responseText) //debug
                 $('#processing-modal').modal('toggle');
-                if (idioma === 0) {
+                if (idioma == 0) {
                     swal("Ups!", "Hubo un error creando la cuenta especificada.", "error");
                 } else {
                     swal("Ups!", "Error occurred creating account.", "error");
@@ -812,7 +812,7 @@ $('#acptButton').on('click', function () {
     }
 
     if (codC.length>0 && codC.length<11 && criterioid>0 && bancoid>0 && monedaid>0 && ref_nostro.length>0 && ref_vostro.length>0 && tipocta>=0 && tcargcont>=0 && tcargcorr>=0 && procs.length>0 && desc.length<=45 && ref_vostro.length<=35 && ref_nostro.length<=35 && tgiro.length<=20 && amail.length<=45 ){
-        if (idioma === 0) {
+        if (idioma == 0) {
             msj = "Seguro que desea agregar la cuenta "+ codC +" ?";
         } else {
             msj = "Sure you want add the account "+ codC +" ?";
@@ -830,91 +830,91 @@ $('#acptButton').on('click', function () {
              );
     }else{
       if (codC.length===0){
-        if (idioma === 0) {
+        if (idioma == 0) {
             swal("Ups!","Por favor colocar un codigo para la cuenta.","error");
         } else {
             swal("Ups!","Introduce the account code please.","error");
         }
       }else if (codC.length>10){
-        if (idioma === 0) {
+        if (idioma == 0) {
             swal("Ups!","El codigo para la cuenta tiene un máximo de 10 caracteres.","error");
         } else {
             swal("Ups!","The account code has a 10 characters maximum length.","error");
         }
       }else if (criterioid<=0){
-        if (idioma === 0) {
+        if (idioma == 0) {
             swal("Ups!","Por favor elija un criterio para la cuenta.","error");
         } else {
             swal("Ups!","Select an account criteria please.","error");
         }
       }else if (bancoid<=0){
-        if (idioma === 0) {
+        if (idioma == 0) {
             swal("Ups!","Por favor elija un banco para la cuenta.","error");
         } else {
             swal("Ups!","Select an account bank please.","error");
         }
       }else if (monedaid<=0){
-        if (idioma === 0) {
+        if (idioma == 0) {
             swal("Ups!","Por favor elija una moneda para la cuenta.","error");
         } else {
             swal("Ups!","Select an account currency please.","error");
         }
       }else if (ref_nostro.length===0){
-        if (idioma === 0) {
+        if (idioma == 0) {
             swal("Ups!","Por favor indique un Nro. Cta. Nostro para la cuenta.","error");
         } else {
             swal("Ups!","Select an Account Nostro No. please ","error");
         }
       }else if (ref_vostro.length===0){
-        if (idioma === 0) {
+        if (idioma == 0) {
             swal("Ups!","Por favor indique un Nro. Cta. Vostro para la cuenta.","error");
         } else {
             swal("Ups!","Select an Account Vostro No. please ","error");
         }
       }else if (tipocta<0){
-        if (idioma === 0) {
+        if (idioma == 0) {
             swal("Ups!","Por favor elija un tipo de cuenta.","error");
         } else {
             swal("Ups!","Select an account type please.","error");
         }
       }else if (tcargcont<0){
-        if (idioma === 0) {
+        if (idioma == 0) {
             swal("Ups!","Por favor elija un tipo de archivo de carga para la contabilidad de la cuenta.","error");
         } else {
             swal("Ups!","Select a load file type for accounting please.","error");
         }
       }else if (tcargcorr<0){
-        if (idioma === 0) {
+        if (idioma == 0) {
             swal("Ups!","Por favor elija un tipo de archivo de carga para el corresponsal de la cuenta.","error");
         } else {
             swal("Ups!","Select a load file type for correspondent please.","error");
         }
       }else if (procs.length<=0){
-        if (idioma === 0) {
+        if (idioma == 0) {
             swal("Ups!","Por favor elija al menos un proceso de match designado para esta cuenta.","error");
         } else {
             swal("Ups!","Select at least one match process for the account please.","error");
         }
       }else if (desc.length>45){
-        if (idioma === 0) {
+        if (idioma == 0) {
             swal("Ups!","La descripcion para la cuenta no debe tener mas de 45 caracteres.","error");
         } else {
             swal("Ups!","Account description has a 45 characters maximum length.","error");
         }
       }else if (ref_nostro.length>35 || ref_vostro.length>35){
-        if (idioma === 0) {
+        if (idioma == 0) {
             swal("Ups!","El tamaño de la referencia nostro/vostro para la cuenta no debe tener mas de 35 caracteres.","error");
         } else {
             swal("Ups!","Nostro/Vostro reference has a 35 characters maximum length.","error");
         }
       }else if(tgiro.length>20){
-        if (idioma === 0) {
+        if (idioma == 0) {
             swal("Ups!","El tamaño del tipo transacción giro para la cuenta no debe tener mas de 20 caracteres.","error");
         } else {
             swal("Ups!","Draft transaction type has a 20 characters maximum length.","error");
         }
       }else if(amail.length>45){
-        if (idioma === 0) {
+        if (idioma == 0) {
             swal("Ups!","El tamaño del correo de alertas para la cuenta no debe tener mas de 45 caracteres.","error");
         } else {
             swal("Ups!","Alerts email has a 45 characters maximum length.","error");    
@@ -1038,7 +1038,7 @@ $('#updButton').on('click', function () {
             error: function(jqXHR, error){
                 alert(jqXHR.responseText) //debug
                 $('#processing-modal').modal('toggle');
-                if (idioma === 0){
+                if (idioma == 0){
                     swal("Ups!", "Hubo un error creando la cuenta especificada.", "error");
                 } else {
                     swal("Ups!", "Error occurred creating the account.", "error");
@@ -1093,7 +1093,7 @@ $('#updButton').on('click', function () {
     }
 
     if (cuentaid>0 && codC.length>0 && codC.length<11 && criterioid>0 && bancoid>0 && monedaid>0 && ref_nostro.length>0 && ref_vostro.length>0 && tipocta>=0 && tcargcont>=0 && tcargcorr>=0 && procs.length>0 && desc.length<=45 && ref_vostro.length<=35 && ref_nostro.length<=35 && tgiro.length<=20 && amail.length<=45 ){
-        if (idioma === 0){
+        if (idioma == 0){
             msj = "Seguro que desea modificar la cuenta "+ codC +" ?"
         } else {
             msj = "Sure you want modify the account "+ codC +" ?"
@@ -1111,97 +1111,97 @@ $('#updButton').on('click', function () {
              );
     }else{
       if (cuentaid<=0){
-        if (idioma === 0){
+        if (idioma == 0){
             swal("Ups!","Por favor seleccionar la cuenta a modificar.","error");
         } else {
             swal("Ups!","Select an account please.","error");
         }
       }else if (codC.length===0){
-        if (idioma === 0){
+        if (idioma == 0){
             swal("Ups!","Por favor colocar un codigo para la cuenta.","error");
         } else {
             swal("Ups!","Introduce an account code please.","error");
         }
       }else if (codC.length>10){
-        if (idioma === 0){
+        if (idioma == 0){
             swal("Ups!","El codigo para la cuenta tiene un máximo de 10 caracteres.","error");
         } else {
             swal("Ups!","Account code has a 10 characters maximum length.","error");
         }
       }else if (criterioid<=0){
-        if (idioma === 0){
+        if (idioma == 0){
             swal("Ups!","Por favor elija un criterio para la cuenta.","error");
         } else {
             swal("Ups!","Select an account criteria please.","error");
         }
       }else if (bancoid<=0){
-        if (idioma === 0){
+        if (idioma == 0){
             swal("Ups!","Por favor elija un banco para la cuenta.","error");
         } else {
             swal("Ups!","Select an account bank please.","error");
         }
       }else if (monedaid<=0){
-        if (idioma === 0){
+        if (idioma == 0){
             swal("Ups!","Por favor elija una moneda para la cuenta.","error");
         } else {
             swal("Ups!","Select an account currency please.","error");
         }
       }else if (ref_nostro.length===0){
-        if (idioma === 0) {
+        if (idioma == 0) {
             swal("Ups!","Por favor indique un Nro. Cta. Nostro para la cuenta.","error");
         } else {
             swal("Ups!","Select an Account Nostro No. please ","error");
         }
       }else if (ref_vostro.length===0){
-        if (idioma === 0) {
+        if (idioma == 0) {
             swal("Ups!","Por favor indique un Nro. Cta. Vostro para la cuenta.","error");
         } else {
             swal("Ups!","Select an Account Vostro No. please ","error");
         }
       }else if (tipocta<0){
-        if (idioma === 0) {
+        if (idioma == 0) {
             swal("Ups!","Por favor elija un tipo de cuenta.","error");
         } else {
             swal("Ups!","Select an account type please.","error");
         }
       }else if (tcargcont<0){
-        if (idioma === 0) {
+        if (idioma == 0) {
             swal("Ups!","Por favor elija un tipo de archivo de carga para la contabilidad de la cuenta.","error");
         } else {
             swal("Ups!","Select a load file type for accounting please.","error");
         }
       }else if (tcargcorr<0){
-        if (idioma === 0) {
+        if (idioma == 0) {
             swal("Ups!","Por favor elija un tipo de archivo de carga para el corresponsal de la cuenta.","error");
         } else {
             swal("Ups!","Select a load file type for correspondent please.","error");
         }
       }else if (procs.length<=0){
-        if (idioma === 0) {
+        if (idioma == 0) {
             swal("Ups!","Por favor elija al menos un proceso de match designado para esta cuenta.","error");
         } else {
             swal("Ups!","Select at least one match process for the account please.","error");
         }
       }else if (desc.length>45){
-        if (idioma === 0) {
+        if (idioma == 0) {
             swal("Ups!","La descripcion para la cuenta no debe tener mas de 45 caracteres.","error");
         } else {
             swal("Ups!","Account description has a 45 characters maximum length.","error");
         }
       }else if (ref_nostro.length>35 || ref_vostro.length>35){
-        if (idioma === 0) {
+        if (idioma == 0) {
             swal("Ups!","El tamaño de la referencia nostro/vostro para la cuenta no debe tener mas de 35 caracteres.","error");
         } else {
             swal("Ups!","Nostro/Vostro reference has a 35 characters maximum length.","error");
         }
       }else if(tgiro.length>20){
-        if (idioma === 0) {
+        if (idioma == 0) {
             swal("Ups!","El tamaño del tipo transacción giro para la cuenta no debe tener mas de 20 caracteres.","error");
         } else {
             swal("Ups!","Draft transaction type has a 20 characters maximum length.","error");
         }
       }else if(amail.length>45){
-        if (idioma === 0) {
+        if (idioma == 0) {
             swal("Ups!","El tamaño del correo de alertas para la cuenta no debe tener mas de 45 caracteres.","error");
         } else {
             swal("Ups!","Alerts email has a 45 characters maximum length.","error");    

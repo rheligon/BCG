@@ -1,4 +1,14 @@
-if (idioma_tr==="es"){
+var idioma = $('#idioma').val();
+var idiomaAux = "";
+var msj ="";
+
+if (idioma == 0){
+    idiomaAux = "es"
+} else {
+    idiomaAux = "en"
+}
+
+if (idiomaAux==="es"){
     //Cambiar el idioma del date picker a español si este es el seleccionado
     $.extend($.fn.pickadate.defaults, {
       monthsFull: ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'],
@@ -10,11 +20,21 @@ if (idioma_tr==="es"){
 }
 
 //Inicializar el DatePicker proc diario conciliacion
-$('#pd_conc_fecha').pickadate({
-  format: 'dd/mm/yyyy',
-  selectYears: true,
-  selectMonths: true,
-})
+if (idioma == 0) {
+  $('#pd_conc_fecha').pickadate({
+    format: 'dd/mm/yyyy',
+    formatSubmit:'dd/mm/yyyy',
+    selectYears: true,
+    selectMonths: true,
+  })
+} else {
+  $('#pd_conc_fecha').pickadate({
+    format: 'yyyy/mm/dd',
+    formatSubmit:'dd/mm/yyyy',
+    selectYears: true,
+    selectMonths: true,
+    })
+}
 
 //Al hacer click en ejecutar pdf
 $('.pdf').on('click', function(){
@@ -36,10 +56,19 @@ $('.autcon').on('click', function(e){
   ufh = $('select option:selected').attr('ufh');
 
   if (ufc === ufh){
-      swal("Ups!","La fecha del último histórico y de la ultima conciliacion son iguales.","error");
+      if (idioma == 0){
+        swal("Ups!","La fecha del último histórico y de la ultima conciliacion son iguales.","error");
+      } else {
+        swal("Ups!","Last historic and last reconciliation dates values does not match.","error");
+      }
   }else{
+      if (idioma == 0){
+        msj = "Seguro que desea autorizar la conciliacion al "+ ufc +" ?";
+      } else {
+        msj = "Sure you want athorize reconciliation to "+ ufc +" ?";
+      }
       swal({   title: "",
-               text: "Seguro que desea autorizar la conciliacion al "+ ufc +" ?",
+               text: msj,
                type: "warning",
                showCancelButton: true,
                confirmButtonText: "Ok"},

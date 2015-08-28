@@ -1,5 +1,4 @@
-//idioma_tr es una variable global definida en la pagina
-var t_conta = iniciar_tabla(idioma_tr,'conta');
+
 var csrftoken = $.cookie('csrftoken');
 var num=1;
 var pagina = 1;
@@ -11,7 +10,19 @@ $('#fmn1').html(inputIni);
 var inputIni2 = $('#fecha-manual-nuevo2').detach();
 $('#fmn2').html(inputIni2);
 
-if (idioma_tr==="es"){
+var idioma = $('#idioma').val();
+var idiomaAux = "";
+var msj ="";
+
+if (idioma == 0){
+    idiomaAux = "es"
+} else {
+    idiomaAux = "en"
+}
+
+var t_conta = iniciar_tabla(idiomaAux,'conta');
+
+if (idiomaAux==="es"){
     $.extend($.fn.pickadate.defaults, {
       monthsFull: ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'],
       weekdaysShort: ['Dom', 'Lun', 'Mar', 'Mie', 'Jue', 'Vie', 'Sab'],
@@ -306,14 +317,23 @@ $('#boton-nuevo').on('click', function () {
         $('#fmn1').html(inputIni);
 
         //inicializamos el DatePicker para Fecha Final
-        $('#fecha-manual-nuevo2').pickadate({
-            format: 'dd/mm/yyyy',
-            formatSubmit:'dd/mm/yyyy',
-            selectYears: true,
-            selectMonths: true,
-            min: minimaFecha,
-            max: true,
-        });
+        if (idioma == 0){
+            $('#fecha-manual-nuevo2').pickadate({
+              format: 'dd/mm/yyyy',
+              formatSubmit:'dd/mm/yyyy',
+              selectYears: true,
+              selectMonths: true,
+              max: true,
+            });
+        } else {
+            $('#fecha-manual-nuevo2').pickadate({
+              format: 'yyyy/mm/dd',
+              formatSubmit:'dd/mm/yyyy',
+              selectYears: true,
+              selectMonths: true,
+              max: true,
+            });
+    }
 
         $('#saldo-manual-cd-nuevo1').html(cd);
         $('#saldo-manual-cd-nuevo2').html(cd);
@@ -338,24 +358,44 @@ $('#boton-nuevo').on('click', function () {
 
 
         //inicializamos el DatePicker para Fecha Final
-        dp1=$('#fecha-manual-nuevo1').pickadate({
-            format: 'dd/mm/yyyy',
-            formatSubmit:'dd/mm/yyyy',
-            selectYears: true,
-            selectMonths: true,
-            max: true,
-        });
+        if (idioma == 0){
+            dp1=$('#fecha-manual-nuevo2').pickadate({
+              format: 'dd/mm/yyyy',
+              formatSubmit:'dd/mm/yyyy',
+              selectYears: true,
+              selectMonths: true,
+              max: true,
+            });
+        } else {
+            dp1=$('#fecha-manual-nuevo2').pickadate({
+              format: 'yyyy/mm/dd',
+              formatSubmit:'dd/mm/yyyy',
+              selectYears: true,
+              selectMonths: true,
+              max: true,
+            });
+        }
 
         $("#fecha-manual-nuevo2").prop('readonly', false);
         $("#fecha-manual-nuevo2").css('background-color', 'white');
 
-        dp2=$('#fecha-manual-nuevo2').pickadate({
-            format: 'dd/mm/yyyy',
-            formatSubmit:'dd/mm/yyyy',
-            selectYears: true,
-            selectMonths: true,
-            max: true,
-        });
+        if (idioma == 0){
+            dp2=$('#fecha-manual-nuevo2').pickadate({
+              format: 'dd/mm/yyyy',
+              formatSubmit:'dd/mm/yyyy',
+              selectYears: true,
+              selectMonths: true,
+              max: true,
+            });
+        } else {
+            dp2=$('#fecha-manual-nuevo2').pickadate({
+              format: 'yyyy/mm/dd',
+              formatSubmit:'dd/mm/yyyy',
+              selectYears: true,
+              selectMonths: true,
+              max: true,
+            });
+        }
 
         $('#saldo-manual-cd-nuevo1').remove();
         $('#after').prepend('<select id="saldo-manual-cd-nuevo1" name="saldo-manual-nuevo1" class="form-control"><option value="C">C</option><option value="D">D</option></select>');
@@ -375,7 +415,11 @@ $('#boton-nuevo').on('click', function () {
         
     }
     if(cuentaVacia<0){
-        swal("Ups!", "Debe Seleccionar el Código de la Cuenta", "error");
+        if (idioma == 0){
+            swal("Ups!", "Debe Seleccionar el Código de la Cuenta", "error");
+        } else {
+            swal("Ups!", "You must select the account code", "error");
+        }
     }
     
 });
@@ -395,12 +439,24 @@ $('#boton-agregar').on('click', function () {
         var saldo1 = $('#saldo-manual-nuevo1').val();
         var saldo2 = $('#saldo-manual-nuevo2').val();
         
-        if(fecha1.length<1){ 
-            swal("Ups!", "Debe introducir la Fecha Inicial para el Nuevo Estado de Cuenta", "error");
+        if(fecha1.length<1){
+            if (idioma == 0){ 
+                swal("Ups!", "Debe introducir la Fecha Inicial para el Nuevo Estado de Cuenta", "error");
+            }  else {
+                swal("Ups!", "You must introduce the new account statement initial date", "error");
+            }
         }else if(fecha2.length<1){ 
-            swal("Ups!", "Debe introducir la Fecha Final para Nuevo Estado de Cuenta", "error");
-        }else if(saldo1.length<1){ 
-            swal("Ups!", "Debe introducir el Saldo Inicial para Nuevo Estado de Cuenta", "error");
+            if (idioma == 0){ 
+                swal("Ups!", "Debe introducir la Fecha Final para Nuevo Estado de Cuenta", "error");
+             }  else {
+                swal("Ups!", "You must introduce the new account statement final date", "error");
+            }
+        }else if(saldo1.length<1){
+            if (idioma == 0){  
+                swal("Ups!", "Debe introducir el Saldo Inicial para Nuevo Estado de Cuenta", "error");
+            }  else {
+                swal("Ups!", "You must introduce the new account statement initial balance", "error");
+            }
         }else{
             var fechaValor = $('#fecha-valor').val();
             console.log(dataP.length)            
@@ -422,12 +478,24 @@ $('#boton-agregar').on('click', function () {
 
             //validaciones de campos obligatorios
             if(fechaValor.length<1){
-                swal("Ups!", "Debe introducir la Fecha Valor de la Transacción", "error");
+                if (idioma == 0){ 
+                    swal("Ups!", "Debe introducir la Fecha Valor de la Transacción", "error");
+                }  else {
+                    swal("Ups!", "You must introduce the transaction value date", "error");
+                }
             }
             else if(monto.length<1){
-                swal("Ups!", "Debe introducir el Monto de la Transacción", "error");
+                if (idioma == 0){
+                    swal("Ups!", "Debe introducir el Monto de la Transacción", "error");
+                }  else {
+                    swal("Ups!", "You must introduce the transaction amount", "error");
+                }
             }else if(tipo.length<1){
-                swal("Ups!", "Debe introducir el Tipo de la Transacción", "error");
+                if (idioma == 0){
+                    swal("Ups!", "Debe introducir el Tipo de la Transacción", "error");
+                }  else {
+                    swal("Ups!", "You must introduce the transaction type", "error");
+                }
             }else{
 
                 //creamos los elementos de cada fila
@@ -550,7 +618,11 @@ $('#boton-agregar').on('click', function () {
             }
         }    
     }else{
-       swal("Ups!", "Debe tener el Numero del Nuevo Estado de Cuenta a Crear", "error"); 
+        if (idioma == 0){ 
+            swal("Ups!", "Debe tener el Numero del Nuevo Estado de Cuenta a Crear", "error"); 
+        } else {
+            swal("Ups!", "You must have the number of the new account statement to create", "error");
+        }
     }
     
 
@@ -568,11 +640,20 @@ $('#boton-procesar').on('click', function () {
         fecha1 = fechaStringtoDate(fecha1)
         fecha2 = fechaStringtoDate(fecha2)
         if(fecha2<fecha1){
-            swal("Ups!", "La Fecha Inicial del Nuevo Estado de Cuenta no puede ser MAYOR a la Fecha Final", "error"); 
+            if (idioma == 0){ 
+                swal("Ups!", "La Fecha Inicial del Nuevo Estado de Cuenta no puede ser MAYOR a la Fecha Final", "error"); 
+            } else {
+                swal("Ups!", "The new account statement initial date can not be greater than initial date", "error");
+            }
         }else{
+            if (idioma == 0){
+                msj = "Seguro que desea crear el Estado de Cuenta ?";
+            } else {
+                msj = "Sure you want create new account statement";
+            }
             swal({
                 title: "",
-                text: "Seguro que desea crear el Estado de Cuenta ?",
+                text: msj,
                 type: "warning",
                 showCancelButton: true,
                 confirmButtonText: "Ok"},
@@ -619,27 +700,51 @@ $('#boton-procesar').on('click', function () {
             );
         }
     }else{
-        swal("Ups!", "No existen transacciones para ser procesadas", "error"); 
+        if (idioma == 0){
+            swal("Ups!", "No existen transacciones para ser procesadas", "error"); 
+        } else {
+            swal("Ups!", "There are not transactions to be process", "error");
+        }
     }
 });
 
 //Inicializar el DatePicker
-$('#fecha-valor').pickadate({
-  format: 'dd/mm/yyyy',
-  formatSubmit:'dd/mm/yyyy',
-  selectYears: true,
-  selectMonths: true,
-  max: true,
-});
+if (idioma == 0){
+    $('#fecha-valor').pickadate({
+      format: 'dd/mm/yyyy',
+      formatSubmit:'dd/mm/yyyy',
+      selectYears: true,
+      selectMonths: true,
+      max: true,
+    });
+} else {
+    $('#fecha-valor').pickadate({
+      format: 'yyyy/mm/dd',
+      formatSubmit:'dd/mm/yyyy',
+      selectYears: true,
+      selectMonths: true,
+      max: true,
+    });
+}
 
 //Inicializar el DatePicker
-$('#fecha-entrada').pickadate({
-  format: 'dd/mm/yyyy',
-  formatSubmit:'dd/mm/yyyy',
-  selectYears: true,
-  selectMonths: true,
-  max: true,
-});
+if (idioma == 0){
+    $('#fecha-entrada').pickadate({
+      format: 'dd/mm/yyyy',
+      formatSubmit:'dd/mm/yyyy',
+      selectYears: true,
+      selectMonths: true,
+      max: true,
+    });
+} else {
+    $('#fecha-entrada').pickadate({
+      format: 'yyyy/mm/dd',
+      formatSubmit:'dd/mm/yyyy',
+      selectYears: true,
+      selectMonths: true,
+      max: true,
+    });
+}
 
 function reiniciar_tablas(){
     t_conta.clear().draw();
@@ -682,16 +787,26 @@ function formatearFecha(fecha){
     }
 
     anio = fecha.getUTCFullYear();
-    nueva = dia +"/" + mes + "/" +anio;
+    if (idioma == 0){
+        nueva = dia +"/" + mes + "/" +anio;
+    } else {
+        nueva = anio +"/" + mes + "/" +dia;
+    }
     return nueva;
 }
 
 //dado un fecha en string la convierte en un objeto Date +1 y luego a string
 function nuevaFecha(fecha){
     var arreglo= fecha.split("/");
-    dia = parseInt(arreglo[0]);
-    mes = parseInt(arreglo[1])-1;
-    anio = parseInt(arreglo[2]);
+    if (idioma == 0){
+        dia = parseInt(arreglo[0]);
+        mes = parseInt(arreglo[1])-1;
+        anio = parseInt(arreglo[2]);
+    } else {
+        dia = parseInt(arreglo[2]);
+        mes = parseInt(arreglo[1])-1;
+        anio = parseInt(arreglo[0]);
+    }
     var nueva = new Date(anio,mes,dia);
     nueva.setDate(nueva.getDate()+1);
     nueva = formatearFecha(nueva);
@@ -892,7 +1007,11 @@ function buscarEstado(tipo,cuentaid,moneda){
         error: function(q,error){
             alert(q.responseText) //debug
             $('#processing-modal').modal('toggle');
-            swal("Ups!", "Hubo un error buscando las partidas para la cuenta especificada.", "error");
+            if (idioma == 0){
+                swal("Ups!", "Hubo un error buscando las partidas para la cuenta especificada.", "error");
+            } else {
+                swal("Ups!", "Error occurred trying to search entries for the account.", "error");
+            }
         },
         dataType:'json',
         headers:{
@@ -933,7 +1052,11 @@ function cargar(listaCuenta,listaTrans,numTrans){
             error: function(q,error){
                 alert(q.responseText) //debug
                 $('#processing-modal').modal('toggle');
-                swal("Ups!", "Hubo un error con la Carga Manual, intente de Nuevo.", "error");
+                if (idioma == 0){
+                    swal("Ups!", "Hubo un error con la Carga Manual, intente de Nuevo.", "error");
+                } else {
+                    swal("Ups!", "Error occurred. Try againg plase.", "error");
+                }
         },
             dataType:'json',
             headers:{

@@ -77,13 +77,13 @@ $('#confButton').on('click', function () {
     var tipo = $('#mtx99_tipo').val()
     
     if (banco===("-1")){
-        if (idioma === 0){
+        if (idioma == 0){
             swal("Ups!","Debe seleccionar un banco.","error");        
         } else {
             swal("Ups!","You must select a bank.","error");  
         }
     }else if (tipo===("-1")){
-        if (idioma === 0){
+        if (idioma == 0){
             swal("Ups!","Debe seleccionar una categoría.","error");        
         } else {
             swal("Ups!","You must select a category.","error");  
@@ -91,10 +91,10 @@ $('#confButton').on('click', function () {
     } else if( ($('#f-desde').val() === "") && ($('#f-hasta').val() === "") ){
         var auxdate = new Date();
         var dd = auxdate.getDate();
-        var mm = auxdate.getMonth()+1; //January is 0!
+        var mm = auxdate.getMonth(); //January is 0!
         var yyyy = auxdate.getFullYear()-30;
         var today = new Date();
-        var dd1 = today.getDate()+1;
+        var dd1 = today.getDate();
         var mm1 = today.getMonth()+1; //January is 0!
         var yyyy1 = today.getFullYear();
 
@@ -160,19 +160,34 @@ $('#confButton').on('click', function () {
                 //si se escogió una fecha limite superior
                 if ($('#f-hasta').val() != ""){
                     fh = $('#f-hasta').val();
-                    var aux = fh.substring(0,2);
-                    aux = parseInt(aux);
-                    aux = aux + 1;
-                    aux = aux.toString();
-                    var fechaAux = fh.split("/")
-                    // Para que la consulta se haga hasta el dia que el usuario ingreso
-                    // como fecha tope inclusive
-                    fh = aux + '/' + fechaAux[1] + '/' + fechaAux[2];
+                    if (idioma == 0){
+                        var aux = fh.substring(0,2);           
+                        aux = parseInt(aux);
+                        if (aux <10) {
+                            aux = '0' + aux.toString();
+                        } else {
+                            aux = aux.toString();
+                        }
+                        var fechaAux = fh.split("/")
+                        // Para que la consulta se haga hasta el dia que el usuario ingreso
+                        // como fecha tope inclusive
+                        fh = aux + '/' + fechaAux[1] + '/' + fechaAux[2];
+                    } else {
+                        var aux = fh.split("/")[2];
+                        aux = parseInt(aux);
+                        if (aux <10) {
+                            aux = '0' + aux.toString();
+                        } else {
+                            aux = aux.toString();
+                        }
+                        var fechaAux = fh.split("/")
+                        fh = fechaAux[0] + '/' + fechaAux[1] + '/' + aux;
+                    }
                 }
                 // en caso contrario se toma la fecha actual 
                 else {
                     var today = new Date();
-                    var dd1 = today.getDate()+1;
+                    var dd1 = today.getDate();
                     var mm1 = today.getMonth()+1; //January is 0!
                     var yyyy1 = today.getFullYear();
 
@@ -187,29 +202,49 @@ $('#confButton').on('click', function () {
                     today = dd1+'/'+mm1+'/'+yyyy1;
                     fh = today;    
                 }
-
+                
                 var aux_fd = fd.split("/");
                 var aux_fh = fh.split("/");
-                var result_fd = aux_fd[2] +"/"+ aux_fd[1] +"/"+aux_fd[0]
-                var result_fh = aux_fh[2] +"/"+ aux_fh[1] +"/"+aux_fh[0]
-                fechaDesde = new Date (result_fd);
-                fechaHasta = new Date (result_fh);
-                console.log(fechaDesde);
-                console.log(fechaHasta);
-            }
 
-            if (fechaDesde > fechaHasta){
-                if (idioma === 0){
+                if (idioma != 0){
+                    fd = aux_fd[2] +"/"+ aux_fd[1] +"/"+aux_fd[0];
+                    fh = aux_fh[2] +"/"+ aux_fh[1] +"/"+aux_fh[0];
+                    anio_fh = aux_fh[0]; 
+                    mes_fh = aux_fh[1];
+                    dia_fh = aux_fh[2];
+                    anio_fd = aux_fd[0]; 
+                    mes_fd = aux_fd[1];
+                    dia_fd = aux_fd[2];
+                } else {
+                    anio_fh = aux_fh[2]; 
+                    mes_fh = aux_fh[1];
+                    dia_fh = aux_fh[0];
+                    anio_fd = aux_fd[2]; 
+                    mes_fd = aux_fd[1];
+                    dia_fd = aux_fd[0];
+                }
+            }
+            console.log(anio_fh);
+            console.log(anio_fd);
+            console.log(mes_fh);
+            console.log(mes_fd);
+            console.log(dia_fh);
+            console.log(dia_fd);
+
+            if ((parseInt(anio_fh) < parseInt(anio_fd)) || 
+                ((parseInt(anio_fh) == parseInt(anio_fd)) && (parseInt(mes_fh) < parseInt(mes_fd))) || 
+                ((parseInt(anio_fh) == parseInt(anio_fd))&& (parseInt(mes_fh) == parseInt(mes_fd)) && (parseInt(dia_fh) < parseInt(dia_fd))))
+            {
+                if (idioma == 0){
                     swal("Ups!","Error en las fechas.","error");        
                 } else {
                     swal("Ups!","Error occurred: Date problem.","error");
-                }
+                } 
             } else {
                 //Llamar funcion de busqueda
                 $('#processing-modal').modal('toggle');
-                buscarmtx99(banco,tipo,fd,fh);
-            }
-
+                buscarmtx99(banco,tipo,fd,fh); 
+            } 
         });
     };
 });
@@ -229,7 +264,7 @@ function buscarmtx99(banco,tipo,fechaDesde,fechaHasta){
 
                 var aux = json_data[i].fields.fecha.substring(0,10);
                 var res = aux.split("-");
-                if (idioma === 0){
+                if (idioma == 0){
                     var fin = res[2].concat("/").concat(res[1]).concat("/").concat(res[0]);
                 } else {
                     var fin = res[0].concat("/").concat(res[1]).concat("/").concat(res[2]);
@@ -266,7 +301,7 @@ function buscarmtx99(banco,tipo,fechaDesde,fechaHasta){
         error: function(jqXHR, error){ 
             alert(jqXHR.responseText) //debug
             $('#processing-modal').modal('toggle');
-            if (idioma ===0){
+            if (idioma ==0){
                 swal("Ups!", "Hubo un error procesando la búsqueda", "error");
             } else {
                 swal("Ups!", "Error ocurred trying to execute searching", "error");     
@@ -325,22 +360,42 @@ if (idiomaAux==="es"){
 }
 
 //Inicializar el DatePicker
-$('#f-desde').pickadate({
-  format: 'd/m/yyyy',
-  formatSubmit:'d/m/yyyy',
-  selectYears: true,
-  selectMonths: true,
-  max:true
-})
+if (idioma == 0){
+    $('#f-desde').pickadate({
+        format: 'dd/mm/yyyy',
+        formatSubmit:'dd/mm/yyyy',
+        selectYears: true,
+        selectMonths: true,
+        max:true
+    })
+} else {
+    $('#f-desde').pickadate({
+        format: 'yyyy/mm/dd',
+        formatSubmit:'dd/mm/yyyy',
+        selectYears: true,
+        selectMonths: true,
+        max:true
+    })
+}
 
 //Inicializar el DatePicker
-$('#f-hasta').pickadate({
-  format: 'd/m/yyyy',
-  formatSubmit:'d/m/yyyy',
-  selectYears: true,
-  selectMonths: true,
-  max:true
-})
+if (idioma == 0){
+    $('#f-hasta').pickadate({
+        format: 'dd/mm/yyyy',
+        formatSubmit:'dd/mm/yyyy',
+        selectYears: true,
+        selectMonths: true,
+        max:true
+    })
+} else {
+    $('#f-hasta').pickadate({
+        format: 'yyyy/mm/dd',
+        formatSubmit:'dd/mm/yyyy',
+        selectYears: true,
+        selectMonths: true,
+        max:true
+    })
+}
 
 //Mostrar o esconder filtros elegidos
 $('.cbfilter').on('click', function(){
@@ -374,38 +429,38 @@ $('#crearMTButton').on('click', function () {
     var narrativa = $('#narrativa').val()
     
     if (banco===("-1")){
-        if (idioma === 0){
+        if (idioma == 0){
             swal("Ups!","Debe seleccionar un banco.","error");        
         } else {
             swal("Ups!","You must select a bank.","error");
         }
     }else if (tipo===("-1")){
-        if (idioma === 0){
+        if (idioma == 0){
             swal("Ups!","Debe seleccionar una categoría.","error");        
         } else {
             swal("Ups!","You must select a category.","error");
         }
     }else if (ref_mensaje.length===0){
-        if (idioma === 0){
+        if (idioma == 0){
             swal("Ups!","Debe colocar la referencia.","error");        
         } else {
             swal("Ups!","You must introduce reference field.","error");
         }
     }else if(ref_mensaje_original.length===0){
-       if (idioma === 0){
+       if (idioma == 0){
             swal("Ups!","Debe scolocar la referencia del mensaje original.","error");        
         } else {
             swal("Ups!","You must introduce original message reference field.","error");
         }
     }else if(narrativa.length===0 ){
-        if (idioma === 0){
+        if (idioma == 0){
             swal("Ups!","Debe colocar la narrativa.","error");        
         } else {
             swal("Ups!","You must introduce narrative field.","error");
         }
     }else{
 
-        if (idioma === 0){
+        if (idioma == 0){
             msj ="¿Seguro que desea crear el mensaje MT?";
         } else {
             msj= "Sure you want create the MTn99 message";
@@ -433,7 +488,7 @@ function agregarmtx99(banco,tipo,ref_mensaje,ref_mensaje_original, narrativa){
         data: {"banco99":banco, "tipo99":tipo, "action":"crear", "ref_mensaje99":ref_mensaje, "ref_mensaje_original99":ref_mensaje_original, "narrativa99":narrativa},
         success: function(data){
             $('#processing-modal').modal('toggle');
-            if (idioma === 0){
+            if (idioma == 0){
                 swal("OK", "Mensaje agregado exitosamente", "success");    
             } else {
                 swal("OK", "Successful aggregated message", "success");
@@ -449,7 +504,7 @@ function agregarmtx99(banco,tipo,ref_mensaje,ref_mensaje_original, narrativa){
         error: function(jqXHR, error){ 
             alert(jqXHR.responseText) //debug
             $('#processing-modal').modal('toggle');
-            if (idioma === 0){
+            if (idioma == 0){
                 swal("Ups!", "Hubo un error al intertar crear el mensaje", "error");
             } else {
                 swal("Ups!", "Error occurred trying to create MT message", "success");
@@ -468,13 +523,13 @@ $('#cargarMTButton').on('click', function () {
     var archivo = $('#mtx99_archivo').val()
 
     if (archivo===("-1")){
-        if (idioma === 0){
+        if (idioma == 0){
             swal("Ups!","Debe seleccionar un archivo para cargar datos.","error");        
         } else {
             swal("Ups!","You must select a load file.","error"); 
         }
     } else {
-        if (idioma === 0){
+        if (idioma == 0){
             msj = "¿Seguro que desea cargar los mensajes MT desde el archivo seleccionado?";       
         } else {
             msj = "Sure yo want load MT messages from selected file?";
@@ -510,7 +565,7 @@ function cargarmtx99(archivo){
 
             } else {
                 $('#processing-modal').modal('toggle');
-                if (idioma === 0){
+                if (idioma == 0){
                     swal("OK", "Archivo cargado exitosamente", "success");
                 } else {
                     swal("OK", "Successful loaded file", "success");
@@ -521,7 +576,7 @@ function cargarmtx99(archivo){
         error: function(jqXHR, error){ 
             alert(jqXHR.responseText) //debug
             $('#processing-modal').modal('toggle');
-            if (idioma === 0){
+            if (idioma == 0){
                 swal("Ups!", "Hubo un error al cargar el archivo", "error");
             } else {
                  swal("Ups!", "Error occurred trying to load file", "error");

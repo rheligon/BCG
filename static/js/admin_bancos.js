@@ -71,7 +71,7 @@ $('#delButton').on('click', function () {
     var codB = $('#Cod_banco').val();
     var idB = $("#Id_banco").val();
     if (idB>=0){
-        if (idioma === 0){
+        if (idioma == 0){
             msj = "Seguro que desea eliminar el banco "+ codB +" ?";
         } else {
             msj = "Sure you want delete bank "+ codB +" ?";
@@ -88,7 +88,7 @@ $('#delButton').on('click', function () {
              }
              );
     }else{
-        if (idioma === 0){
+        if (idioma == 0){
             swal("Ups!","Por favor seleccionar el banco a eliminar previamente.","error");
         } else {
             swal("Ups!","Please select a bank for delete.","error");
@@ -158,7 +158,7 @@ $('#updButton').on('click', function () {
     var idB = $("#Id_banco").val();
 
     if (idB>=0){
-        if (idioma === 0){
+        if (idioma == 0){
             msj = "Seguro que desea modificar el banco "+ codB +" ?";
         } else {
             msj = "Sure you want modify bank "+ codB +" ?";
@@ -175,7 +175,7 @@ $('#updButton').on('click', function () {
                  }
                  );
     }else{
-        if (idioma === 0){
+        if (idioma == 0){
             swal("Ups!","Por favor seleccionar el banco a modificar previamente.","error");
         } else {
             swal("Ups!","Please select a bank for modify.","error");
@@ -284,7 +284,7 @@ $('#form-add-bank').validate({
                             $btn.button('reset');
                         },
                         error: function(error){
-                            if (idioma === 0){
+                            if (idioma == 0){
                                 msj = "Hubo un error, por favor verificar que los campos esten correctos e intente nuevamente.";
                             } else {
                                 msj = "Error, verify fields and try again please.";
