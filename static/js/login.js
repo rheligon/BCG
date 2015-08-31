@@ -8,13 +8,13 @@ $('#loginButton').on('click', function () {
     var pass = $('#passwordID').val();
 
     if (user === ""){
-        if (idioma === 0){
+        if (idioma == 0){
             swal("Ups!","Debe indicar su nombre de usuario","error");
         } else {
             swal("Ups!","Indicate your username please","error");
         }        
     } else if (pass === "" ) {
-        if (idioma === 0){
+        if (idioma == 0){
             swal("Ups!","Debe indicar su contraseña","error");
         } else {
             swal("Ups!","Indicate your password please","error");
@@ -51,7 +51,7 @@ function login(user,pass){
         error: function(jqXHR, error){ 
             alert(jqXHR.responseText) //debug
             $('#processing-modal').modal('toggle');
-            if (idioma === 0){
+            if (idioma == 0){
                 swal("Ups!", "Error al intentar ingresar", "error");
             } else{
                 swal("Ups!", "Attempting enter error", "error");

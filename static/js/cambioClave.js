@@ -9,25 +9,25 @@ $('#guardarButton').on('click', function () {
     var clave2 = $('#clave2').val();
     
     if (clave1===("")){
-        if (idioma === 0){
+        if (idioma == 0){
             swal("Ups!","Debe introducir su nueva contraseña.","error");        
         } else {
             swal("Ups!","You must introduce the new password.","error");
         }
     }else if (clave2===("")){
-        if (idioma === 0){
+        if (idioma == 0){
             swal("Ups!","Debe introducir la verificación de la contraseña.","error");
         } else {
             swal("Ups!","You must introduce the password verification.","error");
         }
     } else if (clave1 != clave2) {
-        if (idioma === 0){
+        if (idioma == 0){
             swal("Ups!","Las contraseñas deben coincidir","error");
         } else {
             swal("Ups!","Password and verification field must match","error");
         }
     } else if (clave1.length < 6 || clave2.length < 6) {
-        if (idioma === 0){
+        if (idioma == 0){
             swal("Ups!","Las contraseñas deben tener una longitud de al menos seis (6) caractéres","error");
         } else {
             swal("Ups!","Password and verification field must have a minimum of six (6) characters length","error");
@@ -62,7 +62,7 @@ function guardarContraseña(clave){
         error: function(jqXHR, error){ 
             alert(jqXHR.responseText) //debug
             $('#processing-modal').modal('toggle');
-            if (idioma ===0){
+            if (idioma ==0){
                 swal("Ups!", "Hubo un error tratando de guardar la nueva contraseña", "error");
             } else {
                 swal("Ups!", "Error occurred trying to save the new password", "error");

@@ -950,6 +950,7 @@ def pd_cargaManual(request):
     if request.method == 'POST':
 
         actn = request.POST.get('action')
+        idioma = Configuracion.objects.all()[0].idioma
 
         if actn == 'buscar':
             
@@ -970,7 +971,11 @@ def pd_cargaManual(request):
 
         if actn == 'cargar':
 
-            msg = "El Edo. de Cuenta se ha cargado con exito"
+            if idioma == 0:
+                msg = "El Edo. de Cuenta se ha cargado con exito"
+            else:
+                msg = "Successful loaded Acc. Statement"
+            
             numTrans = int(request.POST.get('numTrans'))
 
             listaCuenta = request.POST.getlist('listaCuenta')[0]
@@ -1776,10 +1781,13 @@ def pd_conciliacion(request):
         return HttpResponseForbidden(retour)
 
     expirarSesion(request)
+    idioma = Configuracion.objects.all()[0].idioma
     template = "matcher/pd_conciliacion.html"
-    fecha_hoy = ("/").join(str(timenow().date()).split("-")[::-1])
-
-    idioma = Configuracion.objects.all()[0].idioma    
+    if idioma == 0:
+        fecha_hoy = ("/").join(str(timenow().date()).split("-")[::-1])
+    else:
+        fecha_Aux = ("/").join(str(timenow().date()).split("-")[::-1])
+        fecha_hoy = ("/").join(list(reversed(fecha_Aux.split("/"))))
     context = {'idioma':idioma, 'cuentas':get_cuentas(request), 'fecha_hoy':fecha_hoy, 'ops':get_ops(request),'ldap':get_ldap(request)}
     return render(request, template, context)
 
@@ -2563,6 +2571,7 @@ def mtn99(request):
 
                 fechad = datetime.strptime(desde, '%d/%m/%Y')
                 fechah = datetime.strptime(hasta, '%d/%m/%Y')
+                fechah = fechah + timedelta(days=1)
 
                 #buscar los mensajes mtx99 del tipo y banco seleccionados, en el rango de fechas suministrado
                 mensajes = Mt99.objects.filter(bic = banco).filter(tipo_mt = tipo)

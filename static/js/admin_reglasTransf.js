@@ -142,7 +142,7 @@ $('#updButton').on('click', function () {
             error: function(jqXHR, error){
                 alert(jqXHR.responseText) //debug
                 $('#processing-modal').modal('toggle');
-                if (idioma === 0){
+                if (idioma == 0){
                     swal("Ups!", "Hubo un error modificando la regla especificada.", "error");
                 } else {
                     swal("Ups!", "Error occurred modifying the rule.", "error");   
@@ -170,7 +170,7 @@ $('#updButton').on('click', function () {
     var a_masc_corr = $('#masc-corr').val();
 
     if (cuenta_id>=0 && regla_id>=0){
-        if (idioma === 0){
+        if (idioma == 0){
             msj = "Seguro que desea modificar la regla "+ a_nom +" ?";
         } else {
             msj = "Sure you want modify the rule "+ a_nom +" ?";
@@ -188,13 +188,13 @@ $('#updButton').on('click', function () {
                  );
     }else{
         if(cuenta_id<0){
-            if (idioma === 0){
+            if (idioma == 0){
                 swal("Ups!", "Acuerdese de seleccionar una cuenta primero", "error");
             } else {
                 swal("Ups!", "Select an account first please.", "error");
             }
         }else{
-            if (idioma === 0){
+            if (idioma == 0){
                 swal("Ups!", "Acuerdese de seleccionar una regla primero", "error");
             } else {
                 swal("Ups!", "Select a rule first please.", "error");
@@ -245,7 +245,7 @@ $('#delButton').on('click', function () {
             error: function(jqXHR, error){
                 alert(jqXHR.responseText) //debug
                 $('#processing-modal').modal('toggle');
-                if (idioma === 0){
+                if (idioma == 0){
                     swal("Ups!", "Hubo un error modificando la regla especificada.", "error");
                 } else {
                     swal("Ups!", "Error occurred modifying the rule.", "error");
@@ -264,7 +264,7 @@ $('#delButton').on('click', function () {
     var regla_id = $("#Id-regla").val();
                 
     if (cuenta_id>=0 && regla_id>=0){
-        if (idioma === 0){
+        if (idioma == 0){
             msj = "Seguro que desea eliminar la regla "+ a_nom +" ?";
         } else {
             msj = "Sure you want delete the rule "+ a_nom +" ?";
@@ -282,13 +282,13 @@ $('#delButton').on('click', function () {
                  );
     }else{
         if (cuenta_id<0){
-           if (idioma === 0){
+           if (idioma == 0){
                 swal("Ups!", "Acuerdese de seleccionar una cuenta primero", "error");
             } else {
                 swal("Ups!", "Select an account first please.", "error");
             }
         }else{
-            if (idioma === 0){
+            if (idioma == 0){
                 swal("Ups!", "Acuerdese de seleccionar una regla primero", "error");
             } else {
                 swal("Ups!", "Select a rule first please.", "error");
@@ -396,7 +396,7 @@ $('#form-add-regla').validate({
                         },
                         error: function(jqXHR, error){
                             alert(jqXHR.responseText) //debug
-                            if (idioma === 0){
+                            if (idioma == 0){
                                 msj = "Hubo un error, por favor verificar que los campos esten correctos e intente nuevamente.";
                             } else {
                                 msj = "Error occured, verify fileds and try again please.";
@@ -430,7 +430,7 @@ $('#form-add-regla').validate({
                 var cuenta_id = $('#Cuenta-sel').val();
 
                 if (cuenta_id<0){
-                    if (idioma === 0){
+                    if (idioma == 0){
                         swal("Ups!", "Acuerdese de seleccionar una cuenta primero", "error");
                     } else {
                         swal("Ups!", "Select an account first please.", "error");
@@ -518,7 +518,7 @@ function reglas(cuentaId){
         error: function(jqXHR, error){
             alert(jqXHR.responseText) //debug
             $('#processing-modal').modal('toggle');
-            if (idioma === 0){
+            if (idioma == 0){
                 swal("Ups!", "Hubo un error buscando la cuenta especificada.", "error");
             } else {
                 swal("Ups!", "Error occurred looking for the account.", "error");

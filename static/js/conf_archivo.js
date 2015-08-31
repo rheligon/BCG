@@ -345,7 +345,7 @@ $('#delButton').on('click', function () {
     var form_elim = $('ul[type="archivo"] > li.active');
 
     if (form_elim.length > 0){
-        if (idioma === 0){
+        if (idioma == 0){
             msj = "Seguro que desea eliminar el formato "+ form_elim.attr("nombre") +" ?";
         } else {
             msj = "Sure you want delete format "+ form_elim.attr("nombre") +" ?";
@@ -431,7 +431,7 @@ $('#updButton').on('click', function () {
                 }
             }
         });
-        if (idioma === 0){
+        if (idioma == 0){
             msj = "Seguro que desea modificar el formato "+ formNom +" ?";
         } else {
             msj = "Sure you want modify format "+ formNom +" ?";
@@ -448,7 +448,7 @@ $('#updButton').on('click', function () {
                  }
                  );
     }else{
-        if (idioma === 0){
+        if (idioma == 0){
             swal("","Por favor seleccionar un formato primero","error");
         } else {
             swal("","Select a format first please","error");

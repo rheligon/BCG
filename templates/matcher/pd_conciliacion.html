@@ -11,17 +11,32 @@
 {%endblock%}
 
 {% block content %}
+<input type="text" id="idioma" value="{{idioma}}" hidden/>
 <div class="container" style="margin-top:30px;">
     <div class="row">
         <div id="formswell" class="well col-md-5 col-md-push-1">
-            <legend id="legend">Reporte Conciliación</legend>
+            <legend id="legend">
+                {%if idioma == 0%}
+                    Reporte Conciliación
+                {%endif%}
+                {%if idioma == 1%}
+                    Reconciliation Report
+                {%endif%}
+            </legend>
 
             <input value="-1" id="tipoArch" hidden>
 
             <form name="pd_concform" id="pd_concform" method="POST" target="_bank">
                 {% csrf_token %}
                 <div class="col-md-12 form-group">
-                  <label class="col-md-4 control-label" for="pd_conc_codcta">Codigo Cuenta:</label>
+                  <label class="col-md-4 control-label" for="pd_conc_codcta">
+                    {%if idioma == 0%}
+                        Código Cuenta:
+                    {%endif%}
+                    {%if idioma == 1%}
+                        Account Code:
+                    {%endif%}
+                  </label>
                   <div class="col-md-7">
                     <select id="pd_conc_codcta" name="pd_conc_codcta" class="form-control">
                         <option value="-1" ufc="" ufh="">------------</option>
@@ -39,7 +54,14 @@
                 </div>
 
                 <div class="col-md-12 form-group">
-                    <label class="col-md-4 control-label">Fecha:</label>
+                    <label class="col-md-4 control-label">
+                        {%if idioma == 0%}
+                            Fecha:
+                        {%endif%}
+                        {%if idioma == 1%}
+                            Date:
+                        {%endif%}
+                    </label>
                     <div class="col-md-5">
                       <input id="pd_conc_fecha" name="pd_conc_fecha"  data-value="{{fecha_hoy}}" class="form-control">
                     </div>
@@ -51,24 +73,49 @@
                 
                 {% if 20 in ops %}
                 <div class="col-md-6">
-                    <input type="submit" value="Autorizar conciliación" id="pd_conc_submit_aut" class="col-md-10 btn btn-success boton autcon">
+                    {%if idioma == 0%}
+                        <input type="submit" value="Autorizar conciliación" id="pd_conc_submit_aut" class="col-md-10 btn btn-success boton autcon">
+                    {%endif%}
+                    {%if idioma == 1%}
+                        <input type="submit" value="Authorize Reconciliation" id="pd_conc_submit_aut" class="col-md-12 btn btn-success boton autcon">
+                    {%endif%}
                 </div>
 
                 <div class="col-md-6">
-                    <input type="submit" value="Ejecutar PDF" id="pd_conc_submit" class="col-md-8 btn btn-primary boton pdf">
+                    {%if idioma == 0%}
+                        <input type="submit" value="Ejecutar PDF" id="pd_conc_submit" class="col-md-8 btn btn-primary boton pdf">
+                    {%endif%}
+                    {%if idioma == 1%}
+                        <input type="submit" value="Execute PDF" id="pd_conc_submit" class="col-md-8 btn btn-primary boton pdf">
+                    {%endif%}
                 </div>
 
                 <div class="col-md-6 pull-right" style="margin-top:2%;">
-                    <input type="submit" value="Ejecutar Excel" id="pd_conc_submit_ex" class="col-md-8 btn btn-primary boton xls">
+                    {%if idioma == 0%}
+                        <input type="submit" value="Ejecutar Excel" id="pd_conc_submit_ex" class="col-md-8 btn btn-primary boton xls">
+                    {%endif%}
+                    {%if idioma == 1%}
+                        <input type="submit" value="Execute Excel" id="pd_conc_submit_ex" class="col-md-8 btn btn-primary boton xls">
+                    {%endif%}
                 </div>
                 {% else %}
                 
                 <div class="col-md-6">
-                    <input type="submit" value="Ejecutar Excel" id="pd_conc_submit_ex" class="col-md-8 btn btn-primary boton xls">
+                    {%if idioma == 0%}
+                        <input type="submit" value="Ejecutar Excel" id="pd_conc_submit_ex" class="col-md-8 btn btn-primary boton xls">
+                    {%endif%}
+                    {%if idioma == 1%}
+                        <input type="submit" value="Execute Excel" id="pd_conc_submit_ex" class="col-md-8 btn btn-primary boton xls">
+                    {%endif%}
                 </div>
 
                 <div class="col-md-6">
-                    <input type="submit" value="Ejecutar PDF" id="pd_conc_submit" class="col-md-8 btn btn-primary boton pdf">
+                    {%if idioma == 0%}
+                        <input type="submit" value="Ejecutar PDF" id="pd_conc_submit" class="col-md-8 btn btn-primary boton pdf">
+                    {%endif%}
+                    {%if idioma == 1%}
+                        <input type="submit" value="Execute PDF" id="pd_conc_submit" class="col-md-8 btn btn-primary boton pdf">
+                    {%endif%}
                 </div>
                 {% endif %}
             </form>
@@ -78,8 +125,6 @@
 {%endblock%}
 
 {% block script%}
-<script> //define el idioma de la tabla (es/en)
-         idioma_tr = "es"</script>
 <script src="{% static 'js/sweet-alert.min.js' %}"></script>
 <script type="text/javascript" src="{% static 'js/jshashtable.js' %}"></script>
 <script type="text/javascript" src="{% static 'js/numberformatter.js' %}"></script>

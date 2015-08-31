@@ -136,19 +136,19 @@ $('#boton-buscar').on('click', function () {
         var codigoCuenta = $('#opt-'+cuentaId).attr("codigo");
         
         if(fechaIni.length<1){
-            if (idioma === 0){ 
+            if (idioma == 0){ 
                 swal("Ups!", "Debe introducir la Fecha Inicial para la Búsqueda", "error");
             } else {
                 swal("Ups!", "You must introduce initial date for search", "error");
             }
         }else if(fechaFin.length<1){
-            if (idioma === 0){ 
+            if (idioma == 0){ 
                 swal("Ups!", "Debe introducir la Fecha Final para la Búsqueda", "error");
             } else {
                 swal("Ups!", "You must introduce final date for search", "error");
             }
         }else if(archivo=="-1"){
-            if (idioma === 0){ 
+            if (idioma == 0){ 
                 swal("Ups!", "Debe Seleccionar el Archivo en el que se realizará la Búsqueda", "error");
             } else {
                 swal("Ups!", "You must select the search file", "error");
@@ -157,7 +157,7 @@ $('#boton-buscar').on('click', function () {
             fecha1 = fechaStringtoDate(fechaIni);
             fecha2 = fechaStringtoDate(fechaFin);
             if(fecha1 > fecha2){
-                if (idioma === 0){
+                if (idioma == 0){
                     swal("Ups!", "La fecha Final no puede ser menor a la Fecha Inicial", "error");
                 } else {
                     swal("Ups!", "Initial date can not be greater than final date", "error");
@@ -168,7 +168,7 @@ $('#boton-buscar').on('click', function () {
             }
         }
     }else{
-        if (idioma === 0){
+        if (idioma == 0){
             swal("Ups!", "Debe Seleccionar el Código de la Cuenta", "error");
         } else {
             swal("Ups!", "You must select the code account", "error");
@@ -218,7 +218,7 @@ $('#boton-consulta').on('click', function () {
         $('#processing-modal').modal('toggle')
         consultar(codigoCuenta);
     }else{
-        if (idioma === 0){
+        if (idioma == 0){
             swal("Ups!", "Debe Seleccionar el Código de la Cuenta", "error");
         } else {
             swal("Ups!", "You must select the code account", "error");
@@ -237,7 +237,7 @@ $('#boton-ejecutar').on('click', function () {
         var fechaMinima =$('#minima_fecha').val()
 
         if(fecha.length<1){
-            if (idioma === 0){ 
+            if (idioma == 0){ 
                 swal("Ups!", "Debe introducir la Fecha para ejecutar el proceso de Archive", "error");
             } else {
                 swal("Ups!", "You must introduce the date for execute Archive process", "error");
@@ -252,14 +252,14 @@ $('#boton-ejecutar').on('click', function () {
                 fecha1 = fechaStringtoDate(fechaMinima);
                 fecha2 = fechaStringtoDate(fecha);
                 if(fecha1 > fecha2){
-                    if (idioma === 0){ 
+                    if (idioma == 0){ 
                         swal("Ups!", "La fecha Final no puede ser menor a la Fecha Mínima de Match", "error");
                     } else {
                         swal("Ups!", "Final date can not be less than Match minimum date", "error");
                     }
                 }else{
                     var $btn;
-                        if (idioma === 0){
+                        if (idioma == 0){
                                 msj= "Seguro que desea crear el Archive para la Cuenta: " + codigoCuenta + " entre las fechas "+fechaMinima+" y " +fecha+ " ?";
                              } else {
                                 msj= "Sure you want to create Archive for the account : " + codigoCuenta + " between dates "+fechaMinima+" and " +fecha+ " ?";
@@ -280,7 +280,7 @@ $('#boton-ejecutar').on('click', function () {
             }
         }
     }else{
-        if (idioma === 0){ 
+        if (idioma == 0){ 
             swal("Ups!", "Debe Seleccionar el Código de la Cuenta", "error");
         } else {
             swal("Ups!", "You must select the code account", "error");
@@ -305,7 +305,7 @@ function buscarArchivos(cuenta){
             error: function(q,error){
                 alert(q.responseText) //debug
                 $('#processing-modal').modal('toggle')
-                if (idioma === 0){
+                if (idioma == 0){
                     swal("Ups!", "Hubo un error consultando los Archivos, intente de Nuevo.", "error");
                 } else {
                     swal("Ups!", "Error at consulting files. Try again please.", "error");
@@ -339,7 +339,7 @@ function consultar(cuenta){
             error: function(q,error){
                 alert(q.responseText) //debug
                 $('#processing-modal').modal('toggle')
-                if (idioma === 0){
+                if (idioma == 0){
                     swal("Ups!", "Hubo un error consultando la Cuenta, intente de Nuevo.", "error");
                 } else {
                     swal("Ups!", "Error at consulting account. Try again please.", "error");
@@ -367,7 +367,7 @@ function consultarEjecutar(cuenta){
                     fecha2 = fechaStringtoDate(fecha);
                     if(fecha1 > fecha2){  
                         $('#processing-modal').modal('toggle')
-                        if (idioma === 0){
+                        if (idioma == 0){
                             swal("Ups!", "La fecha Final no puede ser menor a la Fecha Mínima de Match", "error");
                         } else {
                             swal("Ups!", "Final date can not be greater than match minimum date.", "error");
@@ -375,7 +375,7 @@ function consultarEjecutar(cuenta){
                     }else{
                         $('#processing-modal').modal('toggle')
                         var $btn;
-                        if (idioma === 0){
+                        if (idioma == 0){
                                 msj= "Seguro que desea crear el Archive para la Cuenta: " + cuenta + " entre las fechas "+data.fechaMinima+" y " +fecha+ " ?";
                              } else {
                                 msj= "Sure you want to create Archive for the account : " + cuenta + " between dates "+data.fechaMinima+" and " +fecha+ " ?";
@@ -407,7 +407,7 @@ function consultarEjecutar(cuenta){
             error: function(q,error){
                 alert(q.responseText) //debug
                 $('#processing-modal').modal('toggle')
-                if (idioma === 0){
+                if (idioma == 0){
                     swal("Ups!", "Hubo un error consultando la Cuenta, intente de Nuevo.", "error");
                 } else {
                     swal("Ups!", "Error at consulting account, try again please.", "error");
@@ -432,7 +432,7 @@ function ejecutarArchive(cuenta,fechaMinima,fechaMaxima){
                     for (var i = 0; i < data.archivos.length;i++){
                         $('#selec_archivo').append($("<option></option>").attr("value",data.archivos[i]).text(data.archivos[i])); 
                     }
-                    if (idioma === 0){
+                    if (idioma == 0){
                         msj= "El Archive se ha ejecutado con éxito";
                      } else {
                         msj= "Successful executed Archive.";
@@ -452,7 +452,7 @@ function ejecutarArchive(cuenta,fechaMinima,fechaMaxima){
             error: function(q,error){
                 alert(q.responseText) //debug
                 $('#processing-modal').modal('toggle')
-                if (idioma === 0){
+                if (idioma == 0){
                     swal("Ups!", "Hubo un error ejecutando el Archive, intente de Nuevo.", "error");
                 } else {
                     swal("Ups!", "Error at executing Archive, try again please.", "error");
@@ -489,7 +489,7 @@ function buscarEnArchivo(archivo,cuenta,fechaIni,fechaFin){
                         var td2 = '<td></td>';
                         var td3 = '<td></td>';
                         var td4 = '<td></td>';
-                        if (idioma === 0) {
+                        if (idioma == 0) {
                             var td5 = '<td align ="center"><h4><strong>Matches</strong></h4></td>';
                             var td6 = '<td align ="center"><h4><strong>Automáticos</strong></h4></td>';
                         } else {
@@ -577,7 +577,7 @@ function buscarEnArchivo(archivo,cuenta,fechaIni,fechaFin){
                         var td2 = '<td></td>';
                         var td3 = '<td></td>';
                         var td4 = '<td></td>';
-                        if (idioma === 0) {
+                        if (idioma == 0) {
                             var td5 = '<td align ="center"><h4><strong>Matches</strong></h4></td>';
                             var td6 = '<td align ="center"><h4><strong>Manuales</strong></h4></td>';
                         } else {
@@ -663,7 +663,7 @@ function buscarEnArchivo(archivo,cuenta,fechaIni,fechaFin){
                         var td1 = '<td></td>';
                         var td2 = '<td></td>';
                         var td3 = '<td></td>';
-                        if (idioma === 0) {
+                        if (idioma == 0) {
                             var td4 = '<td align ="center"><h4><strong>Matches</strong></h4></td>';
                             var td5 = '<td align ="center"><h4><strong>Reverso</strong></h4></td>';
                             var td6 = '<td align ="center"><h4><strong>Contabilidad</strong></h4></td>';
@@ -751,7 +751,7 @@ function buscarEnArchivo(archivo,cuenta,fechaIni,fechaFin){
                         var td1 = '<td></td>';
                         var td2 = '<td></td>';
                         var td3 = '<td></td>';
-                        if (idioma === 0){
+                        if (idioma == 0){
                             var td4 = '<td align ="center"><h4><strong>Matches</strong></h4></td>';
                             var td5 = '<td align ="center"><h4><strong>Reverso</strong></h4></td>';
                             var td6 = '<td align ="center"><h4><strong>Corresponsal</strong></h4></td>';
@@ -840,7 +840,7 @@ function buscarEnArchivo(archivo,cuenta,fechaIni,fechaFin){
 
                     if(automaticas.length < 1 && manuales.length < 1 && contabilidades.length < 1 && corresponsales.length < 1){
                         
-                        if (idioma === 0){
+                        if (idioma == 0){
                             msj= "No existen Coincidencias con la busqueda realizada,Intente con fechas diferentes";
                          } else {
                             msj= "Not matches at search. Try with different dates please.";
@@ -864,7 +864,7 @@ function buscarEnArchivo(archivo,cuenta,fechaIni,fechaFin){
             error: function(q,error){
                 alert(q.responseText) //debug
                 $('#processing-modal').modal('toggle')
-               if (idioma === 0){
+               if (idioma == 0){
                     swal("Ups!", "Hubo un error consultando los Archivos, intente de Nuevo.", "error");
                 } else {
                     swal("Ups!", "Error at consulting files. Try again please.", "error");

@@ -7,14 +7,14 @@ $('#cargarMT96Button').on('click', function () {
     var archivo = $('#mtn96_archivo').val()
 
     if (archivo===("-1")){
-        if (idioma === 0){
+        if (idioma == 0){
             swal("Ups!","Debe seleccionar un archivo para cargar los datos.","error");        
         } else {
             swal("Ups!","You must select a file for the automatic load.","error");            
         }
     } else {
         
-        if (idioma === 0){
+        if (idioma == 0){
             msj = "¿Seguro que desea cargar los mensajes MT desde el archivo seleccionado?";    
         } else {
             msj = "Sure you want load MTn96 messages from selected file?";             
@@ -51,7 +51,7 @@ function cargarmtn96(archivo){
 
             } else {
                 $('#processing-modal').modal('toggle');
-                if (idioma === 0){
+                if (idioma == 0){
                     swal("OK", "Archivo cargado exitosamente", "success");
                 } else {
                     swal("OK", "Succesful loaded file", "success");
@@ -62,7 +62,7 @@ function cargarmtn96(archivo){
         error: function(jqXHR, error){ 
             alert(jqXHR.responseText) //debug
             $('#processing-modal').modal('toggle');
-            if (idioma === 0){
+            if (idioma == 0){
                 swal("Ups!", "Hubo un error al cargar el archivo", "error");
             } else { 
                 swal("Ups!", "Error occurred at automatic load", "error");
