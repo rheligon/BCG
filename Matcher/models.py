@@ -495,6 +495,14 @@ class Licencia(models.Model):
     class Meta:
         db_table = 'Licencia'
 
+class MensajesIntraday(models.Model):
+    idmensaje = sqlserver_ado.fields.BigAutoField(db_column='idMensaje', primary_key=True)   
+    tipo = models.CharField(db_column='tipo', max_length = 3)
+    cuenta = models.ForeignKey(Cuenta, db_column='cuenta')
+    fecha_entrada = models.DateTimeField(db_column='fecha_entrada')
+
+    class Meta:
+        db_table = 'MensajesIntraday'
 
 class Modulos(models.Model):
     idmodulo = sqlserver_ado.fields.BigAutoField(db_column='idModulo', primary_key=True)   
@@ -585,7 +593,6 @@ class Mt103(models.Model):
     tipo_op_banco = models.CharField(db_column='tipo_op_banco', max_length=4)  
     cod_instruccion = models.TextField(db_column='cod_instruccion',null=True)  
     tipo_transaccion = models.CharField(db_column='tipo_transaccion', max_length=3,null=True)  
-    fecha_moneda_monto = models.CharField(db_column='fecha_moneda_monto', max_length=24)  
     moneda_monto = models.CharField(db_column='moneda_monto', max_length=18,null=True)  
     tipo_cambio = models.CharField(db_column='tipo_cambio', max_length=12,null=True)  
     cliente_ordenante = models.CharField(db_column='cliente_ordenante', max_length=200)  
@@ -603,10 +610,13 @@ class Mt103(models.Model):
     cargos_receptor = models.CharField(db_column='cargos_receptor', max_length=18,null=True)  
     info_remitente_a_receptor = models.CharField(db_column='info_remitente_a_receptor', max_length=250,null=True)
     reporte_regulatorio = models.CharField(db_column='reporte_regulatorio', max_length=120,null=True)
-    cuenta = models.ForeignKey(Cuenta, db_column='cuenta', null=True)
     remitente = models.CharField(db_column='remitente', max_length=12)  
     receptor = models.CharField(db_column='receptor', max_length=12)  
-    
+    fecha_valor = models.CharField(db_column='fecha_valor', max_length=10)  
+    moneda = models.CharField(db_column='moneda', max_length=3)  
+    monto = models.CharField(db_column='monto', max_length=15)  
+    mensaje_intraday = models.ForeignKey(MensajesIntraday, db_column='mensaje_intraday')
+
     class Meta:
         db_table = 'MT103'
 
@@ -615,7 +625,6 @@ class Mt202(models.Model):
     ref_transaccion = models.CharField(db_column='ref_transaccion', max_length=16)  
     ref_relacion = models.CharField(db_column='ref_relacion', max_length=16)  
     ind_hora = models.TextField(db_column='ind_hora',null=True)  
-    fecha_moneda_monto = models.CharField(db_column='fecha_moneda_monto', max_length=24)  
     institucion_ordenante = models.CharField(db_column='institucion_ordenante', max_length=200,null=True)  
     corresponsal_remitente = models.CharField(db_column='corresponsal_remitente', max_length=200,null=True)  
     corresponsal_receptor = models.CharField(db_column='corresponsal_receptor', max_length=200,null=True)  
@@ -623,10 +632,13 @@ class Mt202(models.Model):
     cuenta_institucion = models.CharField(db_column='cuenta_institucion', max_length=200,null=True)  
     institucion_beneficiaria = models.CharField(db_column='institucion_beneficiaria', max_length=200)  
     info_remitente_a_receptor = models.CharField(db_column='info_remitente_a_receptor', max_length=250,null=True)
-    cuenta = models.ForeignKey(Cuenta, db_column='cuenta', null=True)
     remitente = models.CharField(db_column='remitente', max_length=12)  
-    receptor = models.CharField(db_column='receptor', max_length=12)  
-    
+    receptor = models.CharField(db_column='receptor', max_length=12) 
+    fecha_valor = models.CharField(db_column='fecha_valor', max_length=10)  
+    moneda = models.CharField(db_column='moneda', max_length=3)  
+    monto = models.CharField(db_column='monto', max_length=15)   
+    mensaje_intraday = models.ForeignKey(MensajesIntraday, db_column='mensaje_intraday')
+
     class Meta:
         db_table = 'MT202'
 
@@ -643,10 +655,10 @@ class Mt942(models.Model):
     total_debitos = models.CharField(db_column='total_debitos', max_length=23,null=True)  
     total_creditos = models.CharField(db_column='total_creditos', max_length=23,null=True)  
     info_owner_final = models.CharField(db_column='info_owner_final', max_length=450,null=True)  
-    cuenta = models.ForeignKey(Cuenta, db_column='cuenta', null=True)
     remitente = models.CharField(db_column='remitente', max_length=12)  
     receptor = models.CharField(db_column='receptor', max_length=12)  
-    
+    mensaje_intraday = models.ForeignKey(MensajesIntraday, db_column='mensaje_intraday')
+
     class Meta:
         db_table = 'MT942'
 
