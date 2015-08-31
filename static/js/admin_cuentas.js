@@ -99,16 +99,31 @@ if (idiomaAux==="es"){
 }
 
 //Inicializar el DatePicker
-$('#add-fecha-encaje').pickadate({
-  format: 'd/m/yyyy',
-  container: '#dp-encaje',
-  onOpen: function() {
-    $('#dp-encaje').prop('hidden',false)
-  },
-  onClose: function() {
-    $('#dp-encaje').prop('hidden',true)
-  },
-})
+if (idioma == 0){
+    $('#add-fecha-encaje').pickadate({
+      format: 'd/m/yyyy',
+      max: true,
+      container: '#dp-encaje',
+      onOpen: function() {
+        $('#dp-encaje').prop('hidden',false)
+      },
+      onClose: function() {
+        $('#dp-encaje').prop('hidden',true)
+      },
+    })
+} else {
+    $('#add-fecha-encaje').pickadate({
+      format: 'yyyy/m/d',
+      max: true,
+      container: '#dp-encaje',
+      onOpen: function() {
+        $('#dp-encaje').prop('hidden',false)
+      },
+      onClose: function() {
+        $('#dp-encaje').prop('hidden',true)
+      },
+    })
+}
 
 //Inicializar los Spinner
 $("#spin7").TouchSpin({
@@ -520,6 +535,10 @@ $('#acptencajeButton').on('click', function (event) {
 
     if (cuentaid>=0 && monto.length>0 && fecha.length>0){
         $('#processing-modal').modal('toggle');
+        if (idioma == 1){
+            var aux_f = fecha.split("/")
+            fecha = aux_f[2] + "/" + aux_f[1] + "/" + aux_f[0]
+        }
         encaje_add(cuentaid,monto,fecha);
     }else{
         if (cuentaid<0){

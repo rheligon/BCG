@@ -87,32 +87,62 @@ if (idiomaAux==="es"){
       close: 'Cerrar',
     });
 }
-//inicializamos el DatePicker para Fecha Final
-$('#fecha-ejecutar').pickadate({
+//inicializamos el DatePicker para Fecha ejecutar
+if (idioma == 0){
+    $('#fecha-ejecutar').pickadate({
     format: 'dd/mm/yyyy',
     formatSubmit:'dd/mm/yyyy',
     selectYears: true,
     selectMonths: true,
     max: true,
-});
+    });
+} else {
+    $('#fecha-ejecutar').pickadate({
+    format: 'yyyy/mm/dd',
+    formatSubmit:'dd/mm/yyyy',
+    selectYears: true,
+    selectMonths: true,
+    max: true,
+    });
+}
+
+//inicializamos el DatePicker para Fecha inicial
+if (idioma == 0){
+    $('#fecha-desde').pickadate({
+    format: 'dd/mm/yyyy',
+    formatSubmit:'dd/mm/yyyy',
+    selectYears: true,
+    selectMonths: true,
+    max: true,
+    });
+} else {
+    $('#fecha-desde').pickadate({
+    format: 'yyyy/mm/dd',
+    formatSubmit:'dd/mm/yyyy',
+    selectYears: true,
+    selectMonths: true,
+    max: true,
+    });
+}
 
 //inicializamos el DatePicker para Fecha Final
-$('#fecha-desde').pickadate({
+if (idioma == 0){
+    $('#fecha-hasta').pickadate({
     format: 'dd/mm/yyyy',
     formatSubmit:'dd/mm/yyyy',
     selectYears: true,
     selectMonths: true,
     max: true,
-});
-
-//inicializamos el DatePicker para Fecha Final
-$('#fecha-hasta').pickadate({
-    format: 'dd/mm/yyyy',
+    });
+} else {
+    $('#fecha-hasta').pickadate({
+    format: 'yyyy/mm/dd',
     formatSubmit:'dd/mm/yyyy',
     selectYears: true,
     selectMonths: true,
     max: true,
-});
+    });
+}
 
 //dado un fecha en string la convierte en un objeto Date
 function fechaStringtoDate(fecha){
@@ -130,8 +160,15 @@ $('#boton-buscar').on('click', function () {
     var cuentaId = $('#Cuenta-sel').val();
     
     if (cuentaId>=0){
-        var fechaIni = $('#fecha-desde').val();
-        var fechaFin = $('#fecha-hasta').val();
+        if (idioma != 0){
+            var fechaIni2 = $('#fecha-desde').val().split("/");
+            var fechaFin2 = $('#fecha-hasta').val().split("/");
+            var fechaIni = fechaIni2[2] + "/" + fechaIni2[1] + "/" + fechaIni2[0];
+            var fechaFin = fechaFin2[2] + "/" + fechaFin2[1] + "/" + fechaFin2[0];
+        } else {
+            var fechaIni = $('#fecha-desde').val();
+            var fechaFin = $('#fecha-hasta').val();
+        }
         var archivo = $('#selec_archivo').val();
         var codigoCuenta = $('#opt-'+cuentaId).attr("codigo");
         
@@ -233,7 +270,12 @@ $('#boton-ejecutar').on('click', function () {
     
     if (cuenta>=0){
         var codigoCuenta = $('#opt-'+cuenta).attr("codigo");
-        var fecha = $('#fecha-ejecutar').val()
+        if (idioma == 0){
+            var fecha = $('#fecha-ejecutar').val()
+        } else {
+            var fechaAux = $('#fecha-ejecutar').val().split("/")
+            var fecha = fechaAux[2] + "/" + fechaAux[1] + "/" + fechaAux[0]
+        }
         var fechaMinima =$('#minima_fecha').val()
 
         if(fecha.length<1){
@@ -249,7 +291,13 @@ $('#boton-ejecutar').on('click', function () {
                 $('#processing-modal').modal('toggle')
                 consultarEjecutar(codigoCuenta)
             }else{
-                fecha1 = fechaStringtoDate(fechaMinima);
+                if (idioma == 0 ){
+                    fecha1 = fechaStringtoDate(fechaMinima);
+                } else {
+                    fechaAux = fechaMinima.split("/");
+                    fechaAux2 = fechaAux[2] + "/" + fechaAux[1] + "/" + fechaAux[0];
+                    fecha1 = fechaStringtoDate(fechaAux2);
+                }
                 fecha2 = fechaStringtoDate(fecha);
                 if(fecha1 > fecha2){
                     if (idioma == 0){ 
@@ -263,6 +311,8 @@ $('#boton-ejecutar').on('click', function () {
                                 msj= "Seguro que desea crear el Archive para la Cuenta: " + codigoCuenta + " entre las fechas "+fechaMinima+" y " +fecha+ " ?";
                              } else {
                                 msj= "Sure you want to create Archive for the account : " + codigoCuenta + " between dates "+fechaMinima+" and " +fecha+ " ?";
+                                var fechaAuxM = $('#minima_fecha').val().split("/");
+                                fechaMinima = fechaAuxM[2] + "/" + fechaAuxM[1] + "/" + fechaAuxM[0]
                              }
                         swal({
                             title: "",
@@ -327,7 +377,13 @@ function consultar(cuenta){
             success: function(data){
                 
                 if (data.exito){
-                    $('#minima_fecha').val(data.fechaMinima);
+                    if (idioma != 0){
+                        var aux_f = data.fechaMinima.split("/");
+                        var aux_f2 = aux_f[2] + "/" + aux_f[1] + "/" + aux_f[0] 
+                        $('#minima_fecha').val(aux_f2);
+                    } else {
+                        $('#minima_fecha').val(data.fechaMinima);
+                    }
                 }else{
                     swal({   title: "",
                              text: data.msg,
@@ -555,7 +611,13 @@ function buscarEnArchivo(archivo,cuenta,fechaIni,fechaFin){
                             //creamos los elementos de cada fila
                             var td1 = '<td>'+edoCta+'</td>';
                             var td2 = '<td>'+pagina+'</td>';
-                            var td3 = '<td>'+fecha+'</td>';
+                            if (idioma == 0) {
+                                var fechaAuxD = fecha;
+                            } else {
+                                var fechaAuxD2 = fecha.split("/");
+                                var fechaAuxD = fechaAuxD2[2] + "/" + fechaAuxD2[1] + "/" + fechaAuxD2[0];
+                            }
+                            var td3 = '<td>'+fechaAuxD+'</td>';
                             var td4 = '<td>'+tipo+'</td>';
                             var td5 = '<td>'+rNostro+'</td>';
                             var td6 = '<td>'+rVostro+'</td>';
@@ -639,10 +701,17 @@ function buscarEnArchivo(archivo,cuenta,fechaIni,fechaFin){
                                 rVostro = "";
                             }
 
+                            if (idioma == 0) {
+                                var fechaAuxD = fecha;
+                            } else {
+                                var fechaAuxD2 = fecha.split("/");
+                                var fechaAuxD = fechaAuxD2[2] + "/" + fechaAuxD2[1] + "/" + fechaAuxD2[0];
+                            }
+
                             //creamos los elementos de cada fila
                             var td1 = '<td>'+edoCta+'</td>';
                             var td2 = '<td>'+pagina+'</td>';
-                            var td3 = '<td>'+fecha+'</td>';
+                            var td3 = '<td>'+fechaAuxD+'</td>';
                             var td4 = '<td>'+tipo+'</td>';
                             var td5 = '<td>'+rNostro+'</td>';
                             var td6 = '<td>'+rVostro+'</td>';
@@ -727,10 +796,17 @@ function buscarEnArchivo(archivo,cuenta,fechaIni,fechaFin){
                                 rVostro = "";
                             }
 
+                            if (idioma == 0) {
+                                var fechaAuxD = fecha;
+                            } else {
+                                var fechaAuxD2 = fecha.split("/");
+                                var fechaAuxD = fechaAuxD2[2] + "/" + fechaAuxD2[1] + "/" + fechaAuxD2[0];
+                            }
+
                             //creamos los elementos de cada fila
                             var td1 = '<td>'+edoCta+'</td>';
                             var td2 = '<td>'+pagina+'</td>';
-                            var td3 = '<td>'+fecha+'</td>';
+                            var td3 = '<td>'+fechaAuxD+'</td>';
                             var td4 = '<td>'+tipo+'</td>';
                             var td5 = '<td>'+rNostro+'</td>';
                             var td6 = '<td>'+rVostro+'</td>';
@@ -816,10 +892,17 @@ function buscarEnArchivo(archivo,cuenta,fechaIni,fechaFin){
                                 rVostro = "";
                             }
 
+                            if (idioma == 0) {
+                                var fechaAuxD = fecha;
+                            } else {
+                                var fechaAuxD2 = fecha.split("/");
+                                var fechaAuxD = fechaAuxD2[2] + "/" + fechaAuxD2[1] + "/" + fechaAuxD2[0];
+                            }
+
                             //creamos los elementos de cada fila
                             var td1 = '<td>'+edoCta+'</td>';
                             var td2 = '<td>'+pagina+'</td>';
-                            var td3 = '<td>'+fecha+'</td>';
+                            var td3 = '<td>'+fechaAuxD+'</td>';
                             var td4 = '<td>'+tipo+'</td>';
                             var td5 = '<td>'+rNostro+'</td>';
                             var td6 = '<td>'+rVostro+'</td>';
