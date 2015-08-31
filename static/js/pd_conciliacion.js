@@ -59,7 +59,7 @@ $('.autcon').on('click', function(e){
       if (idioma == 0){
         swal("Ups!","La fecha del último histórico y de la ultima conciliacion son iguales.","error");
       } else {
-        swal("Ups!","Last historic and last reconciliation dates values does not match.","error");
+        swal("Ups!","Last historic and last reconciliation dates values are the same.","error");
       }
   }else{
       if (idioma == 0){

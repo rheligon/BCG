@@ -34,8 +34,14 @@
             <tr id= "tr-{{cuenta.idcuenta}}">
                 <td id= "td-{{cuenta.idcuenta}}"><a href="/resumen/{{cuenta.idcuenta}}" id="{{cuenta.idcuenta}}">{{ cuenta.codigo }}</a></td>
                 <td>{{ cuenta.banco_corresponsal_idbanco.codigo }}</td>
-                <td>{{ cuenta.ultimafechaconciliacion|date:"d/m/Y"|default:"" }}</td>
-                <td>{{ cuenta.ultimafechahistorico|date:"d/m/Y"|default:"" }}</td>
+                {%if idioma == 0%}
+                    <td>{{ cuenta.ultimafechaconciliacion|date:"d/m/Y"|default:"" }}</td>
+                    <td>{{ cuenta.ultimafechahistorico|date:"d/m/Y"|default:"" }}</td>
+                {%endif%}
+                {%if idioma == 1%}
+                    <td>{{ cuenta.ultimafechaconciliacion|date:"Y/m/d"|default:"" }}</td>
+                    <td>{{ cuenta.ultimafechahistorico|date:"Y/m/d"|default:"" }}</td>
+                {%endif%}
             </tr>
             {% endfor %}
         </tbody>
