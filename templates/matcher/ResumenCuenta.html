@@ -12,7 +12,14 @@
     Back
   {%endif%}
 </button>
-<h3>Resumen de Cuenta</h3>
+<h3>
+  {%if idioma == 0%}
+    Resumen de Cuenta
+  {%endif%}
+  {%if idioma == 1%}
+    Account Summary
+  {%endif%}
+</h3>
 <hr/>
 <div class="table-responsive">
     <table class="table table-bordered table-striped tabla">

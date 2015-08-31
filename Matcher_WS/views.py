@@ -463,9 +463,13 @@ def pd_estadoCuentas(request):
     if request.method == 'POST':
 
         cuentaid = int(request.POST.get('cuentaid'))
+        idioma = Configuracion.objects.all()[0].idioma  
 
         if (cuentaid<0):
-            msg = 'Estado de cuenta eliminado exitosamente'
+            if idioma == 0:
+                msg = 'Estado de cuenta eliminado exitosamente'
+            else:
+                msg = 'Successful deleted account statement'
             edcid = request.POST.get('edcid')
             cop = request.POST.get('cop')
 
@@ -474,7 +478,11 @@ def pd_estadoCuentas(request):
                     cargado = Cargado.objects.get(estado_cuenta_idedocuenta=edcid)
                     edc = cargado.estado_cuenta_idedocuenta
                 except Cargado.DoesNotExist:
-                    msg = "No se encontro el estado de cuenta especificado, asegurese de hacer click en el estado de cuenta a eliminar."
+                    if idioma == 0:
+                        msg = "No se encontro el estado de cuenta especificado, asegurese de hacer click en el estado de cuenta a eliminar."
+                    else:
+                        msg = "Account statement not found, be sure to click one first please."
+                    
                     return JsonResponse({'msg': msg, 'elim': False, 'conocor': cop, 'codigo': edcid})
                 
                 conocor = edc.origen
@@ -486,14 +494,23 @@ def pd_estadoCuentas(request):
                     procesado = Procesado.objects.get(estado_cuenta_idedocuenta=edcid)
                     edc = procesado.estado_cuenta_idedocuenta
                 except Procesado.DoesNotExist:
-                    msg = "No se encontro el estado de cuenta especificado, asegurese de hacer click en el estado de cuenta a eliminar."
+                    if idioma == 0:
+                        msg = "No se encontro el estado de cuenta especificado, asegurese de hacer click en el estado de cuenta a eliminar."
+                    else:
+                         msg = "Account statement not found, be sure to click one first please."
+                    
+                    
                     return JsonResponse({'msg': msg, 'elim': False, 'conocor': conocor, 'codigo': edcid})
 
                 conocor = edc.origen
                 edc.delete()
                 return JsonResponse({'msg': msg, 'elim': True, 'conocor': conocor, 'codigo': edcid})
             
-            msg = "No se encontro el estado de cuenta especificado, asegurese de hacer click en el estado de cuenta a eliminar." 
+            if idioma == 0:
+                msg = "No se encontro el estado de cuenta especificado, asegurese de hacer click en el estado de cuenta a eliminar." 
+            else:
+                msg = "Account statement not found, be sure to click one first please."
+            
             return JsonResponse({'msg': msg, 'elim':False})
 
 

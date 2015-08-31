@@ -1,4 +1,3 @@
-
 var csrftoken = $.cookie('csrftoken');
 var num=1;
 var pagina = 1;
