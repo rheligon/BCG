@@ -2780,7 +2780,7 @@ def mtn99(request):
 
 
 @login_required(login_url='/login')
-def intraday(request):
+def intraday(request,cuenta):
     
     permisos = get_ops(request)
     lista = [Opcion.objects.get(idopcion=p).funprincipal for p in permisos]

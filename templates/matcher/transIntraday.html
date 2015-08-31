@@ -51,12 +51,11 @@
         </thead>
         <tbody id="tb-conta">
           {% for mensaje in mensajes %}
-            {{mensaje.mensaje_intraday.tipo}}
             {% if mensaje.mensaje_intraday.tipo == "103" %}
 
               <tr>
-                <td><a id='"mostrar_info{{mensaje.mensaje_intraday.idmensaje}}"' tipo="mensaje.mensaje_intraday.tipo" refremitente="{{mensaje.ref_remitente}}"data-toggle="modal" href="#myModal">{{mensaje.mensaje_intraday.tipo}}</a></td>
-                <td>{{mensaje.monto}}</td>
+                <td ><a id="mostrar_info" value = "{{mensaje.mensaje_intraday.idmensaje}}" name="{{mensaje.mensaje_intraday.idmensaje}}" tipo="{{mensaje.mensaje_intraday.tipo}}" refremitente="{{mensaje.ref_remitente}}" indHora="{{mensaje.ind_hora}}" tipoOpBanco="{{mensaje.tipo_op_banco}}" codInst="{{mensaje.cod_instruccion}}" tipoTrans="{{mensaje.tipo_transaccion}}" monedaMonto="{{mensaje.moneda_monto}}" tipoCambio="{{mensaje.tipo_cambio}}" clienteOrd="{{mensaje.cliente_ordenante}}" instEmi="{{mensaje.institucion_emisor}}" instOrd="{{mensaje.institucion_ordenante}}" corrRemit="{{mensaje.corresponsal_remitente}}" corrRecept="{{mensaje.corresponsal_receptor}}" instReemb="{{mensaje.institucion_reembolso}}" instInter="{{mensaje.institucion_intermediaria}}" ctaInst="{{mensaje.cuenta_institucion}}" clienteBene="{{mensaje.cliente_beneficiario}}" infoRemesa="{{mensaje.info_remesa}}" detCargos="{{mensaje.detalle_cargos}}" cargRemit="{{mensaje.cargos_remitente}}" cargRecept="{{mensaje.cargos_receptor}}" infoRemitARecept="{{mensaje.info_remitente_a_receptor}}" repReg="{{mensaje.reporte_regulatorio}}" remitente="{{mensaje.remitente}}" receptor="{{mensaje.receptor}}" fechaVal="{{mensaje.fecha_valor}}" moneda="{{mensaje.moneda}}" monto="{{mensaje.monto}}" data-toggle="modal" href="#myModal">{{mensaje.mensaje_intraday.tipo}}</a></td>
+                <td>{{mensaje.monto|intcomma|cut:"-"}}</td>
                 <td></td>
                 <td>{{mensaje.mensaje_intraday.fecha_entrada}}</td>
                 <td>{{mensaje.fecha_valor}}</td>
@@ -64,7 +63,7 @@
             {% elif mensaje.mensaje_intraday.tipo == "202"%}
               <tr>
                 <td><a data-toggle="modal" data-target="#myModal">{{mensaje.mensaje_intraday.tipo}}</a></td>
-                <td>{{mensaje.monto}}</td>
+                <td>{{mensaje.monto|intcomma|cut:"-"}}</td>
                 <td></td>
                 <td>{{mensaje.mensaje_intraday.fecha_entrada}}</td>
                 <td>{{mensaje.fecha_valor}}</td>
@@ -76,13 +75,23 @@
       </table>
     </div>
   </div>
+  <div class="col-md-7" align="rigth">
+            <button type="button" id="boton-regresar" value ="{{cuenta.idcuenta}}" style="align:right" class="col-md-3 btn btn-warning"><a href="/intraday/">
+                 {%if idioma == 0%}
+                    Regresar
+                {%endif%}
+                {%if idioma == 1%}
+                    Back
+                {%endif%}
+            </a></button>
+        </div>
   </fieldset>
 </form>
 
 <!-- Static Modal para procesando -->
 <div class="modal modal-static fade" id="processing-modal" role="dialog" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
+    <div class="modal-dialog" >
+        <div class="modal-content" >
             <div class="modal-body">
                 <div class="text-center">
                     <img src="{% static 'images/procesando.gif' %}" class="icon" />
@@ -95,13 +104,35 @@
 
 <!-- Modal -->
 <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
-  <div class="modal-dialog" role="document">
+  <div class="modal-dialog" role="document" style="width:700px">
     <div class="modal-content">
-      <div class="modal-header">
+      <div class="modal-header bg-primary">
         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-        <h4 class="modal-title" id="myModalLabel">Modal title</h4>
+        <h4 class="modal-title" id="myModalLabel"></h4>
       </div>
       <div id="cuerpo" class="modal-body">
+        <div class="tab-pane active">
+          <div id="table-div-conta" class="table-responsive">
+            <table id="table-info" class="table table-bordered table-striped tabla">
+              <thead>
+                <tr>
+                  {%if idioma == 0%}
+                    <th>Etiqueta</th>
+                    <th>Nombre del Campo</th>
+                    <th>Contenido</th>
+                  {%endif%}
+                  {%if idioma == 1%}
+                    <th>Tag</th>
+                    <th>Field Name</th>
+                    <th>Content</th>
+                  {%endif%}
+                </tr>
+              </thead>
+              <tbody id="info-mensaje">
+              </tbody>
+            </table>
+          </div>
+        </div>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
@@ -126,4 +157,5 @@
 <script type="text/javascript" src="{% static 'js/picker.date.js' %}"></script>
 <script type="text/javascript" src="{% static 'js/pickerlegacy.js' %}"></script>
 <script src="{% static 'js/transIntraday.js' %}" type="text/javascript"></script>
+<script src="{% static 'js/intraday.js' %}" type="text/javascript"></script>
 {% endblock %}

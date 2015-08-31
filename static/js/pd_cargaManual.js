@@ -359,7 +359,7 @@ $('#boton-nuevo').on('click', function () {
 
         //inicializamos el DatePicker para Fecha Final
         if (idioma == 0){
-            dp1=$('#fecha-manual-nuevo2').pickadate({
+            dp1=$('#fecha-manual-nuevo1').pickadate({
               format: 'dd/mm/yyyy',
               formatSubmit:'dd/mm/yyyy',
               selectYears: true,
@@ -367,7 +367,7 @@ $('#boton-nuevo').on('click', function () {
               max: true,
             });
         } else {
-            dp1=$('#fecha-manual-nuevo2').pickadate({
+            dp1=$('#fecha-manual-nuevo1').pickadate({
               format: 'yyyy/mm/dd',
               formatSubmit:'dd/mm/yyyy',
               selectYears: true,
