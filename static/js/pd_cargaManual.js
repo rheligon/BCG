@@ -1,4 +1,3 @@
-
 var csrftoken = $.cookie('csrftoken');
 var num=1;
 var pagina = 1;
@@ -357,7 +356,7 @@ $('#boton-nuevo').on('click', function () {
         $("#fecha-manual-nuevo1").css('background-color', 'white');
 
 
-        //inicializamos el DatePicker para Fecha Final
+        //inicializamos el DatePicker para Fecha Inicial
         if (idioma == 0){
             dp1=$('#fecha-manual-nuevo1').pickadate({
               format: 'dd/mm/yyyy',

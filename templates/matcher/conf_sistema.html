@@ -64,8 +64,18 @@
                     {%endif%}
                 </label>
                 <div class="col-xs-5">
-                    <input id="emp-nombre" type="text" class="form-control" value="{{empresa.nombre}}" name="nombre" required>
-                    <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
+                    {%if idioma == 0%}
+                        {% with "Complete este campo por favor" as mensaje %} 
+                        <input id="emp-nombre" type="text" class="form-control" value="{{empresa.nombre}}" name="nombre" oninvalid="this.setCustomValidity('{{mensaje}}')" oninput="setCustomValidity('')" required>
+                        <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
+                        {% endwith %}
+                    {%endif%}
+                    {%if idioma == 1%}
+                        {% with "Complete this field please" as mensaje %} 
+                        <input id="emp-nombre" type="text" class="form-control" value="{{empresa.nombre}}" name="nombre" oninvalid="this.setCustomValidity('{{mensaje}}')" oninput="setCustomValidity('')" required>
+                        <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
+                        {% endwith %}
+                    {%endif%}
                 <div class="help-block with-errors"></div>
                 </div>
             </div>
@@ -80,8 +90,18 @@
                     {%endif%}
                 </label>
                 <div class="col-xs-5">
-                    <input type="text" class="form-control" value="{{empresa.nombregrupo}}" name="g_fin" required>
-                    <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
+                    {%if idioma == 0%}
+                        {% with "Complete este campo por favor" as mensaje %}
+                        <input type="text" class="form-control" value="{{empresa.nombregrupo}}" name="g_fin"  oninvalid="this.setCustomValidity('{{mensaje}}')" oninput="setCustomValidity('')" required>
+                        {% endwith %}
+                    {%endif%}
+                    {%if idioma == 1%}
+                        {% with "Complete this field please" as mensaje %}
+                        <input type="text" class="form-control" value="{{empresa.nombregrupo}}" name="g_fin"  oninvalid="this.setCustomValidity('{{mensaje}}')" oninput="setCustomValidity('')" required>
+                        <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
+                        {% endwith %}
+                    {%endif%} 
+                        
                 <div class="help-block with-errors"></div>
                 </div>
             </div>
@@ -96,8 +116,18 @@
                     {%endif%}
                 </label>
                 <div class="col-xs-5">
-                    <input type="text" class="form-control" value="{{empresa.direccion}}" name="dir" required/>
-                    <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
+                    {%if idioma == 0%}
+                        {% with "Complete este campo por favor" as mensaje %}
+                        <input type="text" class="form-control" value="{{empresa.direccion}}" name="dir" oninvalid="this.setCustomValidity('{{mensaje}}')" oninput="setCustomValidity('')" required/>
+                        <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
+                        {% endwith %}
+                    {%endif%}
+                    {%if idioma == 1%}
+                        {% with "Complete this field please" as mensaje %}
+                        <input type="text" class="form-control" value="{{empresa.direccion}}" name="dir" oninvalid="this.setCustomValidity('{{mensaje}}')" oninput="setCustomValidity('')" required/>
+                        <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
+                        {% endwith %}
+                    {%endif%}
                 <div class="help-block with-errors"></div>
                 </div>
             </div>
@@ -106,8 +136,18 @@
             <div class="form-group has-feedback">
                 <label class="col-xs-3 control-label">Logo:</label>
                 <div class="col-xs-5">
-                    <input type="text" class="form-control" value="{{empresa.dir_logo}}" name="logo" required/>
-                    <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
+                    {%if idioma == 0%}
+                        {% with "Complete este campo por favor" as mensaje %}
+                        <input type="text" class="form-control" value="{{empresa.dir_logo}}" name="logo" oninvalid="this.setCustomValidity('{{mensaje}}')" oninput="setCustomValidity('')" required/>
+                        <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
+                        {% endwith %}
+                    {%endif%}
+                    {%if idioma == 1%}
+                        {% with "Complete this field please" as mensaje %}
+                        <input type="text" class="form-control" value="{{empresa.dir_logo}}" name="logo" oninvalid="this.setCustomValidity('{{mensaje}}')" oninput="setCustomValidity('')" required/>
+                        <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
+                        {% endwith %}
+                    {%endif%}
                 <div class="help-block with-errors"></div>
                 </div>
             </div>
@@ -116,8 +156,18 @@
             <div class="form-group has-feedback">
                 <label class="col-xs-3 control-label">BIC:</label>
                 <div class="col-xs-5">
-                    <input type="text" class="form-control" value="{{conf.bic}}" name="bic" required/>
-                    <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
+                     {%if idioma == 0%}
+                        {% with "Complete este campo por favor" as mensaje %}
+                        <input type="text" class="form-control" value="{{conf.bic}}" name="bic" required oninvalid="this.setCustomValidity('{{mensaje}}')" oninput="setCustomValidity('')"/>
+                        <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
+                        {% endwith %}
+                    {%endif%}
+                    {%if idioma == 1%}
+                        {% with "Complete this field please" as mensaje %}
+                        <input type="text" class="form-control" value="{{conf.bic}}" name="bic" required oninvalid="this.setCustomValidity('{{mensaje}}')" oninput="setCustomValidity('')"/>
+                        <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
+                        {% endwith %}
+                    {%endif%}
                 <div class="help-block with-errors"></div>
                 </div>
             </div>
@@ -133,8 +183,18 @@
                     {%endif%}
                 </label>
                 <div class="col-xs-5">
-                    <input type="text" class="form-control" value="{{empresa.pais}}" name="pais" required/>
-                    <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
+                    {%if idioma == 0%}
+                        {% with "Complete este campo por favor" as mensaje %}
+                        <input type="text" class="form-control" value="{{empresa.pais}}" name="pais" oninvalid="this.setCustomValidity('{{mensaje}}')" oninput="setCustomValidity('')" required/>
+                        <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
+                        {% endwith %}
+                    {%endif%}
+                    {%if idioma == 1%}
+                        {% with "Complete this field please" as mensaje %}
+                        <input type="text" class="form-control" value="{{empresa.pais}}" name="pais" oninvalid="this.setCustomValidity('{{mensaje}}')" oninput="setCustomValidity('')" required/>
+                        <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
+                        {% endwith %}
+                    {%endif%}
                 <div class="help-block with-errors"></div>
                 </div>
             </div>
@@ -151,8 +211,18 @@
                     {%endif%}
                 </label>
                 <div class="col-xs-5">
-                    <input type="text" class="form-control" value="{{empresa.creditoscontabilidad}}" name="c_conta" required/>
-                    <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
+                    {%if idioma == 0%}
+                        {% with "Complete este campo por favor" as mensaje %}
+                        <input type="text" class="form-control" value="{{empresa.creditoscontabilidad}}" name="c_conta" oninvalid="this.setCustomValidity('{{mensaje}}')" oninput="setCustomValidity('')" required/>
+                        <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
+                        {% endwith %}
+                    {%endif%}
+                    {%if idioma == 1%}
+                        {% with "Complete this field please" as mensaje %}
+                        <input type="text" class="form-control" value="{{empresa.creditoscontabilidad}}" name="c_conta" oninvalid="this.setCustomValidity('{{mensaje}}')" oninput="setCustomValidity('')" required/>
+                        <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
+                        {% endwith %}
+                    {%endif%}
                 <div class="help-block with-errors"></div>
                 </div>
             </div>
@@ -167,8 +237,18 @@
                     {%endif%}
                 </label>
                 <div class="col-xs-5">
-                    <input type="text" class="form-control" value="{{empresa.debitoscontabilidad}}" name="d_conta" required/>
-                    <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
+                    {%if idioma == 0%}
+                        {% with "Complete este campo por favor" as mensaje %}
+                        <input type="text" class="form-control" value="{{empresa.debitoscontabilidad}}" name="d_conta" oninvalid="this.setCustomValidity('{{mensaje}}')" oninput="setCustomValidity('')" required/>
+                        <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
+                        {% endwith %}
+                    {%endif%}
+                    {%if idioma == 1%}
+                        {% with "Complete this field please" as mensaje %}
+                         <input type="text" class="form-control" value="{{empresa.debitoscontabilidad}}" name="d_conta" oninvalid="this.setCustomValidity('{{mensaje}}')" oninput="setCustomValidity('')" required/>
+                        <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
+                        {% endwith %}
+                    {%endif%}
                 <div class="help-block with-errors"></div>
                 </div>
             </div>
@@ -183,8 +263,18 @@
                     {%endif%}
                 </label>
                 <div class="col-xs-5">
-                    <input type="text" class="form-control" value="{{empresa.creditoscorresponsal}}" name="c_corr" required/>
-                    <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
+                    {%if idioma == 0%}
+                        {% with "Complete este campo por favor" as mensaje %}
+                        <input type="text" class="form-control" value="{{empresa.creditoscorresponsal}}" name="c_corr" oninvalid="this.setCustomValidity('{{mensaje}}')" oninput="setCustomValidity('')" required/>
+                        <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
+                        {% endwith %}
+                    {%endif%}
+                    {%if idioma == 1%}
+                        {% with "Complete this field please" as mensaje %}
+                        <input type="text" class="form-control" value="{{empresa.creditoscorresponsal}}" name="c_corr" oninvalid="this.setCustomValidity('{{mensaje}}')" oninput="setCustomValidity('')" required/>
+                        <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
+                        {% endwith %}
+                    {%endif%}
                 <div class="help-block with-errors"></div>
                 </div>
             </div>
@@ -199,8 +289,18 @@
                     {%endif%}
                 </label>
                 <div class="col-xs-5">
-                    <input type="text" class="form-control" value="{{empresa.debitoscorresponsal}}" name="d_corr" required/>
-                    <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
+                     {%if idioma == 0%}
+                        {% with "Complete este campo por favor" as mensaje %}
+                        <input type="text" class="form-control" value="{{empresa.debitoscorresponsal}}" name="d_corr" oninvalid="this.setCustomValidity('{{mensaje}}')" oninput="setCustomValidity('')" required/>
+                        <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
+                        {% endwith %}
+                    {%endif%}
+                    {%if idioma == 1%}
+                        {% with "Complete this field please" as mensaje %}
+                        <input type="text" class="form-control" value="{{empresa.debitoscorresponsal}}" name="d_corr" oninvalid="this.setCustomValidity('{{mensaje}}')" oninput="setCustomValidity('')" required/>
+                        <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
+                        {% endwith %}
+                    {%endif%}
                 <div class="help-block with-errors"></div>
                 </div>
             </div>
@@ -217,8 +317,18 @@
                     {%endif%}
                 </label>
                 <div class="col-xs-5">
-                    <input type="text" class="form-control" value="{{empresa.autorizadopor}}" name="p_aut" required/>
-                    <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
+                    {%if idioma == 0%}
+                        {% with "Complete este campo por favor" as mensaje %}
+                        <input type="text" class="form-control" value="{{empresa.autorizadopor}}" name="p_aut" oninvalid="this.setCustomValidity('{{mensaje}}')" oninput="setCustomValidity('')" required/>
+                        <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
+                        {% endwith %}
+                    {%endif%}
+                    {%if idioma == 1%}
+                        {% with "Complete this field please" as mensaje %}
+                        <input type="text" class="form-control" value="{{empresa.autorizadopor}}" name="p_aut" oninvalid="this.setCustomValidity('{{mensaje}}')" oninput="setCustomValidity('')" required/>
+                        <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
+                        {% endwith %}
+                    {%endif%}
                 <div class="help-block with-errors"></div>
                 </div>
             </div>
@@ -233,8 +343,18 @@
                     {%endif%}
                 </label>
                 <div class="col-xs-5">
-                    <input type="text" class="form-control" value="{{empresa.firmadopor}}" name="p_fir" required/>
-                    <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
+                    {%if idioma == 0%}
+                        {% with "Complete este campo por favor" as mensaje %}
+                        <input type="text" class="form-control" value="{{empresa.firmadopor}}" name="p_fir" oninvalid="this.setCustomValidity('{{mensaje}}')" oninput="setCustomValidity('')" required/>
+                        <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
+                        {% endwith %}
+                    {%endif%}
+                    {%if idioma == 1%}
+                        {% with "Complete this field please" as mensaje %}
+                        <input type="text" class="form-control" value="{{empresa.firmadopor}}" name="p_fir" oninvalid="this.setCustomValidity('{{mensaje}}')" oninput="setCustomValidity('')" required/>
+                        <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
+                        {% endwith %}
+                    {%endif%}
                 <div class="help-block with-errors"></div>
                 </div>
             </div>
@@ -249,8 +369,18 @@
                     {%endif%}
                 </label>
                 <div class="col-xs-5">
-                    <input type="text" class="form-control" value="{{empresa.cargofirmante}}" name="cargo" required/>
-                    <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
+                    {%if idioma == 0%}
+                        {% with "Complete este campo por favor" as mensaje %}
+                        <input type="text" class="form-control" value="{{empresa.cargofirmante}}" name="cargo" oninvalid="this.setCustomValidity('{{mensaje}}')" oninput="setCustomValidity('')" required/>
+                        <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
+                        {% endwith %}
+                    {%endif%}
+                    {%if idioma == 1%}
+                        {% with "Complete this field please" as mensaje %}
+                        <input type="text" class="form-control" value="{{empresa.cargofirmante}}" name="cargo" oninvalid="this.setCustomValidity('{{mensaje}}')" oninput="setCustomValidity('')" required/>
+                        <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
+                        {% endwith %}
+                    {%endif%}
                 <div class="help-block with-errors"></div>
                 </div>
             </div>
@@ -350,9 +480,20 @@
                 {%endif%}
             </label>
             <div class="col-xs-5">
-                <input type="text" class="form-control" value="{{conf.archcontabilidadcarg}}" name="cont_carg"  pattern="^[A-Z]+\:\\[a-zA-Z0-9-_\.\'\(\)\&\%\$\#\!\¿\¡\[\]\{\}\,\;\\]+$" oninvalid="this.setCustomValidity('Introduzca un directirio válido. Por ejemplo: C:\\Matcher\\Ruta')" oninput="setCustomValidity('')" required/>
-                <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
-                <div class="help-block with-errors"></div>
+                {%if idioma == 0%}
+                    {% with "Introduzca un directorio válido. Por ejemplo: C:\\\Matcher\\\Ruta" as mensaje %}
+                    <input type="text" class="form-control" value="{{conf.archcontabilidadcarg}}" name="cont_carg"  pattern="^[A-Z]+\:\\[a-zA-Z0-9-_\.\'\(\)\&\%\$\#\!\¿\¡\[\]\{\}\,\;\\]+$" oninvalid="this.setCustomValidity('{{mensaje}}')" oninput="setCustomValidity('')" required/>
+                    <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
+                    <div class="help-block with-errors"></div>
+                    {% endwith %}
+                {%endif%}
+                {%if idioma == 1%}
+                    {% with "Introduce a valid path please. By example: C:\\\Matcher\\\Rute" as mensaje %}    
+                    <input type="text" class="form-control" value="{{conf.archcontabilidadcarg}}" name="cont_carg"  pattern="^[A-Z]+\:\\[a-zA-Z0-9-_\.\'\(\)\&\%\$\#\!\¿\¡\[\]\{\}\,\;\\]+$" oninvalid="this.setCustomValidity('{{mensaje}}')" oninput="setCustomValidity('')" required/>
+                    <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
+                    <div class="help-block with-errors"></div>
+                    {% endwith %}
+                {%endif%}
             </div>
         </div>
         <div class="form-group has-feedback">
@@ -365,9 +506,20 @@
                 {%endif%}
             </label>
             <div class="col-xs-5">
-                <input type="text" class="form-control" value="{{conf.archswiftcarg}}" name="corr_carg" pattern="^[A-Z]+\:\\[a-zA-Z0-9-_\.\'\(\)\&\%\$\#\!\¿\¡\[\]\{\}\,\;\\]+$" oninvalid="this.setCustomValidity('Introduzca un directirio válido. Por ejemplo: C:\\Matcher\\Ruta')" oninput="setCustomValidity('')" required/>
-                <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
-                <div class="help-block with-errors"></div>
+                {%if idioma == 0%}
+                    {% with "Introduzca un directorio válido. Por ejemplo: C:\\\Matcher\\\Ruta" as mensaje %}
+                    <input type="text" class="form-control" value="{{conf.archswiftcarg}}" name="corr_carg" pattern="^[A-Z]+\:\\[a-zA-Z0-9-_\.\'\(\)\&\%\$\#\!\¿\¡\[\]\{\}\,\;\\]+$" oninvalid="this.setCustomValidity('{{mensaje}}')" oninput="setCustomValidity('')" required/>
+                    <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
+                    <div class="help-block with-errors"></div>
+                    {% endwith %}
+                {%endif%}
+                {%if idioma == 1%}
+                    {% with "Introduce a valid path please. By example: C:\\\Matcher\\\Rute" as mensaje %} 
+                    <input type="text" class="form-control" value="{{conf.archswiftcarg}}" name="corr_carg" pattern="^[A-Z]+\:\\[a-zA-Z0-9-_\.\'\(\)\&\%\$\#\!\¿\¡\[\]\{\}\,\;\\]+$" oninvalid="this.setCustomValidity('{{mensaje}}')" oninput="setCustomValidity('')" required/>
+                    <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
+                    <div class="help-block with-errors"></div>
+                    {% endwith %}
+                {%endif%}
             </div>
         </div>
         <div class="form-group has-feedback">
@@ -380,9 +532,20 @@
                 {%endif%}
             </label>
             <div class="col-xs-5">
-                <input type="text" class="form-control" value="{{conf.archcontabilidadproc}}" name="cont_procs" pattern="^[A-Z]+\:\\[a-zA-Z0-9-_\.\'\(\)\&\%\$\#\!\¿\¡\[\]\{\}\,\;\\]+$" oninvalid="this.setCustomValidity('Introduzca un directirio válido. Por ejemplo: C:\\Matcher\\Ruta')" oninput="setCustomValidity('')" required/>
-                <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
-                <div class="help-block with-errors"></div>
+                {%if idioma == 0%}
+                    {% with "Introduzca un directorio válido. Por ejemplo: C:\\\Matcher\\\Ruta" as mensaje %}
+                    <input type="text" class="form-control" value="{{conf.archcontabilidadproc}}" name="cont_procs" pattern="^[A-Z]+\:\\[a-zA-Z0-9-_\.\'\(\)\&\%\$\#\!\¿\¡\[\]\{\}\,\;\\]+$" oninvalid="this.setCustomValidity('{{mensaje}}')" oninput="setCustomValidity('')" required/>
+                    <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
+                    <div class="help-block with-errors"></div>
+                    {% endwith %}
+                {%endif%}
+                {%if idioma == 1%}
+                    {% with "Introduce a valid path please. By example: C:\\\Matcher\\\Rute" as mensaje %} 
+                    <input type="text" class="form-control" value="{{conf.archcontabilidadproc}}" name="cont_procs" pattern="^[A-Z]+\:\\[a-zA-Z0-9-_\.\'\(\)\&\%\$\#\!\¿\¡\[\]\{\}\,\;\\]+$" oninvalid="this.setCustomValidity('{{mensaje}}')" oninput="setCustomValidity('')" required/>
+                    <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
+                    <div class="help-block with-errors"></div>
+                    {% endwith %}
+                {%endif%}
             </div>
         </div>
         <div class="form-group has-feedback">
@@ -395,9 +558,20 @@
                 {%endif%}
             </label>
             <div class="col-xs-5">
-                <input type="text" class="form-control" value="{{conf.archswiftproc}}" name="corr_procs" pattern="^[A-Z]+\:\\[a-zA-Z0-9-_\.\'\(\)\&\%\$\#\!\¿\¡\[\]\{\}\,\;\\]+$" oninvalid="this.setCustomValidity('Introduzca un directirio válido. Por ejemplo: C:\\Matcher\\Ruta')" oninput="setCustomValidity('')" required/>
-                <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
-                <div class="help-block with-errors"></div>
+                 {%if idioma == 0%}
+                    {% with "Introduzca un directorio válido. Por ejemplo: C:\\\Matcher\\\Ruta" as mensaje %}
+                    <input type="text" class="form-control" value="{{conf.archswiftproc}}" name="corr_procs" pattern="^[A-Z]+\:\\[a-zA-Z0-9-_\.\'\(\)\&\%\$\#\!\¿\¡\[\]\{\}\,\;\\]+$" oninvalid="this.setCustomValidity('{{mensaje}}')" oninput="setCustomValidity('')" required/>
+                    <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
+                    <div class="help-block with-errors"></div>
+                    {% endwith %}
+                {%endif%}
+                {%if idioma == 1%}
+                    {% with "Introduce a valid path please. By example: C:\\\Matcher\\\Rute" as mensaje %}
+                    <input type="text" class="form-control" value="{{conf.archswiftproc}}" name="corr_procs" pattern="^[A-Z]+\:\\[a-zA-Z0-9-_\.\'\(\)\&\%\$\#\!\¿\¡\[\]\{\}\,\;\\]+$" oninvalid="this.setCustomValidity('{{mensaje}}')" oninput="setCustomValidity('')" required/>
+                        <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
+                        <div class="help-block with-errors"></div>
+                        {% endwith %}
+                    {%endif%}
             </div>
         </div>
     </div>
@@ -463,9 +637,21 @@
             <div class="form-group has-feedback">
                 <label class="col-xs-3 control-label">Host:</label>
                 <div class="col-xs-5">
-                    <input type="text" class="form-control" value="{{conf.matcherhost}}" name="m-host" pattern="^(?!0)(?!.*\.$)((1?\d?\d|25[0-5]|2[0-4]\d)(\.|$)){4}$" oninvalid="this.setCustomValidity('Introduzca una dirección IP válida. Por ejemplo: 1.2.3.4')" oninput="setCustomValidity('')" onkeypress='return solonumeroypunto(event)' onkeyup='return solonumeroypunto(event)' required/>
-                    <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
-                    <div class="help-block with-errors"></div>
+                    {%if idioma == 0%}
+                        {% with "Introduzca una dirección IP válida. Por ejemplo: 1.2.3.4" as mensaje %}
+                        <input type="text" class="form-control" value="{{conf.matcherhost}}" name="m-host" pattern="^(?!0)(?!.*\.$)((1?\d?\d|25[0-5]|2[0-4]\d)(\.|$)){4}$" oninvalid="this.setCustomValidity('{{mensaje}}')" oninput="setCustomValidity('')" onkeypress='return solonumeroypunto(event)' onkeyup='return solonumeroypunto(event)' required/>
+                        <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
+                        <div class="help-block with-errors"></div>
+                        {% endwith %}
+                    {% endif %}
+                    {%if idioma == 1%}
+                        {% with "Introce a valid IP adress please. By example: 1.2.3.4" as mensaje %}
+                        <input type="text" class="form-control" value="{{conf.matcherhost}}" name="m-host" pattern="^(?!0)(?!.*\.$)((1?\d?\d|25[0-5]|2[0-4]\d)(\.|$)){4}$" oninvalid="this.setCustomValidity('{{mensaje}}')" oninput="setCustomValidity('')" onkeypress='return solonumeroypunto(event)' onkeyup='return solonumeroypunto(event)' required/>
+                        <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
+                        <div class="help-block with-errors"></div>
+                        {% endwith %}
+                    {% endif %}
+
                 </div>
             </div>
 
@@ -479,9 +665,20 @@
                     {%endif%}
                 </label>
                 <div class="col-xs-5">
-                    <input type="text" class="form-control" value="{{conf.matcherpuerto}}" name="m-puerto" pattern="^[0-9]{1,5}$" oninvalid="this.setCustomValidity('Introduzca un puero válido. Por ejemplo: 1234')" oninput="setCustomValidity('')" onkeypress='return solonumero(event)' onkeyup='return solonumero(event)' required/>
-                    <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
-                    <div class="help-block with-errors"></div>
+                    {%if idioma == 0%}
+                        {% with "Introduzca un puero válido. Por ejemplo: 1234" as mensaje %}
+                        <input type="text" class="form-control" value="{{conf.matcherpuerto}}" name="m-puerto" pattern="^[0-9]{1,5}$" oninvalid="this.setCustomValidity('{{mensaje}}')" oninput="setCustomValidity('')" onkeypress='return solonumero(event)' onkeyup='return solonumero(event)' required/>
+                        <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
+                        <div class="help-block with-errors"></div>
+                        {% endwith %}
+                    {% endif %}
+                    {%if idioma == 1%}
+                        {% with "Introce a valid port please. By example: 1234" as mensaje %}
+                        <input type="text" class="form-control" value="{{conf.matcherpuerto}}" name="m-puerto" pattern="^[0-9]{1,5}$" oninvalid="this.setCustomValidity('{{mensaje}}')" oninput="setCustomValidity('')" onkeypress='return solonumero(event)' onkeyup='return solonumero(event)' required/>
+                        <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
+                        <div class="help-block with-errors"></div>
+                        {% endwith %}
+                    {% endif %}
                 </div>
             </div>
         </div>
@@ -490,9 +687,20 @@
             <div class="form-group has-feedback">
                 <label class="col-xs-3 control-label">IP:</label>
                 <div class="col-xs-5">
-                    <input type="text" class="form-control" value="{{conf.ldap_ip}}" name="ldap_ip"pattern="^(?!0)(?!.*\.$)((1?\d?\d|25[0-5]|2[0-4]\d)(\.|$)){4}$" oninvalid="this.setCustomValidity('Introduzca una dirección IP válida. Por ejemplo: 1.2.3.4')" oninput="setCustomValidity('')" onkeypress='return solonumeroypunto(event)' onkeyup='return solonumeroypunto(event)' required/>
-                    <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
-                    <div class="help-block with-errors"></div>
+                    {%if idioma == 0%}
+                        {% with "Introduzca una dirección IP válida. Por ejemplo: 1.2.3.4" as mensaje %}
+                        <input type="text" class="form-control" value="{{conf.ldap_ip}}" name="ldap_ip"pattern="^(?!0)(?!.*\.$)((1?\d?\d|25[0-5]|2[0-4]\d)(\.|$)){4}$" oninvalid="this.setCustomValidity('{{mensaje}}')" oninput="setCustomValidity('')" onkeypress='return solonumeroypunto(event)' onkeyup='return solonumeroypunto(event)' required/>
+                        <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
+                        <div class="help-block with-errors"></div>
+                        {% endwith %}
+                    {% endif %}
+                    {%if idioma == 1%}
+                        {% with "Introce a valid IP adress please. By example: 1.2.3.4" as mensaje %}
+                        <input type="text" class="form-control" value="{{conf.ldap_ip}}" name="ldap_ip"pattern="^(?!0)(?!.*\.$)((1?\d?\d|25[0-5]|2[0-4]\d)(\.|$)){4}$" oninvalid="this.setCustomValidity('{{mensaje}}')" oninput="setCustomValidity('')" onkeypress='return solonumeroypunto(event)' onkeyup='return solonumeroypunto(event)' required/>
+                        <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
+                        <div class="help-block with-errors"></div>
+                        {% endwith %}
+                    {% endif %}
                 </div>
             </div>
 
@@ -506,9 +714,20 @@
                     {%endif%}
                 </label>
                 <div class="col-xs-5">
-                    <input type="text" class="form-control" value="{{conf.ldap_puerto}}" name="ldap_puerto" pattern="^[0-9]{1,5}$" oninvalid="this.setCustomValidity('Introduzca un puero válido. Por ejemplo: 1234')" oninput="setCustomValidity('')" onkeypress='return solonumero(event)' onkeyup='return solonumero(event)' required/>
-                    <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
-                    <div class="help-block with-errors"></div>
+                    {%if idioma == 0%}
+                        {% with "Introduzca un puero válido. Por ejemplo: 1234" as mensaje %}
+                        <input type="text" class="form-control" value="{{conf.ldap_puerto}}" name="ldap_puerto" pattern="^[0-9]{1,5}$" oninvalid="this.setCustomValidity('{{mensaje}}')" oninput="setCustomValidity('')" onkeypress='return solonumero(event)' onkeyup='return solonumero(event)' required/>
+                        <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
+                        <div class="help-block with-errors"></div>
+                        {% endwith %}
+                    {% endif %}
+                    {%if idioma == 1%}
+                        {% with "Introce a valid port please. By example: 1234" as mensaje %}
+                        <input type="text" class="form-control" value="{{conf.ldap_puerto}}" name="ldap_puerto" pattern="^[0-9]{1,5}$" oninvalid="this.setCustomValidity('{{mensaje}}')" oninput="setCustomValidity('')" onkeypress='return solonumero(event)' onkeyup='return solonumero(event)' required/>
+                        <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
+                        <div class="help-block with-errors"></div>
+                        {% endwith %}
+                    {% endif %}
                 </div>
             </div>
 
@@ -539,6 +758,7 @@
                     {%endif%}
                 </label>
                 <div class="col-xs-5">
+
                     <input type="text" class="form-control" value="{{conf.alertasservidor}}" name="a-mail" />
                     <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
                     <div class="help-block with-errors"></div>  
@@ -630,7 +850,7 @@
                     {%endif%}
                 </label>
                 <div class="col-xs-5">
-                    <input type="text" class="form-control" value="{{conf.dirarchive}}" name="arch" pattern="^[A-Z]+\:\\[a-zA-Z0-9-_\.\'\(\)\&\%\$\#\!\¿\¡\[\]\{\}\,\;\\]+$" oninvalid="this.setCustomValidity('Introduzca un directirio válido. Por ejemplo: C:\\Matcher\\Ruta')" oninput="setCustomValidity('')" />
+                    <input type="text" class="form-control" value="{{conf.dirarchive}}" name="arch" pattern="^[A-Z]+\:\\[a-zA-Z0-9-_\.\'\(\)\&\%\$\#\!\¿\¡\[\]\{\}\,\;\\]+$" oninvalid="this.setCustomValidity('Introduzca un directorio válido. Por ejemplo: C:\\\Matcher\\\Ruta')" oninput="setCustomValidity('')" />
                 <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
                 <div class="help-block with-errors"></div>
                 </div>
@@ -649,9 +869,20 @@
                     {%endif%}
                 </label>
                 <div class="col-xs-5">
-                    <input type="text" class="form-control" value="{{conf.dirsalida95}}" name="dir_s_mt95" pattern="^[A-Z]+\:\\[a-zA-Z0-9-_\.\'\(\)\&\%\$\#\!\¿\¡\[\]\{\}\,\;\\]+$" oninvalid="this.setCustomValidity('Introduzca un directirio válido. Por ejemplo: C:\\Matcher\\Ruta')" oninput="setCustomValidity('')" required/>
-                <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
-                <div class="help-block with-errors"></div>
+                    {%if idioma == 0%}
+                        {% with "Introduzca un directorio válido. Por ejemplo: C:\\\Matcher\\\Ruta" as mensaje %}
+                        <input type="text" class="form-control" value="{{conf.dirsalida95}}" name="dir_s_mt95" pattern="^[A-Z]+\:\\[a-zA-Z0-9-_\.\'\(\)\&\%\$\#\!\¿\¡\[\]\{\}\,\;\\]+$" oninvalid="this.setCustomValidity('{{mensaje}}')" oninput="setCustomValidity('')" required/>
+                        <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
+                        <div class="help-block with-errors"></div>
+                        {% endwith %}
+                    {%endif%}
+                    {%if idioma == 1%}
+                        {% with "Introdoce a valid path please. By Example: C:\\\Matcher\\\Rute" as mensaje %}
+                        <input type="text" class="form-control" value="{{conf.dirsalida95}}" name="dir_s_mt95" pattern="^[A-Z]+\:\\[a-zA-Z0-9-_\.\'\(\)\&\%\$\#\!\¿\¡\[\]\{\}\,\;\\]+$" oninvalid="this.setCustomValidity('{{mensaje}}')" oninput="setCustomValidity('')" required/>
+                        <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
+                        <div class="help-block with-errors"></div>
+                        {% endwith %}
+                    {%endif%}
                 </div>
             </div>
             <div class="form-group has-feedback">
@@ -664,9 +895,20 @@
                     {%endif%}
                 </label>
                 <div class="col-xs-5">
-                    <input type="text" class="form-control" value="{{conf.dircarga96}}" name="dir_c_mt96" pattern="^[A-Z]+\:\\[a-zA-Z0-9-_\.\'\(\)\&\%\$\#\!\¿\¡\[\]\{\}\,\;\\]+$" oninvalid="this.setCustomValidity('Introduzca un directirio válido. Por ejemplo: C:\\Matcher\\Ruta')" oninput="setCustomValidity('')" required/>
-                <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
-                <div class="help-block with-errors"></div>
+                    {%if idioma == 0%}
+                        {% with "Introduzca un directorio válido. Por ejemplo: C:\\\Matcher\\\Ruta" as mensaje %}
+                        <input type="text" class="form-control" value="{{conf.dircarga96}}" name="dir_c_mt96" pattern="^[A-Z]+\:\\[a-zA-Z0-9-_\.\'\(\)\&\%\$\#\!\¿\¡\[\]\{\}\,\;\\]+$" oninvalid="this.setCustomValidity('{{mensaje}}')" oninput="setCustomValidity('')" required/>
+                        <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
+                        <div class="help-block with-errors"></div>
+                        {% endwith %}
+                    {%endif%}
+                    {%if idioma == 1%}
+                        {% with "Introdoce a valid path please. By Example: C:\\\Matcher\\\Rute" as mensaje %}
+                        <input type="text" class="form-control" value="{{conf.dircarga96}}" name="dir_c_mt96" pattern="^[A-Z]+\:\\[a-zA-Z0-9-_\.\'\(\)\&\%\$\#\!\¿\¡\[\]\{\}\,\;\\]+$" oninvalid="this.setCustomValidity('{{mensaje}}')" oninput="setCustomValidity('')" required/>
+                        <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
+                        <div class="help-block with-errors"></div>
+                        {% endwith %}
+                    {%endif%}
                 </div>
             </div>
             <div class="form-group has-feedback">
@@ -679,9 +921,20 @@
                     {%endif%}
                 </label>
                 <div class="col-xs-5">
-                    <input type="text" class="form-control" value="{{conf.dirsalida99}}" name="dir_s_mt99" pattern="^[A-Z]+\:\\[a-zA-Z0-9-_\.\'\(\)\&\%\$\#\!\¿\¡\[\]\{\}\,\;\\]+$" oninvalid="this.setCustomValidity('Introduzca un directirio válido. Por ejemplo: C:\\Matcher\\Ruta')" oninput="setCustomValidity('')" required/>
-                <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
-                <div class="help-block with-errors"></div>
+                    {%if idioma == 0%}
+                        {% with "Introduzca un directorio válido. Por ejemplo: C:\\\Matcher\\\Ruta" as mensaje %}
+                        <input type="text" class="form-control" value="{{conf.dirsalida99}}" name="dir_s_mt99" pattern="^[A-Z]+\:\\[a-zA-Z0-9-_\.\'\(\)\&\%\$\#\!\¿\¡\[\]\{\}\,\;\\]+$" oninvalid="this.setCustomValidity('{{mensaje}}')" oninput="setCustomValidity('')" required/>
+                        <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
+                        <div class="help-block with-errors"></div>
+                         {% endwith %}
+                    {%endif%}
+                    {%if idioma == 1%}
+                        {% with "Introdoce a valid path please. By Example: C:\\\Matcher\\\Rute" as mensaje %}
+                        <input type="text" class="form-control" value="{{conf.dirsalida99}}" name="dir_s_mt99" pattern="^[A-Z]+\:\\[a-zA-Z0-9-_\.\'\(\)\&\%\$\#\!\¿\¡\[\]\{\}\,\;\\]+$" oninvalid="this.setCustomValidity('{{mensaje}}')" oninput="setCustomValidity('')" required/>
+                        <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
+                        <div class="help-block with-errors"></div>
+                         {% endwith %}
+                    {%endif%}
                 </div>
             </div>
             <div class="form-group has-feedback">
@@ -694,9 +947,20 @@
                     {%endif%}
                 </label>
                 <div class="col-xs-5">
-                    <input type="text" class="form-control" value="{{conf.dircarga99}}" name="dir_c_mt99" pattern="^[A-Z]+\:\\[a-zA-Z0-9-_\.\'\(\)\&\%\$\#\!\¿\¡\[\]\{\}\,\;\\]+$" oninvalid="this.setCustomValidity('Introduzca un directirio válido. Por ejemplo: C:\\Matcher\\Ruta')" oninput="setCustomValidity('')" required/>
-                <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
-                <div class="help-block with-errors"></div>
+                    {%if idioma == 0%}
+                        {% with "Introduzca un directorio válido. Por ejemplo: C:\\\Matcher\\\Ruta" as mensaje %}
+                        <input type="text" class="form-control" value="{{conf.dircarga99}}" name="dir_c_mt99" pattern="^[A-Z]+\:\\[a-zA-Z0-9-_\.\'\(\)\&\%\$\#\!\¿\¡\[\]\{\}\,\;\\]+$" oninvalid="this.setCustomValidity('{{mensaje}}')" oninput="setCustomValidity('')" required/>
+                        <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
+                        <div class="help-block with-errors"></div>
+                        {% endwith %}
+                    {%endif%}
+                    {%if idioma == 1%}
+                        {% with "Introdoce a valid path please. By Example: C:\\\Matcher\\\Rute" as mensaje %}
+                        <input type="text" class="form-control" value="{{conf.dircarga99}}" name="dir_c_mt99" pattern="^[A-Z]+\:\\[a-zA-Z0-9-_\.\'\(\)\&\%\$\#\!\¿\¡\[\]\{\}\,\;\\]+$" oninvalid="this.setCustomValidity('{{mensaje}}')" oninput="setCustomValidity('')" required/>
+                        <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
+                        <div class="help-block with-errors"></div>
+                        {% endwith %}
+                    {%endif%}
                 </div>
             </div>
             <div class="form-group has-feedback">
@@ -709,9 +973,20 @@
                     {%endif%}
                 </label>
                 <div class="col-xs-5">
-                    <input type="text" class="form-control" value="{{conf.dirprocesado96}}" name="dir_p_mt96" pattern="^[A-Z]+\:\\[a-zA-Z0-9-_\.\'\(\)\&\%\$\#\!\¿\¡\[\]\{\}\,\;\\]+$" oninvalid="this.setCustomValidity('Introduzca un directirio válido. Por ejemplo: C:\\Matcher\\Ruta')" oninput="setCustomValidity('')" required/>
-                <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
-                <div class="help-block with-errors"></div>
+                     {%if idioma == 0%}
+                        {% with "Introduzca un directorio válido. Por ejemplo: C:\\\Matcher\\\Ruta" as mensaje %}
+                        <input type="text" class="form-control" value="{{conf.dirprocesado96}}" name="dir_p_mt96" pattern="^[A-Z]+\:\\[a-zA-Z0-9-_\.\'\(\)\&\%\$\#\!\¿\¡\[\]\{\}\,\;\\]+$" oninvalid="this.setCustomValidity('{{mensaje}}')" oninput="setCustomValidity('')" required/>
+                        <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
+                        <div class="help-block with-errors"></div>
+                        {% endwith %}
+                    {%endif%}
+                    {%if idioma == 1%}
+                        {% with "Introdoce a valid path please. By Example: C:\\\Matcher\\\Rute" as mensaje %}
+                         <input type="text" class="form-control" value="{{conf.dirprocesado96}}" name="dir_p_mt96" pattern="^[A-Z]+\:\\[a-zA-Z0-9-_\.\'\(\)\&\%\$\#\!\¿\¡\[\]\{\}\,\;\\]+$" oninvalid="this.setCustomValidity('{{mensaje}}')" oninput="setCustomValidity('')" required/>
+                        <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
+                        <div class="help-block with-errors"></div>
+                        {% endwith %}
+                    {%endif%}
                 </div>
             </div>
             <div class="form-group has-feedback">
@@ -724,9 +999,20 @@
                     {%endif%}
                 </label>
                 <div class="col-xs-5">
-                    <input type="text" class="form-control" value="{{conf.dirprocesado99}}" name="dir_p_mt99" pattern="^[A-Z]+\:\\[a-zA-Z0-9-_\.\'\(\)\&\%\$\#\!\¿\¡\[\]\{\}\,\;\\]+$" oninvalid="this.setCustomValidity('Introduzca un directirio válido. Por ejemplo: C:\\Matcher\\Ruta')" oninput="setCustomValidity('')" required/>
-                <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
-                <div class="help-block with-errors"></div>
+                    {%if idioma == 0%}
+                        {% with "Introduzca un directorio válido. Por ejemplo: C:\\\Matcher\\\Ruta" as mensaje %}
+                        <input type="text" class="form-control" value="{{conf.dirprocesado99}}" name="dir_p_mt99" pattern="^[A-Z]+\:\\[a-zA-Z0-9-_\.\'\(\)\&\%\$\#\!\¿\¡\[\]\{\}\,\;\\]+$" oninvalid="this.setCustomValidity('{{mensaje}}')" oninput="setCustomValidity('')" required/>
+                        <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
+                        <div class="help-block with-errors"></div>
+                        {% endwith %}
+                    {%endif%}
+                    {%if idioma == 1%}
+                        {% with "Introdoce a valid path please. By Example: C:\\\Matcher\\\Rute" as mensaje %}
+                        <input type="text" class="form-control" value="{{conf.dirprocesado99}}" name="dir_p_mt99" pattern="^[A-Z]+\:\\[a-zA-Z0-9-_\.\'\(\)\&\%\$\#\!\¿\¡\[\]\{\}\,\;\\]+$" oninvalid="this.setCustomValidity('{{mensaje}}')" oninput="setCustomValidity('')" required/>
+                        <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
+                        <div class="help-block with-errors"></div>
+                        {% endwith %}
+                    {%endif%}
                 </div>
             </div>
         </div>
@@ -743,9 +1029,20 @@
                     {%endif%}
                 </label>
                 <div class="col-xs-5">
-                    <input type="text" class="form-control" value="{{conf.dirarchiveconfirmados}}" name="archconfirm" pattern="^[A-Z]+\:\\[a-zA-Z0-9-_\.\'\(\)\&\%\$\#\!\¿\¡\[\]\{\}\,\;\\]+$" oninvalid="this.setCustomValidity('Introduzca un directirio válido. Por ejemplo: C:\\Matcher\\Ruta')" oninput="setCustomValidity('')" required/>
-                <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
-                <div class="help-block with-errors"></div>
+                     {%if idioma == 0%}
+                        {% with "Introduzca un directorio válido. Por ejemplo: C:\\\Matcher\\\Ruta" as mensaje %}
+                        <input type="text" class="form-control" value="{{conf.dirarchiveconfirmados}}" name="archconfirm" pattern="^[A-Z]+\:\\[a-zA-Z0-9-_\.\'\(\)\&\%\$\#\!\¿\¡\[\]\{\}\,\;\\]+$" oninvalid="this.setCustomValidity('{{mensaje}}')" oninput="setCustomValidity('')" required/>
+                        <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
+                        <div class="help-block with-errors"></div>
+                        {% endwith %}
+                    {%endif%}
+                    {%if idioma == 1%}
+                        {% with "Introdoce a valid path please. By Example: C:\\\Matcher\\\Rute" as mensaje %}
+                    <input type="text" class="form-control" value="{{conf.dirarchiveconfirmados}}" name="archconfirm" pattern="^[A-Z]+\:\\[a-zA-Z0-9-_\.\'\(\)\&\%\$\#\!\¿\¡\[\]\{\}\,\;\\]+$" oninvalid="this.setCustomValidity('{{mensaje}}')" oninput="setCustomValidity('')" required/>
+                        <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
+                        <div class="help-block with-errors"></div>
+                        {% endwith %}
+                    {%endif%}
                 </div>
             </div>
 
@@ -763,9 +1060,20 @@
                     {%endif%}
                 </label>
                 <div class="col-xs-5">
-                    <input type="text" class="form-control" value="{{conf.dirintraday}}" name="dirIntraday" pattern="^[A-Z]+\:\\[a-zA-Z0-9-_\.\'\(\)\&\%\$\#\!\¿\¡\[\]\{\}\,\;\\]+$" oninvalid="this.setCustomValidity('Introduzca un directirio válido. Por ejemplo: C:\\Matcher\\Ruta')" oninput="setCustomValidity('')" required/>
-                <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
-                <div class="help-block with-errors"></div>
+                    {%if idioma == 0%}
+                        {% with "Introduzca un directorio válido. Por ejemplo: C:\\\Matcher\\\Ruta" as mensaje %}
+                        <input type="text" class="form-control" value="{{conf.dirintraday}}" name="dirIntraday" pattern="^[A-Z]+\:\\[a-zA-Z0-9-_\.\'\(\)\&\%\$\#\!\¿\¡\[\]\{\}\,\;\\]+$" oninvalid="this.setCustomValidity('{{mensaje}}}')" oninput="setCustomValidity('')" required/>
+                        <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
+                        <div class="help-block with-errors"></div>
+                        {% endwith %}
+                    {%endif%}
+                    {%if idioma == 1%}
+                        {% with "Introdoce a valid path please. By Example: C:\\\Matcher\\\Rute" as mensaje %}
+                        <input type="text" class="form-control" value="{{conf.dirintraday}}" name="dirIntraday" pattern="^[A-Z]+\:\\[a-zA-Z0-9-_\.\'\(\)\&\%\$\#\!\¿\¡\[\]\{\}\,\;\\]+$" oninvalid="this.setCustomValidity('{{mensaje}}')" oninput="setCustomValidity('')" required/>
+                        <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
+                        <div class="help-block with-errors"></div>
+                        {% endwith %}
+                    {%endif%}
                 </div>
             </div>
 
@@ -779,9 +1087,20 @@
                     {%endif%}
                 </label>
                 <div class="col-xs-5">
-                    <input type="text" class="form-control" value="{{conf.dirintradaysalida}}" name="dirIntradaySalida" pattern="^[A-Z]+\:\\[a-zA-Z0-9-_\.\'\(\)\&\%\$\#\!\¿\¡\[\]\{\}\,\;\\]+$" oninvalid="this.setCustomValidity('Introduzca un directirio válido. Por ejemplo: C:\\Matcher\\Ruta')" oninput="setCustomValidity('')" required/>
-                <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
-                <div class="help-block with-errors"></div>
+                    {%if idioma == 0%}
+                        {% with "Introduzca un directorio válido. Por ejemplo: C:\\\Matcher\\\Ruta" as mensaje %}
+                        <input type="text" class="form-control" value="{{conf.dirintradaysalida}}" name="dirIntradaySalida" pattern="^[A-Z]+\:\\[a-zA-Z0-9-_\.\'\(\)\&\%\$\#\!\¿\¡\[\]\{\}\,\;\\]+$" oninvalid="this.setCustomValidity('{{mensaje}}')" oninput="setCustomValidity('')" required/>
+                        <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
+                        <div class="help-block with-errors"></div>
+                        {% endwith %}
+                    {%endif%}
+                    {%if idioma == 1%}
+                        {% with "Introdoce a valid path please. By Example: C:\\\Matcher\\\Rute" as mensaje %}
+                        <input type="text" class="form-control" value="{{conf.dirintradaysalida}}" name="dirIntradaySalida" pattern="^[A-Z]+\:\\[a-zA-Z0-9-_\.\'\(\)\&\%\$\#\!\¿\¡\[\]\{\}\,\;\\]+$" oninvalid="this.setCustomValidity('{{mensaje}}')" oninput="setCustomValidity('')" required/>
+                        <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
+                        <div class="help-block with-errors"></div>
+                        {% endwith %}
+                    {%endif%}
                 </div>
             </div>
 
@@ -821,9 +1140,20 @@
                     {%endif%}
                 </label>
                 <div class="col-xs-5">
-                    <input type="text" class="form-control" value="{{conf.dirlicencia}}" name="dirlicencia" pattern="^[A-Z]+\:\\[a-zA-Z0-9-_\.\'\(\)\&\%\$\#\!\¿\¡\[\]\{\}\,\;\\]+$" oninvalid="this.setCustomValidity('Introduzca un directirio válido. Por ejemplo: C:\\Matcher\\Ruta')" oninput="setCustomValidity('')" required/>
-                <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
-                <div class="help-block with-errors"></div>
+                    {%if idioma == 0%}
+                        {% with "Introduzca un directorio válido. Por ejemplo: C:\\\Matcher\\\Ruta" as mensaje %}
+                        <input type="text" class="form-control" value="{{conf.dirlicencia}}" name="dirlicencia" pattern="^[A-Z]+\:\\[a-zA-Z0-9-_\.\'\(\)\&\%\$\#\!\¿\¡\[\]\{\}\,\;\\]+$" oninvalid="this.setCustomValidity('{{mensaje}}')" oninput="setCustomValidity('')" required/>
+                        <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
+                        <div class="help-block with-errors"></div>
+                        {% endwith %}
+                    {%endif%}
+                    {%if idioma == 1%}
+                        {% with "Introdoce a valid path please. By Example: C:\\\Matcher\\\Rute" as mensaje %}
+                        <input type="text" class="form-control" value="{{conf.dirlicencia}}" name="dirlicencia" pattern="^[A-Z]+\:\\[a-zA-Z0-9-_\.\'\(\)\&\%\$\#\!\¿\¡\[\]\{\}\,\;\\]+$" oninvalid="this.setCustomValidity('{{mensaje}}')" oninput="setCustomValidity('')" required/>
+                        <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
+                        <div class="help-block with-errors"></div>
+                        {% endwith %}
+                    {%endif%}
                 </div>
             </div>
 
@@ -865,9 +1195,20 @@
                     {%endif%}
                 </label>
                 <div class="col-xs-5">
-                    <input type="text" class="form-control" value="{{conf.longitud_minima}}" name="long_min" oninvalid="this.setCustomValidity('Introduzca la longitud mínima para las contraseñas')" oninput="setCustomValidity('')" onkeypress='return solonumero(event)' onkeyup='return solonumero(event)'required/>
-                    <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
-                    <div class="help-block with-errors"></div>
+                    {%if idioma == 0%}
+                        {% with "Introduzca la longitud mínima para las contraseñas" as mensaje %}
+                        <input type="text" class="form-control" value="{{conf.longitud_minima}}" name="long_min" oninvalid="this.setCustomValidity('{{mensaje}}')" oninput="setCustomValidity('')" onkeypress='return solonumero(event)' onkeyup='return solonumero(event)'required/>
+                        <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
+                        <div class="help-block with-errors"></div>
+                        {% endwith %}
+                    {%endif%}
+                    {%if idioma == 1%}
+                        {% with "Introdoce the passwords minimum length" as mensaje %}
+                        <input type="text" class="form-control" value="{{conf.longitud_minima}}" name="long_min" oninvalid="this.setCustomValidity('{{mensaje}}')" oninput="setCustomValidity('')" onkeypress='return solonumero(event)' onkeyup='return solonumero(event)'required/>
+                        <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
+                        <div class="help-block with-errors"></div>
+                        {% endwith %}
+                    {%endif%}
                 </div>
             </div>
 
@@ -881,9 +1222,20 @@
                     {%endif%}
                 </label>
                 <div class="col-xs-5">
-                    <input type="text" class="form-control" value="{{conf.num_intentos}}" name="num_fall" oninvalid="this.setCustomValidity('Introduzca el número de intentos fallidos para las contraseñas')" oninput="setCustomValidity('')" onkeypress='return solonumero(event)' onkeyup='return solonumero(event)'required/>
-                    <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
-                    <div class="help-block with-errors"></div>
+                    {%if idioma == 0%}
+                        {% with "Introduzca el número de intentos fallidos para las contraseñas" as mensaje %}
+                        <input type="text" class="form-control" value="{{conf.num_intentos}}" name="num_fall" oninvalid="this.setCustomValidity('{{mensaje}}')" oninput="setCustomValidity('')" onkeypress='return solonumero(event)' onkeyup='return solonumero(event)'required/>
+                        <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
+                        <div class="help-block with-errors"></div>
+                        {% endwith %}
+                    {%endif%}
+                    {%if idioma == 1%}
+                        {% with "Introdoce the passwords maximun failed logins" as mensaje %}
+                        <input type="text" class="form-control" value="{{conf.num_intentos}}" name="num_fall" oninvalid="this.setCustomValidity('{{mensaje}}')" oninput="setCustomValidity('')" onkeypress='return solonumero(event)' onkeyup='return solonumero(event)'required/>
+                        <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
+                        <div class="help-block with-errors"></div>
+                        {% endwith %}
+                    {%endif%}
                 </div>
             </div>
 

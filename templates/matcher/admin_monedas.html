@@ -1,7 +1,7 @@
 {% extends "matcher/base.html" %}
 
 {% load staticfiles %}
-
+{% load humanize %}
 {% block title %}Monedas disponibles{% endblock %}
 
 {%block head%}
@@ -34,7 +34,7 @@
             <tr id= "tr-{{moneda.idmoneda}}">
                 <td id= "td-{{moneda.idmoneda}}"><a href="/admin/monedas/{{moneda.idmoneda}}" nombre = "{{ moneda.nombre }}" codigo = "{{ moneda.codigo }}" cambio="{{ moneda.cambio_usd }}" id="{{moneda.idmoneda}}" type="moneda"> {{ moneda.codigo }}</td>
                 <td>{{ moneda.nombre }}</td>
-                <td>{{ moneda.cambio_usd }}</td>
+                <td>{{ moneda.cambio_usd | intcomma }}</td>
             </tr>
             {% endfor %}
         </tbody>

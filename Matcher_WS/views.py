@@ -463,9 +463,13 @@ def pd_estadoCuentas(request):
     if request.method == 'POST':
 
         cuentaid = int(request.POST.get('cuentaid'))
+        idioma = Configuracion.objects.all()[0].idioma  
 
         if (cuentaid<0):
-            msg = 'Estado de cuenta eliminado exitosamente'
+            if idioma == 0:
+                msg = 'Estado de cuenta eliminado exitosamente'
+            else:
+                msg = 'Successful deleted account statement'
             edcid = request.POST.get('edcid')
             cop = request.POST.get('cop')
 
@@ -474,7 +478,11 @@ def pd_estadoCuentas(request):
                     cargado = Cargado.objects.get(estado_cuenta_idedocuenta=edcid)
                     edc = cargado.estado_cuenta_idedocuenta
                 except Cargado.DoesNotExist:
-                    msg = "No se encontro el estado de cuenta especificado, asegurese de hacer click en el estado de cuenta a eliminar."
+                    if idioma == 0:
+                        msg = "No se encontro el estado de cuenta especificado, asegurese de hacer click en el estado de cuenta a eliminar."
+                    else:
+                        msg = "Account statement not found, be sure to click one first please."
+                    
                     return JsonResponse({'msg': msg, 'elim': False, 'conocor': cop, 'codigo': edcid})
                 
                 conocor = edc.origen
@@ -486,14 +494,23 @@ def pd_estadoCuentas(request):
                     procesado = Procesado.objects.get(estado_cuenta_idedocuenta=edcid)
                     edc = procesado.estado_cuenta_idedocuenta
                 except Procesado.DoesNotExist:
-                    msg = "No se encontro el estado de cuenta especificado, asegurese de hacer click en el estado de cuenta a eliminar."
+                    if idioma == 0:
+                        msg = "No se encontro el estado de cuenta especificado, asegurese de hacer click en el estado de cuenta a eliminar."
+                    else:
+                         msg = "Account statement not found, be sure to click one first please."
+                    
+                    
                     return JsonResponse({'msg': msg, 'elim': False, 'conocor': conocor, 'codigo': edcid})
 
                 conocor = edc.origen
                 edc.delete()
                 return JsonResponse({'msg': msg, 'elim': True, 'conocor': conocor, 'codigo': edcid})
             
-            msg = "No se encontro el estado de cuenta especificado, asegurese de hacer click en el estado de cuenta a eliminar." 
+            if idioma == 0:
+                msg = "No se encontro el estado de cuenta especificado, asegurese de hacer click en el estado de cuenta a eliminar." 
+            else:
+                msg = "Account statement not found, be sure to click one first please."
+            
             return JsonResponse({'msg': msg, 'elim':False})
 
 
@@ -997,11 +1014,17 @@ def pd_cargaManual(request):
             
             fechaIni = listaCuenta[8]
             arreglo = fechaIni.split('/')
-            fechaIni= datetime(int(arreglo[2]), int(arreglo[1]), int(arreglo[0]))
+            if idioma == 0:
+                fechaIni= datetime(int(arreglo[2]), int(arreglo[1]), int(arreglo[0]))
+            else:
+                fechaIni= datetime(int(arreglo[0]), int(arreglo[1]), int(arreglo[2]))
             
             fechaFin = listaCuenta[9]
             arreglo2 = fechaFin.split('/')
-            fechaFin= datetime(int(arreglo2[2]), int(arreglo2[1]), int(arreglo2[0]))
+            if idioma == 0:
+                fechaFin= datetime(int(arreglo2[2]), int(arreglo2[1]), int(arreglo2[0]))
+            else:
+                fechaFin= datetime(int(arreglo2[0]), int(arreglo2[1]), int(arreglo2[2]))
             
             cdIni = listaCuenta[10]
             cdFin = listaCuenta[11]
@@ -1030,7 +1053,10 @@ def pd_cargaManual(request):
                         
                         fechaS = listaTrans[i][2]
                         arregloTrans = fechaS.split('/')
-                        fechaT = datetime(int(arregloTrans[2]), int(arregloTrans[1]), int(arregloTrans[0]))
+                        if idioma == 0:
+                            fechaT = datetime(int(arregloTrans[2]), int(arregloTrans[1]), int(arregloTrans[0]))
+                        else:
+                            fechaT = datetime(int(arregloTrans[0]), int(arregloTrans[1]), int(arregloTrans[2]))
                         
                         monto = listaTrans[i][4]
                         monto = float(monto.replace(",",""))
@@ -1065,7 +1091,10 @@ def pd_cargaManual(request):
                         
                         fechaS = listaTrans[i][2]
                         arregloTrans = fechaS.split('/')
-                        fechaT = datetime(int(arregloTrans[2]), int(arregloTrans[1]), int(arregloTrans[0]))
+                        if idioma == 0:
+                            fechaT = datetime(int(arregloTrans[2]), int(arregloTrans[1]), int(arregloTrans[0]))
+                        else:
+                            fechaT = datetime(int(arregloTrans[0]), int(arregloTrans[1]), int(arregloTrans[2]))
                         
                         monto = listaTrans[i][4]
                         monto = float(monto.replace(",",""))
@@ -1828,11 +1857,12 @@ def reportes(request):
                 fecha = cuenta.ultimafechaconciliacion
                 print(request.POST)
                 
+                print(fecha)
                 cursor = connection.cursor()
-                try:
-                    cursor.execute('EXEC [dbo].[autorizarConciliacion] %s, %s', (codCta,fecha))
-                finally:
-                    cursor.close()
+                #try:
+                    #cursor.execute('EXEC [dbo].[autorizarConciliacion] %s, %s', (codCta,fecha))
+                #finally:
+                    #cursor.close()
 
                 if pagina == 'reportes':
                     return HttpResponseRedirect('/reportes/')

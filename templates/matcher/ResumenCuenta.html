@@ -3,25 +3,54 @@
 {% block title %}Resumen{% endblock %}
 
 {% block content %}
-<button class="pull-right btn btn-inverse" onclick="goBack()">Atrás</button>
-<h3>Resumen de Cuenta</h3>
+<input type="text" id="idioma" value="{{idioma}}" hidden/>
+<button class="pull-right btn btn-inverse" onclick="goBack()">
+  {%if idioma == 0%}
+    Atrás
+  {%endif%}
+  {%if idioma == 1%}
+    Back
+  {%endif%}
+</button>
+<h3>
+  {%if idioma == 0%}
+    Resumen de Cuenta
+  {%endif%}
+  {%if idioma == 1%}
+    Account Summary
+  {%endif%}
+</h3>
 <hr/>
 <div class="table-responsive">
     <table class="table table-bordered table-striped tabla">
         <thead>
             <tr>
+              {%if idioma == 0%}
                 <th>Código cuenta</th>
                 <th>Banco</th>
                 <th>Última Conciliación</th>
-                <th>Último Historico</th>
+                <th>Último Histórico</th>
+              {%endif%}
+              {%if idioma == 1%}
+                <th>Account Code</th>
+                <th>Bank</th>
+                <th>Last Reconciliation</th>
+                <th>Last Historic</th>
+              {%endif%}
             </tr>
         </thead>
         <tbody>
                 <tr>
                     <td>{{ cuenta.codigo }}</td>
                     <td>{{ cuenta.banco_corresponsal_idbanco.codigo }}</td>
+                  {%if idioma == 0%}
                     <td>{{ cuenta.ultimafechaconciliacion|date:"d/m/Y" }}</td>
                     <td>{{ cuenta.ultimafechahistorico|date:"d/m/Y" }}</td>
+                  {%endif%}
+                  {%if idioma == 1%}
+                    <td>{{ cuenta.ultimafechaconciliacion|date:"Y/m/d" }}</td>
+                    <td>{{ cuenta.ultimafechahistorico|date:"Y/m/d" }}</td>
+                  {%endif%}
                 </tr>
         </tbody>
     </table>
@@ -31,12 +60,26 @@
     <form class="form-vertical">
     <fieldset>
         <!-- Form Name -->
-        <legend>Información Cuenta</legend>
+        <legend>
+          {%if idioma == 0%}
+            Información Cuenta
+          {%endif%}
+          {% if idioma == 1%}
+            Account Information
+          {%endif%}
+        </legend>
 
         <div class="row clearfix">
             <!-- Text input-->
             <div class="form-group col-md-4 column">
-              <label class="control-label" for="Cod_cuenta">Código Cuenta:</label>  
+              <label class="control-label" for="Cod_cuenta">
+                {%if idioma == 0%}
+                  Código Cuenta:
+                {%endif%}
+                {% if idioma == 1%}
+                  Account Code:
+                {%endif%}
+              </label>  
               <div>
               <input id="Cod_cuenta" name="Cod_cuenta" type="text" value="{{cuenta.codigo}}" class="form-control input-md" readonly>
                 
@@ -45,7 +88,14 @@
 
             <!-- Text input-->
             <div class="form-group col-md-4 column">
-              <label class="control-label" for="cta_nostro">No. Cta. Nostro</label>  
+              <label class="control-label" for="cta_nostro">
+                {%if idioma == 0%}
+                  No. Cta. Nostro:
+                {%endif%}
+                {% if idioma == 1%}
+                  Nostro Acc. No.:
+                {%endif%}
+              </label>  
               <div>
               <input id="cta_nostro" name="cta_nostro" type="text" value="{{cuenta.ref_nostro}}" class="form-control input-md" readonly>
                 
@@ -54,7 +104,14 @@
 
             <!-- Text input-->
             <div class="form-group col-md-4 column">
-              <label class="control-label" for="cod_moneda">Código Moneda:</label>  
+              <label class="control-label" for="cod_moneda">
+                {%if idioma == 0%}
+                  Código Moneda:
+                {%endif%}
+                {% if idioma == 1%}
+                  Currency Code:
+                {%endif%}
+              </label>  
               <div>
               <input id="cod_moneda" name="cod_moneda" type="text" value="{{cuenta.moneda_idmoneda.nombre}} ({{cuenta.moneda_idmoneda.codigo}})" class="form-control input-md" readonly>
                 
@@ -65,7 +122,14 @@
         <div class="row clearfix">
             <!-- Text input-->
             <div class="form-group col-md-4 column">
-              <label class="control-label" for="cod_banco">Banco:</label>  
+              <label class="control-label" for="cod_banco">
+                {%if idioma == 0%}
+                  Banco:
+                {%endif%}
+                {% if idioma == 1%}
+                  Bank:
+                {%endif%}
+              </label>  
               <div>
               <input id="cod_banco" name="cod_banco" type="text" value="{{cuenta.banco_corresponsal_idbanco.codigo}}" class="form-control input-md" readonly>
               </div>
@@ -73,7 +137,14 @@
 
             <!-- Text input-->
             <div class="form-group col-md-4 column">
-              <label class="control-label" for="cta_vostro">No. Cta. Vostro:</label>  
+              <label class="control-label" for="cta_vostro">
+                {%if idioma == 0%}
+                  No. Cta. Vostro:
+                {%endif%}
+                {% if idioma == 1%}
+                  Vostro Acc. No.:
+                {%endif%}
+              </label>  
               <div>
               <input id="cta_vostro" name="cta_vostro" type="text" value="{{cuenta.ref_vostro}}" class="form-control input-md" readonly>
                 
@@ -82,7 +153,14 @@
 
             <!-- Text input-->
             <div class="form-group col-md-4 column">
-              <label class="control-label" for="estado">Estado:</label>  
+              <label class="control-label" for="estado">
+                {%if idioma == 0%}
+                  Estado:
+                {%endif%}
+                {% if idioma == 1%}
+                  Status:
+                {%endif%}
+              </label>  
               <div>
               <input id="estado" name="estado" type="text" value="{{cuenta.estado}}" class="form-control input-md" readonly>
                 
@@ -94,8 +172,26 @@
     </form>
 </div>
 
-<h3> Detalles Última Conciliación</h3>
-<h4> Fecha: <small>{{cuenta.ultimafechaconciliacion|date:"d/m/Y"}}</small></h4>
+<h3> 
+  {%if idioma == 0%}
+    Detalles Última Conciliación
+  {%endif%}
+  {% if idioma == 1%}
+    Last Reconciliation Details
+  {%endif%}
+</h3>
+ 
+{%if idioma == 0%}
+  <h4>
+  Fecha:
+  <small>{{cuenta.ultimafechaconciliacion|date:"d/m/Y"}}</small></h4>
+{%endif%}
+{% if idioma == 1%}
+  <h4>
+    Date:
+   <small>{{cuenta.ultimafechaconciliacion|date:"Y/m/d"}}</small></h4>
+{%endif%}
+
 <div>
     <div class="row clearfix">
         <div class="col-md-3 well" style="margin-top:15%;">
@@ -104,7 +200,14 @@
                         <fieldset>
                             <!-- Appended Input-->
                             <div class="form-group col-md-12">
-                              <label class="control-label" for="sald_fin_conta">Saldo Final Contabilidad</label>
+                              <label class="control-label" for="sald_fin_conta">
+                                {%if idioma == 0%}
+                                  Saldo Final Contabilidad
+                                {%endif%}
+                                {% if idioma == 1%}
+                                  Accounting Final Balance
+                                {%endif%}
+                              </label>
                                 <div class="input-group">
                                   <input id="sald_fin_conta" name="sald_fin_conta" class="form-control" value="{{cons.balancefinalcontabilidad|intcomma|cut:"-"}}" type="text" readonly>
                                   <span class="input-group-addon">{{cod.0}}</span>
@@ -113,7 +216,13 @@
 
                             <!-- Appended Input-->
                             <div class="form-group col-md-12">
-                              <label class="control-label" for="sald_fin_corr">Saldo Final Corresponsal</label>
+                              <label class="control-label" for="sald_fin_corr">
+                                {%if idioma == 0%}
+                                  Saldo Final Corresponsal
+                                {%endif%}
+                                {% if idioma == 1%}
+                                  Correspondent Final Balance
+                                {%endif%}</label>
                                 <div class="input-group">
                                   <input id="sald_fin_corr" name="sald_fin_corr" class="form-control" value="{{cons.balancefinalcorresponsal|intcomma|cut:"-"}}" type="text" readonly>
                                   <span class="input-group-addon">{{cod.1}}</span>
@@ -128,10 +237,24 @@
             <div class="row clearfix" style="text-align:center">
                 <br/>
                 <div class="well col-md-5">
-                    <h3> Concepto </h3>
+                    <h3> 
+                      {%if idioma == 0%}
+                        Concepto
+                      {%endif%}
+                      {% if idioma == 1%}
+                        Concept
+                      {%endif%}
+                    </h3>
                 </div>
                 <div class="well col-md-5 col-md-push-1">
-                    <h3> Monto </h3>
+                    <h3>
+                      {%if idioma == 0%}
+                        Monto
+                      {%endif%}
+                      {% if idioma == 1%}
+                        Amount
+                      {%endif%}
+                    </h3>
                 </div>
             </div>
 
@@ -193,7 +316,14 @@
               <fieldset>
                   <!-- Appended Input-->
                   <div class="form-group col-md-12">
-                    <label class="control-label" for="sald_tot_conta">Total Saldo Contabilidad</label>
+                    <label class="control-label" for="sald_tot_conta">
+                      {%if idioma == 0%}
+                        Total Saldo Contabilidad
+                      {%endif%}
+                      {% if idioma == 1%}
+                        Accountig Total Balance
+                      {%endif%}
+                    </label>
                       <div class="input-group">
                         <input id="sald_tot_conta" name="sald_tot_conta" class="form-control" value="{{cons.saldocontabilidad|intcomma|cut:"-"}}" type="text" readonly>
                         <span class="input-group-addon">{{cod.2}}</span>
@@ -202,7 +332,14 @@
 
                   <!-- Appended Input-->
                   <div class="form-group col-md-12">
-                      <label class="control-label" for="sald_tot_corr">Total Saldo Corresponsal</label>
+                      <label class="control-label" for="sald_tot_corr">
+                        {%if idioma == 0%}
+                          Total Saldo Corresponsal
+                        {%endif%}
+                        {% if idioma == 1%}
+                          Corresp. Total Balance
+                        {%endif%}
+                      </label>
                       <div class="input-group">
                         <input id="sald_tot_corr" name="sald_tot_corr" class="form-control" value="{{cons.saldocorresponsal|intcomma|cut:"-"}}" type="text" readonly>
                         <span class="input-group-addon">{{cod.3}}</span>
