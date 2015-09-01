@@ -565,7 +565,7 @@ function buscarEnArchivo(archivo,cuenta,fechaIni,fechaFin){
                             var td10 = '<td>'+contaCorr+'</td>';
 
                             //creamos la fila con los elementos y la mostramos
-                            $('#table-pa > tbody').append('<tr id ="tr-con-'+contador+'"></tr>');
+                            $('#table-pa > tbody').append('<tr style="background-color:#fff" id ="tr-con-'+contador+'"></tr>');
                             var jRow = $("#tr-con-"+contador).append(td1,td2,td3,td4,td5,td6,td7,td8,td9,td10);
                             t_conta.row.add(jRow);
                             contador++;   
@@ -652,7 +652,7 @@ function buscarEnArchivo(archivo,cuenta,fechaIni,fechaFin){
                             var td10 = '<td>'+contaCorr+'</td>';
 
                             //creamos la fila con los elementos y la mostramos
-                            $('#table-pa > tbody').append('<tr id ="tr-con-'+contador+'"></tr>');
+                            $('#table-pa > tbody').append('<tr style="background-color:#fff" id ="tr-con-'+contador+'"></tr>');
                             var jRow = $("#tr-con-"+contador).append(td1,td2,td3,td4,td5,td6,td7,td8,td9,td10);
                             t_conta.row.add(jRow);
                             contador++; 
@@ -740,7 +740,7 @@ function buscarEnArchivo(archivo,cuenta,fechaIni,fechaFin){
                             var td10 = '<td>'+contaCorr+'</td>';
 
                             //creamos la fila con los elementos y la mostramos
-                            $('#table-pa > tbody').append('<tr id ="tr-con-'+contador+'"></tr>');
+                            $('#table-pa > tbody').append('<tr style="background-color:#fff" id ="tr-con-'+contador+'"></tr>');
                             var jRow = $("#tr-con-"+contador).append(td1,td2,td3,td4,td5,td6,td7,td8,td9,td10);
                             t_conta.row.add(jRow);
                             contador++;
@@ -828,8 +828,8 @@ function buscarEnArchivo(archivo,cuenta,fechaIni,fechaFin){
                             var td9 = '<td>'+monto+'</td>';
                             var td10 = '<td>'+contaCorr+'</td>';
 
-                            //creamos la fila con los elementos y la mostramos
-                            $('#table-pa > tbody').append('<tr id ="tr-con-'+contador+'"></tr>');
+                            //creamos la fila con los elementos y la mostramos:
+                            $('#table-pa > tbody').append('<tr style="background-color:#fff" id ="tr-con-'+contador+'"></tr>');
                             var jRow = $("#tr-con-"+contador).append(td1,td2,td3,td4,td5,td6,td7,td8,td9,td10);
                             t_conta.row.add(jRow);
                             contador++;
