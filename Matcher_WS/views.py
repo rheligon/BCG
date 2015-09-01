@@ -1793,7 +1793,11 @@ def pd_matchesConfirmados(request,cuenta):
             if matchArray:
                 setConsolidado(codcta,request)
 
-            msg = 'Matches rotos con éxito'
+            if idioma == 0:
+                msg = 'Matches rotos con éxito'
+            else:
+                msg = 'Successfully broken matches'
+            
             return JsonResponse({'msg': msg, 'elim': True})
 
     if request.method == 'GET':
