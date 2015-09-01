@@ -12,9 +12,19 @@ def get_ops(request):
     opciones = [opcion.opcion_idopcion.idopcion for opcion in PerfilOpcion.objects.filter(perfil_idperfil=perfilid).select_related('opcion_idopcion')]
     return opciones
 
-def get_bancos():
-    #Buscar todos los bancos corresponsales 
-    bancos = BancoCorresponsal.objects.all().order_by('codigo')
+def get_bancos(request):
+    #Busco la sesion que esta conectada
+    login = request.user.username 
+    #Busco la sesion con el login para obtener el usuario
+    sess = Sesion.objects.get(login=login, conexion="1")
+    #Coloco las cuentas segun el usuario encontrado
+    UC = UsuarioCuenta.objects.filter(usuario_idusuario=sess.usuario_idusuario).select_related('cuenta_idcuenta')
+
+    #Filtro el id de los bancos según las cuentas que tenga asignada la persona
+    l_bancos = [cuenta.cuenta_idcuenta.banco_corresponsal_idbanco.idbanco for cuenta in UC]
+
+    #Buscar todos los bancos corresponsales asociados a la cuenta que maneja el usuario
+    bancos = BancoCorresponsal.objects.filter(idbanco__in=l_bancos).order_by('codigo') 
     return bancos
 
 def get_codigos95():
