@@ -161,10 +161,19 @@ $('#boton-buscar').on('click', function () {
     
     if (cuentaId>=0){
         if (idioma != 0){
-            var fechaIni2 = $('#fecha-desde').val().split("/");
-            var fechaFin2 = $('#fecha-hasta').val().split("/");
-            var fechaIni = fechaIni2[2] + "/" + fechaIni2[1] + "/" + fechaIni2[0];
-            var fechaFin = fechaFin2[2] + "/" + fechaFin2[1] + "/" + fechaFin2[0];
+            if ($('#fecha-desde').val()!=""){
+                var fechaIni2 = $('#fecha-desde').val().split("/");
+                var fechaIni = fechaIni2[2] + "/" + fechaIni2[1] + "/" + fechaIni2[0];
+            } else {
+                 var fechaIni = "";
+            }
+            if ($('#fecha-hasta').val() != ""){
+                var fechaFin2 = $('#fecha-hasta').val().split("/");
+                var fechaFin = fechaFin2[2] + "/" + fechaFin2[1] + "/" + fechaFin2[0];
+            } else {
+                var fechaFin = "";
+            }
+            
         } else {
             var fechaIni = $('#fecha-desde').val();
             var fechaFin = $('#fecha-hasta').val();
@@ -271,15 +280,18 @@ $('#boton-ejecutar').on('click', function () {
     if (cuenta>=0){
         var codigoCuenta = $('#opt-'+cuenta).attr("codigo");
         if (idioma == 0){
-            var fecha = $('#fecha-ejecutar').val()
+            var fecha = $('#fecha-ejecutar').val();
         } else {
-            var fechaAux = $('#fecha-ejecutar').val().split("/")
-            var fecha = fechaAux[2] + "/" + fechaAux[1] + "/" + fechaAux[0]
+            if ($('#fecha-ejecutar').val()===""){
+                var fecha = "";
+            } else {
+                var fechaAux = $('#fecha-ejecutar').val().split("/");
+                var fecha = fechaAux[2] + "/" + fechaAux[1] + "/" + fechaAux[0];
+            };
         }
-        var fechaMinima =$('#minima_fecha').val()
-
+        var fechaMinima =$('#minima_fecha').val();
         if(fecha.length<1){
-            if (idioma == 0){ 
+            if (idioma == 0){
                 swal("Ups!", "Debe introducir la Fecha para ejecutar el proceso de Archive", "error");
             } else {
                 swal("Ups!", "You must introduce the date for execute Archive process", "error");
@@ -417,8 +429,12 @@ function consultarEjecutar(cuenta){
             success: function(data){
                 
                 if (data.exito){
-                    var fecha = $('#fecha-ejecutar').val()
-        
+                    if (idioma == 0) {
+                        var fecha = $('#fecha-ejecutar').val();
+                    } else {
+                        var fechaAux = $('#fecha-ejecutar').val().split("/");
+                        var fecha = fechaAux[2] + "/" + fechaAux[1] + "/" + fechaAux[0];
+                    }
                     fecha1 = fechaStringtoDate(data.fechaMinima);
                     fecha2 = fechaStringtoDate(fecha);
                     if(fecha1 > fecha2){  
@@ -594,7 +610,7 @@ function buscarEnArchivo(archivo,cuenta,fechaIni,fechaFin){
                             var rVostro = automaticas[i][1][j][5];
                             var detalles = automaticas[i][1][j][6];
                             var credDeb = automaticas[i][1][j][7];
-                            var monto = automaticas[i][1][j][8];
+                            var monto = $.formatNumber(automaticas[i][1][j][8],{locale:idiomaAux});
                             var contaCorr = automaticas[i][1][j][9];
 
                             if (detalles == "null"){
@@ -688,7 +704,7 @@ function buscarEnArchivo(archivo,cuenta,fechaIni,fechaFin){
                             var rVostro = manuales[i][1][j][5];
                             var detalles = manuales[i][1][j][6];
                             var credDeb = manuales[i][1][j][7];
-                            var monto = manuales[i][1][j][8];
+                            var monto = $.formatNumber(automaticas[i][1][j][8],{locale:idiomaAux});
                             var contaCorr = manuales[i][1][j][9];
 
                             if (detalles == "null"){
@@ -783,7 +799,7 @@ function buscarEnArchivo(archivo,cuenta,fechaIni,fechaFin){
                             var rVostro = contabilidades[i][1][j][5];
                             var detalles = contabilidades[i][1][j][6];
                             var credDeb = contabilidades[i][1][j][7];
-                            var monto = contabilidades[i][1][j][8];
+                            var monto = $.formatNumber(automaticas[i][1][j][8],{locale:idiomaAux});
                             var contaCorr = contabilidades[i][1][j][9];
 
                             if (detalles == "null"){
@@ -879,7 +895,7 @@ function buscarEnArchivo(archivo,cuenta,fechaIni,fechaFin){
                             var rVostro = corresponsales[i][1][j][5];
                             var detalles = corresponsales[i][1][j][6];
                             var credDeb = corresponsales[i][1][j][7];
-                            var monto = corresponsales[i][1][j][8];
+                            var monto = $.formatNumber(automaticas[i][1][j][8],{locale:idiomaAux});
                             var contaCorr = corresponsales[i][1][j][9];
 
                             if (detalles == "null"){

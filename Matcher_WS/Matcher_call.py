@@ -12,16 +12,19 @@ def dma_millis(dia,mes,ano):
     millis = time.mktime(dt.timetuple()) * 1000 + dt.microsecond / 1000
     return int(millis)
 
-def matcher(cuenta,millis,funciones='1'):
+def matcher(idioma,cuenta,millis,funciones='1'):
     # Buscar host y puerto de matcher
+    idm = idioma
     try:
         conf = Configuracion.objects.all()[0]
         host = conf.matcherhost
         port = int(conf.matcherpuerto)
     except:
         # No existe una configuracion previa
-        return("No hay configuracion previa en la BD")
-
+        if idm == 0:
+            return("No hay configuracion previa en la BD")
+        else:
+            return("There is not previous configuration on DB")
     message = cuenta+"*"+str(millis)+"*"+funciones+"\r\n"
 
     # Crear socket y conectarse
@@ -32,8 +35,10 @@ def matcher(cuenta,millis,funciones='1'):
     try :
         sock.sendall(message.encode())
     except error:
-        return("No se pudo realizar la llamada a matcher")
-
+        if idm == 0:
+            return("No se pudo realizar la llamada a matcher")
+        else:
+            return("Matcher call could not be make")
     data = ''
 
     while True:

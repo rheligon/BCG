@@ -1,6 +1,15 @@
 var csrftoken = $.cookie('csrftoken');
+var idioma = $('#idioma').val();
+var idiomaAux = "";
+var msj ="";
 
-if (idioma_tr==="es"){
+if (idioma == 0){
+    idiomaAux = "es"
+} else {
+    idiomaAux = "en"
+}
+
+if (idiomaAux==="es"){
     //Cambiar el idioma del date picker a español si este es el seleccionado
     $.extend($.fn.pickadate.defaults, {
       monthsFull: ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'],
@@ -11,19 +20,35 @@ if (idioma_tr==="es"){
     });
 }
 
-//Inicializar el DatePicker
-$('#f-match').pickadate({
-  format: 'd/m/yyyy',
-  formatSubmit:'d/m/yyyy',
-  selectYears: true,
-  selectMonths: true,
-  max: new Date()
-})
+//inicializamos el DatePicker para Fecha ejecutar
+if (idioma == 0){
+    $('#f-match').pickadate({
+    format: 'dd/mm/yyyy',
+    formatSubmit:'dd/mm/yyyy',
+    selectYears: true,
+    selectMonths: true,
+    max: true,
+    });
+} else {
+    $('#f-match').pickadate({
+    format: 'yyyy/mm/dd',
+    formatSubmit:'dd/mm/yyyy',
+    selectYears: true,
+    selectMonths: true,
+    max: true,
+    });
+}
 
 //Al cambiar la fecha se llama a buscar cuentas para esa fecha
 $('#f-match').on('change', function () {
     $('#processing-modal').modal('toggle');
-    busqueda($(this).val());
+    if (idioma != 0){
+      var Aux = $(this).val().split("/");
+      var fecha_aux = Aux[2] + "/" + Aux[1] + "/" + Aux[0];
+      busqueda(fecha_aux);
+    } else {
+      busqueda($(this).val());
+    }
 });
 
 //Llamar a matcher con la cuenta elegida
@@ -31,9 +56,17 @@ $('#matchButton').on('click', function () {
     var ctaid = $('#Cuenta-sel').val();
     var fecha = $('#f-match').val();
     if (fecha===""){
-      swal("Ups!", "Porfavor elija una fecha primero.", "error");
+      if (idioma == 0) {
+        swal("Ups!", "Por favor elija una fecha primero.", "error");
+      } else {
+        swal("Ups!", "Select a date first please.", "error");
+      }
     }else if (ctaid<=0){
-      swal("Ups!", "Porfavor elija una cuenta primero.", "error");
+      if (idioma == 0) {
+        swal("Ups!", "Por favor elija una cuenta primero.", "error");
+      } else {
+        swal("Ups!", "Select an account first please.", "error");
+      }
     }else{
       $('#processing-modal').modal('toggle');
       matcher(ctaid,fecha,'match');
@@ -45,7 +78,11 @@ $('#cpButton').on('click', function () {
     var ctaid = $('#Cuenta-sel').val();
     var fecha = $('#f-match').val();
     if (fecha === ""){
-      swal("Ups!", "Porfavor elija una fecha primero.", "error");
+      if (idioma == 0) {
+        swal("Ups!", "Por favor elija una fecha primero.", "error");
+      } else {
+        swal("Ups!", "Select a date first please.", "error");
+      }
     }else{
       $('#processing-modal').modal('toggle');
       matcher(0,fecha,'matchcp');
@@ -57,9 +94,17 @@ $('#liberarButton').on('click', function () {
     var ctaid = $('#Cuenta-sel').val();
     var fecha = $('#f-match').val();
     if (fecha === ""){
-      swal("Ups!", "Porfavor elija una fecha primero.", "error");
+      if (idioma == 0) {
+        swal("Ups!", "Por favor elija una fecha primero.", "error");
+      } else {
+        swal("Ups!", "Select a date first please.", "error");
+      }
     }else if (ctaid<=0){
-      swal("Ups!", "Porfavor elija una cuenta primero.", "error");
+      if (idioma == 0) {
+        swal("Ups!", "Por favor elija una cuenta primero.", "error");
+      } else {
+        swal("Ups!", "Select an account first please.", "error");
+      }
     }else{
       $('#processing-modal').modal('toggle');
       liberar(ctaid);
@@ -92,7 +137,11 @@ function busqueda(fecha){
         error: function(q,error){
             //alert(q.responseText) //debug
             $('#processing-modal').modal('toggle');
-            swal("Ups!", "Hubo un error buscando las cuentas para la fecha especificada.", "error");
+            if (idioma == 0){
+              swal("Ups!", "Hubo un error buscando las cuentas para la fecha especificada.", "error");
+            } else {
+               swal("Ups!", "Error occurred searching the accounts on date value.", "error");
+            }
         },
         dataType:'json',
         headers:{
@@ -128,7 +177,11 @@ function matcher(ctaid,fecha,action){
         error: function(q,error){
             //alert(q.responseText) //debug
             $('#processing-modal').modal('toggle');
-            swal("Ups!", "Hubo un error procesando la cuenta para la fecha especificada, verifique que el servidor este iniciado.", "error");
+            if (idioma == 0){
+              swal("Ups!", "Hubo un error procesando la cuenta para la fecha especificada, verifique que el servidor de match se encuentre en correcto funcionamiento.", "error");
+            } else {
+               swal("Ups!", "Error occurred processing the account on date value, please verify the match server status.", "error");
+            }
         },
         dataType:'json',
         headers:{
@@ -155,7 +208,11 @@ function liberar(ctaid){
         error: function(q,error){
             //alert(q.responseText) //debug
             $('#processing-modal').modal('toggle');
-            swal("Ups!", "Hubo un error liberando la cuenta para la fecha especificada.", "error");
+            if (idioma == 0){
+              swal("Ups!", "Hubo un error liberando la cuenta para la fecha especificada.", "error");
+            } else {
+               swal("Ups!", "Error occurred seting free the account on date value.", "error");
+            }
         },
         dataType:'json',
         headers:{

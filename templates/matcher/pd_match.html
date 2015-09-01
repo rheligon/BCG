@@ -12,6 +12,7 @@
 {%endblock%}
 
 {% block content %}
+<input type="text" id="idioma" value="{{idioma}}" hidden/>
   <div class="col-md-9 col-md-push-1">
     <div class="well">
       <form id="form-match" class="form-horizontal">
@@ -20,7 +21,14 @@
           <legend>Match</legend>
           <!-- Select Basic -->
           <div class="form-group">
-            <label class="col-md-4 control-label" for="Cuenta-sel">Seleccione una Cuenta: </label>
+            <label class="col-md-4 control-label" for="Cuenta-sel">
+              {%if idioma == 0%}
+                Seleccione una Cuenta: 
+              {%endif%}
+              {%if idioma == 1%}
+                Account Selection: 
+              {%endif%}
+            </label>
             <div class="col-md-4">
             <select id="Cuenta-sel" name="Cuenta-sel" class="form-control">
               <option value="-1">----------</option>
@@ -29,7 +37,14 @@
           </div>
 
           <div class="form-group">
-            <label class="col-md-4 control-label">Fecha:</label>
+            <label class="col-md-4 control-label">
+              {%if idioma == 0%}
+                Fecha: 
+              {%endif%}
+              {%if idioma == 1%}
+                Date: 
+              {%endif%}
+            </label>
             <div class="col-md-4">
               <input id="f-match" class="form-control" data-value="{{fecha_hoy}}">
             </div>
@@ -38,7 +53,12 @@
           <div class="col-md-3">
             <div>
                 <button type="button" id="liberarButton" data-loading-text="Cargando..." class="col-md-7 btn btn-warning" autocomplete="off">
-                    Liberar
+                    {%if idioma == 0%}
+                      Liberar 
+                    {%endif%}
+                    {%if idioma == 1%}
+                      Set Free 
+                    {%endif%}
                 </button>
             </div>
           </div>
@@ -47,7 +67,12 @@
             {% if 77 in ops %}
             <div>
                 <button type="button" id="cpButton" data-loading-text="Cargando..." class="col-md-7 btn btn-warning" autocomplete="off">
-                    Match CP
+                    {%if idioma == 0%}
+                      Match CP 
+                    {%endif%}
+                    {%if idioma == 1%}
+                      Match OA 
+                    {%endif%}
                 </button>
             </div>
             {% endif %}
@@ -64,7 +89,12 @@
           <div class="col-md-3">
             <div>
                 <button type="button" id="cancelButton" class="col-md-7 btn btn-default">
-                    Cancelar
+                    {%if idioma == 0%}
+                      Cancelar 
+                    {%endif%}
+                    {%if idioma == 1%}
+                      Cancel 
+                    {%endif%}
                 </button>
             </div>
           </div>
@@ -81,7 +111,12 @@
             <div class="modal-body">
                 <div class="text-center">
                     <img src="{% static 'images/procesando.gif' %}" class="icon" />
-                    <h4>Procesando, por favor espere.</h4>
+                    {%if idioma == 0%}
+                      <h4>Procesando, por favor espere.</h4>
+                    {%endif%}
+                    {%if idioma == 1%}
+                      <h4>Processing, wait please.</h4>
+                    {%endif%}
                 </div>
             </div>
         </div>

@@ -1,6 +1,17 @@
 var csrftoken = $.cookie('csrftoken');
-var tabla = iniciar_tabla(idioma_tr);
 var filterArray = [[],[],[],[],[]];
+var idioma = $('#idioma').val();
+var idiomaAux = "";
+var msj ="";
+var centinela = true;
+
+if (idioma == 0){
+    idiomaAux = "es"
+} else {
+    idiomaAux = "en"
+}
+
+var tabla = iniciar_tabla(idiomaAux);
 
 $(document).ready(function() {
     //Al cargar la pagina se coloca en el select el valor de la cuenta elegida
@@ -49,7 +60,27 @@ function iniciar_tabla(idioma){
     };
 };
 
-if (idioma_tr==="es"){
+// funcion para aceptar solo numeros
+function solonumeroypunto(e) {
+    var codigo;
+    codigo = (document.all) ? e.keyCode : e.which;
+    if (codigo == 46 || (codigo > 47 && codigo < 58) ) {
+    return true;
+    }
+    return false;
+}; 
+
+// funcion para aceptar solo numeros
+function solonumeroycoma(e) {
+    var codigo;
+    codigo = (document.all) ? e.keyCode : e.which;
+    if (codigo == 44 || (codigo > 47 && codigo < 58) ) {
+    return true;
+    }
+    return false;
+}; 
+
+if (idiomaAux==="es"){
     //Cambiar el idioma del date picker a español si este es el seleccionado
     $.extend($.fn.pickadate.defaults, {
       monthsFull: ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'],
@@ -60,37 +91,81 @@ if (idioma_tr==="es"){
     });
 }
 
-//Inicializar el DatePicker
-$('#f-desde').pickadate({
-  format: 'd/m/yyyy',
-  formatSubmit:'d/m/yyyy',
-  selectYears: true,
-  selectMonths: true,
-})
+//inicializamos el DatePicker para fecha desde
+if (idioma == 0){
+    $('#f-desde').pickadate({
+    format: 'dd/mm/yyyy',
+    formatSubmit:'dd/mm/yyyy',
+    selectYears: true,
+    selectMonths: true,
+    max: true,
+    });
+} else {
+    $('#f-desde').pickadate({
+    format: 'yyyy/mm/dd',
+    formatSubmit:'dd/mm/yyyy',
+    selectYears: true,
+    selectMonths: true,
+    max: true,
+    });
+}
 
-//Inicializar el DatePicker
-$('#f-hasta').pickadate({
-  format: 'd/m/yyyy',
-  formatSubmit:'d/m/yyyy',
-  selectYears: true,
-  selectMonths: true,
-})
+//inicializamos el DatePicker para fecha hasta
+if (idioma == 0){
+    $('#f-hasta').pickadate({
+    format: 'dd/mm/yyyy',
+    formatSubmit:'dd/mm/yyyy',
+    selectYears: true,
+    selectMonths: true,
+    max: true,
+    });
+} else {
+    $('#f-hasta').pickadate({
+    format: 'yyyy/mm/dd',
+    formatSubmit:'dd/mm/yyyy',
+    selectYears: true,
+    selectMonths: true,
+    max: true,
+    });
+}
 
-//Inicializar el DatePicker
-$('#fm-desde').pickadate({
-  format: 'd/m/yyyy',
-  formatSubmit:'d/m/yyyy',
-  selectYears: true,
-  selectMonths: true,
-})
+//inicializamos el DatePicker para fecha m desde
+if (idioma == 0){
+    $('#fm-desde').pickadate({
+    format: 'dd/mm/yyyy',
+    formatSubmit:'dd/mm/yyyy',
+    selectYears: true,
+    selectMonths: true,
+    max: true,
+    });
+} else {
+    $('#fm-desde').pickadate({
+    format: 'yyyy/mm/dd',
+    formatSubmit:'dd/mm/yyyy',
+    selectYears: true,
+    selectMonths: true,
+    max: true,
+    });
+}
 
-//Inicializar el DatePicker
-$('#fm-hasta').pickadate({
-  format: 'd/m/yyyy',
-  formatSubmit:'d/m/yyyy',
-  selectYears: true,
-  selectMonths: true,
-})
+//inicializamos el DatePicker para fecha m hasta
+if (idioma == 0){
+    $('#fm-hasta').pickadate({
+    format: 'dd/mm/yyyy',
+    formatSubmit:'dd/mm/yyyy',
+    selectYears: true,
+    selectMonths: true,
+    max: true,
+    });
+} else {
+    $('#fm-hasta').pickadate({
+    format: 'yyyy/mm/dd',
+    formatSubmit:'dd/mm/yyyy',
+    selectYears: true,
+    selectMonths: true,
+    max: true,
+    });
+}
 
 //Boton de buscar matches para la cuenta elegida
 $('#srchButton').on('click', function() {
@@ -98,64 +173,197 @@ $('#srchButton').on('click', function() {
   var cuentaId = $('#Cuenta-sel').val();
 
   if (cuentaId!=''){
+    if (cuentaId!='-1'){
+        $('#processing-modal').modal('toggle');
 
-    $('#processing-modal').modal('toggle');
+          //Inicializar todo de nuevo
+          tabla.fnClearTable();
+          filterArray = [[],[],[],[],[]];
 
-      //Inicializar todo de nuevo
-      tabla.fnClearTable();
-      filterArray = [[],[],[],[],[]];
+            $('#checkAllButton').attr('selec',0);
 
-        $('#checkAllButton').attr('selec',0);
+        //Checkear los filtros
+        $('.cbfilter:checked').each(function(){
 
-    //Checkear los filtros
-    $('.cbfilter:checked').each(function(){
+            var idaux = $(this).attr('id').split('-')[0];
+            var id = '#filter-'+idaux;
 
-        var idaux = $(this).attr('id').split('-')[0];
-        var id = '#filter-'+idaux;
-
-        if (idaux==='monto'){
-            filterArray[0].push($('#monto-desde').val());
-            filterArray[0].push($('#monto-hasta').val());
-        }
-
-        if (idaux==='match'){
-            var match = $('#match-id').val();
-            filterArray[1].push(match);
-        }
-
-        if (idaux==='ref'){
-            var rad = $(id+' input[type=radio]:checked').val();
-            if (rad != undefined ){
-                filterArray[2].push(rad);
-                filterArray[2].push($('#ref-txt').val());
+            if (idaux==='monto'){
+                var p = chequearFornatoNumero($('#monto-desde').val());
+                var q = chequearFornatoNumero($('#monto-hasta').val());
+                if (p && q ){
+                    if (idioma == 0){
+                        var desde = $('#monto-desde').val();
+                        var m_aux = desde.replace(",", ".");
+                        var hasta = $('#monto-hasta').val();
+                        var m_aux2 = hasta.replace(",", ".");
+                        if (parseFloat(m_aux2) > parseFloat(m_aux)){
+                            filterArray[0].push(m_aux);
+                            filterArray[0].push(m_aux2);
+                            centinela = true;
+                        } else {
+                            $('#processing-modal').modal('toggle');
+                            if (idioma == 0){
+                                swal("Ups!", "Monto desde debe ser estrictamente menor que monto hasta.", "error");
+                            } else {
+                                swal("Ups!", '"Since" amount shloud be strict less than "Until" amount', "error");
+                            }
+                            centinela = false;
+                        }
+                    } else {
+                        if (parseFloat($('#monto-hasta').val()) > parseFloat($('#monto-desde').val())){
+                            filterArray[0].push($('#monto-desde').val());
+                            filterArray[0].push($('#monto-hasta').val());
+                            centinela = true;
+                        } else {
+                            $('#processing-modal').modal('toggle');
+                            if (idioma == 0){
+                                swal("Ups!", "Monto desde debe ser estrictamente menor que monto hasta.", "error");
+                            } else {
+                                swal("Ups!", '"Since" amount shloud be strict less than "Until" amount', "error");
+                            }
+                            centinela = false;
+                        }
+                    }
+                } else {
+                    $('#processing-modal').modal('toggle');
+                    if (idioma == 0){
+                        swal("Ups!", "Formato de montos erróneo", "error");
+                    } else {
+                        swal("Ups!", "Wrong amount format", "error");
+                    }
+                    centinela = false;
+                }
             }
+
+            if (idaux==='match'){
+                var match = $('#match-id').val();
+                filterArray[1].push(match);
+            }
+
+            if (idaux==='ref'){
+                var rad = $(id+' input[type=radio]:checked').val();
+                if (rad != undefined ){
+                    filterArray[2].push(rad);
+                    filterArray[2].push($('#ref-txt').val());
+                }
+            }
+
+            if (idaux==='fecham'){
+                if ($('#fm-desde').val() != "" && $('#fm-hasta').val()){
+                    var fd = "";
+                    var fh = "";
+                    var fd_aux = "";
+                    var fh_aux = "";
+                    if (idioma == 0){
+                        fd = $('#fm-desde').val();
+                        fh = $('#fm-hasta').val();
+                        fd_aux = $('#fm-desde').val().split("/").reverse().join("/");
+                        fh_aux = $('#fm-hasta').val().split("/").reverse().join("/");
+                        filterArray[3].push(fd);
+                        filterArray[3].push(fh);
+                        
+                    } else {
+                        fd_aux = $('#fm-desde').val().split("/");
+                        fh_aux = $('#fm-hasta').val().split("/");
+                        fd = fd_aux.reverse().join("/");
+                        fh = fh_aux.reverse().join("/");
+                        fd_aux = fd_aux.reverse().join("/");
+                        fh_aux = fh_aux.reverse().join("/");
+                        filterArray[3].push(fd);
+                        filterArray[3].push(fh);
+                       
+                    }
+                    
+                    var fd_date = new Date(fd_aux);
+                    var fh_date = new Date(fh_aux);
+                    if (fh_date < fd_date){
+                        $('#processing-modal').modal('toggle');
+                        if (idioma == 0){
+                            swal("Ups!", "Fecha inicial de match no puede ser mayor que la final", "error");
+                        } else {
+                            swal("Ups!", "Match initial date can not be greater than final", "error");
+                        }
+                        centinela = false;
+                    }
+                } else {
+                    $('#processing-modal').modal('toggle');
+                    if (idioma == 0){
+                        swal("Ups!", "Las fechas de match no pueden ser vacías", "error");
+                    } else {
+                        swal("Ups!", "Match dates can not be empty", "error");
+                    }
+                    centinela = false;
+                }
+            }
+
+            if (idaux==='fecha'){
+                if ($('#f-desde').val() != "" && $('#f-hasta').val()){
+                    var fd = "";
+                    var fh = "";
+                    var fd_aux = "";
+                    var fh_aux = "";
+                    if (idioma == 0){
+                        fd = $('#f-desde').val();
+                        fh = $('#f-hasta').val();
+                        fd_aux = $('#f-desde').val().split("/").reverse().join("/");
+                        fh_aux = $('#f-hasta').val().split("/").reverse().join("/");
+                        filterArray[4].push(fd);
+                        filterArray[4].push(fh);
+                        
+                    } else {
+                        fd_aux = $('#f-desde').val().split("/");
+                        fh_aux = $('#f-hasta').val().split("/");
+                        fd = fd_aux.reverse().join("/");
+                        fh = fh_aux.reverse().join("/");
+                        fd_aux = fd_aux.reverse().join("/");
+                        fh_aux = fh_aux.reverse().join("/");
+                        filterArray[4].push(fd);
+                        filterArray[4].push(fh);
+                       
+                    }
+                    
+                    var fd_date = new Date(fd_aux);
+                    var fh_date = new Date(fh_aux);
+                    if (fh_date < fd_date){
+                        $('#processing-modal').modal('toggle');
+                        if (idioma == 0){
+                            swal("Ups!", "Fecha inicial no puede ser mayor que la final", "error");
+                        } else {
+                            swal("Ups!", "Initial date can not be greater than final", "error");
+                        }
+                        centinela = false;
+                    }
+                } else {
+                    $('#processing-modal').modal('toggle');
+                    if (idioma == 0){
+                        swal("Ups!", "Las fechas no pueden ser vacías", "error");
+                    } else {
+                        swal("Ups!", "Dates can not be empty", "error");
+                    }
+                    centinela = false;
+                }    
+            }
+        });
+    
+        if (centinela) {
+            var url = '/procd/mConfirmados/'+cuentaId+'\/';
+            var serialFilter = JSON.stringify(filterArray);
+
+            busqueda(url,'POST',{
+                ctaid: cuentaId,
+                filterArray: serialFilter,
+                csrfmiddlewaretoken: csrftoken,
+                action: 'buscar'
+            });
         }
-
-        if (idaux==='fecham'){
-            var fd = $('#fm-desde').val();
-            var fh = $('#fm-hasta').val();
-            filterArray[3].push(fd);
-            filterArray[3].push(fh);
+    } else {
+        if (idioma == 0){
+            swal("Ups!", "Debe seleccionar una cuenta", "error");
+        } else {
+            swal("Ups!", "Select an account please", "error");
         }
-
-        if (idaux==='fecha'){
-            var fd = $('#f-desde').val();
-            var fh = $('#f-hasta').val();
-            filterArray[4].push(fd);
-            filterArray[4].push(fh);
-        }   
-    });
-
-    var url = '/procd/mConfirmados/'+cuentaId+'\/';
-    var serialFilter = JSON.stringify(filterArray);
-
-    busqueda(url,'POST',{
-        ctaid: cuentaId,
-        filterArray: serialFilter,
-        csrfmiddlewaretoken: csrftoken,
-        action: 'buscar'
-    });
-
+    }
   }else{
 
     tabla.fnClearTable();
@@ -316,7 +524,11 @@ function romper_match(matchArray,ctaid){
         error: function(q,error){
             alert(q.responseText) //debug
             $('#processing-modal').modal('toggle');
-            swal("Ups!", "Hubo un error matcheando las partidas para la cuenta especificada.", "error");
+            if (idioma == 0){
+                swal("Ups!", "Hubo un error matcheando las partidas para la cuenta especificada.", "error");
+            } else {
+                swal("Ups!", "Error occurred in matching process.", "error");
+            }
         },
         dataType:'json',
         headers:{
@@ -325,4 +537,13 @@ function romper_match(matchArray,ctaid){
     });
     return false;
 };
+
+// chequear formato de los numeros
+function chequearFornatoNumero(elem){
+    if (idioma == 1){
+        return (/^(\d{1})+(\.\d{1,2})?$/.test(elem))
+    } else {
+        return (/^(\d{1})+(\,\d{1,2})?$/.test(elem))
+    }
+}
 

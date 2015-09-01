@@ -1150,6 +1150,8 @@ def pd_match(request):
     expirarSesion(request)
     if request.method == 'POST':
         actn = request.POST.get('action')
+        idioma = Configuracion.objects.all()[0].idioma    
+
         if actn == 'buscar':
             fecha = request.POST.get('fecha').split("/")
             fechaform = datetime(int(fecha[2]),int(fecha[1]),int(fecha[0]))
@@ -1186,7 +1188,7 @@ def pd_match(request):
 
             if not matches and conc is None:
                 # Lista vacia, por lo que no hay propuestos en la BD para la cuenta
-                msg = matcher(cta.codigo,millis,procesos)
+                msg = matcher(idioma,cta.codigo,millis,procesos)
                 match = True
 
                 #Para el log
@@ -1194,10 +1196,16 @@ def pd_match(request):
             else:
                 # Checkear si la cuenta esta tomada
                 if conc is not None:
-                    msg = '*La cuenta se encuentra tomada, liberar antes de matchear.'
+                    if idioma == 0:
+                        msg = '*La cuenta se encuentra tomada, liberar antes de matchear.'
+                    else:
+                        msg = '*Account is blocked, set free before matching.'
                 else:
                     # La cuenta no esta tomada, pero posee elementos en propuestos
-                    msg = '*Existen elementos en la tabla propuestos para la cuenta especificada.'
+                    if idioma == 0:
+                        msg = '*Existen elementos en la tabla propuestos para la cuenta especificada.'
+                    else:
+                        msg = '*There are elements on proposed table for the account.'
                 match = False
 
             return JsonResponse({'msg':msg, 'match':match})
@@ -1206,7 +1214,7 @@ def pd_match(request):
             fecha = request.POST.get('fecha').split("/")
             millis = dma_millis(int(fecha[0]),int(fecha[1]),int(fecha[2]))
 
-            msg = matcher('CuentasPropias',millis,'2')
+            msg = matcher(idioma,'CuentasPropias',millis,'2')
 
             #Para el log
             log(request,5,'CuentasPropias')
@@ -1220,7 +1228,10 @@ def pd_match(request):
             cta.concurrencia = None
             cta.save()
 
-            msg = 'Cuenta liberada exitosamente'
+            if idioma ==0:
+                msg = 'Cuenta liberada exitosamente'
+            else:
+                msg = 'Successful freed account'
 
             return JsonResponse({'msg':msg})
 
@@ -1800,7 +1811,11 @@ def pd_matchesConfirmados(request,cuenta):
             if matchArray:
                 setConsolidado(codcta,request)
 
-            msg = 'Matches rotos con éxito'
+            if idioma == 0:
+                msg = 'Matches rotos con éxito'
+            else:
+                msg = 'Successfully broken matches'
+            
             return JsonResponse({'msg': msg, 'elim': True})
 
     if request.method == 'GET':
@@ -2587,8 +2602,9 @@ def mtn99(request):
     expirarSesion(request)
     if request.method == 'GET':
         template = "matcher/mtn99.html"
+        bancos= get_bancos(request)
         idioma = Configuracion.objects.all()[0].idioma    
-        context = {'idioma':idioma, 'ops':get_ops(request), 'bancos':get_bancos(), 'archivos':get_archivosMT99(),'ldap':get_ldap(request)}
+        context = {'idioma':idioma, 'ops':get_ops(request), 'bancos':bancos, 'archivos':get_archivosMT99(),'ldap':get_ldap(request)}
         
         return render(request, template, context)
 
