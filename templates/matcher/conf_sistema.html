@@ -645,7 +645,7 @@
                         {% endwith %}
                     {% endif %}
                     {%if idioma == 1%}
-                        {% with "Introce a valid IP adress please. By example: 1.2.3.4" as mensaje %}
+                        {% with "Introduce a valid IP adress please. By example: 1.2.3.4" as mensaje %}
                         <input type="text" class="form-control" value="{{conf.matcherhost}}" name="m-host" pattern="^(?!0)(?!.*\.$)((1?\d?\d|25[0-5]|2[0-4]\d)(\.|$)){4}$" oninvalid="this.setCustomValidity('{{mensaje}}')" oninput="setCustomValidity('')" onkeypress='return solonumeroypunto(event)' onkeyup='return solonumeroypunto(event)' required/>
                         <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
                         <div class="help-block with-errors"></div>

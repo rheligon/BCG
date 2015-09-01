@@ -1004,15 +1004,24 @@ def pd_cargaManual(request):
             pag = int(listaCuenta[3])
             
             balIni = listaCuenta[4]
-            balIni = float(balIni.replace(",",""))
+            if idioma== 0 :
+                balIni = balIni.replace(".","")
+                balIni = float(balIni.replace(",","."))
+            else:
+                balIni = float(balIni.replace(",",""))
             
             balFin = listaCuenta[5]
-            balFin = float(balFin.replace(",",""))
+            if idioma== 0 :
+                balFin = balFin.replace(".","")
+                balIni = float(balFin.replace(",","."))
+            else:
+                balFin = float(balFin.replace(",",""))
             
             mIni = listaCuenta[6]
             mFin = listaCuenta[7]
             
             fechaIni = listaCuenta[8]
+            print(fechaIni)
             arreglo = fechaIni.split('/')
             if idioma == 0:
                 fechaIni= datetime(int(arreglo[2]), int(arreglo[1]), int(arreglo[0]))
@@ -1020,6 +1029,7 @@ def pd_cargaManual(request):
                 fechaIni= datetime(int(arreglo[0]), int(arreglo[1]), int(arreglo[2]))
             
             fechaFin = listaCuenta[9]
+            print (fechaFin)
             arreglo2 = fechaFin.split('/')
             if idioma == 0:
                 fechaFin= datetime(int(arreglo2[2]), int(arreglo2[1]), int(arreglo2[0]))
@@ -1059,7 +1069,11 @@ def pd_cargaManual(request):
                             fechaT = datetime(int(arregloTrans[0]), int(arregloTrans[1]), int(arregloTrans[2]))
                         
                         monto = listaTrans[i][4]
-                        monto = float(monto.replace(",",""))
+                        if idioma== 0 :
+                            monto = monto.replace(".","")
+                            balIni = float(monto.replace(",","."))
+                        else:
+                            monto = float(monto.replace(",",""))
                         
                         TransabiertaCorresponsal.objects.create(estado_cuenta_idedocuenta=edocta,codigo_transaccion=listaTrans[i][5], pagina=pagina, fecha_valor=fechaT, descripcion=listaTrans[i][8], monto=monto, credito_debito=listaTrans[i][3], referencianostro=listaTrans[i][6], referenciacorresponsal=listaTrans[i][7], codigocuenta=cta.codigo, numtransaccion=int(listaTrans[i][1]), campo86_940=None, seguimiento=None)
                     
@@ -1097,7 +1111,11 @@ def pd_cargaManual(request):
                             fechaT = datetime(int(arregloTrans[0]), int(arregloTrans[1]), int(arregloTrans[2]))
                         
                         monto = listaTrans[i][4]
-                        monto = float(monto.replace(",",""))
+                        if idioma== 0 :
+                            monto = monto.replace(".","")
+                            balIni = float(monto.replace(",","."))
+                        else:
+                            monto = float(monto.replace(",",""))
                         
                         TransabiertaContabilidad.objects.create(estado_cuenta_idedocuenta=edocta,codigo_transaccion=listaTrans[i][5], pagina=pagina, fecha_valor=fechaT, descripcion=listaTrans[i][8], monto=monto, credito_debito=listaTrans[i][3], referencianostro=listaTrans[i][6], referenciacorresponsal=listaTrans[i][7], codigocuenta=cta.codigo, numtransaccion=int(listaTrans[i][1]), campo86_940=None, seguimiento=None)
                     

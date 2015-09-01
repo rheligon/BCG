@@ -9,6 +9,8 @@ $('#fmn1').html(inputIni);
 var inputIni2 = $('#fecha-manual-nuevo2').detach();
 $('#fmn2').html(inputIni2);
 
+
+
 var idioma = $('#idioma').val();
 var idiomaAux = "";
 var msj ="";
@@ -18,6 +20,7 @@ if (idioma == 0){
 } else {
     idiomaAux = "en"
 }
+console.log(idiomaAux)
 
 var t_conta = iniciar_tabla(idiomaAux,'conta');
 
@@ -29,11 +32,6 @@ if (idiomaAux==="es"){
       clear: 'Limpiar',
       close: 'Cerrar',
     });
-}
-
-function commas (num) {
-    var N = parseFloat(num).toFixed(2);
-    return N.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,")
 }
 
 $('#Cuenta-sel').change(function() {
@@ -110,7 +108,11 @@ $('#Cuenta-sel').change(function() {
         //si cambiamos de cuenta borramos la tabla e inicializamos num
         t_conta.clear().draw();
         num=1;
-
+        $( "div" ).removeClass( "has-success" );
+        $( "div" ).removeClass( "has-error" );
+        $( "span" ).removeClass( "glyphicon-remove" );
+        $( "span" ).removeClass( "glyphicon-ok" );
+        $( "div ul li" ).remove();
         //Buscamos el ultimo estado de cuenta contable(primera vez)
         buscarEstado('cont-radio',cuentaId,moneda);
     }else{
@@ -184,6 +186,11 @@ $('#Cuenta-sel').change(function() {
         
         $('#fmn1').html(inputIni);
         $('#fmn2').html(inputIni2);
+        $( "div" ).removeClass( "has-success" );
+        $( "div" ).removeClass( "has-error" );
+        $( "span" ).removeClass( "glyphicon-remove" );
+        $( "span" ).removeClass( "glyphicon-ok" );
+        $( "div ul li" ).remove();
          //si cambiamos de cuenta borramos la tabla e inicializamos num
         t_conta.clear().draw();
         num=1;
@@ -259,9 +266,24 @@ $('input[name=radiocuenta]').change(function(){
         $("#saldo-manual-nuevo2").css('background-color', '#eee');
         $("#edo-cuenta-nuevo").prop('readonly', true);
         $("#edo-cuenta-nuevo").css('background-color', '#eee');
+        $('#fecha-valor').val("");
+        $('#fecha-entrada').val("");
+        $('#selector-cd').val("C");            
+        $('#monto-tran').val("");
+        $('#tipo-tran').val("");
+        $('#nostro-tran').val("");
+        $('#vostro-tran').val("");
+        $('#detalle-tran').val("");
 
         $('#saldo-manual-cd-nuevo1').remove();
         $('#after').prepend('<span id="saldo-manual-cd-nuevo1" class="input-group-addon"></span>');
+        $( "div" ).removeClass( "has-success" );
+        $( "div" ).removeClass( "has-error" );
+        $( "span" ).removeClass( "glyphicon-remove" );
+        $( "span" ).removeClass( "glyphicon-ok" );
+        $( "div ul" ).remove();
+
+
 
 
 
@@ -276,12 +298,28 @@ $('input[name=radiocuenta]').change(function(){
         $('#fecha-manual').val("");
         $('#saldo-manual-cd').html("");
         $('#saldo-manual').val("");
+        
+        
         t_conta.clear().draw();
         num=1;
-        
+        $('#fecha-valor').val("");
+        $('#fecha-entrada').val("");
+        $('#selector-cd').val("C");            
+        $('#monto-tran').val("");
+        $('#tipo-tran').val("");
+        $('#nostro-tran').val("");
+        $('#vostro-tran').val("");
+        $('#detalle-tran').val("");
+        $( "div" ).removeClass( "has-success" );
+        $( "div" ).removeClass( "has-error" );
+        $( "span" ).removeClass( "glyphicon-remove" );
+        $( "span" ).removeClass( "glyphicon-ok" );
+        $( "div ul" ).remove();
     }
 
     buscarEstado(tipo,cuentaId,moneda);
+
+
      
 });
 
@@ -397,7 +435,7 @@ $('#boton-nuevo').on('click', function () {
         }
 
         $('#saldo-manual-cd-nuevo1').remove();
-        $('#after').prepend('<select id="saldo-manual-cd-nuevo1" name="saldo-manual-nuevo1" class="form-control"><option value="C">C</option><option value="D">D</option></select>');
+        $('#after').prepend('<select id="saldo-manual-cd-nuevo1" name="saldo-manual-nuevo1" class="form-control"style="width:70px"><option value="C">C</option><option value="D">D</option></select>');
 
         
         var selec = $('#opt-'+cuentaVacia);
@@ -427,12 +465,14 @@ $('#boton-nuevo').on('click', function () {
 $('#boton-agregar').on('click', function () {
 
     var cuentaId = $('#edo-cuenta-nuevo').val();
+    var cuentaCaso2 = $('#edo-cuenta').val();
+    console.log(cuentaCaso2)
     var dataP = t_conta.rows().data();
-    console.log(dataP.length);
     cuentaId = parseInt(cuentaId);
 
+     var error = $( "div" ).hasClass( "has-error" )
     //si ya se habia seleccionado el nuevo edo de cuenta
-    if (cuentaId>=0){
+    if (cuentaId>=0 && !error){
         var fecha1 = $('#fecha-manual-nuevo1').val();
         var fecha2 = $('#fecha-manual-nuevo2').val();
         var saldo1 = $('#saldo-manual-nuevo1').val();
@@ -460,16 +500,25 @@ $('#boton-agregar').on('click', function () {
             var fechaValor = $('#fecha-valor').val();
             console.log(dataP.length)            
             if(dataP.length==0){
-                var cdCuenta = $('#saldo-manual-cd-nuevo1').val();    
+                if(cuentaCaso2.length<1){
+                    var cdCuenta = $('#saldo-manual-cd-nuevo1').val();    
+                }else{
+                    var cdCuenta = $('#saldo-manual-cd-nuevo2').html();
+                }
+                    
             }else{
                 var cdCuenta = $('#saldo-manual-cd-nuevo2').html();
             }
+
             console.log(cdCuenta)
             var cdTrans = $('#selector-cd').val();
             var monto = $('#monto-tran').val();
+            if(idiomaAux == "es"){
+                monto = monto.replace(",",".")
+            }
             montoFloatPuro = parseFloat(monto)
             montoFloatPuroFixed = montoFloatPuro.toFixed(2);
-            montoFloat = commas(montoFloatPuroFixed);
+            montoFloat = $.formatNumber(montoFloatPuroFixed,{locale:idiomaAux})
             var tipo = $('#tipo-tran').val();
             var nostro = $('#nostro-tran').val();
             var vostro = $('#vostro-tran').val();
@@ -549,59 +598,107 @@ $('#boton-agregar').on('click', function () {
                 if(cdCuenta==cdTrans){
                     if(dataP.length<1){
                         var saldo = $('#saldo-manual-nuevo1').val();
-                        saldoFloatPuro = parseFloat(saldo);
+                        if(cuentaCaso2.length<1){
+                            if(idiomaAux=="es"){
+                                saldo = saldo.replace(",",".");
+                                saldoFloatPuro = parseFloat(saldo);    
+                            }else{
+                                saldoFloatPuro = parseFloat(saldo);    
+                            }
+                        }else{
+                            if(idiomaAux == "es"){
+                                saldo = saldo.replace(".","");
+                                saldo = saldo.replace(",",".");
+                            }else{
+                                saldo = saldo.replace(",","");
+                            }
+                            saldoFloatPuro = parseFloat(saldo);
+                        }
                         primeroFixed = saldoFloatPuro.toFixed(2);
-                        primero = commas(primeroFixed);
+                        primero = $.formatNumber(primeroFixed,{locale:idiomaAux}) 
+
                         $('#saldo-manual-nuevo1').val(primero); 
                         $("#saldo-manual-nuevo1").prop('readonly', true);
                         $("#saldo-manual-nuevo1").css('background-color', '#eee');
+                        $("#edo-cuenta-nuevo").prop('readonly', true);
+                        $("#edo-cuenta-nuevo").css('background-color', '#eee');
         
                         total1 = saldoFloatPuro + montoFloatPuro;
                         totalFixed = total1.toFixed(2);
-                        total = commas(totalFixed);
+                        total = $.formatNumber(totalFixed,{locale:idiomaAux});
                         $('#saldo-manual-nuevo2').val(total);
                         $('#saldo-manual-cd-nuevo2').html(cdTrans);
                     }else{
                         var saldo = $('#saldo-manual-nuevo2').val();
-                        saldo = parseFloat(monto_Float(saldo));
+                        if(idiomaAux == "es"){
+                            saldo = saldo.replace(".","");
+                            saldo = saldo.replace(",",".");
+                        }else{
+                            saldo = saldo.replace(",","");
+                        }
+                        saldo = parseFloat(saldo);
                         total = saldo + montoFloatPuro;
-                        total = commas(total);
+                        total = $.formatNumber(total,{locale:idiomaAux});
                         $('#saldo-manual-nuevo2').val(total);    
                     }
                         
                 }else{
                     if(dataP.length<1){
                         var saldo = $('#saldo-manual-nuevo1').val();
-                        saldoFloatPuro = parseFloat(saldo);
+                        if(cuentaCaso2.length<1){
+                            if(idiomaAux=="es"){
+                                saldo = saldo.replace(",",".");
+                                saldoFloatPuro = parseFloat(saldo);    
+                            }else{
+                                saldoFloatPuro = parseFloat(saldo);    
+                            }
+                        }else{
+                            if(idiomaAux == "es"){
+                                saldo = saldo.replace(".","");
+                                saldo = saldo.replace(",",".");
+                            }else{
+                                saldo = saldo.replace(",","");
+                            }
+                            saldoFloatPuro = parseFloat(saldo);
+                        }
                         primeroFixed = saldoFloatPuro.toFixed(2);
-                        primero = commas(primeroFixed);
+                        primero = $.formatNumber(primeroFixed,{locale:idiomaAux});
                         $('#saldo-manual-nuevo1').val(primero); 
                         $("#saldo-manual-nuevo1").prop('readonly', true);
                         $("#saldo-manual-nuevo1").css('background-color', '#eee');
+                        $("#edo-cuenta-nuevo").prop('readonly', true);
+                        $("#edo-cuenta-nuevo").css('background-color', '#eee');
         
                         total1 = saldoFloatPuro - montoFloatPuro;
                         if(total1<=0){
                             total= Math.abs(total1);
-                            total = commas(total);
+                            total = $.formatNumber(total,{locale:idiomaAux});
                             $('#saldo-manual-nuevo2').val(total);
                             $('#saldo-manual-cd-nuevo2').html(cdTrans);
                         }else{
-                            total = commas(total1);
+                            total = $.formatNumber(total1,{locale:idiomaAux});
                             $('#saldo-manual-nuevo2').val(total);
-                            $('#saldo-manual-cd-nuevo2').html(cdTrans);
+                            $('#saldo-manual-cd-nuevo2').html(cdCuenta);
                         }   
                     }else{
                         var saldo = $('#saldo-manual-nuevo2').val();
+                        if(idiomaAux == "es"){
+                            saldo = saldo.replace(".","");
+                            saldo = saldo.replace(",",".");
+                        }else{
+                            saldo = saldo.replace(",","");
+                        }
                         saldo = parseFloat(monto_Float(saldo));
                         total = saldo - montoFloatPuro;
                         if(total<=0){
                             total= Math.abs(total);
-                            total = commas(total);
+                            total = $.formatNumber(total,{locale:idiomaAux});
                             $('#saldo-manual-nuevo2').val(total);
                             $('#saldo-manual-cd-nuevo2').html(cdTrans);
                         }else{
-                            total = commas(total);
+                            total = $.formatNumber(total,{locale:idiomaAux});
                             $('#saldo-manual-nuevo2').val(total);
+                            $('#saldo-manual-cd-nuevo2').html(cdCuenta);
                         }               
                     } 
                 }
@@ -614,13 +711,29 @@ $('#boton-agregar').on('click', function () {
                 $('#nostro-tran').val("");
                 $('#vostro-tran').val("");
                 $('#detalle-tran').val("");
+                $( "div" ).removeClass( "has-success" );
+                $( "div" ).removeClass( "has-error" );
+                $( "span" ).removeClass( "glyphicon-remove" );
+                $( "span" ).removeClass( "glyphicon-ok" );
+                $( "div ul li" ).remove();
+                
             }
         }    
     }else{
         if (idioma == 0){ 
-            swal("Ups!", "Debe tener el Numero del Nuevo Estado de Cuenta a Crear", "error"); 
+            if(error){
+                swal("Ups!", "Debe corregir el error mostrado.", "error");
+            }else{
+                swal("Ups!", "Debe tener el Numero del Nuevo Estado de Cuenta a Crear", "error"); 
+            }
+            
         } else {
-            swal("Ups!", "You must have the number of the new account statement to create", "error");
+
+            if(error){
+                swal("Ups!", "You must correct The error.", "error");
+            }else{
+                swal("Ups!", "You must have the number of the new account statement to create", "error");
+            }
         }
     }
     
@@ -755,6 +868,15 @@ function reiniciar_tablas(){
 function numero(e) {
     var codigo;
     codigo = (document.all) ? e.keyCode : e.which;
+    if (codigo > 31 && ((codigo < 48 && codigo != 44) || codigo > 57) ) {
+    return false;
+    }
+    return true;
+};
+
+function number(e) {
+    var codigo;
+    codigo = (document.all) ? e.keyCode : e.which;
     if (codigo > 31 && ((codigo < 48 && codigo != 46) || codigo > 57) ) {
     return false;
     }
@@ -763,6 +885,7 @@ function numero(e) {
 
 // funcion para aceptar solo numeros
 function solonumero(e) {
+
     var codigo;
     codigo = (document.all) ? e.keyCode : e.which;
     if (codigo > 31 && (codigo < 48 || codigo > 57) ) {
@@ -952,8 +1075,8 @@ function buscarEstado(tipo,cuentaid,moneda){
                 $('#saldo-manual-moneda').html(moneda);
                 $('#saldo-manual-cd').html(json_data[carg][ult_edc_conc].fields.c_dfinal);
                 $('#ffinal').html(json_data[carg][ult_edc_conc].fields.m_ffinal);
-                $('#saldo-manual').val(commas(json_data[carg][ult_edc_conc].fields.balance_final));
-            }
+                $('#saldo-manual').val($.formatNumber((json_data[carg][ult_edc_conc].fields.balance_final),{locale:idiomaAux}));
+            }   
 
             else if (ult_conp_existe && !ult_conc_existe && tipo =="cont-radio"){
                 var fecha_conp = new Date(json_data[proc][ult_edc_conp].fields.fecha_final);
@@ -964,7 +1087,7 @@ function buscarEstado(tipo,cuentaid,moneda){
                 $('#saldo-manual-moneda').html(moneda);
                 $('#saldo-manual-cd').html(json_data[proc][ult_edc_conp].fields.c_dfinal);
                 $('#ffinal').html(json_data[proc][ult_edc_conp].fields.m_ffinal);
-                $('#saldo-manual').val(commas(json_data[proc][ult_edc_conp].fields.balance_final));
+                $('#saldo-manual').val($.formatNumber((json_data[carg][ult_edc_conc].fields.balance_final),{locale:idiomaAux}));
             
             }
 
@@ -977,7 +1100,7 @@ function buscarEstado(tipo,cuentaid,moneda){
                 $('#saldo-manual-moneda').html(moneda);
                 $('#saldo-manual-cd').html(json_data[carg][ult_edc_corc].fields.c_dfinal);
                 $('#ffinal').html(json_data[carg][ult_edc_corc].fields.m_ffinal);
-                $('#saldo-manual').val(commas(json_data[carg][ult_edc_corc].fields.balance_final));
+                $('#saldo-manual').val($.formatNumber((json_data[carg][ult_edc_conc].fields.balance_final),{locale:idiomaAux}));
             }
 
             else if (ult_corp_existe && !ult_corc_existe && tipo =="corr-radio"){
@@ -989,7 +1112,7 @@ function buscarEstado(tipo,cuentaid,moneda){
                 $('#saldo-manual-moneda').html(moneda);
                 $('#saldo-manual-cd').html(json_data[proc][ult_edc_corp].fields.c_dfinal);
                 $('#ffinal').html(json_data[proc][ult_edc_corp].fields.m_ffinal);
-                $('#saldo-manual').val(commas(json_data[proc][ult_edc_corp].fields.balance_final));
+                $('#saldo-manual').val($.formatNumber((json_data[carg][ult_edc_conc].fields.balance_final),{locale:idiomaAux}));
             
             }else{
                 
@@ -1000,6 +1123,12 @@ function buscarEstado(tipo,cuentaid,moneda){
                 $('#ffinal').html("");
                 $('#saldo-manual').val("");
             }
+
+            $( "div" ).removeClass( "has-success" );
+            $( "div" ).removeClass( "has-error" );
+            $( "span" ).removeClass( "glyphicon-remove" );
+            $( "span" ).removeClass( "glyphicon-ok" );
+            $( "div ul" ).remove();
 
             $('#processing-modal').modal('toggle');
         },
