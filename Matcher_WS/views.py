@@ -5541,6 +5541,7 @@ def SU_licencia(request):
 
     if request.method == "POST":
        action = request.POST.get('action')
+       idioma = Configuracion.objects.all()[0].idioma 
 
        if action == "guardarCambios":
         numUsers = request.POST.get('numUsers') 
@@ -5601,7 +5602,11 @@ def SU_licencia(request):
             msg = "Bic: " +bic + "\nUsuarios: " + numUsers +"\n Expiración (YY-MM-DD): "+ str(fecha).split(" ")[0] +"\n Llave: " + hashp+ "\nSalt : " + salt  +"\n Modulos: " + str(cuentamod) + modulosemail
             enviar_mail('Licencia del banco: '+bic,msg,'jotha41@gmail.com')
             
-            mensaje = "Licencia modificada exitosamente"
+            if idioma == 0:
+                mensaje = "Licencia modificada exitosamente"
+            else:
+                mensaje = "Successful modified license"
+
             return JsonResponse({'mens':mensaje})
                
         except:
@@ -5654,7 +5659,11 @@ def SU_licencia(request):
             msg = "Bic: " +bic + "\nUsuarios: " + numUsers +"\n Expiración (YY-MM-DD): "+ str(fecha).split(" ")[0] +"\n Llave: " + hashp+ "\nSalt : " + salt +"\n Modulos: " +str(cuentamod)+ modulosemail
             enviar_mail('Licencia del banco: '+bic,msg,'jotha41@gmail.com')
             
-            mensaje = "Licencia agregada exitosamente"
+            if idioma ==0:
+                mensaje = "Licencia agregada exitosamente"
+            else:
+                mensaje = "Successful added license"
+
             return JsonResponse({'mens':mensaje})
 
 

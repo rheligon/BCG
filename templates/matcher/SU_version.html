@@ -9,7 +9,15 @@
 {% endblock%}
 
 {% block content %}
-<legend align="center">Versión del Sistema</legend>
+<input type="text" id="idioma" value="{{idioma}}" hidden/>
+<legend align="center">
+    {%if idioma == 0%}
+        Versión de Matcher
+    {%endif%}
+    {%if idioma == 1%}
+        Macther Version
+    {%endif%}
+</legend>
 <h1 align="center" style="color:#337ab7">{{version.descripcion}}</h1>
 <!-- Static Modal para procesando -->
 <div class="modal modal-static fade" id="processing-modal" role="dialog" aria-hidden="true">
@@ -18,7 +26,12 @@
             <div class="modal-body">
                 <div class="text-center">
                     <img src="{% static 'images/procesando.gif' %}" class="icon" />
-                    <h4>Procesando, por favor espere.</h4>
+                    {%if idioma == 0%}
+                      <h4>Procesando, por favor espere.</h4>
+                    {%endif%}
+                    {%if idioma == 1%}
+                      <h4>Processing, wait please.</h4>
+                    {%endif%}
                 </div>
             </div>
         </div>

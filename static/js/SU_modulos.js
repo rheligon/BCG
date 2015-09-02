@@ -1,8 +1,19 @@
 var csrftoken = $.cookie('csrftoken');
-var tabla_AD = iniciar_tabla_AD(idioma_tr);
-var tabla_NAD = iniciar_tabla_NAD(idioma_tr);
 var arregloQuitar = [];
 var arregloAgregar = [];
+var idioma = $('#idioma').val();
+var idiomaAux = "";
+var msj ="";
+
+if (idioma == 0){
+    idiomaAux = "es"
+} else {
+    idiomaAux = "en"
+}
+
+
+var tabla_AD = iniciar_tabla_AD(idiomaAux);
+var tabla_NAD = iniciar_tabla_NAD(idiomaAux);
 
 //inicializar la tabla de destalles
 function iniciar_tabla_AD(idioma){
@@ -123,9 +134,14 @@ function chequearA(elemento){
 //Introducir en el arreglo el id del checkbox que se haya clickeado
 $('#quitarModButton').on('click', function () {
     
+    if (idioma== 0){
+        msj = "¿Seguro que desea eliminar los módulos seleccionados?";
+    } else {
+        msj = "Sure you want to delete selected modules?";
+    }
     swal({
         title: "",
-        text: "¿Seguro que desea eliminar los módulos seleccionados?",
+        text: msj,
         type: "warning",
         showCancelButton: true,
         confirmButtonText: "Ok"},
@@ -146,7 +162,11 @@ function quitarModulos(array){
         data: {"arrayQuitar":array, "action":"quitarModulos"},
         success: function(data){
             $('#processing-modal').modal('toggle');
-            swal("OK", "Modulos eliminados", "success");
+            if (idioma== 0){
+               swal("OK", "Modulos eliminados", "success");
+            } else {
+                swal("OK", "Deleted Modules", "success");
+            }
             setTimeout(function(){
                 window.location.reload();
             },1500);
@@ -156,7 +176,11 @@ function quitarModulos(array){
         error: function(jqXHR, error){ 
             alert(jqXHR.responseText) //debug
             $('#processing-modal').modal('toggle');
-            swal("Ups!", "Hubo un error al intertar eliminar los modulos", "error");
+            if (idioma == 0){
+                swal("Ups!", "Hubo un error al intertar eliminar los modulos", "error");
+            } else {
+                swal("Ups!", "Error occurred trying to eliminate modules", "error");
+            }
         },
         dataType:'json',
         headers:{
@@ -169,9 +193,14 @@ function quitarModulos(array){
 //Introducir en el arreglo el id del checkbox que se haya clickeado
 $('#agregarModButton').on('click', function () {
     
+    if (idioma== 0){
+        msj = "¿Seguro que desea agregar los módulos seleccionados?";
+    } else {
+        msj = "Sure you want to add selected modules?";
+    }
     swal({
         title: "",
-        text: "¿Seguro que desea agregar los módulos seleccionados?",
+        text: msj,
         type: "warning",
         showCancelButton: true,
         confirmButtonText: "Ok"},
@@ -192,7 +221,11 @@ function agregarModulos(array){
         data: {"arrayAgregar":array, "action":"agregarModulos"},
         success: function(data){
             $('#processing-modal').modal('toggle');
-            swal("OK", "Modulos agregados", "success");
+             if (idioma== 0){
+               swal("OK", "Modulos agregados", "success");
+            } else {
+                swal("OK", "Added Modules", "success");
+            }
             setTimeout(function(){
                 window.location.reload();
             },1500);
@@ -202,7 +235,11 @@ function agregarModulos(array){
         error: function(jqXHR, error){ 
             alert(jqXHR.responseText) //debug
             $('#processing-modal').modal('toggle');
-            swal("Ups!", "Hubo un error al intertar agregar los modulos", "error");
+            if (idioma == 0){
+                swal("Ups!", "Hubo un error al intertar agregar los modulos", "error");
+            } else {
+                swal("Ups!", "Error occurred trying to insert modules", "error");
+            }
         },
         dataType:'json',
         headers:{

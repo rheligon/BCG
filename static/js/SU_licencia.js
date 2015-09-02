@@ -1,7 +1,17 @@
 var csrftoken = $.cookie('csrftoken');
+var idioma = $('#idioma').val();
+var idiomaAux = "";
+var msj ="";
+
+if (idioma == 0){
+    idiomaAux = "es"
+} else {
+    idiomaAux = "en"
+}
+
 
 //Cambiar el idioma del date picker a español si este es el seleccionado
-if (idioma_tr==="es"){
+if (idiomaAux==="es"){
     $.extend($.fn.pickadate.defaults, {
       monthsFull: ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'],
       weekdaysShort: ['Dom', 'Lun', 'Mar', 'Mie', 'Jue', 'Vie', 'Sab'],
@@ -12,13 +22,23 @@ if (idioma_tr==="es"){
 }
 
 //Inicializar el DatePicker
-$('#expiracionLicencia').pickadate({
-  format: 'd/m/yyyy',
-  formatSubmit:'d/m/yyyy',
-  selectYears: true,
-  selectMonths: true,
-  min: true,
-});
+if (idioma == 0){
+    $('#expiracionLicencia').pickadate({
+      format: 'dd/mm/yyyy',
+      formatSubmit:'dd/mm/yyyy',
+      selectYears: true,
+      selectMonths: true,
+      min: true,
+    });
+} else{
+    $('#expiracionLicencia').pickadate({
+      format: 'yyyy/mm/dd',
+      formatSubmit:'dd/mm/yyyy',
+      selectYears: true,
+      selectMonths: true,
+      min: true,
+    });
+}
 
 $("#numUserLicencia").TouchSpin({
     verticalbuttons: true,
@@ -47,27 +67,31 @@ $('#guardarCambiosButton').on('click', function () {
     var fecha = $('#expiracionLicencia').val();
     var fechaAux = $('#expiracionLicenciaAux').val();
     var usersAux = $('#numUserLicenciaAux').val();
-    console.log(numUsers);
-    console.log(usersAux);
-    console.log(fecha);
-    console.log(fechaAux);
 
     if (numUsers === ""){
         numUsers = usersAux;
         if (usersAux < 1) {
-            swal("Ups!","Al menos debe tener 1 usuario en sistema.","error");        
+            if (idioma == 0){
+                swal("Ups!","Al menos debe tener 1 usuario en sistema.","error");        
+            } else {
+                swal("Ups!","The system must have at least one user.","error");        
+            }
         }
     } 
 
     if (fecha===""){
         fecha = fechaAux
         if (fechaAux ===""){
-            swal("Ups!","Debe seleccionar una fecha de expiración para la licencia.","error");
+            if (idioma == 0){
+                swal("Ups!","Debe seleccionar una fecha de expiración para la licencia.","error");        
+            } else {
+                swal("Ups!","You must select a license expiration date.","error");        
+            }
         }
     }
     
     var auxdate = new Date();
-    var dd = auxdate.getDate();
+    var dd = auxdate.getDate()+1;
     var mm = auxdate.getMonth()+1; //January is 0!
     var yyyy = auxdate.getFullYear();
     if(dd<10) {
@@ -97,23 +121,57 @@ $('#guardarCambiosButton').on('click', function () {
     var fecha0 = day+"/"+month+"/"+aux[2];
     fecha = aux[2]+"-"+month+"-"+day;
     auxdate = yyyy+'-'+mm+'-'+dd;
+    if (idioma == 1){
+        bla = parseInt(aux[2])+1;
+        bla2 = bla - 1
+        if (bla < 10){
+            bla = "0" + bla.toString();
+            bla2 = "0" + bla2.toString();
+        } else {
+            bla = bla.toString();
+            bla2 = bla2.toString();
+        }
+        fecha = day+"-"+month+"-"+ bla;
+        var auxff = bla2 + "/" + month + "/" + day;
+    } else {
+         bla = parseInt(aux[0]);
+        if (bla < 10){
+            bla = "0" + bla.toString();
+        } else {
+            bla = bla,toString();
+        }
+        fecha = month+"-"+bla+"-"+ aux[2]; 
+    }
     fecha = new Date(fecha);
     auxdate = new Date(auxdate);
 
-    if (fecha < auxdate){
-        swal("Ups!","La fecha seleccionada debe ser mayor a la fecha de hoy.","error");        
+    if (fecha <= auxdate){
+        if (idioma == 0){
+                swal("Ups!","La fecha seleccionada debe ser mayor a la fecha de hoy.","error");
+        } else {
+            swal("Ups!","Selected date must be greater than today","error");        
+        }        
     } else {
 
+        if (idioma == 0){
+            msj = "¿Seguro que desea guardar los cambios en la licencia?";
+        } else {
+            msj = "Sure you want to save license changes?"
+        } 
         swal({
             title: "",
-            text: "¿Seguro que desea guardar los cambios en la licencia?",
+            text: msj,
             type: "warning",
             showCancelButton: true,
             confirmButtonText: "Ok"},
             function(){
                 $('#processing-modal').modal('toggle');
                 //Llamar funcion de guardar cambios
-                guardarCambios(numUsers,fecha0);
+                if (idioma == 0){
+                    guardarCambios(numUsers,fecha0);
+                } else {
+                    guardarCambios(numUsers,auxff);
+                }
             }
         ); 
     }
@@ -134,7 +192,11 @@ function guardarCambios(numUsers,fecha){
         error: function(jqXHR, error){ 
             alert(jqXHR.responseText) //debug
             $('#processing-modal').modal('toggle');
-            swal("Ups!", "Hubo un error al guardar los cambios de la licencia", "error");
+            if (idioma == 0){
+                swal("Ups!", "Hubo un error al guardar los cambios de la licencia", "error");
+            } else {
+                swal("Ups!", "Error occured trying to save license changes", "error");
+            }
         },
         dataType:'json',
         headers:{

@@ -20,7 +20,7 @@ if (idioma == 0){
 } else {
     idiomaAux = "en"
 }
-console.log(idiomaAux)
+
 
 var t_conta = iniciar_tabla(idiomaAux,'conta');
 
