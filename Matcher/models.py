@@ -178,7 +178,8 @@ class Configuracion(models.Model):
     dirintraday = models.CharField(db_column='DirIntraday', max_length=200, blank=True)
     tiempointraday = models.IntegerField(db_column='TiempoIntraday', blank=True, null=True)
     dirintradaysalida = models.CharField(db_column='DirIntradaySalida', max_length=200, blank=True)
-     
+    dirintradayerror = models.CharField(db_column='DirIntradayError', max_length=200, blank=True)
+
     class Meta:
         db_table = 'Configuracion'
 
@@ -500,6 +501,8 @@ class MensajesIntraday(models.Model):
     tipo = models.CharField(db_column='tipo', max_length = 3)
     cuenta = models.ForeignKey(Cuenta, db_column='cuenta')
     fecha_entrada = models.DateTimeField(db_column='fecha_entrada')
+    i_o = models.CharField(db_column='I_O', max_length = 1,null=True)
+    observacion = models.CharField(db_column='observacion', max_length = 200,null=True)
 
     class Meta:
         db_table = 'MensajesIntraday'

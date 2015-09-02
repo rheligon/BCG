@@ -329,136 +329,145 @@ $('#boton-nuevo').on('click', function () {
     var cuentaId = $('#edo-cuenta').val();
     var cuentaVacia = $('#Cuenta-sel').val();
     cuentaId = parseInt(cuentaId);
-    
-    if (cuentaId>=0){
-        
+    var fechaEdo = $('#fecha-manual').val();
+    pasa = verificarFecha(fechaEdo) 
 
-        var fecha = $('#fecha-manual').val();
-        var cd = $('#saldo-manual-cd').html();
-        var moneda = $('#saldo-manual-moneda').html();
-        var saldo = $('#saldo-manual').val();
-        var ffinal = $('#ffinal').html();
-        cuentaId+=1;
-        fecha = nuevaFecha(fecha);
 
-        $('#edo-cuenta-nuevo').val(cuentaId);
-        $('#paginas-nuevo').html(1);
-        
-        $('#fecha-manual-nuevo1').val(fecha);
-        $('#fecha-manual-nuevo2').val(fecha);
+    if(pasa){
+        if (cuentaId>=0){
+            var fecha = $('#fecha-manual').val();
+            
+            var cd = $('#saldo-manual-cd').html();
+            var moneda = $('#saldo-manual-moneda').html();
+            var saldo = $('#saldo-manual').val();
+            var ffinal = $('#ffinal').html();
+            cuentaId+=1;
+            fecha = nuevaFecha(fecha);
 
-        var minimaFecha = fechaStringtoDate(fecha);
-        $("#fecha-manual-nuevo2").prop('readonly', false);
-        $("#fecha-manual-nuevo2").css('background-color', 'white');
+            $('#edo-cuenta-nuevo').val(cuentaId);
+            $('#paginas-nuevo').html(1);
+            
+            $('#fecha-manual-nuevo1').val(fecha);
+            $('#fecha-manual-nuevo2').val(fecha);
 
-        $('#fmn1').html(inputIni);
+            var minimaFecha = fechaStringtoDate(fecha)  ;
+            $("#fecha-manual-nuevo2").prop('readonly', false);
+            $("#fecha-manual-nuevo2").css('background-color', 'white');
 
-        //inicializamos el DatePicker para Fecha Final
-        if (idioma == 0){
-            $('#fecha-manual-nuevo2').pickadate({
-              format: 'dd/mm/yyyy',
-              formatSubmit:'dd/mm/yyyy',
-              selectYears: true,
-              selectMonths: true,
-              max: true,
-            });
-        } else {
-            $('#fecha-manual-nuevo2').pickadate({
-              format: 'yyyy/mm/dd',
-              formatSubmit:'dd/mm/yyyy',
-              selectYears: true,
-              selectMonths: true,
-              max: true,
-            });
-    }
+            $('#fmn1').html(inputIni);
 
-        $('#saldo-manual-cd-nuevo1').html(cd);
-        $('#saldo-manual-cd-nuevo2').html(cd);
-        
-        $('#saldo-manual-moneda-nuevo1').html(moneda);
-        $('#saldo-manual-moneda-nuevo2').html(moneda);
-        
-        $('#saldo-manual-nuevo1').val(saldo);
-        $('#saldo-manual-nuevo2').val(saldo);
-        
-        $('#f-nuevo-ini').html(ffinal);
-        $('#f-nuevo-fin').html(ffinal);
+            //inicializamos el DatePicker para Fecha Final
+            if (idioma == 0){
+                $('#fecha-manual-nuevo2').pickadate({
+                  format: 'dd/mm/yyyy',
+                  formatSubmit:'dd/mm/yyyy',
+                  selectYears: true,
+                  selectMonths: true,
+                  max: true,
+                });
+            } else {
+                $('#fecha-manual-nuevo2').pickadate({
+                  format: 'yyyy/mm/dd',
+                  formatSubmit:'dd/mm/yyyy',
+                  selectYears: true,
+                  selectMonths: true,
+                  max: true,
+                });
+            }
 
+            $('#saldo-manual-cd-nuevo1').html(cd);
+            $('#saldo-manual-cd-nuevo2').html(cd);
+            
+            $('#saldo-manual-moneda-nuevo1').html(moneda);
+            $('#saldo-manual-moneda-nuevo2').html(moneda);
+            
+            $('#saldo-manual-nuevo1').val(saldo);
+            $('#saldo-manual-nuevo2').val(saldo);
+            
+            $('#f-nuevo-ini').html(ffinal);
+            $('#f-nuevo-fin').html(ffinal);
+
+        }else{
+            $("#edo-cuenta-nuevo").prop('readonly', false);
+            $("#edo-cuenta-nuevo").css('background-color', 'white');
+
+            $('#paginas-nuevo').html(1);
+            
+            $("#fecha-manual-nuevo1").prop('readonly', false);
+            $("#fecha-manual-nuevo1").css('background-color', 'white');
+
+
+            //inicializamos el DatePicker para Fecha Inicial
+            if (idioma == 0){
+                dp1=$('#fecha-manual-nuevo1').pickadate({
+                  format: 'dd/mm/yyyy',
+                  formatSubmit:'dd/mm/yyyy',
+                  selectYears: true,
+                  selectMonths: true,
+                  max: true,
+                });
+            } else {
+                dp1=$('#fecha-manual-nuevo1').pickadate({
+                  format: 'yyyy/mm/dd',
+                  formatSubmit:'dd/mm/yyyy',
+                  selectYears: true,
+                  selectMonths: true,
+                  max: true,
+                });
+            }
+
+            $("#fecha-manual-nuevo2").prop('readonly', false);
+            $("#fecha-manual-nuevo2").css('background-color', 'white');
+
+            if (idioma == 0){
+                dp2=$('#fecha-manual-nuevo2').pickadate({
+                  format: 'dd/mm/yyyy',
+                  formatSubmit:'dd/mm/yyyy',
+                  selectYears: true,
+                  selectMonths: true,
+                  max: true,
+                });
+            } else {
+                dp2=$('#fecha-manual-nuevo2').pickadate({
+                  format: 'yyyy/mm/dd',
+                  formatSubmit:'dd/mm/yyyy',
+                  selectYears: true,
+                  selectMonths: true,
+                  max: true,
+                });
+            }
+
+            $('#saldo-manual-cd-nuevo1').remove();
+            $('#after').prepend('<select id="saldo-manual-cd-nuevo1" name="saldo-manual-nuevo1" class="form-control"style="width:70px"><option value="C">C</option><option value="D">D</option></select>');
+
+            
+            var selec = $('#opt-'+cuentaVacia);
+            var monedaM = selec.attr('moneda');
+
+            $('#saldo-manual-moneda-nuevo1').html(monedaM);
+            $('#saldo-manual-moneda-nuevo2').html(monedaM);
+            
+            
+            $("#saldo-manual-nuevo1").prop('readonly', false);
+            $("#saldo-manual-nuevo1").css('background-color', 'white');
+            $('#f-nuevo-ini').html("F");
+            $('#f-nuevo-fin').html("F");
+            
+        }
+        if(cuentaVacia<0){
+            if (idioma == 0){
+                swal("Ups!", "Debe Seleccionar el Código de la Cuenta", "error");
+            } else {
+                swal("Ups!", "You must select the account code", "error");
+            }
+        }
     }else{
-        $("#edo-cuenta-nuevo").prop('readonly', false);
-        $("#edo-cuenta-nuevo").css('background-color', 'white');
-
-        $('#paginas-nuevo').html(1);
-        
-        $("#fecha-manual-nuevo1").prop('readonly', false);
-        $("#fecha-manual-nuevo1").css('background-color', 'white');
-
-
-        //inicializamos el DatePicker para Fecha Inicial
         if (idioma == 0){
-            dp1=$('#fecha-manual-nuevo1').pickadate({
-              format: 'dd/mm/yyyy',
-              formatSubmit:'dd/mm/yyyy',
-              selectYears: true,
-              selectMonths: true,
-              max: true,
-            });
-        } else {
-            dp1=$('#fecha-manual-nuevo1').pickadate({
-              format: 'yyyy/mm/dd',
-              formatSubmit:'dd/mm/yyyy',
-              selectYears: true,
-              selectMonths: true,
-              max: true,
-            });
-        }
-
-        $("#fecha-manual-nuevo2").prop('readonly', false);
-        $("#fecha-manual-nuevo2").css('background-color', 'white');
-
-        if (idioma == 0){
-            dp2=$('#fecha-manual-nuevo2').pickadate({
-              format: 'dd/mm/yyyy',
-              formatSubmit:'dd/mm/yyyy',
-              selectYears: true,
-              selectMonths: true,
-              max: true,
-            });
-        } else {
-            dp2=$('#fecha-manual-nuevo2').pickadate({
-              format: 'yyyy/mm/dd',
-              formatSubmit:'dd/mm/yyyy',
-              selectYears: true,
-              selectMonths: true,
-              max: true,
-            });
-        }
-
-        $('#saldo-manual-cd-nuevo1').remove();
-        $('#after').prepend('<select id="saldo-manual-cd-nuevo1" name="saldo-manual-nuevo1" class="form-control"style="width:70px"><option value="C">C</option><option value="D">D</option></select>');
-
-        
-        var selec = $('#opt-'+cuentaVacia);
-        var monedaM = selec.attr('moneda');
-
-        $('#saldo-manual-moneda-nuevo1').html(monedaM);
-        $('#saldo-manual-moneda-nuevo2').html(monedaM);
-        
-        
-        $("#saldo-manual-nuevo1").prop('readonly', false);
-        $("#saldo-manual-nuevo1").css('background-color', 'white');
-        $('#f-nuevo-ini').html("F");
-        $('#f-nuevo-fin').html("F");
-        
+                swal("Ups!", "El estado de cuenta del Día ya ha sido cargado", "error");
+            } else {
+                swal("Ups!", "The statement of today is already loaded", "error");
+            }
     }
-    if(cuentaVacia<0){
-        if (idioma == 0){
-            swal("Ups!", "Debe Seleccionar el Código de la Cuenta", "error");
-        } else {
-            swal("Ups!", "You must select the account code", "error");
-        }
-    }
-    
 });
 
 //agregamos las nuevas transacciones en la tabla
@@ -930,11 +939,50 @@ function nuevaFecha(fecha){
         anio = parseInt(arreglo[0]);
     }
     var nueva = new Date(anio,mes,dia);
-    nueva.setDate(nueva.getDate()+1);
-    nueva = formatearFecha(nueva);
+    var hoy = new Date();
+    
+    diaN = hoy.getUTCDate();
+    mesN = hoy.getUTCMonth();
+    anioN = hoy.getUTCFullYear();
+
+    var fechaHoy = new Date(anioN,mesN,diaN);
+    
+    if(fechaHoy.getTime() == nueva.getTime()){
+        nueva = formatearFecha(nueva);    
+    }else{
+        nueva.setDate(nueva.getDate()+1);
+        nueva = formatearFecha(nueva); 
+    }
     return nueva;
 }
 
+function verificarFecha(fecha){
+    var arreglo= fecha.split("/");
+    if (idioma == 0){
+        dia = parseInt(arreglo[0]);
+        mes = parseInt(arreglo[1])-1;
+        anio = parseInt(arreglo[2]);
+    } else {
+        dia = parseInt(arreglo[2]);
+        mes = parseInt(arreglo[1])-1;
+        anio = parseInt(arreglo[0]);
+    }
+    var nueva = new Date(anio,mes,dia);
+    var hoy = new Date();
+    
+    diaN = hoy.getUTCDate();
+    mesN = hoy.getUTCMonth();
+    anioN = hoy.getUTCFullYear();
+
+    var fechaHoy = new Date(anioN,mesN,diaN);
+    
+    if(fechaHoy.getTime() == nueva.getTime()){
+        pasa = false;    
+    }else{
+        pasa = true;
+    }
+    return pasa;
+}
 //dado un fecha en string la convierte en un objeto Date
 function fechaStringtoDate(fecha){
     var arreglo= fecha.split("/");
@@ -1174,7 +1222,7 @@ function cargar(listaCuenta,listaTrans,numTrans){
                 $('#processing-modal').modal('toggle');
                 setTimeout(function(){
                     window.location.reload();
-                }, 2000);
+                }, 1000);
                 
             },
             error: function(q,error){

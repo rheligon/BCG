@@ -49,7 +49,7 @@ urlpatterns = patterns('',
     url(r'^mtn99/$','Matcher_WS.views.mtn99', name='mtn99'),
 
     # INTRADAY
-    url(r'^intraday/$', 'Matcher_WS.views.intraday', name='intraday'),
+    url(r'^intraday/((?P<cuenta>\w+)/)?$', 'Matcher_WS.views.intraday', name='intraday'),
     url(r'^transIntraday/((?P<cuenta>\w+)/)?$', 'Matcher_WS.views.transIntraday', name='transIntraday'),
     
     # Configuración (Sistema-Archivo)

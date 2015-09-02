@@ -1009,13 +1009,15 @@ def pd_cargaManual(request):
                 balIni = float(balIni.replace(",","."))
             else:
                 balIni = float(balIni.replace(",",""))
+            print (balIni)
             
             balFin = listaCuenta[5]
             if idioma== 0 :
                 balFin = balFin.replace(".","")
-                balIni = float(balFin.replace(",","."))
+                balFin = float(balFin.replace(",","."))
             else:
                 balFin = float(balFin.replace(",",""))
+            print(balFin)
             
             mIni = listaCuenta[6]
             mFin = listaCuenta[7]
@@ -1071,7 +1073,7 @@ def pd_cargaManual(request):
                         monto = listaTrans[i][4]
                         if idioma== 0 :
                             monto = monto.replace(".","")
-                            balIni = float(monto.replace(",","."))
+                            monto = float(monto.replace(",","."))
                         else:
                             monto = float(monto.replace(",",""))
                         
@@ -1113,7 +1115,7 @@ def pd_cargaManual(request):
                         monto = listaTrans[i][4]
                         if idioma== 0 :
                             monto = monto.replace(".","")
-                            balIni = float(monto.replace(",","."))
+                            monto = float(monto.replace(",","."))
                         else:
                             monto = float(monto.replace(",",""))
                         
@@ -2871,8 +2873,8 @@ def intraday(request,cuenta):
         if actn == 'buscarConci':
             msg = ""
             res = ""
-            cuenta_id = request.POST.get('cuenta')
-            conciliacion = Conciliacionconsolidado.objects.filter(cuenta_idcuenta = cuenta_id)
+            
+            conciliacion = Conciliacionconsolidado.objects.filter(cuenta_idcuenta = cuenta)
             json_cons =""
             exitoconci = False
             exito = False
@@ -2883,8 +2885,8 @@ def intraday(request,cuenta):
             if conciliacion:
                 exitoconci =True
                 cons = conciliacion[0]
-                cuenta = cons.cuenta_idcuenta
-                fecha = cuenta.ultimafechaconciliacion.strftime("%d/%m/%Y")
+                cuentaId = cons.cuenta_idcuenta
+                fecha = cuentaId.ultimafechaconciliacion.strftime("%d/%m/%Y")
                 fechaActual = datetime.now().strftime("%d/%m/%Y %H:%M %p")
                 bfcon = cons.balancefinalcontabilidad
                 bfcor = cons.balancefinalcorresponsal
@@ -2902,18 +2904,19 @@ def intraday(request,cuenta):
                 if scor < 0:
                     cod[3] = "D"
             else:
-                cuenta = Cuenta.objects.filter(idcuenta=cuenta_id)[0]
+                cuentaId = Cuenta.objects.filter(idcuenta=cuenta)[0]
                 cons = None
                 cod = ['C']*4
                 exitoconci = False
 
-            json_cuenta = serializers.serialize('json', [cuenta])
+            json_cuenta = serializers.serialize('json', [cuentaId])
 
             archivos942 = ""
             
             obj = Configuracion.objects.all()[0]
             directorio = obj.dirintraday
             directorioSalida = obj.dirintradaysalida
+            directorioError = obj.dirintradayerror
 
             try:
                 archivos = os.listdir(directorio)
@@ -2940,12 +2943,23 @@ def intraday(request,cuenta):
                                 
                                 if not os.path.exists(nuevo):
                                     os.makedirs(nuevo)
-                                
-                                pathdest = nuevo + '\\' + elem
+
+                                base, extension = os.path.splitext(elem)
+                                fech = datetime.now().strftime("%d%m%Y_%H%M%S")
+                                pathdest = nuevo + '\\' + base + "_" + fech +extension
                                 shutil.move(pathsrc,pathdest)
                             else:
                                 exitoParseo = False
                                 msg = res[1]
+                                #Mover archivo a errores
+                                pathsrc = direct 
+                                nuevo = directorioError +"\\FORMATO"  
+                                
+                                if not os.path.exists(nuevo):
+                                    os.makedirs(nuevo)
+                                pathdest = nuevo + '\\' + elem
+                                
+                                shutil.move(pathsrc,pathdest)
                                 continue
 
                         elif (tipo[0] == "202"):
@@ -2961,11 +2975,22 @@ def intraday(request,cuenta):
                                 
                                 if not os.path.exists(nuevo):
                                     os.makedirs(nuevo)
+                                base, extension = os.path.splitext(elem)
+                                fech = datetime.now().strftime("%d%m%Y_%H%M%S")
+                                pathdest = nuevo + '\\' + base + "_" + fech +extension
                                 
-                                pathdest = nuevo + '\\' + elem
                                 shutil.move(pathsrc,pathdest)
                             else:
                                 exitoParseo = False
+                                #Mover archivo a errores
+                                pathsrc = direct 
+                                nuevo = directorioError +"\\FORMATO"  
+                                
+                                if not os.path.exists(nuevo):
+                                    os.makedirs(nuevo)
+                                pathdest = nuevo + '\\' + elem
+                                
+                                shutil.move(pathsrc,pathdest)
                                 msg = res[1]
                                 continue
 
@@ -2993,8 +3018,17 @@ def intraday(request,cuenta):
                     else:
                         exito = False
                         msg = tipo[1]
-                        break
-                
+                        #Mover archivo a errores
+                        pathsrc = direct 
+                        nuevo = directorioError +"\\FORMATO"  
+                        
+                        if not os.path.exists(nuevo):
+                            os.makedirs(nuevo)
+                        pathdest = nuevo + '\\' + elem
+                        
+                        shutil.move(pathsrc,pathdest)
+                        continue
+              
             return JsonResponse({'exitoParseo':exitoParseo,'exitoconci':exitoconci,'msg':msg,'fecha':fecha,'fechaActual':fechaActual, 'exito':exito, 'cuenta': json_cuenta, 'cons':json_cons, 'cod': cod})
 
 
@@ -3134,6 +3168,7 @@ def configuracion(request, tipo):
                 archconfirm = request.POST.get('archconfirm')
                 dirIntraday = request.POST.get('dirIntraday')
                 dirIntradaySalida = request.POST.get('dirIntradaySalida')
+                dirIntradayError = request.POST.get('dirIntradayError')
                 tiempoIntraday = request.POST.get('tiempoAct')
                 dir_s_mt95 = request.POST.get('dir_s_mt95')
                 dir_c_mt96 = request.POST.get('dir_c_mt96')
@@ -3154,7 +3189,7 @@ def configuracion(request, tipo):
                 conf = Configuracion.objects.all()[0]
 
                 #Crear directorios si no existen
-                arregloDir = [cont_carg,cont_procs,corr_carg,corr_procs,arch,dir_s_mt95,dir_c_mt96,dir_s_mt99,dir_c_mt99,dir_p_mt96,dir_p_mt99,archconfirm,dirlicencia,dirIntraday,dirIntradaySalida]
+                arregloDir = [cont_carg,cont_procs,corr_carg,corr_procs,arch,dir_s_mt95,dir_c_mt96,dir_s_mt99,dir_c_mt99,dir_p_mt96,dir_p_mt99,archconfirm,dirlicencia,dirIntraday,dirIntradaySalida,dirIntradayError]
                 verificarDirectorio(arregloDir)
 
                 # Asignar los cambios
@@ -3180,6 +3215,7 @@ def configuracion(request, tipo):
                 conf.dirarchiveconfirmados = archconfirm
                 conf.dirintraday = dirIntraday
                 conf.dirintradaysalida = dirIntradaySalida
+                conf.dirintradayerror = dirIntradayError
                 conf.tiempointraday = tiempoIntraday
                 conf.dirsalida95 = dir_s_mt95
                 conf.dircarga96 = dir_c_mt96

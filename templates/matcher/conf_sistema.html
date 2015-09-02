@@ -1104,6 +1104,33 @@
                 </div>
             </div>
 
+            <div class="form-group has-feedback">
+                <label class="col-xs-3 control-label">
+                    {%if idioma == 0%}
+                        Directorio de Intraday (Mensajes Erróneos):
+                    {%endif%}
+                    {%if idioma == 1%}
+                        Intraday Wrong Messages Directory:
+                    {%endif%}
+                </label>
+                <div class="col-xs-5">
+                    {%if idioma == 0%}
+                        {% with "Introduzca un directorio válido. Por ejemplo: C:\\\Matcher\\\Ruta" as mensaje %}
+                        <input type="text" class="form-control" value="{{conf.dirintradayerror}}" name="dirIntradayError" pattern="^[A-Z]+\:\\[a-zA-Z0-9-_\.\'\(\)\&\%\$\#\!\¿\¡\[\]\{\}\,\;\\]+$" oninvalid="this.setCustomValidity('{{mensaje}}')" oninput="setCustomValidity('')" required/>
+                        <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
+                        <div class="help-block with-errors"></div>
+                        {% endwith %}
+                    {%endif%}
+                    {%if idioma == 1%}
+                        {% with "Introdoce a valid path please. By Example: C:\\\Matcher\\\Rute" as mensaje %}
+                        <input type="text" class="form-control" value="{{conf.dirintradayerror}}" name="dirIntradayError" pattern="^[A-Z]+\:\\[a-zA-Z0-9-_\.\'\(\)\&\%\$\#\!\¿\¡\[\]\{\}\,\;\\]+$" oninvalid="this.setCustomValidity('{{mensaje}}')" oninput="setCustomValidity('')" required/>
+                        <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
+                        <div class="help-block with-errors"></div>
+                        {% endwith %}
+                    {%endif%}
+                </div>
+            </div>
+
             <div >
             <label class="col-xs-3 control-label">
                 {%if idioma == 0%}

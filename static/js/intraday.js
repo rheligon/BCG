@@ -11,8 +11,68 @@ $( document ).ready(function() {
 
 
 $( document ).ready(function() {
+    var url = window.location.href;
+    var path = window.location.pathname;
+    
+    var arreglo = path.split("/");
+    largo = arreglo.length;
+    var cuentaIds = arreglo[largo-2];
+    console.log(cuentaIds);
+    
+    if(cuentaIds == "intraday"){
+        console.log("no hago nada");
+
+    }else{
+        ceuntaIds=parseInt(cuentaIds);
+        console.log("tengo la cuenta " + cuentaIds)
+        $("div.intra select").val(cuentaIds);
+    }
+
            
      $('#boton_go').attr("disabled", true);
+     var cuentaId = $('#Cuenta-sel').val();
+    console.log(cuentaId)
+    //si se selecciona una cuenta mostramos su info
+    if (cuentaId>=0){
+        var codigoCuenta = $('#opt-'+cuentaId).attr("codigo");
+        console.log(codigoCuenta)
+        $('a[name="boton_trans"]').attr('href','/transIntraday/'+cuentaId);
+        $('#processing-modal').modal('toggle');
+        buscarUltimaConciliacion(cuentaId)
+    
+    }else{
+
+        //borramos los campos
+        $('#fecha_conci').html("");
+        $('#fecha_tran').html("");
+        $('#fecha_actual').html("");
+                    
+        $('#sald_fin_conta').val("");
+        $('#cdFinConta').html("");
+        
+        $('#sald_fin_corr').val("");
+        $('#cdFinCorr').html("");
+
+        $('#sald_ini_conta').val("");
+        $('#cdIniConta').html("");
+        
+        $('#sald_ini_corr').val("");
+        $('#cdIniCorr').html("");
+        
+        $('#ced_corr_nodeb').val("");
+        $('#deb_corr_noacr').val("");
+        $('#ced_banco_nodeb').val("");
+        $('#deb_banco_noacr').val("");
+
+        $('#sald_tot_conta').val("");
+        $('#cdTotalConta').html("");
+
+        $('#sald_tot_corr').val("");  
+        $('#cdTotalCorr').html("");
+
+        $('#boton_go').attr("disabled", true);
+
+    }
 });
 
 $('#Cuenta-sel').change(function() {
@@ -100,8 +160,8 @@ function formatearFecha(fecha){
 function buscarUltimaConciliacion(cuenta){
         $.ajax({
             type:"POST",
-            url: "/intraday/",
-            data: {"cuenta":cuenta, "action": "buscarConci"},
+            url: "/intraday/"+cuenta+"/",
+            data: {"action": "buscarConci"},
             success: function(data){
                 if (data.exitoconci){
                     var json_data = jQuery.parseJSON(data.cons);
