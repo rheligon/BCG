@@ -16,6 +16,35 @@ if (idioma == 0){
 
 var tabla = iniciar_tabla(idiomaAux);
 
+// funcion para aceptar solo numeros
+function solonumeroypunto(e) {
+    var codigo;
+    codigo = (document.all) ? e.keyCode : e.which;
+    if (codigo == 46 || (codigo > 47 && codigo < 58) ) {
+    return true;
+    }
+    return false;
+}; 
+
+// funcion para aceptar solo numeros
+function solonumeroycoma(e) {
+    var codigo;
+    codigo = (document.all) ? e.keyCode : e.which;
+    if (codigo == 44 || (codigo > 47 && codigo < 58) ) {
+    return true;
+    }
+    return false;
+}; 
+
+// chequear formato de los numeros
+function chequearFornatoNumero(elem){
+    if (idioma == 1){
+        return (/^(\d{1})+(\.\d{1,2})?$/.test(elem))
+    } else {
+        return (/^(\d{1})+(\,\d{1,2})?$/.test(elem))
+    }
+}
+
 function iniciar_tabla(idioma){
 
     if (idioma==="es"){
@@ -44,7 +73,7 @@ $('#table-mon').on('click','a[type=moneda]', function(event) {
     var a_idaux = $("#Id_moneda").val();
     var a_nom = $(this).attr("nombre");
     var a_cod = $(this).attr("codigo");
-    var a_cam = $(this).attr("cambio");
+    var a_cam = $.formatNumber($(this).attr("cambio"),{locale:idiomaAux});
     var a_id = $(this).attr("id");
     $("#Cod_moneda").val(a_cod);
     $("#Nom_moneda").val(a_nom);
@@ -160,6 +189,9 @@ $('#updButton').on('click', function () {
                 }
                 $('#processing-modal').modal('toggle');
                 $btn.button('reset')
+                setTimeout(function(){
+                    window.location.reload();
+                },1000);
             },
             dataType:'json',
             headers:{
@@ -173,19 +205,31 @@ $('#updButton').on('click', function () {
     var nomM = $('#Nom_moneda').val();
     var camM = $('#Cam_moneda').val();
     var idM = $("#Id_moneda").val();
-
+    var p = chequearFornatoNumero(camM);
     if(idM>=0){
-        if (codM.length===0){
+        if (codM.length===0 || nomM.length===0){
             if (idioma == 0){
-                swal("Ups!", "Recuerde el codigo es obligatorio por lo que no debe estar vacío.", "info");
+                swal("Ups!", "Recuerde el codigo y el nombre son obligatorios por lo que no deben estar vacíos.", "info");
             } else {
-                swal("Ups!", "Code field is mandatory.", "info");
+                swal("Ups!", "Code and name fields are mandatory.", "info");
             }
         }else if (codM.length>3 || nomM.length>10){
             if (idioma == 0){
                 swal("Ups!", "Recuerde el codigo y el nombre deben tener máximo 3 y 10 caracteres respectivamente", "info");
             } else {
                 swal("Ups!", "Code and name fields must have 3 and 10 characters maximum.", "info");   
+            }
+        }else if (camM.length=== 0){
+            if (idioma == 0){
+                swal("Ups!", "Por favor introduzca el valor para el cambio", "info");
+            } else {
+                swal("Ups!", "Introduce Change value please.", "info");   
+            }
+        }else if (!p){
+            if (idioma == 0){
+                swal("Ups!", "Formato de campo cambio erróneo", "info");
+            } else {
+                swal("Ups!", "Bad change field format.", "info");   
             }
         }else{
             if (idioma == 0){
@@ -311,6 +355,10 @@ $('#form-add-moneda').validate({
 
                             $('#processing-modal').modal('toggle');
                             $btn.button('reset');
+
+                            setTimeout(function(){
+                                window.location.reload();
+                            },1000);
                         },
                         error: function(jqXHR,error){
                             alert(jqXHR.responseText)

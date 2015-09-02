@@ -1,5 +1,6 @@
 {% extends "matcher/base.html" %}
 {% load humanize %}
+{% load formatonumero %}
 {% block title %}Resumen{% endblock %}
 
 {% block content %}
@@ -209,7 +210,12 @@
                                 {%endif%}
                               </label>
                                 <div class="input-group">
-                                  <input id="sald_fin_conta" name="sald_fin_conta" class="form-control" value="{{cons.balancefinalcontabilidad|intcomma|cut:"-"}}" type="text" readonly>
+                                  {%if idioma == 1%}
+                                    <input id="sald_fin_conta" name="sald_fin_conta" class="form-control" value="{{cons.balancefinalcontabilidad|intcomma|cut:"-"}}" type="text" readonly>
+                                  {%endif%}
+                                  {%if idioma == 0%}
+                                    <input id="sald_fin_conta" name="sald_fin_conta" class="form-control" value="{{cons.balancefinalcontabilidad|intpunto|cut:"-"}}" type="text" readonly>
+                                  {%endif%}
                                   <span class="input-group-addon">{{cod.0}}</span>
                                 </div>
                             </div>
@@ -224,7 +230,12 @@
                                   Correspondent Final Balance
                                 {%endif%}</label>
                                 <div class="input-group">
-                                  <input id="sald_fin_corr" name="sald_fin_corr" class="form-control" value="{{cons.balancefinalcorresponsal|intcomma|cut:"-"}}" type="text" readonly>
+                                  {%if idioma == 1%}
+                                    <input id="sald_fin_corr" name="sald_fin_corr" class="form-control" value="{{cons.balancefinalcorresponsal|intcomma|cut:"-"}}" type="text" readonly>
+                                  {%endif%}
+                                  {%if idioma == 0%}
+                                    <input id="sald_fin_corr" name="sald_fin_corr" class="form-control" value="{{cons.balancefinalcorresponsal|intpunto|cut:"-"}}" type="text" readonly>
+                                  {%endif%}
                                   <span class="input-group-addon">{{cod.1}}</span>
                                 </div>
                             </div>
@@ -267,7 +278,12 @@
                         <div class="form-group col-md-12">
                           <label class="col-md-6 control-label" for="ced_corr_nodeb" style="text-align:center">{{empresa.creditoscorresponsal}}:</label>
                             <div class="col-md-5 col-md-push-1 input-group">
-                              <input id="ced_corr_nodeb" name="ced_corr_nodeb" class="form-control" value="{{cons.totalcreditoscorresponsal|intcomma|cut:"-"}}" type="text" readonly>
+                              {% if idioma == 1%}
+                                <input id="ced_corr_nodeb" name="ced_corr_nodeb" class="form-control" value="{{cons.totalcreditoscorresponsal|intcomma|cut:"-"}}" type="text" readonly>
+                              {%endif%}
+                              {% if idioma == 0%}
+                                <input id="ced_corr_nodeb" name="ced_corr_nodeb" class="form-control" value="{{cons.totalcreditoscorresponsal|intpunto|cut:"-"}}" type="text" readonly>
+                              {%endif%}
                               <span class="input-group-addon">C</span>
                             </div>
                         </div>
@@ -276,7 +292,12 @@
                         <div class="form-group col-md-12">
                             <label class="col-md-6 control-label" for="deb_corr_noacr" style="text-align:center">{{empresa.debitoscorresponsal}}:</label>
                             <div class="col-md-5 col-md-push-1 input-group">
-                              <input id="deb_corr_noacr" name="deb_corr_noacr" class="form-control" value="{{cons.totaldebitoscorresponsal|intcomma|cut:"-"}}" type="text" readonly>
+                              {% if idioma == 1%}
+                                <input id="deb_corr_noacr" name="deb_corr_noacr" class="form-control" value="{{cons.totaldebitoscorresponsal|intcomma|cut:"-"}}" type="text" readonly>
+                              {%endif%}
+                              {% if idioma == 0%}
+                                <input id="deb_corr_noacr" name="deb_corr_noacr" class="form-control" value="{{cons.totaldebitoscorresponsal|intpunto|cut:"-"}}" type="text" readonly>
+                              {%endif%}
                               <span class="input-group-addon">D</span>
                             </div>
                         </div>
@@ -291,7 +312,12 @@
                         <div class="form-group col-md-12">
                           <label class="col-md-6 control-label" for="ced_banco_nodeb" style="text-align:center">{{empresa.creditoscontabilidad}}:</label>
                             <div class="col-md-5 col-md-push-1 input-group">
-                              <input id="ced_banco_nodeb" name="ced_banco_nodeb" class="form-control" value="{{cons.totalcreditoscontabilidad|intcomma|cut:"-"}}" type="text" readonly>
+                              {% if idioma == 1%}
+                                <input id="ced_banco_nodeb" name="ced_banco_nodeb" class="form-control" value="{{cons.totalcreditoscontabilidad|intcomma|cut:"-"}}" type="text" readonly>
+                              {%endif%}
+                              {% if idioma == 0%}
+                                <input id="ced_banco_nodeb" name="ced_banco_nodeb" class="form-control" value="{{cons.totalcreditoscontabilidad|intpunto|cut:"-"}}" type="text" readonly>
+                              {%endif%}
                               <span class="input-group-addon">C</span>
                             </div>
                         </div>
@@ -300,7 +326,12 @@
                         <div class="form-group col-md-12">
                             <label class="col-md-6 control-label" for="deb_corr_noacr" style="text-align:center">{{empresa.debitoscontabilidad}}:</label>
                             <div class="col-md-5 col-md-push-1 input-group">
-                              <input id="deb_corr_noacr" name="deb_corr_noacr" class="form-control" value="{{cons.totaldebitoscontabilidad|intcomma|cut:"-"}}" type="text" readonly>
+                              {% if idioma == 1%}
+                                <input id="deb_corr_noacr" name="deb_corr_noacr" class="form-control" value="{{cons.totaldebitoscontabilidad|intcomma|cut:"-"}}" type="text" readonly>
+                              {%endif%}
+                              {% if idioma == 0%}
+                                <input id="deb_corr_noacr" name="deb_corr_noacr" class="form-control" value="{{cons.totaldebitoscontabilidad|intpunto|cut:"-"}}" type="text" readonly>
+                              {%endif%}
                               <span class="input-group-addon">D</span>
                             </div>
                         </div>
@@ -325,7 +356,12 @@
                       {%endif%}
                     </label>
                       <div class="input-group">
-                        <input id="sald_tot_conta" name="sald_tot_conta" class="form-control" value="{{cons.saldocontabilidad|intcomma|cut:"-"}}" type="text" readonly>
+                        {%if idioma == 1%}
+                          <input id="sald_tot_conta" name="sald_tot_conta" class="form-control" value="{{cons.saldocontabilidad|intcomma|cut:"-"}}" type="text" readonly>
+                        {%endif%}
+                        {% if idioma == 0%}
+                          <input id="sald_tot_conta" name="sald_tot_conta" class="form-control" value="{{cons.saldocontabilidad|intpunto|cut:"-"}}" type="text" readonly>
+                        {%endif%}
                         <span class="input-group-addon">{{cod.2}}</span>
                       </div>
                   </div>
@@ -341,7 +377,12 @@
                         {%endif%}
                       </label>
                       <div class="input-group">
-                        <input id="sald_tot_corr" name="sald_tot_corr" class="form-control" value="{{cons.saldocorresponsal|intcomma|cut:"-"}}" type="text" readonly>
+                        {%if idioma == 1%}
+                          <input id="sald_tot_corr" name="sald_tot_corr" class="form-control" value="{{cons.saldocorresponsal|intcomma|cut:"-"}}" type="text" readonly>
+                        {%endif%}
+                        {% if idioma == 0%}
+                          <input id="sald_tot_corr" name="sald_tot_corr" class="form-control" value="{{cons.saldocorresponsal|intpunto|cut:"-"}}" type="text" readonly>
+                        {%endif%}
                         <span class="input-group-addon">{{cod.3}}</span>
                       </div>
                   </div>

@@ -101,7 +101,7 @@ if (idiomaAux==="es"){
 //Inicializar el DatePicker
 if (idioma == 0){
     $('#add-fecha-encaje').pickadate({
-      format: 'd/m/yyyy',
+      format: 'dd/mm/yyyy',
       max: true,
       container: '#dp-encaje',
       onOpen: function() {
@@ -113,7 +113,7 @@ if (idioma == 0){
     })
 } else {
     $('#add-fecha-encaje').pickadate({
-      format: 'yyyy/m/d',
+      format: 'yyyy/mm/dd',
       max: true,
       container: '#dp-encaje',
       onOpen: function() {
@@ -453,17 +453,85 @@ function encaje_s(cuentaId){
             for (var i = 0; i < json_data.length; i++) {
                 var a_id = json_data[i].pk;
                 var a_monto = json_data[i].fields.monto;
-                var a_fecha = json_data[i].fields.fecha;
+                var a_fecha = dateFormat(json_data[i].fields.fecha);
+                if (idioma == 1){
+                    var esta = a_fecha;
+                    var aux = esta.toString().split("/");
+                    var dia = "";
+                    var mes = "";
+                    if (parseInt(aux[1]) <10){
+                        mes = '0' + aux[1]; 
+                    } else {
+                        mes = aux[1]
+                    }
+                    if ((parseInt(aux[0])+1) <10){
+                        dia = '0' + (parseInt(aux[0])+1).toString(); 
+                    } else {
+                        dia = (parseInt(aux[0])+1).toString();
+                    }
+                    a_fecha = aux[2] + "/" + mes + "/" + dia;
+                } else {
+                    var esta = a_fecha;
+                    var aux = esta.toString().split("/");
+                    var dia = "";
+                    var mes = "";
+                    if (parseInt(aux[1]) <10){
+                        mes = '0' + aux[1]; 
+                    } else {
+                        mes = aux[1]
+                    }
+                    if ((parseInt(aux[0])+1) <10){
+                        dia = '0' + (parseInt(aux[0])+1).toString(); 
+                    } else {
+                        dia = (parseInt(aux[0])+1).toString();
+                    }
+                    a_fecha = dia + "/" + mes + "/" + aux[2];
+                }
                 $('#table-encaje > tbody').append('<tr id="tre-'+a_id+'"><tr>');
-                var jRow = $("#tre-"+a_id).append('<td>'+dateFormat(a_fecha)+'</td>'+'<td>'+ $.formatNumber(a_monto,{locale:idiomaAux}) +'</td>');
+                var jRow = $("#tre-"+a_id).append('<td>'+a_fecha+'</td>'+'<td>'+ $.formatNumber(a_monto,{locale:idiomaAux}) +'</td>');
                 tencaje.row.add(jRow).draw();
             };
 
             if (json_data.length>0){
               var i = json_data.length-1;
-              var fecha = json_data[i].fields.fecha;
+              var fecha = dateFormat(json_data[i].fields.fecha);
               var monto = json_data[i].fields.monto;
-              $('#encaje-fecha').val(dateFormat(fecha));
+
+              if (idioma == 1){
+                    var esta = fecha;
+                    var aux = esta.toString().split("/");
+                    var dia = "";
+                    var mes = "";
+                    if (parseInt(aux[1]) <10){
+                        mes = '0' + aux[1]; 
+                    } else {
+                        mes = aux[1]
+                    }
+                    if ((parseInt(aux[0])+1) <10){
+                        dia = '0' + (parseInt(aux[0])+1).toString(); 
+                    } else {
+                        dia = (parseInt(aux[0])+1).toString();
+                    }
+                    fecha = aux[2] + "/" + mes + "/" + dia;
+                } else {
+                    var esta = fecha;
+                    var aux = esta.toString().split("/");
+                    var dia = "";
+                    var mes = "";
+                    if (parseInt(aux[1]) <10){
+                        mes = '0' + aux[1]; 
+                    } else {
+                        mes = aux[1]
+                    }
+                    if ((parseInt(aux[0])+1) <10){
+                        dia = '0' + (parseInt(aux[0])+1).toString(); 
+                    } else {
+                        dia = (parseInt(aux[0])+1).toString();
+                    }
+                    fecha = dia + "/" + mes + "/" + aux[2];
+                }
+
+              $('#encaje-fecha').val(fecha);
               $('#encaje-monto').val(monto);
               $('#encaje-monto').formatNumber({locale:idiomaAux});
             };
@@ -495,6 +563,10 @@ function encaje_add(cuentaId,monto,fecha){
             var a_id = data.encajeid;
             var a_monto = data.monto;
             var a_fecha = data.fecha;
+            if (idioma == 1){
+                var aux = a_fecha.split("/");
+                a_fecha = aux[2] + "/" +aux[1] + "/" + aux[0];
+            }
             $('#table-encaje > tbody').append('<tr id="tre-'+a_id+'"><tr>');
             var jRow = $("#tre-"+a_id).append('<td>'+a_fecha+'</td>'+'<td>'+$.formatNumber(a_monto,{locale:idiomaAux})+'</td>');
             tencaje.row.add(jRow).draw();
@@ -539,7 +611,17 @@ $('#acptencajeButton').on('click', function (event) {
             var aux_f = fecha.split("/")
             fecha = aux_f[2] + "/" + aux_f[1] + "/" + aux_f[0]
         }
-        encaje_add(cuentaid,monto,fecha);
+        var p = chequearFornatoNumero(monto);
+        if (p){
+            encaje_add(cuentaid,monto,fecha);
+        } else {
+            $('#processing-modal').modal('toggle');
+            if (idioma == 0 ){
+                swal("Ups!","Formato de campo monto erróneo.","error");
+            } else {
+                swal("Ups!","Bad amount field format.","error");
+            }
+        }
     }else{
         if (cuentaid<0){
             if (idioma == 0 ){
@@ -551,13 +633,13 @@ $('#acptencajeButton').on('click', function (event) {
             if (idioma == 0 ){
                 swal("Ups!","Por favor introduzca un monto.","error");
             } else {
-                swal("Ups!","Itroduce an amount please.","error");
+                swal("Ups!","Introduce an amount please.","error");
             }
         }else if (fecha.length===0){
             if (idioma == 0 ){
                 swal("Ups!","Por favor introduzca una fecha primero.","error");
             } else {
-                swal("Ups!","Itroduce a date please.","error");
+                swal("Ups!","Introduce a date please.","error");
             }
         }
     }
@@ -1229,3 +1311,31 @@ $('#updButton').on('click', function () {
     }
 })
 
+// funcion para aceptar solo numeros
+function solonumeroypunto(e) {
+    var codigo;
+    codigo = (document.all) ? e.keyCode : e.which;
+    if (codigo == 46 || (codigo > 47 && codigo < 58) ) {
+    return true;
+    }
+    return false;
+}; 
+
+// funcion para aceptar solo numeros
+function solonumeroycoma(e) {
+    var codigo;
+    codigo = (document.all) ? e.keyCode : e.which;
+    if (codigo == 44 || (codigo > 47 && codigo < 58) ) {
+    return true;
+    }
+    return false;
+}; 
+
+// chequear formato de los numeros
+function chequearFornatoNumero(elem){
+    if (idioma == 1){
+        return (/^(\d{1})+(\.\d{1,2})?$/.test(elem))
+    } else {
+        return (/^(\d{1})+(\,\d{1,2})?$/.test(elem))
+    }
+}

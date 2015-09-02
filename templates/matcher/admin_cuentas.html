@@ -617,7 +617,7 @@
                               Date:
                             {%endif%}
                           </label>
-                          <input id="encaje-fecha" name="trans-corr" type="text"  class="form-control input-md">
+                          <input id="encaje-fecha" name="trans-corr" type="text"  class="form-control input-md" readonly>
                         </div>
                         <!-- Text input-->
                         <div class="col-md-5">
@@ -629,7 +629,7 @@
                               Amount:
                             {%endif%}
                           </label>
-                          <input id="encaje-monto" name="trans-corr" type="text"  class="form-control input-md">
+                          <input id="encaje-monto" name="trans-corr" type="text"  class="form-control input-md" readonly>
                           </br>
                         </div>
                         <div class="col-md-12">
@@ -947,10 +947,10 @@
               </label>
               <div class="col-md-7">
                 {%if idioma == 0%}
-                  <input type="text" class="form-control" name="add-monto-encaje" id="add-monto-encaje" placeholder="Monto del encaje"/>
+                  <input type="text" class="form-control" name="add-monto-encaje" id="add-monto-encaje" placeholder="Monto del encaje" onkeypress='return solonumeroycoma(event)' onkeyup='return solonumeroycoma(event)'/>
                 {%endif%}
                 {%if idioma == 1%}
-                  <input type="text" class="form-control" name="add-monto-encaje" id="add-monto-encaje" placeholder="Cash amount"/>
+                  <input type="text" class="form-control" name="add-monto-encaje" id="add-monto-encaje" placeholder="Cash amount" onkeypress='return solonumeroypunto(event)' onkeyup='return solonumeroypunto(event)'/>
                 {%endif%}
               </div>
           </div>

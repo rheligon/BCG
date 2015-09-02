@@ -64,7 +64,12 @@
                         {% if men.fecha_msg_original == None %}
                         {%endif%}
                         {% if men.fecha_msg_original != None %}
-                            {{men.fecha_msg_original | date:"Y M d"}}
+                            {%if idioma == 1%}
+                                {{men.fecha_msg_original|date:"Y/m/d"}}
+                            {%endif%}
+                            {%if idioma == 0%}
+                                {{men.fecha_msg_original|date:"d/m/Y"}}
+                            {%endif%}
                         {%endif%}
                     </td>
                     <td>{{men.codigo}}</td>
@@ -122,7 +127,12 @@
                         {% if men.fecha_msg_original == None %}
                         {%endif%}
                         {% if men.fecha_msg_original != None %}
-                            {{men.fecha_msg_original}}
+                            {%if idioma == 1%}
+                                {{men.fecha_msg_original|date:"Y/m/d"}}
+                            {%endif%}
+                            {%if idioma == 0%}
+                                {{men.fecha_msg_original|date:"d/m/Y"}}
+                            {%endif%}
                         {%endif%}
                     </td>
                     <td>{{men.codigo}}</td>
