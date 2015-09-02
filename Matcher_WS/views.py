@@ -415,6 +415,7 @@ def resumen_cuenta(request, cuenta_id):
 
     expirarSesion(request)
 
+    idioma = Configuracion.objects.all()[0].idioma  
     conciliacion = Conciliacionconsolidado.objects.filter(cuenta_idcuenta = cuenta_id)
     empresa = Empresa.objects.all()[0]
 
@@ -441,7 +442,7 @@ def resumen_cuenta(request, cuenta_id):
         cod = ['C']*4
 
 
-    idioma = Configuracion.objects.all()[0].idioma    
+      
     context = {'idioma':idioma, 'cuenta': cuenta, 'cons':cons, 'cod': cod, 'ops':get_ops(request), 'empresa':empresa,'ldap':get_ldap(request)}
     template = "matcher/ResumenCuenta.html"
 
@@ -1682,6 +1683,7 @@ def pd_matchesConfirmados(request,cuenta):
 
     expirarSesion(request)
     if request.method == 'POST':
+        idioma = Configuracion.objects.all()[0].idioma
         actn = request.POST.get('action')
 
         if actn == 'buscar':
@@ -1771,8 +1773,7 @@ def pd_matchesConfirmados(request,cuenta):
                     mConf = mConf.filter(Q(tc_conta__fecha__lte=fechah)|Q(tc_corres__fecha_valor__lte=fechah))
             
             cuentas = Cuenta.objects.all().order_by('codigo')
-            
-            idioma = Configuracion.objects.all()[0].idioma    
+                
             context = {'idioma':idioma, 'cuentas':cuentas, 'matches':mConf, 'cta':cuenta, 'fArray':filterArray, 'msg':None, 'ops':get_ops(request),'ldap':get_ldap(request)}
             template = "matcher/pd_matchesConfirmados.html"
             return render(request, template, context)
@@ -1868,6 +1869,7 @@ def reportes(request):
 
     expirarSesion(request)
     if request.method == 'POST':
+        idioma = Configuracion.objects.all()[0].idioma   
         reporte = request.POST.get('rep')
         tipoarch = request.POST.get('tipoArch')
         respuesta = reporte+'*'+tipoarch+'*'
@@ -1879,6 +1881,11 @@ def reportes(request):
             codCta = request.POST.get('pd_conc_codcta')
             tipoCta = request.POST.get('pd_conc_tipocta')
             fecha = request.POST.get('pd_conc_fecha')
+            print(fecha)
+            if idioma == 1:
+                fechaAux = '/'.join(list(reversed(fecha.split("/"))))
+                fecha = fechaAux
+
             tipo = request.POST.get('tipo')
             usuario = get_ci(request)
 
@@ -3964,7 +3971,11 @@ def admin_monedas(request):
         if actn == 'add':
             monedacod = request.POST.get('moncod').upper()
             monedanom = request.POST.get('monnom')
-            monedacam = float(request.POST.get('moncam'))
+            if idioma == 1:
+                monedacam = float(request.POST.get('moncam'))
+            else:
+                aux = request.POST.get('moncam')
+                monedacam= aux.replace(",", ".")
             moneda, creado = Moneda.objects.get_or_create(codigo=monedacod, defaults={'nombre':monedanom, 'cambio_usd':monedacam})
 
             if creado:
@@ -3977,7 +3988,11 @@ def admin_monedas(request):
             monedaid = request.POST.get('monedaid')
             monedacod = request.POST.get('monedacod').upper()
             monedanom = request.POST.get('monedanom')
-            monedacam = float(request.POST.get('monedacam'))
+            if idioma == 1:
+                monedacam = float(request.POST.get('monedacam'))
+            else:
+                aux = request.POST.get('monedacam')
+                monedacam= aux.replace(",", ".")
 
             if idioma == 0:
                 msg = "Moneda modificada exitosamente."
@@ -4077,7 +4092,12 @@ def admin_cuentas(request):
             else:
                 msg="Successful aggregated cash."
             cuentaid = int(request.POST.get('cuentaid'))
-            monto = request.POST.get('monto')
+            if idioma == 1:
+                monto = request.POST.get('monto')
+            else:
+                aux = request.POST.get('monto')
+                monto= aux.replace(",", ".")
+
             fechapost = request.POST.get('fecha')
             fecha = datetime.strptime(fechapost, '%d/%m/%Y')
             cuenta = Cuenta.objects.get(pk=cuentaid)
@@ -5455,6 +5475,13 @@ def seg_licencia(request):
                     moduloQuery.save()
                     modulosemail =  modulosemail + "- " + mod + "\n"
 
+                exc = Modulos.objects.exclude(descripcion__in=modulosLicencia)
+                exc_list = [e.descripcion for e in exc]
+                for el in exc_list:
+                    modexcQuery = Modulos.objects.get(descripcion=el)
+                    modexcQuery.activo = 0
+                    modexcQuery.save()
+                
                 #Enviar mail
                 msg = "Bic: " + bicLicencia + "\nUsuarios: " + usuariosLicencia +"\n Expiración (YY-MM-DD): "+ str(fechaLicencia) +"\n Llave: " + llaveLicencia+ "\nSalt : BCG.bcg+2015" +"\n Modulos: " +str(numeroModulos)+ modulosemail
                 enviar_mail('Licencia del banco: '+bicLicencia,msg,'jotha41@gmail.com')
@@ -5550,6 +5577,7 @@ def SU_licencia(request):
 
     if request.method == "POST":
        action = request.POST.get('action')
+       idioma = Configuracion.objects.all()[0].idioma 
 
        if action == "guardarCambios":
         numUsers = request.POST.get('numUsers') 
@@ -5610,7 +5638,11 @@ def SU_licencia(request):
             msg = "Bic: " +bic + "\nUsuarios: " + numUsers +"\n Expiración (YY-MM-DD): "+ str(fecha).split(" ")[0] +"\n Llave: " + hashp+ "\nSalt : " + salt  +"\n Modulos: " + str(cuentamod) + modulosemail
             enviar_mail('Licencia del banco: '+bic,msg,'jotha41@gmail.com')
             
-            mensaje = "Licencia modificada exitosamente"
+            if idioma == 0:
+                mensaje = "Licencia modificada exitosamente"
+            else:
+                mensaje = "Successful modified license"
+
             return JsonResponse({'mens':mensaje})
                
         except:
@@ -5663,7 +5695,11 @@ def SU_licencia(request):
             msg = "Bic: " +bic + "\nUsuarios: " + numUsers +"\n Expiración (YY-MM-DD): "+ str(fecha).split(" ")[0] +"\n Llave: " + hashp+ "\nSalt : " + salt +"\n Modulos: " +str(cuentamod)+ modulosemail
             enviar_mail('Licencia del banco: '+bic,msg,'jotha41@gmail.com')
             
-            mensaje = "Licencia agregada exitosamente"
+            if idioma ==0:
+                mensaje = "Licencia agregada exitosamente"
+            else:
+                mensaje = "Successful added license"
+
             return JsonResponse({'mens':mensaje})
 
 
@@ -5812,3 +5848,12 @@ def expirarSesion(request):
     config = Configuracion.objects.all()[0]
     tiempo = config.expiracion_sesion * 60 
     request.session.set_expiry(tiempo)
+
+def intPuntos(x):
+    if x < 0:
+        return '-' + intPuntos(-x)
+    result = ''
+    while x >= 1000:
+        x, r = divmod(x, 1000)
+        result = ".%03d%s" % (r, result)
+    return "%d%s" % (x, result)

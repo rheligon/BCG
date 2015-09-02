@@ -13,11 +13,26 @@
 {% endblock%}
 
 {% block content %}
-<legend>Licencia</legend>
+<input type="text" id="idioma" value="{{idioma}}" hidden/>
+<legend>
+    {%if idioma == 0%}
+        Licencia
+    {%endif%}
+    {%if idioma == 1%}
+        License
+    {%endif%}
+</legend>
 <div id="Licencia-Info">
     <td class="col-md-6 ">
         <div class="col-md-7 form-group">
-            <label class="col-md-4 control-label" >Número de Usuarios:</label>
+            <label class="col-md-4 control-label" >
+                {%if idioma == 0%}
+                    Número de Usuarios:
+                {%endif%}
+                {%if idioma == 1%}
+                    Users number:
+                {%endif%}
+            </label>
                 <div class="col-md-4">
                     <input class="form-control" name="numUserLicenciaN" id="numUserLicencia" type="text" placeholder="{{numU}}" onkeypress='return solonumero(event)' onkeyup='return solonumero(event)' required>
                 </div>
@@ -28,15 +43,37 @@
     </td>
     <td class "col-md-6">
         <div id="fechaExp" class="col-md-7 form-group">
-            <label class="col-md-4 control-label">Fecha de Expiración:</label>
-                <div class="col-md-4"><input name="expiracionLicenciaN" id="expiracionLicencia" class="form-control" placeholder="{{Exp | date:"d/m/Y"}}"></div>
+            <label class="col-md-4 control-label">
+                {%if idioma == 0%}
+                    Fecha de Expiración:
+                {%endif%}
+                {%if idioma == 1%}
+                    Expiration Date:
+                {%endif%}
+            </label>
+                {%if idioma == 0%}
+                    <div class="col-md-4"><input name="expiracionLicenciaN" id="expiracionLicencia" class="form-control" placeholder="{{Exp | date:"d/m/Y"}}"></div>
+                {%endif%}
+                {%if idioma == 1%}
+                    <div class="col-md-4"><input name="expiracionLicenciaN" id="expiracionLicencia" class="form-control" placeholder="{{Exp | date:"Y/m/d"}}"></div>
+                {%endif%}
         </div>
-        <div class="col-md-4" hidden><input name="expiracionLicenciaNAux" id="expiracionLicenciaAux" class="form-control" value="{{Exp | date:"d/m/Y"}}"></div>
+        {%if idioma == 0%}
+            <div class="col-md-4" hidden><input name="expiracionLicenciaNAux" id="expiracionLicenciaAux" class="form-control" value="{{Exp | date:"d/m/Y"}}"></div>
+        {%endif%}
+        {%if idioma == 1%}
+            <div class="col-md-4" hidden><input name="expiracionLicenciaNAux" id="expiracionLicenciaAux" class="form-control" value="{{Exp | date:"Y/m/d"}}"></div>
+        {%endif%}
     </td>
     <td class "col-md-6">
         <div class="col-md-7 form-group">
             <button type="button" id="guardarCambiosButton" style="align:right" class="col-md-2 btn btn-primary">
-                Guardar
+                {%if idioma == 0%}
+                    Guardar
+                {%endif%}
+                {%if idioma == 1%}
+                    Save
+                {%endif%}
             </button>
         </div>
     </td> 
@@ -49,7 +86,12 @@
             <div class="modal-body">
                 <div class="text-center">
                     <img src="{% static 'images/procesando.gif' %}" class="icon" />
-                    <h4>Procesando, por favor espere.</h4>
+                    {%if idioma == 0%}
+                      <h4>Procesando, por favor espere.</h4>
+                    {%endif%}
+                    {%if idioma == 1%}
+                      <h4>Processing, wait please.</h4>
+                    {%endif%}
                 </div>
             </div>
         </div>

@@ -2,6 +2,7 @@
 
 {% load staticfiles %}
 {% load humanize %}
+{% load formatonumero %}
 {% block title %}Monedas disponibles{% endblock %}
 
 {%block head%}
@@ -34,7 +35,12 @@
             <tr id= "tr-{{moneda.idmoneda}}">
                 <td id= "td-{{moneda.idmoneda}}"><a href="/admin/monedas/{{moneda.idmoneda}}" nombre = "{{ moneda.nombre }}" codigo = "{{ moneda.codigo }}" cambio="{{ moneda.cambio_usd }}" id="{{moneda.idmoneda}}" type="moneda"> {{ moneda.codigo }}</td>
                 <td>{{ moneda.nombre }}</td>
-                <td>{{ moneda.cambio_usd | intcomma }}</td>
+                {%if idioma == 1%}
+                  <td>{{ moneda.cambio_usd | intcomma }}</td>
+                {%endif%}
+                {%if idioma == 0%}
+                  <td>{{ moneda.cambio_usd | intpunto }}</td>
+                {%endif%}
             </tr>
             {% endfor %}
         </tbody>
@@ -125,7 +131,20 @@
                 {%endif%}
               </label>  
               <div>
-                <input id="Cam_moneda" name="Cam_moneda" type="text" class="form-control input-md">
+                {%if idioma == 1%}
+                  <input id="Cam_moneda" name="Cam_moneda" type="text" class="form-control input-md" onkeypress='return solonumeroypunto(event)' onkeyup='return solonumeroypunto(event)'>
+                {%endif%}
+                {%if idioma == 0%}
+                  <input id="Cam_moneda" name="Cam_moneda" type="text" class="form-control input-md" onkeypress='return solonumeroycoma(event)' onkeyup='return solonumeroycoma(event)'>
+                {%endif%}
+                <p class="help-block">
+                  {%if idioma == 0%}
+                    En el campo cambio debe introducir sólo números. Puede usar la coma "," y dos (2) decimales.  
+                  {%endif%}
+                  {%if idioma == 1%}
+                    Change field must be numbers characters only. You can use dot "." and two (2) decimal for characters numbers.  
+                  {%endif%}
+                </p>
               </div>
             </div>
         </div>
@@ -205,10 +224,10 @@
               </label>
               <div class="ui left labeled input">
                 {%if idioma == 0%}
-                  <input type="text" name="add-moneda[cambio]" id="add-moneda-cambio" placeholder="Cambio de la moneda hacia USD" data-validation="[L>=2, L<=6]" data-validation-message="$ debe tener entre 2 y 6 digitos." data-validation-regex="/^\d+(\.\d+)?$/" data-validation-regex-message="Sólo se permiten números" data-toggle="popover" data-content="Puedes numeros y punto, sin espacio ni caracteres especiales."></input>
+                  <input type="text" name="add-moneda[cambio]" id="add-moneda-cambio" placeholder="Cambio de la moneda hacia USD" data-validation="[L>=2, L<=6]" data-validation-message="$ debe tener entre 2 y 6 digitos." data-validation-regex="/^\d+(\,\d+)?$/" data-validation-regex-message="Sólo se permiten números y comas oara especificar decimales" data-toggle="popover" data-content="Puedes numeros y comas (,) , sin espacio ni caracteres especiales."></input>
                 {%endif%}
                 {%if idioma == 1%}
-                  <input type="text" name="add-moneda[Change]" id="add-moneda-cambio" placeholder="Currency change to USD" data-validation="[L>=2, L<=6]" data-validation-message="$ must have between 2 and 6 digits." data-validation-regex="/^\d+(\.\d+)?$/" data-validation-regex-message="Only numbers and a dot allowed" data-toggle="popover" data-content="You can use numbers and a dot only."></input>
+                  <input type="text" name="add-moneda[Change]" id="add-moneda-cambio" placeholder="Currency change to USD" data-validation="[L>=2, L<=6]" data-validation-message="$ must have between 2 and 6 digits." data-validation-regex="/^\d+(\.\d+)?$/" data-validation-regex-message="Just numbers and a dot allowed. Dot is only for decimal purposes." data-toggle="popover" data-content="You can use numbers and a dot only."></input>
                 {%endif%}
                   <div class="ui corner label">
                     <i class="asterisk icon">*</i>
@@ -263,5 +282,7 @@
 <script src="{% static 'js/dataTables.bootstrap.js' %}" type="text/javascript"></script>
 <script src="{% static 'js/jquery-form-validation/jquery.validation.min.js' %}"></script>
 <script src="{% static 'js/sweet-alert.min.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/jshashtable.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/numberformatter.js' %}"></script>
 <script src="{% static 'js/admin_monedas.js' %}" type="text/javascript"></script>
 {% endblock %}

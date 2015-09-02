@@ -2,6 +2,7 @@
 
 {% load staticfiles %}
 {% load assign %}
+{% load formatonumero %}
 {% load humanize %}
 
 {% block title %}Matches Confirmados{% endblock %}
@@ -419,6 +420,7 @@ table {
         </thead>
         <tbody id="tb-pa">
           {% assign prevcod '' %}
+          {% assign contador 0%}
           {% for match in matches %}
 
             {% if prevcod != match.codigomatch %}
@@ -441,15 +443,27 @@ table {
             <tr class="{{match.codigomatch}}">
               <td>{{match.tc_conta.estado_cuenta_idedocuenta.codigo}}</td>
               <td>{{match.tc_conta.pagina}}</td>
-              <td>{{match.tc_conta.fecha_valor|date:"d/m/Y"|default:""}}</td>
+              {%if idioma == 0%}
+                <td>{{match.tc_conta.fecha_valor|date:"d/m/Y"|default:""}}</td>
+              {%endif%}
+              {%if idioma == 1%}
+                <td>{{match.tc_conta.fecha_valor|date:"Y/m/d"|default:""}}</td>
+              {%endif%}
               <td>{{match.tc_conta.codigo_transaccion}}</td>
               <td>{{match.tc_conta.referencianostro|default:""}}</td>
               <td>{{match.tc_conta.referenciacorresponsal|default:""}}</td>
               <td>{{match.tc_conta.descripcion|default:""}}</td>
               <td>{{match.tc_conta.credito_debito}}</td>
-              <td>{{match.tc_conta.monto|intcomma}}</td>
+              {%if idioma == 1%}
+                <td>{{match.tc_conta.monto|intcomma}}</td>
+              {%endif%}
+              {%if idioma == 0%}
+                <td>{{match.tc_conta.monto|intpunto}}</td>
+              {%endif%}
               <td>L</td>
               <td></td>
+
+              {% assign contador contador|add:"1"%}
             </tr>
             {%endif%}
 
@@ -457,15 +471,26 @@ table {
             <tr class="{{match.codigomatch}}">
               <td>{{match.tc_corres.estado_cuenta_idedocuenta.codigo}}</td>
               <td>{{match.tc_corres.pagina}}</td>
-              <td>{{match.tc_corres.fecha_valor|date:"d/m/Y"|default:""}}</td>
+              {%if idioma == 0%}
+                <td>{{match.tc_corres.fecha_valor|date:"d/m/Y"|default:""}}</td>
+              {%endif%}
+              {%if idioma == 1%}
+                <td>{{match.tc_corres.fecha_valor|date:"Y/m/d"|default:""}}</td>
+              {%endif%}
               <td>{{match.tc_corres.codigo_transaccion}}</td>
               <td>{{match.tc_corres.referencianostro|default:""}}</td>
               <td>{{match.tc_corres.referenciacorresponsal|default:""}}</td>
               <td>{{match.tc_corres.descripcion|default:""}}</td>
               <td>{{match.tc_corres.credito_debito}}</td>
-              <td>{{match.tc_corres.monto|intcomma}}</td>
+              {%if idioma == 1%}
+                <td>{{match.tc_corres.monto|intcomma}}</td>
+              {%endif%}
+              {%if idioma == 0%}
+                <td>{{match.tc_corres.monto|intpunto}}</td>
+              {%endif%}
               <td>S</td>
               <td></td>
+              {% assign contador contador|add:"1"%}
             </tr>
             {% endif %}
             

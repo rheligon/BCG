@@ -1,6 +1,8 @@
 {% extends "matcher/base.html" %}
 
 {% load staticfiles %}
+{% load formatonumero %}
+{% load humanize %}
 
 {% block title %}criterios disponibles{% endblock %}
 
@@ -46,9 +48,16 @@
             {% for criterio in criterios %}
             <tr id= "tr-{{criterio.idcriterio}}">
                 <td id= "td-{{criterio.idcriterio}}"><a href="/admin/crit_reglas/{{criterio.idcriterio}}" nombre ="{{ criterio.nombre }}" monto1="{{ criterio.monto1 }}" monto2="{{ criterio.monto2 }}" monto3="{{ criterio.monto3 }}" fecha1="{{ criterio.fecha1 }}" fecha2="{{ criterio.fecha2 }}" fecha3="{{ criterio.fecha3 }}" fecha4="{{ criterio.fecha4 }}" fecha5="{{ criterio.fecha5 }}" type="criterio" id ="{{criterio.idcriterio}}"> {{ criterio.nombre }}</a></td>
-                <td>{{ criterio.monto1|default_if_none:"" }}</td>
-                <td>{{ criterio.monto2|default_if_none:"" }}</td>
-                <td>{{ criterio.monto3|default_if_none:"" }}</td>
+                {%if idioma == 0%}
+                  <td>{{ criterio.monto1|intpunto|default_if_none:"" }}</td>
+                  <td>{{ criterio.monto2|intpunto|default_if_none:"" }}</td>
+                  <td>{{ criterio.monto3|intpunto|default_if_none:"" }}</td>
+                {%endif%}
+                {%if idioma == 1%}
+                  <td>{{ criterio.monto1|intcomma|default_if_none:"" }}</td>
+                  <td>{{ criterio.monto2|intcomma|default_if_none:"" }}</td>
+                  <td>{{ criterio.monto3|intcomma|default_if_none:"" }}</td>
+                {%endif%}
                 <td>{{ criterio.fecha1|default_if_none:"" }}</td>
                 <td>{{ criterio.fecha2|default_if_none:"" }}</td>
                 <td>{{ criterio.fecha3|default_if_none:"" }}</td>
