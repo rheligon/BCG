@@ -1,4 +1,6 @@
 var csrftoken = $.cookie('csrftoken');
+var idioma = $('#idioma').val();
+var msj ="";
 
 function dateFormat(fecha){
     var date = new Date(Date.parse(fecha));
@@ -83,9 +85,13 @@ $('#resButton').on('click', function () {
         }
 
         $('#processing-modal').modal('toggle');
-        
+        if (idioma == 0){
+            msj = "Seguro que desea restaurar la cuenta "+ cuentaCod +" ?\nInformación almacenada en Backup:\nConciliación: "+f1+"\nHistorico: "+f2;
+        } else {
+            msj = "Sure you want to restore the account " +cuentaCod +" ?\n Backup stored data:\nReconciliation: "+f1+"\nHistoric: "+f2;
+        }
         swal({   title: "",
-             text: "Seguro que desea restaurar la cuenta "+ cuentaCod +" ?\nInformación almacenada en Backup:\nConciliación: "+f1+"\nHistorico: "+f2,
+             text: msj,
              type: "warning",
              showCancelButton: true,
              confirmButtonText: "Ok"},
@@ -104,7 +110,11 @@ $('#resButton').on('click', function () {
         $('#processing-modal').modal('toggle');
         fecha_res(codC);
     }else{
-        swal("Ups!","Por favor seleccionar la cuenta a restaurar previamente.","error");
+        if (idioma == 0){
+            swal("Ups!","Por favor seleccionar la cuenta a restaurar previamente.","error");
+        } else {
+            swal("Ups!","Select account first please.","error");    
+        }
     }
 })
 
@@ -145,9 +155,13 @@ $('#bkUpButton').on('click', function () {
         });
         return false;
     }
-
+    if (idioma == 0){
+        msj = "Seguro que desea hacer un backup del sistema?";
+    } else {
+        msj = "Sure you want to make a system backup?";
+    }
     swal({   title: "",
-         text: "Seguro que desea hacer un backup del sistema?",
+         text: msj,
          type: "warning",
          showCancelButton: true,
          confirmButtonText: "Ok"},

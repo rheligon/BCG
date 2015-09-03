@@ -1,5 +1,15 @@
 var csrftoken = $.cookie('csrftoken');
-var tabla = iniciar_tabla(idioma_tr);
+var idiomaAux = "";
+var msj ="";
+var centinela = true;
+
+if (idioma == 0){
+    idiomaAux = "es"
+} else {
+    idiomaAux = "en"
+}
+
+var tabla = iniciar_tabla(idiomaAux);
 
 
 $('#Cuenta-sel').change(function() {
@@ -11,8 +21,13 @@ $('#Cuenta-sel').change(function() {
     var index = aux.indexOf('mPropuestos');
 
     if (aux[aux.length-1] != ""){
-        //El url estaba incorrecto, falta / al final
-        alert("URL incorrecto, falta '\/' al final.");
+        if (idioma == 0){
+            //El url estaba incorrecto, falta / al final
+            alert("URL incorrecto, falta '\/' al final.");
+        } else{
+            //El url estaba incorrecto, falta / al final
+            alert("Wrong URL, missing '\/' at the end.");
+        }
     }else{
 
         $('#processing-modal').modal('toggle');
