@@ -93,6 +93,7 @@ def parseo103(archivo,directorio):
 	reporteReg77B = ""
 	fecha_entrada = ""
 	io=""
+	vali = ""
 	observacion =""
 	#contenido77T = ""
 
@@ -771,7 +772,8 @@ def parseo103(archivo,directorio):
 			if cuenta:
 				monedaCta = cuenta[0].moneda_idmoneda.codigo
 				if(monedaCta != moneda32A):
-					observacion = "Moneda Invalida, la moneda proveniente del mensaje es : " + moneda32A + ", deberia ser : " + monedaCta 
+					observacion = "Moneda Invalida, la moneda proveniente del mensaje es : " + moneda32A + ", deberia ser : " + monedaCta + ", Archivo: " + archivo
+					vali = "vali"
 
 				fecha_entrada = timenow()
 				mensaje_intra = MensajesIntraday.objects.create(tipo = "103",cuenta = cuenta[0],fecha_entrada=fecha_entrada,i_o = io,observacion=observacion) 
@@ -818,7 +820,7 @@ def parseo103(archivo,directorio):
 		
 	#cerrar archivo
 	info.close()
-	return ("True","")
+	return ("True",vali)
 
 def parseo202(archivo,directorio):
 	dirArch = directorio + "\\" + archivo
@@ -862,6 +864,7 @@ def parseo202(archivo,directorio):
 	fecha_entrada = ""
 	io=""
 	observacion =""
+	vali=""
 	
 	cuantos = 0
 
@@ -1225,6 +1228,10 @@ def parseo202(archivo,directorio):
 				cuenta = Cuenta.objects.filter(banco_corresponsal_idbanco__codigo = receptorR) 
 			
 			if cuenta:
+				monedaCta = cuenta[0].moneda_idmoneda.codigo
+				if(monedaCta != moneda32A):
+					observacion = "Moneda Invalida, la moneda proveniente del mensaje es : " + moneda32A + ", deberia ser : " + monedaCta + ", Archivo: " + archivo
+					vali = "vali"
 				fecha_entrada = timenow()
 				mensaje_intra = MensajesIntraday.objects.create(tipo = "202",cuenta = cuenta[0],fecha_entrada=fecha_entrada,i_o=io,observacion=observacion) 
 				mensaje = Mt202.objects.create(mensaje_intraday = mensaje_intra,fecha_valor = fechaValor32A, moneda = moneda32A,monto = monto32A,remitente = emisorS,receptor = receptorR, ref_transaccion = emisorRef20,ref_relacion = refRel21,ind_hora = timeId13C, institucion_ordenante = instOrd52a,corresponsal_remitente = emisorCorr53a, corresponsal_receptor = receptorCorr54a,intermediario = instInter56a, cuenta_institucion = instCuenta57a,institucion_beneficiaria = instBene58a,info_remitente_a_receptor = receptorInfo72)
@@ -1249,7 +1256,7 @@ def parseo202(archivo,directorio):
 			receptorInfo72 =""
 			fecha_entrada = ""
 			observacion =""
-	
+			msg=""
 			finMensaje = False				
 
 		lineaAct += 1
@@ -1257,7 +1264,288 @@ def parseo202(archivo,directorio):
 
 	#cerrar archivo
 	info.close()
-	return ("True","")
+	return ("True",vali)
+
+
+def parseo756(archivo,directorio):
+	dirArch = directorio + "\\" + archivo
+
+	#abrir archivo
+	info = open(dirArch, 'r')
+
+	lines = info.readlines()
+	numLineas = len(lines)
+	for i in range(0,numLineas):
+		lines[i]=lines[i].strip()
+
+	lineaAct = 0
+	lineaAux = 0
+	contador = 0
+	opcionales = 0
+	largoMensajes = []
+	verificarOps = []
+	numLineasActual = 0
+
+	opcional = False
+	error = False
+	finMensaje = False
+	es72 = False
+	contenidoLinea = ""
+	mensajeTipoM = ""
+	emisorS = ""
+	receptorR = ""
+	emisorRef20 = ""
+	refRel21 = ""
+	montoTotal32B = ""
+	montoReemb33A = ""
+	emisorCorr53a = ""
+	receptorCorr54a = ""
+	info72 =""
+	cuantos = 0
+	msg = ""
+	io=""
+	vali=""
+	observacion = ""
+
+	while contador < numLineas:
+
+		contenidoLinea = lines[contador]
+		#Caso para primera Linea $
+		if (lineaAct == 0):
+			opcion = contenidoLinea
+
+			if (opcion != "$"):
+				msg = "Caracter inesperado, en la línea número " +str(contador+1)+ " del archivo " + archivo
+				return ("error", msg)
+		
+		#Caso para Linea campo [M] Tipo de Mensaje
+		if (lineaAct == 1):
+			opcion = contenidoLinea[:3] 
+			
+			if (opcion != "[M]"):
+				msg = "Caracter inesperado, en la línea número " +str(contador+1)+ " del archivo " + archivo
+				return ("error", msg)
+			else:
+				mensajeTipoM = contenidoLinea[3:]
+				print ("[M]: ",mensajeTipoM)
+
+		#Caso para Linea campo [S] Emisor
+		if (lineaAct == 2):
+			opcion = contenidoLinea[:3] 
+			
+			if (opcion != "[S]"):
+				msg = "Caracter inesperado, en la línea número " +str(contador+1)+ " del archivo " + archivo
+				return ("error", msg)
+			else:
+				emisorS = contenidoLinea[3:]
+				print ("[S]: ",emisorS)
+
+		#Caso para Linea campo [R] Receptor
+		if (lineaAct == 3):
+			opcion = contenidoLinea[:3] 
+			
+			if (opcion != "[R]"):
+				msg = "Caracter inesperado, en la línea número " +str(contador+1)+ " del archivo " + archivo
+				return ("error", msg)
+			else:
+				receptorR = contenidoLinea[3:]
+				print ("[R]: ",receptorR)
+
+		#Caso para Linea campo [20]
+		if (lineaAct == 4):
+			opcion = contenidoLinea[:4] 
+			
+			if (opcion != "[20]"):
+				msg = "Caracter inesperado, en la línea número " +str(contador+1)+ " del archivo " + archivo
+				return ("error", msg)
+			else:
+				emisorRef20 = contenidoLinea[4:]
+				print ("[20]: ",emisorRef20)
+		
+		#Caso para Campo [21] 
+		if (lineaAct == 5):
+			opcion = contenidoLinea[:4]  
+			
+			if (opcion != "[21]"):
+				msg = "Caracter inesperado, en la línea número " +str(contador+1)+ " del archivo " + archivo
+				return ("error", msg)
+			else:
+				refRel21 = contenidoLinea[4:]
+				print ("[21]: ",refRel21)
+		
+		#Caso para Linea campo [32B] 
+		if (lineaAct == 6):
+			
+			opcion = contenidoLinea[:5]
+		
+			if (opcion != "[32B]"): 
+				msg = "Caracter inesperado, en la línea número " +str(contador+1)+ " del archivo " + archivo
+				return ("error", msg)
+			else: 
+				montoTotal32B = contenidoLinea[5:]
+				print ("[32B]: ",montoTotal32B)
+
+		#Caso para Linea campo [33A] 
+		if (lineaAct == 7):
+			
+			opcion = contenidoLinea[:5]
+		
+			if (opcion != "[33A]"): 
+				msg = "Caracter inesperado, en la línea número " +str(contador+1)+ " del archivo " + archivo
+				return ("error", msg)
+			else: 
+				montoReemb33A = contenidoLinea[5:]
+				print ("[33A]: ",montoReemb33A)
+
+		#caso para opcionales si existen
+		if (lineaAct == 8):
+			opcion0 = contenidoLinea[:4]
+			opcion1 = contenidoLinea[:5]
+			verificarOps = ["[53A]","[53B]","[53D]","[54A]","[54B]","[54D]","[72]"]
+
+			while (opcion0 == "[72]" or opcion1 == "[53A]" or opcion1 == "[53B]" or opcion1 == "[53D]" or opcion1 == "[54A]" or opcion1 == "[54B]" or opcion1 == "[54D]" ):
+				if (opcion0 == "[72]"):
+					es72 = True
+				if (es72):			
+					if(opcion0 not in verificarOps):
+						msg = "Caracter inesperado, en la línea número " +str(contador+1)+ " del archivo " + archivo
+						return ("error", msg)
+				else: 
+					if(opcion1 not in verificarOps):
+						msg = "Caracter inesperado, en la línea número " +str(contador+1)+ " del archivo " + archivo
+						return ("error", msg)
+				if (opcion1 == "[53A]"):
+					emisorCorr53a = opcion1 + contenidoLinea[5:]
+					cuantos = 2
+					contenidoLinea = lines[contador+1]
+					opcion2 = contenidoLinea[:5]
+					opcion3 = contenidoLinea[:4]
+					while (opcion2 != "[54A]" and opcion2 != "[54B]" and opcion2 != "[54D]" and opcion3 !="[72]" ):
+						emisorCorr53a = emisorCorr53a+"\n"+contenidoLinea
+						lineaAct += 1
+						contador += 1
+						opcionales +=1
+						contenidoLinea = lines[contador+1]
+						opcion2 = contenidoLinea[:5]
+						opcion3 = contenidoLinea[:4]
+					print ("[53a]: ",emisorCorr53a)
+				if (opcion1 == "[53B]"):
+					emisorCorr53a = opcion1 + contenidoLinea[5:]
+					cuantos = 1
+					contenidoLinea = lines[contador+1]
+					opcion2 = contenidoLinea[:5]
+					opcion3 = contenidoLinea[:4]
+					while (opcion2 != "[54A]" and opcion2 != "[54B]" and opcion2 != "[54D]" and opcion3 !="[72]" ):
+						emisorCorr53a = emisorCorr53a+"\n"+contenidoLinea
+						lineaAct += 1
+						contador += 1
+						opcionales +=1
+						contenidoLinea = lines[contador+1]
+						opcion2 = contenidoLinea[:5]
+						opcion3 = contenidoLinea[:4]
+					print ("[53a]: ",emisorCorr53a)
+				if (opcion1 == "[53D]"):
+					emisorCorr53a = opcion1 + contenidoLinea[5:]
+					contenidoLinea = lines[contador+1]
+					opcion2 = contenidoLinea[:5]
+					opcion3 = contenidoLinea[:4]
+					while (opcion2 != "[54A]" and opcion2 != "[54B]" and opcion2 != "[54D]" and opcion3 !="[72]" ):
+						emisorCorr53a = emisorCorr53a+"\n"+contenidoLinea
+						lineaAct += 1
+						contador += 1
+						opcionales +=1
+						contenidoLinea = lines[contador+1]
+						opcion2 = contenidoLinea[:5]
+						opcion3 = contenidoLinea[:4]
+					print ("[53a]: ",emisorCorr53a)
+				if (opcion1 == "[54A]"):
+					receptorCorr54a = opcion1 + contenidoLinea[5:]
+					cuantos = 2
+					contenidoLinea = lines[contador+1]
+					opcion3 = contenidoLinea[:4]
+					while (opcion3 !="[72]" ):
+						receptorCorr54a = receptorCorr54a+"\n"+contenidoLinea
+						lineaAct += 1
+						contador += 1
+						opcionales +=1
+						contenidoLinea = lines[contador+1]
+						opcion3 = contenidoLinea[:4]
+					print ("[54a]: ",receptorCorr54a)
+				if (opcion1 == "[54B]"):
+					receptorCorr54a = opcion1 + contenidoLinea[5:]
+					cuantos = 1
+					contenidoLinea = lines[contador+1]
+					opcion3 = contenidoLinea[:4]
+					while (opcion3 !="[72]" ):
+						receptorCorr54a = receptorCorr54a+"\n"+contenidoLinea
+						lineaAct += 1
+						contador += 1
+						opcionales +=1
+						contenidoLinea = lines[contador+1]
+						opcion3 = contenidoLinea[:4]
+					print ("[54a]: ",receptorCorr54a)
+				if (opcion1 == "[54D]"):
+					receptorCorr54a = opcion1 + contenidoLinea[5:]
+					contenidoLinea = lines[contador+1]
+					opcion3 = contenidoLinea[:4]
+					while (opcion3 !="[72]" ):
+						receptorCorr54a = receptorCorr54a+"\n"+contenidoLinea
+						lineaAct += 1
+						contador += 1
+						opcionales +=1
+						contenidoLinea = lines[contador+1]
+						opcion3 = contenidoLinea[:4]
+					print ("[54a]: ",receptorCorr54a)
+				if (opcion0 == "[72]"):
+					info72 = contenidoLinea[4:]
+					contenidoLinea = lines[contador+1]
+					opcion3 = contenidoLinea[:2]
+					
+					while (opcion3 != "@@"):
+						info72 = info72+"\n"+contenidoLinea
+						lineaAct += 1
+						contador += 1
+						opcionales +=1
+						contenidoLinea = lines[contador+1]
+						opcion3 = contenidoLinea[:2]
+						opcion2 = contenidoLinea[:4]
+					print ("[72]: ",info72)
+				if (es72):
+					indice = verificarOps.index(opcion0)
+					verificarOps = verificarOps[indice+1:]
+				else:
+					indice = verificarOps.index(opcion1)
+					sumaT = cuantos + indice + 1
+					verificarOps = verificarOps[sumaT:]
+				lineaAct += 1
+				contador += 1
+				opcionales +=1
+				contenidoLinea = lines[contador]
+				opcion0 = contenidoLinea[:4]
+				opcion1 = contenidoLinea[:5]
+				es72 = False
+				cuantos = 0
+					
+			if (opcion0 != "@@"): 
+				msg = "Caracter inesperado, en la línea número " +str(contador+1)+ " del archivo " + archivo
+				return ("error", msg)
+			else: 
+				finMensaje =True
+				largoMensajes.append(lineaAct+1)
+				numLineasActual = sumaLineas(largoMensajes)
+				lineaAct = contador - numLineasActual
+				opcionales = 0
+
+		if (finMensaje):
+			print("Fin del mensaje")
+			finMensaje = False		
+
+		lineaAct += 1
+		contador += 1
+
+	#cerrar archivo
+	info.close()
+	return ("True",vali)
 
 
 def parseo942(archivo,directorio):
@@ -1278,7 +1566,6 @@ def parseo942(archivo,directorio):
 	largoMensajes = []
 	verificarOps = []
 	numLineasActual = 0
-	msg = ""
 	finMensaje = False
 	es86 = False 
 	contenidoLinea = ""
@@ -1297,7 +1584,9 @@ def parseo942(archivo,directorio):
 	infoTitularOp86 = ""
 	entradasDeb90D = ""
 	entradasCred90C = ""
+	msg = ""
 	io=""
+	vali=""
 
 
 	while contador < numLineas:
@@ -1532,4 +1821,4 @@ def parseo942(archivo,directorio):
 
 	#cerrar archivo
 	info.close()
-	return ("True","")
+	return ("True",vali)

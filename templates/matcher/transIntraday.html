@@ -19,16 +19,21 @@
 
 <legend><h1>Intraday (Detalle de Transacciones)</h1></legend>
 
-<form class="form-inline">
-  <fieldset>
-    <div class="row clearfix">
+    <div class="row clearfix" >
       <!-- Select Basic -->
-      <div class="form-group col-md-12 ">
-        <label class="control-label"> </label>
-        <h4>Cuenta: <strong>{{cuenta.codigo}}</strong></h4><h4> Transacciones Desde <strong>{{fecha}}</strong> Hasta : <strong>{{fechaActual}}</strong></h4>
+      <div class="form-group col-md-6 ">
+        <h4>Cuenta: <strong>{{cuenta.codigo}}</strong></h4><h4> Transacciones Desde: <strong>{{fecha}}</strong> Hasta: <strong>{{fechaActual}}</strong></h4>
       </div> 
-  </fieldset>
-</form>
+      <div class="form-group col-md-6 ">
+        {% if errores%}
+        <div class="alert alert-danger alert-dismissible" role="alert">
+          <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          <strong>Existen Archivos con errores en su Directorio de Mensajes Erróneos, <br>Por Favor verifique.</strong>
+        </div>
+        {% endif %}
+      </div> 
+    </div>
+  
 
 <form class="form-inline">
   <fieldset>
