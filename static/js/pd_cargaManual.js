@@ -1135,7 +1135,7 @@ function buscarEstado(tipo,cuentaid,moneda){
                 $('#saldo-manual-moneda').html(moneda);
                 $('#saldo-manual-cd').html(json_data[proc][ult_edc_conp].fields.c_dfinal);
                 $('#ffinal').html(json_data[proc][ult_edc_conp].fields.m_ffinal);
-                $('#saldo-manual').val($.formatNumber((json_data[carg][ult_edc_conc].fields.balance_final),{locale:idiomaAux}));
+                $('#saldo-manual').val($.formatNumber((json_data[proc][ult_edc_conc].fields.balance_final),{locale:idiomaAux}));
             
             }
 
@@ -1160,7 +1160,7 @@ function buscarEstado(tipo,cuentaid,moneda){
                 $('#saldo-manual-moneda').html(moneda);
                 $('#saldo-manual-cd').html(json_data[proc][ult_edc_corp].fields.c_dfinal);
                 $('#ffinal').html(json_data[proc][ult_edc_corp].fields.m_ffinal);
-                $('#saldo-manual').val($.formatNumber((json_data[carg][ult_edc_conc].fields.balance_final),{locale:idiomaAux}));
+                $('#saldo-manual').val($.formatNumber((json_data[proc][ult_edc_conc].fields.balance_final),{locale:idiomaAux}));
             
             }else{
                 

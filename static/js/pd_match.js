@@ -69,7 +69,12 @@ $('#matchButton').on('click', function () {
       }
     }else{
       $('#processing-modal').modal('toggle');
-      matcher(ctaid,fecha,'match');
+      if (idioma == 0){
+        matcher(ctaid,fecha,'match');
+      } else{
+        var f_aux = fecha.split("/").reverse().join("/");
+        matcher(ctaid,f_aux,'match');
+      }
     }
 });
 
@@ -85,6 +90,9 @@ $('#cpButton').on('click', function () {
       }
     }else{
       $('#processing-modal').modal('toggle');
+      if (idioma == 1){
+        fecha = fecha.split("/").reverse().join("/");
+      }
       matcher(0,fecha,'matchcp');
     }
 });

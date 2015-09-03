@@ -359,7 +359,7 @@ def cambioClave(request):
             if idioma == 0:
                 msg = "Contraseña actualizada exitosamente"
             else:
-                msg = "Successful updated password"
+                msg = "Successfully updated password"
 
         except:
             if idioma == 0:
@@ -470,7 +470,7 @@ def pd_estadoCuentas(request):
             if idioma == 0:
                 msg = 'Estado de cuenta eliminado exitosamente'
             else:
-                msg = 'Successful deleted account statement'
+                msg = 'Successfully deleted account statement'
             edcid = request.POST.get('edcid')
             cop = request.POST.get('cop')
 
@@ -827,7 +827,7 @@ def pd_cargaAutomatica(request):
             if idioma == 0:
                 msg = "Archivo cargado con exito"
             else:
-                msg = "Successful loaded file"
+                msg = "Successfully loaded file"
             edcl_json = request.POST.get('edcl')
             filename = request.POST.get('filename')
             edcl = jsonpickle.decode(edcl_json)
@@ -882,7 +882,7 @@ def pd_cargaAutomatica(request):
             if idioma == 0:
                 msg = "Archivo cargado con exito"
             else:
-                msg = "Successful loaded file"
+                msg = "Successfully loaded file"
             filename = request.POST.get('filename')
             edcl_json = request.POST.get('edcl')
             edcl = jsonpickle.decode(edcl_json)
@@ -992,7 +992,7 @@ def pd_cargaManual(request):
             if idioma == 0:
                 msg = "El Edo. de Cuenta se ha cargado con exito"
             else:
-                msg = "Successful loaded Acc. Statement"
+                msg = "Successfully loaded Acc. Statement"
             
             numTrans = int(request.POST.get('numTrans'))
 
@@ -1170,6 +1170,8 @@ def pd_match(request):
                 if elem not in cuentas:
                     cuentas_carg.remove(elem)
 
+            cuentas_carg = set(cuentas_carg)
+
             res_json = serializers.serialize('json', cuentas_carg)
             
             return JsonResponse(res_json, safe=False)
@@ -1234,7 +1236,7 @@ def pd_match(request):
             if idioma ==0:
                 msg = 'Cuenta liberada exitosamente'
             else:
-                msg = 'Successful freed account'
+                msg = 'Successfully freed account'
 
             return JsonResponse({'msg':msg})
 
@@ -1260,6 +1262,7 @@ def pd_matchesPropuestos(request, cuenta):
 
     expirarSesion(request)
     if request.method == 'POST':
+        idioma = Configuracion.objects.all()[0].idioma
         my_dict = dict(request.POST)
         del my_dict['csrfmiddlewaretoken'] #Sirve para quitar el token antiforgery del diccionario
         
@@ -1286,7 +1289,11 @@ def pd_matchesPropuestos(request, cuenta):
         log(request,6,cuenta)
 
         template = "matcher/pd_matchesPropuestos.html"
-        msg = 'Matches Confirmados Exitosamente!'
+        if idioma == 0:
+            msg = 'Matches Confirmados Exitosamente!'
+        else:
+            msg = "Successfully confirmed matches"
+
         cuentas = Cuenta.objects.all().order_by('codigo')
         idioma = Configuracion.objects.all()[0].idioma    
         context = {'idioma':idioma, 'cuentas':cuentas, 'matches':None, 'cta':None, 'msg':msg, 'ops':get_ops(request),'ldap':get_ldap(request)}
@@ -1377,6 +1384,7 @@ def pd_partidasAbiertas(request):
     expirarSesion(request)
     if request.method == 'POST':
         actn = request.POST.get('action')
+        idioma = Configuracion.objects.all()[0].idioma 
 
         if actn == 'match':
             matchArray = request.POST.getlist('matchArray[]')
@@ -1437,8 +1445,11 @@ def pd_partidasAbiertas(request):
 
             # Se llama la funcion de poner consolidado
             setConsolidado(codigoCuenta,request)
-
-            return JsonResponse({'msg':'Éxito'}, safe=False )
+            if idioma == 0:
+                msg_pa = "Éxito"
+            else:
+                msg_pa = "Success"
+            return JsonResponse({'msg':msg_pa}, safe=False )
 
 
         if actn == 'buscar':
@@ -1583,13 +1594,19 @@ def pd_partidasAbiertas(request):
 
                 tra = TransabiertaContabilidad.objects.filter(idtransaccion=trans95)[0]
                 Mt95.objects.create(ta_conta=tra,codigo=ref95,codigo95_idcodigo95=codAux,ref_relacion=refOrg95,query=query,narrativa=narra95,num_mt=tipo95a,fecha_msg_original=fechad,campo79=original95)
-                mensajeMT = "exito"
+                if idioma == 0:
+                    mensajeMT = "exito"
+                else:
+                    mensajeMt = "success"
 
             if clase95 == "corres":
                 
                 tra = TransabiertaCorresponsal.objects.filter(idtransaccion=trans95)[0]
                 Mt95.objects.create(ta_corres=tra,codigo=ref95,codigo95_idcodigo95=codAux,ref_relacion=refOrg95,query=query,narrativa=narral95,num_mt=tipo95a,fecha_msg_original=fechad,campo79=original95) 
-                mensajeMT = "exito"
+                if idioma == 0:
+                    mensajeMT = "exito"
+                else:
+                    mensajeMt = "success"
 
             tn = str(timenow())
             hora = tn[11:]
@@ -3275,7 +3292,7 @@ def configuracion(request, tipo):
                 if idioma == 0:
                     msg = "Formato creado exitosamente."
                 else:
-                    msg = "Successful created format."
+                    msg = "Successfully created format."
 
                 try:
                     cuenta = Cuenta.objects.get(pk=formcuenta)
@@ -3297,7 +3314,7 @@ def configuracion(request, tipo):
                 if idioma == 0: 
                     msg = "Formato eliminado exitosamente."
                 else:
-                    msg = "Successful deleted format."
+                    msg = "Successfully deleted format."
 
                 try:
                     formato = Formatoarchivo.objects.get(idformato=formid)
@@ -3323,7 +3340,7 @@ def configuracion(request, tipo):
                 if idioma == 0: 
                     msg = "Formato modificado exitosamente."
                 else:
-                    msg = "Successful modified format."
+                    msg = "Successfully modified format."
                 
                 try:
                     formato = Formatoarchivo.objects.get(idformato=formid)
@@ -3787,6 +3804,7 @@ def seg_backupRestore(request):
 
     expirarSesion(request)
     if request.method == "POST":
+        idioma = Configuracion.objects.all()[0].idioma 
         actn = request.POST.get("action")
 
         # https://djangosnippets.org/snippets/118/
@@ -3810,7 +3828,10 @@ def seg_backupRestore(request):
         if actn == "res":
             # Recibe el codigo de la cuenta
             cuenta = request.POST.get("cuentacod")
-            msg = "Cuenta restaurada exitosamente."
+            if idioma == 0:
+                msg = "Cuenta restaurada exitosamente."
+            else:
+                msg = "Successfully restored account."
 
             cursor = connection.cursor()
             try:
@@ -3825,7 +3846,10 @@ def seg_backupRestore(request):
 
         if actn == "bkUp":
             # No recibe nada
-            msg = "Backup realizado exitosamente."
+            if idioma == 0:
+                msg = "Backup realizado exitosamente."
+            else:
+                msg = "Successfully backup done."
 
             cursor = connection.cursor()
             try:
@@ -3868,7 +3892,7 @@ def admin_bancos(request):
             if idioma == 0:
                 msg = "Banco agregado exitosamente."
             else:
-                msg = "Successful aggregated bank."
+                msg = "Successfully aggregated bank."
 
             banco, creado = BancoCorresponsal.objects.get_or_create(codigo=bancocod, defaults={'nombre':banconom})
             
@@ -3889,7 +3913,7 @@ def admin_bancos(request):
             if idioma == 0:
                 msg = "Banco modificado exitosamente."
             else:
-                msg = "Successful modified bank."
+                msg = "Successfully modified bank."
             try:
                 banco = BancoCorresponsal.objects.get(idbanco=bancoid)
             except BancoCorresponsal.DoesNotExist:
@@ -3923,7 +3947,7 @@ def admin_bancos(request):
             if idioma == 0:
                 msg = "Banco eliminado exitosamente."
             else:
-                msg = "Successful deleted bank."
+                msg = "Successfully deleted bank."
             
             bancoid = request.POST.get('bancoid')
 
@@ -3997,7 +4021,7 @@ def admin_monedas(request):
             if idioma == 0:
                 msg = "Moneda modificada exitosamente."
             else:
-                msg = "Successful modified currency."
+                msg = "Successfully modified currency."
 
             try:
                 moneda = Moneda.objects.get(idmoneda=monedaid)
@@ -4033,7 +4057,7 @@ def admin_monedas(request):
             if idioma == 0:
                 msg = "Moneda eliminada exitosamente."
             else:
-                msg = "Successful deleted currency."
+                msg = "Successfully deleted currency."
 
             monedaid = request.POST.get('monedaid')
 
@@ -4090,7 +4114,7 @@ def admin_cuentas(request):
             if idioma == 0:
                 msg="Encaje agregado exitosamente."
             else:
-                msg="Successful aggregated cash."
+                msg="Successfully aggregated cash."
             cuentaid = int(request.POST.get('cuentaid'))
             if idioma == 1:
                 monto = request.POST.get('monto')
@@ -4186,7 +4210,7 @@ def admin_cuentas(request):
             if idioma == 0:
                 msg = "Cuenta creada satisfactoriamente."
             else:
-                msg = "Successful created account."
+                msg = "Successfully created account."
             
             #Para el log
             log(request,21,codigo)
@@ -4197,7 +4221,7 @@ def admin_cuentas(request):
             if idioma == 0:
                 msg = "Cuenta eliminada exitosamente."
             else:
-                msg = "Successful deleted account."
+                msg = "Successfully deleted account."
             
             cuenta = Cuenta.objects.get(pk=cuentaid)
             #Para el log
@@ -4334,7 +4358,7 @@ def admin_cuentas(request):
             if idioma == 0:
                 msg = "Cuenta modificada satisfactoriamente."
             else:
-                msg = "Successful modified account."
+                msg = "Successfully modified account."
 
             #Para el log
             log(request,22,cuenta.codigo)
@@ -5158,7 +5182,7 @@ def admin_reglas_transf(request):
             if idioma == 0:
                 msg = "Regla creada exitosamente"
             else:
-                msg = "Successful created rule"
+                msg = "Successfully created rule"
 
             try:
                 cuenta = Cuenta.objects.get(pk=cuentaid)
@@ -5183,7 +5207,7 @@ def admin_reglas_transf(request):
             if idioma == 0:
                 msg = "Regla eliminada exitosamente"
             else:
-                msg = "Successful deleted rule."
+                msg = "Successfully deleted rule."
 
             try:
                 regla = ReglaTransformacion.objects.get(pk=reglaid)
@@ -5208,7 +5232,7 @@ def admin_reglas_transf(request):
             if idioma == 0:
                 msg = 'Regla modificada exitosamente'
             else:
-                msg = 'Successful modified rule'
+                msg = 'Successfully modified rule'
             
             reglaid = request.POST.get("reglaid")
             nombre = request.POST.get("nombre")
@@ -5272,7 +5296,7 @@ def admin_crit_reglas(request):
             if idioma == 0:
                 msg = "Criterio creado exitosamente."
             else:
-                msg = "Successful created criteria."
+                msg = "Successfully created criteria."
             
             criterionom = request.POST.get('criterionom')
             criteriomon1 = request.POST.get('criteriomon1')
@@ -5316,7 +5340,7 @@ def admin_crit_reglas(request):
             if idioma == 0:
                 msg = "Criterio eliminado exitosamente."
             else:
-                msg = "Successful deleted criteria."
+                msg = "Successfully deleted criteria."
             
             criterioid = request.POST.get('criterioid')
 
@@ -5351,7 +5375,7 @@ def admin_crit_reglas(request):
             if idioma == 0:
                 msg = "Criterio modificado exitosamente."
             else:
-                msg = "Successful modified criteria."
+                msg = "Successfully modified criteria."
 
             try:
                criterio = CriteriosMatch.objects.get(idcriterio=criterioid)
@@ -5412,6 +5436,7 @@ def seg_licencia(request):
 
     if request.method == 'POST':
         action = request.POST.get('action')
+        idioma = Configuracion.objects.all()[0].idioma 
 
         if action == "cargarLicencia":
             archivo = request.POST.get('archivo')
@@ -5423,7 +5448,7 @@ def seg_licencia(request):
 
             #ruta del archivo a cargar
             ruta = directorio + archivo
-            bicLicencia = obj.bic
+            bicLicencia_aux = obj.bic
             fechaLicencia = ""
             usuariosLicencia = ""
             numeroModulos = 0
@@ -5433,6 +5458,9 @@ def seg_licencia(request):
             #abrir archivo
             fo = open(ruta, 'r')
             for line in fo:
+                if line[:5] == "<BIC>":
+                    bicLicencia = line.strip()
+                    bicLicencia = bicLicencia[5:][:-6]
                 if line[:17] == "<FechaExpiracion>":
                     fechaLicencia = line.strip()
                     fechaLicencia = fechaLicencia[17:][:-18]
@@ -5453,7 +5481,31 @@ def seg_licencia(request):
             fo.close()
             
             if fechaLicencia == "" or usuariosLicencia == "" or numeroModulos == 0 or modulosLicencia == [] or llaveLicencia == "":
-                mensaje = "Problemas con el archivo"
+                if idioma == 0:
+                    mensaje = "Problemas con el archivo"
+                else:
+                    mensaje = "Wrong file data"
+                    
+                return JsonResponse({'mens':mensaje})
+
+            f_aux = ("/").join(list(reversed(fechaLicencia.split("-"))))
+            pwd_aux = bicLicencia + "$" + usuariosLicencia + "$" + f_aux
+            newp_aux = make_password(pwd_aux, salt='BCG.bcg+2015', hasher='pbkdf2_sha256')
+            x, x, x, hashp_aux = newp_aux.split("$")
+
+            if bicLicencia_aux != bicLicencia:
+                if idioma == 0:
+                    mensaje = "El campo Bic no coincide con el registrado para su empresa."
+                else:
+                    mensaje = "File bic does not match with your company bic."
+                
+                return JsonResponse({'mens':mensaje})
+
+            if hashp_aux != llaveLicencia:
+                if idioma == 0:
+                    mensaje = "Los datos del archivo han sido corrompidos. Por lo tanto no podrá cargar la licencia."
+                else:
+                    mensaje = "License data corrupted. Therefore you can not load the license."
                 return JsonResponse({'mens':mensaje})
 
             try:
@@ -5486,7 +5538,11 @@ def seg_licencia(request):
                 msg = "Bic: " + bicLicencia + "\nUsuarios: " + usuariosLicencia +"\n Expiración (YY-MM-DD): "+ str(fechaLicencia) +"\n Llave: " + llaveLicencia+ "\nSalt : BCG.bcg+2015" +"\n Modulos: " +str(numeroModulos)+ modulosemail
                 enviar_mail('Licencia del banco: '+bicLicencia,msg,'jotha41@gmail.com')
 
-                mensaje = "Licencia modificada exitosamente"
+                if idioma == 0:
+                    mensaje = "Licencia modificada exitosamente"
+                else:
+                    mensaje = "Successfully modified license"
+
                 return JsonResponse({'mens':mensaje})
 
             except:
@@ -5507,7 +5563,11 @@ def seg_licencia(request):
                 msg = "Bic: " + bicLicencia + "\nUsuarios: " + usuariosLicencia +"\n Expiración (YY-MM-DD): "+ str(fechaLicencia) +"\n Llave: " + llaveLicencia+ "\nSalt : BCG.bcg+2015" +"\n Modulos: " +str(numeroModulos)+ modulosemail
                 enviar_mail('Licencia del banco: '+bicLicencia,msg,'jotha41@gmail.com')
                 
-                mensaje = "La agregada exitosamente"
+                if idioma == 0:
+                    mensaje = "Licencia agregada exitosamente"
+                else:
+                    mensaje = "Successfully aggregated license"
+
                 return JsonResponse({'mens':mensaje})
                 
 
@@ -5635,13 +5695,13 @@ def SU_licencia(request):
             fo.close()
 
             #Enviar mail
-            msg = "Bic: " +bic + "\nUsuarios: " + numUsers +"\n Expiración (YY-MM-DD): "+ str(fecha).split(" ")[0] +"\n Llave: " + hashp+ "\nSalt : " + salt  +"\n Modulos: " + str(cuentamod) + modulosemail
+            msg = "Bic: " +bic + "\nUsuarios: " + numUsers +"\n Expiración (YYYY-MM-DD): "+ str(fecha).split(" ")[0] +"\n Llave: " + hashp+ "\nSalt : " + salt  +"\n Modulos: " + str(cuentamod) + modulosemail
             enviar_mail('Licencia del banco: '+bic,msg,'jotha41@gmail.com')
             
             if idioma == 0:
                 mensaje = "Licencia modificada exitosamente"
             else:
-                mensaje = "Successful modified license"
+                mensaje = "Successfully modified license"
 
             return JsonResponse({'mens':mensaje})
                
@@ -5692,13 +5752,13 @@ def SU_licencia(request):
             fo.close()
 
             #Enviar mail
-            msg = "Bic: " +bic + "\nUsuarios: " + numUsers +"\n Expiración (YY-MM-DD): "+ str(fecha).split(" ")[0] +"\n Llave: " + hashp+ "\nSalt : " + salt +"\n Modulos: " +str(cuentamod)+ modulosemail
+            msg = "Bic: " +bic + "\nUsuarios: " + numUsers +"\n Expiración (YYYY-MM-DD): "+ str(fecha).split(" ")[0] +"\n Llave: " + hashp+ "\nSalt : " + salt +"\n Modulos: " +str(cuentamod)+ modulosemail
             enviar_mail('Licencia del banco: '+bic,msg,'jotha41@gmail.com')
             
             if idioma ==0:
                 mensaje = "Licencia agregada exitosamente"
             else:
-                mensaje = "Successful added license"
+                mensaje = "Successfully added license"
 
             return JsonResponse({'mens':mensaje})
 

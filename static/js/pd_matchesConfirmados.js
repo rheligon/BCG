@@ -274,7 +274,7 @@ $('#srchButton').on('click', function() {
                         filterArray[3].push(fh);
                        
                     }
-                    
+                    centinela = true;
                     var fd_date = new Date(fd_aux);
                     var fh_date = new Date(fh_aux);
                     if (fh_date < fd_date){
@@ -322,7 +322,7 @@ $('#srchButton').on('click', function() {
                         filterArray[4].push(fh);
                        
                     }
-                    
+                    centinela = true;
                     var fd_date = new Date(fd_aux);
                     var fh_date = new Date(fh_aux);
                     if (fh_date < fd_date){

@@ -5,6 +5,7 @@
 {% block title %}Partidas Abiertas{% endblock %}
 
 {%block head%}
+<input type="text" id="idioma" value="{{idioma}}" hidden/>
 <!-- No hace falta cargar dataTables.css original si se incluye el de bootstrap -->
 <link rel="stylesheet" href="{% static 'css/dataTables/dataTables.bootstrap.css' %}">
 <link rel="stylesheet" href="{% static 'css/dataTables/dataTables.scroller.css' %}">
@@ -30,10 +31,24 @@ table {
 
 
 <div id="MT95-verTabla">
-<legend>Partidas Abiertas</legend>
+<legend>
+  {%if idioma == 0%}
+    Partidas Abiertas
+  {%endif%}
+  {%if idioma == 1%}
+    Open Entries
+  {%endif%}
+</legend>
   <!-- Select Basic -->
   <div class="form-group col-md-12">
-    <label class="col-md-3" for="Cuenta-sel">Seleccione una cuenta: </label>
+    <label class="col-md-3" for="Cuenta-sel">
+      {%if idioma == 0%}
+        Seleccione una cuenta:
+      {%endif%}
+      {%if idioma == 1%}
+        Select account:
+      {%endif%}
+    </label>
     <div class="col-md-3">
       <select id="Cuenta-sel" name="Cuenta-sel" class="form-control">
         <option value="-1">----------</option>
@@ -45,13 +60,23 @@ table {
 
     <div class="col-md-3 col-md-push-1">
       <button type="button" id="srchButton" data-loading-text="Cargando..." class="col-md-6 btn btn-primary" autocomplete="off">
-          Buscar
+          {%if idioma == 0%}
+            Buscar
+          {%endif%}
+          {%if idioma == 1%}
+            Search
+          {%endif%}
       </button>
     </div>
 
     <div class="col-md-3">
       <button type="button" id="cancelButton" data-loading-text="Cargando..." class="col-md-6 btn btn-default" autocomplete="off">
-          Cancelar
+          {%if idioma == 0%}
+            Cancelar
+          {%endif%}
+          {%if idioma == 1%}
+            Cancel
+          {%endif%}
       </button>
     </div>
 
@@ -63,21 +88,36 @@ table {
           <div class="checkbox col-md-4">
             <label>
               <input type="checkbox" class="cbfilter" id="monto-cb" value="0">
-              Monto
+                {%if idioma == 0%}
+                  Monto
+                {%endif%}
+                {%if idioma == 1%}
+                  Amount
+                {%endif%}
             </label>
           </div>
 
           <div class="checkbox col-md-4" style="margin-top: 10px;">
             <label>
               <input type="checkbox" class="cbfilter" id="ref-cb" value="1">
-              Referencias
+                {%if idioma == 0%}
+                  Referencias
+                {%endif%}
+                {%if idioma == 1%}
+                  References
+                {%endif%}
             </label>
           </div>
 
           <div class="checkbox col-md-4" style="margin-top: 10px;">
             <label>
               <input type="checkbox" class="cbfilter" id="cod-cb" value="2">
-              Crédito/Débito
+                {%if idioma == 0%}
+                  Crédito/Débito
+                {%endif%}
+                {%if idioma == 1%}
+                  Credit/Debit
+                {%endif%}
             </label>
           </div>
         </div>
@@ -86,21 +126,36 @@ table {
           <div class="checkbox col-md-4">
             <label>
               <input type="checkbox" class="cbfilter" id="fecha-cb" value="3">
-              Fecha
+                {%if idioma == 0%}
+                  Fecha
+                {%endif%}
+                {%if idioma == 1%}
+                  Date
+                {%endif%}
             </label>
           </div>
 
           <div class="checkbox col-md-4" style="margin-top: 10px;">
             <label>
               <input type="checkbox" class="cbfilter" id="tipo-cb" value="4">
-              Tipo Trans.
+                {%if idioma == 0%}
+                  Tipo Trans.
+                {%endif%}
+                {%if idioma == 1%}
+                  Trans. Type
+                {%endif%}
             </label>
           </div>
 
           <div class="checkbox col-md-4" style="margin-top: 10px;">
             <label>
               <input type="checkbox" class="cbfilter" id="origen-cb" value="5">
-              Origen
+                {%if idioma == 0%}
+                  Origen
+                {%endif%}
+                {%if idioma == 1%}
+                  Source
+                {%endif%}
             </label>
           </div>
         </div>
@@ -113,19 +168,51 @@ table {
           <div id="filter-monto" hidden>
             <!-- Text input-->
             <div class="form-group col-md-6">
-              <label class="control-label">Desde: </label>  
+              <label class="control-label">
+                {%if idioma == 0%}
+                  Desde:
+                {%endif%}
+                {%if idioma == 1%}
+                  From:
+                {%endif%}
+              </label>  
               <div>
-              <input id="monto-desde" type="text" placeholder="" class="form-control input-md">
+              {%if idioma == 0%}
+                <input id="monto-desde" type="text" placeholder="" class="form-control input-md" onkeypress='return solonumeroycoma(event)' onkeyup='return solonumeroycoma(event)'>
+              {%endif%}
+              {%if idioma == 1%}
+                <input id="monto-desde" type="text" placeholder="" class="form-control input-md" onkeypress='return solonumeroypunto(event)' onkeyup='return solonumeroypunto(event)'>
+              {%endif%}
               </div>
             </div>
 
             <!-- Text input-->
             <div class="form-group col-md-6">
-              <label class="control-label">Hasta: </label>  
+              <label class="control-label">
+                {%if idioma == 0%}
+                  Hasta:
+                {%endif%}
+                {%if idioma == 1%}
+                  Until:
+                {%endif%}
+              </label>  
               <div>
-              <input id="monto-hasta" type="text" placeholder="" class="form-control input-md">
+              {%if idioma == 0%}
+                <input id="monto-hasta" type="text" placeholder="" class="form-control input-md" onkeypress='return solonumeroycoma(event)' onkeyup='return solonumeroycoma(event)'>
+              {%endif%}
+              {%if idioma == 1%}
+                <input id="monto-hasta" type="text" placeholder="" class="form-control input-md" onkeypress='return solonumeroypunto(event)' onkeyup='return solonumeroypunto(event)'>
+              {%endif%}
               </div>
             </div>
+            <p class="help-block">
+              {%if idioma == 0%}
+                Los montos deben ser sólo números. Puede usar la coma "," y dos (2) decimales.  
+              {%endif%}
+              {%if idioma == 1%}
+                Amounts must be number characters only. You can use dot "." and two (2) decimal for decimal numbers.  
+              {%endif%}
+            </p>
           </div>
 
           <div id="filter-ref" hidden>
@@ -146,7 +233,12 @@ table {
             <div class="col-md-4"> 
               <label class="radio-inline">
                 <input type="radio" name="radioref" id="det-radio" value="D">
-                Detalles
+                  {%if idioma == 0%}
+                    Detalles
+                  {%endif%}
+                  {%if idioma == 1%}
+                    Details
+                  {%endif%}
               </label>
             </div>
 
@@ -162,25 +254,49 @@ table {
             <div class="col-md-6"> 
               <label class="radio-inline">
                 <input type="radio" name="radiocod" id="cred-radio" value="C">
-                Crédito
+                {%if idioma == 0%}
+                  Crédito
+                {%endif%}
+                {%if idioma == 1%}
+                  Credit
+                {%endif%}
               </label> 
             </div>
             <div class="col-md-6"> 
               <label class="radio-inline">
                 <input type="radio" name="radiocod" id="deb-radio" value="D">
-                Débito
+                {%if idioma == 0%}
+                  Débito
+                {%endif%}
+                {%if idioma == 1%}
+                  Debit
+                {%endif%}
               </label>
             </div>
           </div>
 
           <div id="filter-fecha" hidden>
             <div class="form-group">
-              <label class="col-md-2 control-label">Desde:</label>
+              <label class="col-md-2 control-label">
+                {%if idioma == 0%}
+                  Desde:
+                {%endif%}
+                {%if idioma == 1%}
+                  From:
+                {%endif%}
+              </label>
               <div class="col-md-4"><input id="f-desde" class="form-control"></div>
             </div>
 
             <div class="form-group">
-              <label class="col-md-2 control-label">Hasta:</label>
+              <label class="col-md-2 control-label">
+                {%if idioma == 0%}
+                  Hasta:
+                {%endif%}
+                {%if idioma == 1%}
+                  To:
+                {%endif%}
+              </label>
               <div class="col-md-4"><input id="f-hasta" class="form-control"></div>
             </div>
           </div>
@@ -188,7 +304,14 @@ table {
           <div id="filter-tipo" hidden>
             <!-- Text input-->
             <div class="form-group col-md-10">
-              <label class="control-label">Tipo Trans.: </label>  
+              <label class="control-label">
+                {%if idioma == 0%}
+                  Tipo Trans.
+                {%endif%}
+                {%if idioma == 1%}
+                  Trans. Type
+                {%endif%}
+              </label>  
               <div>
               <input id="tipo-trans" type="text" placeholder="" class="form-control input-md">
               </div>
@@ -199,13 +322,23 @@ table {
             <div class="col-md-6"> 
               <label class="radio-inline">
                 <input type="radio" name="radioorig" id="conta-radio" value="L">
-                Libro (L)
+                  {%if idioma == 0%}
+                    Libro (L)
+                  {%endif%}
+                  {%if idioma == 1%}
+                    Accounting (L)
+                  {%endif%}
               </label> 
             </div>
             <div class="col-md-6"> 
               <label class="radio-inline">
                 <input type="radio" name="radioorig" id="corr-radio" value="S">
-                Corresponsal (S)
+                  {%if idioma == 0%}
+                    Corresponsal (S)
+                  {%endif%}
+                  {%if idioma == 1%}
+                    Correspondent (S)
+                  {%endif%}
               </label>
             </div>
           </div>
@@ -229,6 +362,7 @@ table {
       <table id="table-pa" style="width:100%;" class="table table-bordered table-striped tabla">
           <thead>
               <tr>
+                {%if idioma == 0%}
                   <th>E/C</th>
                   <th>Pág</th>
                   <th>Fecha</th>
@@ -242,6 +376,22 @@ table {
                   <th>Sel</th>
                   <th>MT</th>
                   <th>MT Acción</th>
+                {%endif%}
+                {%if idioma == 1%}
+                  <th>A/S</th>
+                  <th>Page</th>
+                  <th>Date</th>
+                  <th>Type</th>
+                  <th>Nostro Ref.</th>
+                  <th>Vostro Ref.</th>
+                  <th>Details</th>
+                  <th>C/D</th>
+                  <th>Amount</th>
+                  <th>S/L</th>
+                  <th>Sel</th>
+                  <th>MT</th>
+                  <th>MT Action</th>
+                {%endif%}
               </tr>
           </thead>
           <tbody id="tb-pa">
@@ -258,19 +408,34 @@ table {
     {% if 25 in ops %}
     <div class="col-md-3 col-md-push-1">
       <button type="button" id="crearMTButton" class="col-md-6 btn btn-primary" disabled>
+        {%if idioma == 0%}
           Crear MT
+        {%endif%}
+        {%if idioma == 1%}
+          Create MT
+        {%endif%}
       </button>
     </div>
     <div class="col-md-3 col-md-push-1">
       <button type="button" id="verMTButton" class="col-md-6 btn btn-primary" disabled>
+        {%if idioma == 0%}
           Ver MT
+        {%endif%}
+        {%if idioma == 1%}
+          See MT
+        {%endif%}
       </button>
     </div>
     {%endif%}
 
     <div class="col-md-3 col-md-push-1">
       <button type="button" id="checkAllButton" data-loading-text="Cargando..." class="col-md-6 btn btn-primary" selec="0">
+        {%if idioma == 0%}
           Selecc. Todas
+        {%endif%}
+        {%if idioma == 1%}
+          Select All
+        {%endif%}
       </button>
     </div>
 
@@ -285,10 +450,24 @@ table {
 </div>
 
 <div id="MT95-crear" style="display: none;">
-  <legend>Crear MTn95</legend>
+  <legend>
+    {%if idioma == 0%}
+      Crear MTn95
+    {%endif%}
+    {%if idioma == 1%}
+      Crate MTn95
+    {%endif%}
+  </legend>
     <td class="col-md-6 ">
       <div class="col-md-7 form-group">
-        <label class="col-md-4 control-label" >Referencia del Mensaje:</label>
+        <label class="col-md-4 control-label" >
+          {%if idioma == 0%}
+            Referencia del Mensaje:
+          {%endif%}
+          {%if idioma == 1%}
+            Message Reference:
+          {%endif%}
+        </label>
         <div class="col-md-8">
           <input class="form-control input-sm" name="refmensajeMT" id="refmensaje" type="text" maxlength="16" placeholder="" required>
         </div>
@@ -296,7 +475,14 @@ table {
     </td>
     <td class="col-md-6 ">
       <div class="col-md-7 form-group">
-        <label class="col-md-4 control-label" >Referencia del Mensaje Original:</label>
+        <label class="col-md-4 control-label" >
+          {%if idioma == 0%}
+            Referencia del Mensaje Original:
+          {%endif%}
+          {%if idioma == 1%}
+            Original Message Reference:
+          {%endif%}
+        </label>
         <div class="col-md-8">
           <input class="form-control input-sm" name="refmensajeoriginalMT" id="refmensajeoriginal" type="text" maxlength="16" placeholder="" required>
         </div>
@@ -304,7 +490,14 @@ table {
     </td>
     <td class="col-md-5 ">
       <div class="col-md-7 form-group">
-        <label class="col-md-4 control-label" >Tipo de Mensaje Original:</label>
+        <label class="col-md-4 control-label" >
+          {%if idioma == 0%}
+            Tipo del Mensaje Original:
+          {%endif%}
+          {%if idioma == 1%}
+            Original Message Type:
+          {%endif%}
+        </label>
         <div class="col-md-4">
           <select id="tipo" name="tipoN" class="form-control">
             <option value="-1">---</option>
@@ -313,24 +506,48 @@ table {
             <option value="950">950</option>
           </select>
           <p class="help-block">
-            Este campo no es indispensable.
+            {%if idioma == 0%}
+              Este campo no es indispensable.
+            {%endif%}
+            {%if idioma == 1%}
+              No mandatory field.
+            {%endif%}
           </p> 
         </div>
       </div>
     <td class="col-md-5">
       <div class="col-md-7 form-group">
-        <label class="col-md-4 control-label">Fecha del Mensaje Original: <span class="glyphicon glyphicon-calendar" aria-hidden="true"></span>
+        <label class="col-md-4 control-label">
+          {%if idioma == 0%}
+            Fecha del Mensaje Original:
+          {%endif%}
+          {%if idioma == 1%}
+            Original Message Date: 
+          {%endif%}
+        <span class="glyphicon glyphicon-calendar" aria-hidden="true"></span>
         </label>
           <div class="col-md-4">
       <input id="f-desdeMT" class="form-control"></div>
           <p class="help-block">
-            Este campo no es indispensable.
+            {%if idioma == 0%}
+              Este campo no es indispensable.
+            {%endif%}
+            {%if idioma == 1%}
+              No mandatory field.
+            {%endif%}
           </p> 
       </div>
     </td>
     <td class="col-md-6 ">
       <div class="col-md-7 form-group">
-          <label class="col-md-4 control-label" >Pregunta:</label>
+          <label class="col-md-4 control-label" >
+            {%if idioma == 0%}
+              Pregunta:
+            {%endif%}
+            {%if idioma == 1%}
+              Query:
+            {%endif%}
+          </label>
           <div class="col-md-8">
             <select id="mt95cod" name="mtx95codN" class="form-control">
               <option value="-1">--------------</option>
@@ -344,25 +561,63 @@ table {
     </td>
     <td class="col-md-6 ">
       <div class="col-md-7 form-group">
-        <label class="col-md-4 control-label" >Narrativa:</label>
+        <label class="col-md-4 control-label" >
+          {%if idioma == 0%}
+            Narrativa:
+          {%endif%}
+          {%if idioma == 1%}
+            Narrative:
+          {%endif%}
+        </label>
         <div class="col-md-8">
-          <textarea class="form-control input-sm" name="narrativaMT" id="narrativa" type="text" maxlength="45" placeholder="Ingrese la Descripción" required autofocus/></textarea>
+          <textarea class="form-control input-sm" name="narrativaMT" id="narrativa" type="text" maxlength="45" required autofocus/></textarea>
           <p class="help-block">
-            Este campo no es indispensable.
+            {%if idioma == 0%}
+              Este campo no es indispensable.
+            {%endif%}
+            {%if idioma == 1%}
+              No mandatory field.
+            {%endif%}
           </p> 
         </div>
       </div>
     </td>
     <div class="col-md-7 form-group">
-      <label class="col-md-4 control-label" >MT Original Enviado/Recibido:</label>
+      <label class="col-md-4 control-label" >
+        {%if idioma == 0%}
+          MT Original Enviado/Recibido:
+        {%endif%}
+        {%if idioma == 1%}
+          Sent/Received Original MT:
+        {%endif%}
+      </label>
       <div class="col-md-4">
         <select id="claseOriginal" name="claseOriginalN" class="form-control">
           <option value="-1">---</option>
-          <option value="S">Enviado</option>
-          <option value="R">Recibido</option>
+          <option value="S">
+            {%if idioma == 0%}
+              Enviado
+            {%endif%}
+            {%if idioma == 1%}
+              Sent
+            {%endif%}
+          </option>
+          <option value="R">
+            {%if idioma == 0%}
+              Recibido
+            {%endif%}
+            {%if idioma == 1%}
+              Received
+            {%endif%}
+          </option>
         </select>
         <p class="help-block">
-          Este campo no es indispensable.
+          {%if idioma == 0%}
+            Este campo no es indispensable.
+          {%endif%}
+          {%if idioma == 1%}
+            No mandatory field.
+          {%endif%}
         </p> 
       </div>
     </div>
@@ -371,13 +626,23 @@ table {
         <tr>
           <div class="col-md-4" align="rigth">
             <button type="button" id="crearMT95Button" style="align:right" class="col-md-6 btn btn-primary">
-              Aceptar
+              {%if idioma == 0%}
+                Aceptar
+              {%endif%}
+              {%if idioma == 1%}
+                Accept
+              {%endif%}
             </button>
           </div>
         
           <div class="col-md-4" align="rigth">
             <button type="button" id="regresarCMT95Button" style="align:right" class="col-md-6 btn btn-warning">
-            Regresar
+              {%if idioma == 0%}
+                Regresar
+              {%endif%}
+              {%if idioma == 1%}
+                Back
+              {%endif%}
             </button>
           </div>
         </tr>
@@ -392,19 +657,47 @@ table {
         {% csrf_token %}
         <div class="modal-header">
           <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-          <h4 class="modal-title">Agregar una Justificacion</h4>
+          <h4 class="modal-title">
+            {%if idioma == 0%}
+              Agregar una Justificación
+            {%endif%}
+            {%if idioma == 1%}
+              Add Justification
+            {%endif%}
+          </h4>
         </div>
         <div class="modal-body row">
           <div class="field">
-              <label>Justificacion: </label>
+              <label>
+              {%if idioma == 0%}
+                Justificación
+              {%endif%}
+              {%if idioma == 1%}
+                Justification
+              {%endif%}
+              </label>
               <div class="ui left labeled input col-md-10">
                   <input type="text" id="justificacion" class="form-control">
               </div>
           </div>
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
-          <button id="just-submit" type="button" class="btn btn-primary">Aceptar</button>
+          <button type="button" class="btn btn-default" data-dismiss="modal">
+            {%if idioma == 0%}
+              Cerrar
+            {%endif%}
+            {%if idioma == 1%}
+              Close
+            {%endif%}
+          </button>
+          <button id="just-submit" type="button" class="btn btn-primary">
+            {%if idioma == 0%}
+              Aceptar
+            {%endif%}
+            {%if idioma == 1%}
+              Accept
+            {%endif%}
+          </button>
         </div>
     </div><!-- /.modal-content -->
   </div><!-- /.modal-dialog -->
@@ -417,7 +710,12 @@ table {
             <div class="modal-body">
                 <div class="text-center">
                     <img src="{% static 'images/procesando.gif' %}" class="icon" />
-                    <h4>Procesando, por favor espere.</h4>
+                    {%if idioma == 0%}
+                      <h4>Procesando, por favor espere.</h4>
+                    {%endif%}
+                    {%if idioma == 1%}
+                      <h4>Processing, wait please.</h4>
+                    {%endif%}
                 </div>
             </div>
         </div>
@@ -426,8 +724,6 @@ table {
 {% endblock %}
 
 {% block script%}
-<script> //define el idioma de la tabla (es/en)
-         idioma_tr = "es" </script>
 <script src="{% static 'js/jquery.dataTables.min.js' %}" type="text/javascript"></script>
 <script src="{% static 'js/dataTables.scroller.js' %}" type="text/javascript"></script>
 <script src="{% static 'js/dataTables.bootstrap.js' %}" type="text/javascript"></script>

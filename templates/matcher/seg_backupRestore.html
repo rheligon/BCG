@@ -10,15 +10,29 @@
 {%endblock%}
 
 {% block content %}
+<input type="text" id="idioma" value="{{idioma}}" hidden/>
   <div class="row">
     <div class="well col-md-4 col-md-push-1">
       <legend>Backup</legend>
-      <h4>Al presionar Ejecutar se realizará un Backup
-          del estado actual del sistema.</h4>
+      <h4>
+        {%if idioma == 0%}
+          Al presionar Ejecutar se realizará un Backup
+        del estado actual del sistema.
+        {%endif%}
+        {%if idioma == 1%}
+          Pushing Execute system will perform a Backup
+        with actual status.
+        {%endif%}
+      </h4>
       <div class="col-md-8 col-md-push-4">
         <div>
             <button type="button" id="bkUpButton" data-loading-text="Cargando..." class="col-md-5 btn btn-warning" autocomplete="off">
-                Ejecutar
+                {%if idioma == 0%}
+                  Ejecutar
+                {%endif%}
+                {%if idioma == 1%}
+                  Execute
+                {%endif%}
             </button>
         </div>
       </div>
@@ -33,7 +47,14 @@
           <legend>Restore</legend>
           <!-- Select Basic -->
           <div class="form-group">
-            <label class="col-md-4 control-label" for="Cuenta-sel">Código Cuenta: </label>
+            <label class="col-md-4 control-label" for="Cuenta-sel">
+              {%if idioma == 0%}
+                  Código Cuenta:
+                {%endif%}
+                {%if idioma == 1%}
+                  Account Code:
+                {%endif%}
+            </label>
             <div class="col-md-6">
             <select id="Cuenta-sel" name="Cuenta-sel" class="form-control">
               <option value="-1">----------</option>
@@ -47,14 +68,24 @@
           <div class="col-md-6 col-md-push-5">
                 <div>
                     <button type="button" id="resButton" data-loading-text="Cargando..." class="col-md-6 btn btn-warning" autocomplete="off">
-                        Ejecutar
+                        {%if idioma == 0%}
+                          Ejecutar
+                        {%endif%}
+                        {%if idioma == 1%}
+                          Execute
+                        {%endif%}
                     </button>
                 </div>
           </div>
           <div class="col-md-6 col-md-push-2">
                 <div>
                     <button type="button" id="cancelButton" class="col-md-6 btn btn-default">
-                        Cancelar
+                        {%if idioma == 0%}
+                          Cancelar
+                        {%endif%}
+                        {%if idioma == 1%}
+                          Cancel
+                        {%endif%}
                     </button>
                 </div>
           </div>
@@ -71,7 +102,12 @@
             <div class="modal-body">
                 <div class="text-center">
                     <img src="{% static 'images/procesando.gif' %}" class="icon" />
-                    <h4>Procesando, por favor espere.</h4>
+                    {%if idioma == 0%}
+                      <h4>Procesando, por favor espere.</h4>
+                    {%endif%}
+                    {%if idioma == 1%}
+                      <h4>Processing, wait please.</h4>
+                    {%endif%}
                 </div>
             </div>
         </div>

@@ -1,5 +1,4 @@
 var csrftoken = $.cookie('csrftoken');
-var tabla = iniciar_tabla(idioma_tr);
 var faltacorr = false;
 var matchArray = [];
 var filterArray = [[],[],[],[],[],[]];
@@ -9,11 +8,69 @@ var mt95Aux=[];
 var copiaAux = [];
 var copia = [];
 var opcionChequeada = "";
+var idioma = $('#idioma').val();
+var idiomaAux = "";
+var msj ="";
+var centinela = true;
+
+if (idioma == 0){
+    idiomaAux = "es"
+} else {
+    idiomaAux = "en"
+}
+
+var tabla = iniciar_tabla(idiomaAux);
+
+// chequear formato de los numeros
+function chequearFornatoNumero(elem){
+    if (idioma == 1){
+        return (/^(\d{1})+(\.\d{1,2})?$/.test(elem))
+    } else {
+        return (/^(\d{1})+(\,\d{1,2})?$/.test(elem))
+    }
+};
+
+// funcion para aceptar solo numeros
+function solonumeroypunto(e) {
+    var codigo;
+    codigo = (document.all) ? e.keyCode : e.which;
+    if (codigo == 46 || (codigo > 47 && codigo < 58) ) {
+    return true;
+    }
+    return false;
+}; 
+
+// funcion para aceptar solo numeros
+function solonumeroycoma(e) {
+    var codigo;
+    codigo = (document.all) ? e.keyCode : e.which;
+    if (codigo == 44 || (codigo > 47 && codigo < 58) ) {
+    return true;
+    }
+    return false;
+}; 
+
 
 function dateFormat(fecha){
+    var date_final = "";
     var date = new Date(Date.parse(fecha));
-    date.setDate(date.getDate() + 1);
-    return date.toLocaleDateString();
+    var res =date.setDate(date.getDate() + 1);
+    res = date.toLocaleDateString();
+    var date_aux = res.split("/");
+    if (parseInt(date_aux[0]) < 10){
+        date_aux[0] = '0' + date_aux[0];
+    }
+    if (parseInt(date_aux[1]) < 10){
+        date_aux[1] = '0' + date_aux[1];
+    }
+
+    if (idioma == 0){
+        date_final = date_aux.join("/");
+    } else {
+        date_final = date_aux.reverse().join("/");
+    }
+
+    return date_final;
 }
 
 function vacio(str){
@@ -113,7 +170,7 @@ function iniciar_tabla(idioma){
     }
 };
 
-if (idioma_tr==="es"){
+if (idiomaAux==="es"){
     //Cambiar el idioma del date picker a español si este es el seleccionado
     $.extend($.fn.pickadate.defaults, {
       monthsFull: ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'],
@@ -125,22 +182,41 @@ if (idioma_tr==="es"){
 }
 
 //Inicializar el DatePicker
-$('#f-desde').pickadate({
-  format: 'd/m/yyyy',
-  formatSubmit:'d/m/yyyy',
-  selectYears: true,
-  selectMonths: true,
-  max: true,
-})
-
+if (idioma == 0){
+    $('#f-desde').pickadate({
+      format: 'dd/mm/yyyy',
+      formatSubmit:'dd/mm/yyyy',
+      selectYears: true,
+      selectMonths: true,
+      max: true,
+    });
+} else {
+    $('#f-desde').pickadate({
+      format: 'yyyy/mm/dd',
+      formatSubmit:'dd/mm/yyyy',
+      selectYears: true,
+      selectMonths: true,
+      max: true,
+    });
+}
 //Inicializar el DatePicker
-$('#f-hasta').pickadate({
-  format: 'd/m/yyyy',
-  formatSubmit:'d/m/yyyy',
-  selectYears: true,
-  selectMonths: true,
-  max: true,
-})
+if (idioma == 0){
+    $('#f-hasta').pickadate({
+      format: 'dd/mm/yyyy',
+      formatSubmit:'dd/mm/yyyy',
+      selectYears: true,
+      selectMonths: true,
+      max: true,
+    });
+} else {
+    $('#f-hasta').pickadate({
+      format: 'yyyy/mm/dd',
+      formatSubmit:'dd/mm/yyyy',
+      selectYears: true,
+      selectMonths: true,
+      max: true,
+    });
+}
 
 //Resetear los filtros
 $('#cancelButton').on('click', function () {
@@ -190,7 +266,11 @@ $('#srchButton').on('click', function () {
     var ctaid = $('#Cuenta-sel').val().split("-")[0];
 
     if (ctaid<=0){
-      swal("Ups!", "Porfavor elija una cuenta primero.", "error");
+        if (idioma == 0){
+          swal("Ups!", "Por favor elija una cuenta primero.", "error");
+        } else {
+          swal("Ups!", "Select account first please.", "error");  
+        }
     }else{
 
       $('#processing-modal').modal('toggle');
@@ -216,8 +296,48 @@ $('#srchButton').on('click', function () {
         var id = '#filter-'+idaux;
 
         if (idaux==='monto'){
-            filterArray[0].push($('#monto-desde').val());
-            filterArray[0].push($('#monto-hasta').val());
+            if ($('#monto-desde').val() === "" || $('#monto-hasta').val() === "" ){
+                $('#processing-modal').modal('toggle');
+                if (idioma == 0){
+                    swal("Ups!", "Los montos deben tener valores asignados.", "error");
+                } else {
+                    swal("Ups!", "Amounts can not be empty.", "error");
+                }
+                centinela = false;
+            } else {
+                var p = chequearFornatoNumero($('#monto-desde').val());
+                var q = chequearFornatoNumero($('#monto-hasta').val());
+                if (p && q){
+                    if (idioma == 0){
+                        var desde = $('#monto-desde').val();
+                        var hasta = $('#monto-hasta').val();
+                    } else {
+                        var desde = $('#monto-desde').val().replace(",",".");
+                        var hasta = $('#monto-hasta').val().replace(",",".");
+                    }
+                    if (parseFloat(desde) > parseFloat(hasta)){
+                        if (idioma == 0){
+                            swal("Ups!", 'El monto "Desde" debe ser menor que el monto "Hasta".', "error");
+                        } else {
+                            swal("Ups!", '"Since" amount must be less than "Until" amount.', "error");
+                        }
+                        $('#processing-modal').modal('toggle');
+                        centinela = false;
+                    } else {
+                        filterArray[0].push(desde);
+                        filterArray[0].push(hasta);
+                        centinela = true;
+                    }
+                } else {
+                    if (idioma == 0){
+                        swal("Ups!", "Los montos no cumplen el formato", "error");
+                    } else {
+                        swal("Ups!", "Wrong amount format", "error");
+                    }
+                    $('#processing-modal').modal('toggle');
+                    centinela = false;
+                }
+            }
         }
 
         if (idaux==='ref'){
@@ -238,8 +358,52 @@ $('#srchButton').on('click', function () {
         if (idaux==='fecha'){
             var fd = $('#f-desde').val();
             var fh = $('#f-hasta').val();
-            filterArray[3].push(fd);
-            filterArray[3].push(fh);
+            var aux_fd ="";
+            var aux_fh ="";
+            if(fh==="" || fd===""){
+                $('#processing-modal').modal('toggle');
+                if (idioma == 0){
+                    swal("Ups!", "Las fechas no pueden estar vacías", "error");
+                } else {
+                    swal("Ups!", "Dates can not be empty.", "error");
+                }
+                centinela = false;
+                $('#f-desde').val('');
+                $('#f-hasta').val('');
+            } else{
+                if (idioma == 1){
+                    aux_fd = new Date(fd);
+                    aux_fh = new Date(fh);
+                } else {
+                    var aux1 = fd.split("/").reverse().join("/");
+                    var aux2 = fh.split("/").reverse().join("/");
+                    aux_fd = new Date(aux1);
+                    aux_fh = new Date(aux2);
+                }
+                if (aux_fd >= aux_fh){
+                    $('#processing-modal').modal('toggle');
+                    if (idioma == 0){
+                        swal("Ups!", 'La fecha "desde" debe ser menor que la fecha "hasta"', "error");
+                    } else {
+                        swal("Ups!", '"From" date must be less than "To" date', "error");
+                    }
+                    centinela = false;
+                    $('#f-desde').val('');
+                    $('#f-hasta').val('');
+                } else {
+                    if (idioma == 0){
+                        filterArray[3].push(fd);
+                        filterArray[3].push(fh);
+                        centinela = true;
+                    } else {
+                        var fd_en = fd.split("/").reverse().join("/");
+                        var fh_en = fh.split("/").reverse().join("/");
+                        filterArray[3].push(fd_en);
+                        filterArray[3].push(fh_en);
+                        centinela = true;
+                    }
+                }
+            }
         }
 
         if (idaux==='tipo'){
@@ -255,8 +419,10 @@ $('#srchButton').on('click', function () {
         }        
       });
 
-      //Llamar funcion de busqueda
-      busqueda(ctaid,filterArray);
+        if (centinela){
+          //Llamar funcion de busqueda
+          busqueda(ctaid,filterArray);
+        }
     }
 });
 
@@ -323,7 +489,11 @@ $('#checkAllButton').on('click', function () {
 //Verificar suma de montos y enviar tds
 $('#matchButton').on('click', function () {
     if (matchArray.length <2){
-        swal("","Debe elegir una pareja primero","error");
+        if (idioma == 0){
+          swal("", "Debe elegir una pareja primero.", "error");
+        } else {
+          swal("Ups!", "You must select a match couple first.", "error");  
+        }
     }else{
         
         var montocredito = 0.0;
@@ -351,18 +521,18 @@ $('#matchButton').on('click', function () {
         diferencia = 0;
 
         if (Math.round(diferencia) != 0.0){
-            if (idioma_tr === 'es'){
+            if (idiomaAux === 'es'){
                 var title = 'Montos Incorrectos:';
 
-                var msg = 'Créditos:\nTotal Créditos: '+ $.formatNumber(montocredito,{locale:idioma_tr});
-                msg += '\n\nDébitos:\nTotal Débitos: '+$.formatNumber((-montodebito),{locale:idioma_tr});
-                msg += '\n\nDiferencia: '+$.formatNumber(diferencia,{locale:idioma_tr});
-            }else if (idioma_tr === 'en'){
+                var msg = 'Créditos:\nTotal Créditos: '+ $.formatNumber(montocredito,{locale:idiomaAux});
+                msg += '\n\nDébitos:\nTotal Débitos: '+$.formatNumber((-montodebito),{locale:idiomaAux});
+                msg += '\n\nDiferencia: '+$.formatNumber(diferencia,{locale:idiomaAux});
+            }else if (idiomaAux === 'en'){
                 var title = 'Incorrect ammounts:';
 
-                var msg = 'Credits:\nCredits Total: '+ $.formatNumber(montocredito,{locale:idioma_tr});
-                msg += '\n\nDebits:\nDebits Total: '+$.formatNumber((-montodebito),{locale:idioma_tr});
-                msg += '\n\nDifference: '+$.formatNumber(diferencia,{locale:idioma_tr});
+                var msg = 'Credits:\nCredits Total: '+ $.formatNumber(montocredito,{locale:idiomaAux});
+                msg += '\n\nDebits:\nDebits Total: '+$.formatNumber((-montodebito),{locale:idiomaAux});
+                msg += '\n\nDifference: '+$.formatNumber(diferencia,{locale:idiomaAux});
             }
 
             swal({  title: title,
@@ -443,7 +613,11 @@ function busqueda(ctaid,filterArray){
         error: function(q,error){
             alert(q.responseText) //debug
             $('#processing-modal').modal('toggle');
-            swal("Ups!", "Hubo un error buscando las partidas para la cuenta especificada.", "error");
+            if (idioma == 0){
+                swal("Ups!", "Hubo un error buscando las partidas para la cuenta especificada.", "error");
+            } else {
+                swal("Ups!", "Error occured searching entries for the account.", "error");
+            }
         },
         dataType:'json',
         headers:{
@@ -470,7 +644,11 @@ function hacer_match(matchArray,justificacion){
         error: function(q,error){
             alert(q.responseText) //debug
             $('#processing-modal').modal('toggle');
-            swal("Ups!", "Hubo un error matcheando las partidas para la cuenta especificada.", "error");
+            if (idioma == 0){
+                swal("Ups!", "Hubo un error matcheando las partidas para la cuenta especificada.", "error");
+            } else {
+                swal("Ups!", "Error occurred matching entries for the account.", "error");     
+            }
         },
         dataType:'json',
         headers:{
@@ -575,7 +753,7 @@ function calcularfila(elem,tipo,edc){
     var td6 = '<td>' + vacio(elem.fields.referenciacorresponsal) + '</td>';
     var td7 = '<td>' + vacio(elem.fields.descripcion) + '</td>';
     var td8 = '<td class="cod">' + elem.fields.credito_debito + '</td>';
-    var td9 = '<td class="monto" monto="'+elem.fields.monto+'">' + $.formatNumber(elem.fields.monto,{locale:idioma_tr}) + '</td>';
+    var td9 = '<td class="monto" monto="'+elem.fields.monto+'">' + $.formatNumber(elem.fields.monto,{locale:idiomaAux}) + '</td>';
     if (tipo==='conta'){
         var td10 = '<td>L</td>';
     }else{
@@ -650,13 +828,23 @@ $('#crearMTButton').on('click', function () {
 });
 
 //Inicializar el DatePicker
-$('#f-desdeMT').pickadate({
-  format: 'd/m/yyyy',
-  formatSubmit:'d/m/yyyy',
-  selectYears: true,
-  selectMonths: true,
-  max: true,
-})
+if (idioma == 0){
+    $('#f-desdeMT').pickadate({
+      format: 'dd/mm/yyyy',
+      formatSubmit:'d/m/yyyy',
+      selectYears: true,
+      selectMonths: true,
+      max: true,
+    });
+} else {
+    $('#f-desdeMT').pickadate({
+      format: 'yyyy/mm/dd',
+      formatSubmit:'dd/mm/yyyy',
+      selectYears: true,
+      selectMonths: true,
+      max: true,
+    });
+}
 
 //Boton para crear MTn95
 $('#crearMT95Button').on('click', function () {
@@ -670,7 +858,6 @@ $('#crearMT95Button').on('click', function () {
     var original = $('#narrativa').val();
     var tipoOriginal = $('#claseOriginal').val();
     var pregunta = codigo2;
-    console.log(codigo + codigo2 + narrativa + pregunta);
     var transaccion = este.split('-')[1];
     var cuenta = $('#Cuenta-sel').val().split("-")[1];
     var clase = este.split('-')[2];
@@ -684,20 +871,40 @@ $('#crearMT95Button').on('click', function () {
             arregloFecha[1] = "0" + arregloFecha[1];
         }
 
-        fecha = arregloFecha[0]+"/"+arregloFecha[1]+"/"+arregloFecha[2];
-
+        if (idioma == 0){
+            fecha = arregloFecha[0]+"/"+arregloFecha[1]+"/"+arregloFecha[2];
+        } else {
+            fecha = arregloFecha[2]+"/"+arregloFecha[1]+"/"+arregloFecha[0];
+        }
     }
     if (ref_mensaje.length===0){
-        swal("Ups!","Debe colocar la referencia del mensaje.","error");
+        if (idioma == 0 ){
+            swal("Ups!","Debe colocar la referencia del mensaje.","error");    
+        } else {
+             swal("Ups!","Message reference can not be empty.","error");
+        }
     }else if(ref_mensaje_original.length===0){
-        swal("Ups!","Debe colocar la referencia del mensaje original","error");       
+        if (idioma == 0 ){
+            swal("Ups!","Debe colocar la referencia del mensaje original","error");
+        } else {
+             swal("Ups!","Original message reference can not be empty.","error");
+        }       
     }else if (codigo ===("-1")){
-        swal("Ups!","Debe seleccionar un codigo de Mensaje MT.","error");        
+        if (idioma == 0 ){
+            swal("Ups!","Debe seleccionar un codigo de Mensaje MT.","error");  
+         } else {
+             swal("Ups!","You must select a MT message code.","error");
+        }        
     }else{
 
+        if (idioma == 0){
+            msj ="¿Seguro que desea crear el mensaje MT?";
+        } else{
+            msj ="Sure you want to create MT message?";
+        }
         swal({
             title: "",
-            text: "¿Seguro que desea crear el mensaje MT?",
+            text: msj,
             type: "warning",
             showCancelButton: true,
             confirmButtonText: "Ok"},
@@ -719,7 +926,11 @@ function crearmt95(ref_mensaje,ref_mensaje_original,tipo,fecha,codigo,pregunta,n
         data: {"ref95":ref_mensaje, "refOrg95":ref_mensaje_original, "tipo95":tipo, "fecha95":fecha, "cod95":codigo, "preg95":pregunta, "narrativa95":narrativa, "original95":original, "transaccion":transaccion, "action":"crearMT95", "clase":clase, "cuenta":cuenta, "codigo2":codigo2, "tipoOriginal":tipoOriginal},
         success: function(data){
             $('#processing-modal').modal('toggle');
-            swal("OK", "Mensaje creado exitosamente", "success");
+            if (idioma == 0){
+                swal("OK", "Mensaje creado exitosamente", "success");
+            } else {
+                swal("OK", "Successful created message", "success");
+            }
             window.location.reload();
             
 
@@ -727,7 +938,11 @@ function crearmt95(ref_mensaje,ref_mensaje_original,tipo,fecha,codigo,pregunta,n
         error: function(jqXHR, error){ 
             alert(jqXHR.responseText) //debug
             $('#processing-modal').modal('toggle');
-            swal("Ups!", "Hubo un error al intertar crear el mensaje", "error");
+            if (idioma == 0){
+                swal("Ups!", "Hubo un error al intertar crear el mensaje", "error");
+            } else {
+                swal("OK", "Error occurred trying to create the message", "success");
+            }
         },
         dataType:'json',
         headers:{
@@ -757,3 +972,4 @@ $('#verMTButton').on('click', function () {
     //$('#processing-modal').modal('toggle');
     
 });
+
