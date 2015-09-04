@@ -3048,21 +3048,43 @@ def intraday(request,cuenta):
                             res = parseo756(elem,directorio)
                             
                             if(res[0] == "True"):
-                                print("True")
-                                
-                                #Mover archivo a procesado
-                                #pathsrc = direct 
-                                #nuevo = directorioSalida +"\\MT" + tipo[0]  
-                                
-                                #if not os.path.exists(nuevo):
-                                #    os.makedirs(nuevo)
-                                
-                                #pathdest = nuevo + '\\' + elem
-                                #shutil.move(pathsrc,pathdest)
+                                if (res[1]==""):
+                                    #Mover archivo a procesado
+                                    pathsrc = direct 
+                                    nuevo = directorioSalida +"\\MT" + tipo[0]  
+                                    
+                                    if not os.path.exists(nuevo):
+                                        os.makedirs(nuevo)
+                                    base, extension = os.path.splitext(elem)
+                                    fech = datetime.now().strftime("%d%m%Y_%H%M%S")
+                                    pathdest = nuevo + '\\' + base + "_" + fech +extension
+                                    
+                                    shutil.move(pathsrc,pathdest)
+                                else:
+                                    ##Mover archivo a errores
+                                    pathsrc = direct 
+                                    nuevo = directorioError +"\\VALIDACION"  
+                                    
+                                    if not os.path.exists(nuevo):
+                                        os.makedirs(nuevo)
+                                    pathdest = nuevo + '\\' + elem
+                                    
+                                    shutil.move(pathsrc,pathdest)
+                                    continue
                             else:
                                 exitoParseo = False
+                                #Mover archivo a errores
+                                pathsrc = direct 
+                                nuevo = directorioError +"\\FORMATO"  
+                                
+                                if not os.path.exists(nuevo):
+                                    os.makedirs(nuevo)
+                                pathdest = nuevo + '\\' + elem
+                                
+                                shutil.move(pathsrc,pathdest)
                                 msgParseo = res[1]
                                 continue
+
 
                         elif (tipo[0] == "942"):
                             
@@ -3121,6 +3143,7 @@ def transIntraday(request,cuenta):
     m103 = None
     m202 = None
     m942 = None
+    m756 = None
     errores = False
     archivosFormato = []
     archivosValidacion = []
@@ -3168,7 +3191,13 @@ def transIntraday(request,cuenta):
                     m202 = Mt202.objects.get(mensaje_intraday=mensaje.idmensaje) 
                     arregloMensajes.append(m202)
                 except:
-                    print("no")    
+                    print("no")
+            if mensaje.tipo == "756":
+                try:
+                    m756 = Mt756.objects.get(mensaje_intraday=mensaje.idmensaje) 
+                    arregloMensajes.append(m756)
+                except:
+                    print("no")   
             if mensaje.tipo == "942":
                 m942 = Mt942.objects.get(mensaje_intraday=mensaje.idmensaje) 
                 if m942:

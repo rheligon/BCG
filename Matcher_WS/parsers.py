@@ -1297,7 +1297,9 @@ def parseo756(archivo,directorio):
 	emisorRef20 = ""
 	refRel21 = ""
 	montoTotal32B = ""
-	montoReemb33A = ""
+	fechaValor33A = ""
+	moneda33A = ""
+	monto33A = ""			
 	emisorCorr53a = ""
 	receptorCorr54a = ""
 	info72 =""
@@ -1394,9 +1396,15 @@ def parseo756(archivo,directorio):
 				msg = "Caracter inesperado, en la línea número " +str(contador+1)+ " del archivo " + archivo
 				return ("error", msg)
 			else: 
-				montoReemb33A = contenidoLinea[5:]
-				print ("[33A]: ",montoReemb33A)
-
+				fechaValor33A = contenidoLinea[5:11]
+				fechaValor33A = datetime.strptime(fechaValor33A, "%y%m%d").date()
+				fechaValor33A = fechaValor33A.strftime("%d/%m/%Y")
+				moneda33A = contenidoLinea[11:14]
+				monto33A = contenidoLinea[14:]
+				print ("[33A]: ",fechaValor33A)
+				print ("[33A]: ",moneda33A)
+				print ("[33A]: ",monto33A)
+		
 		#caso para opcionales si existen
 		if (lineaAct == 8):
 			opcion0 = contenidoLinea[:4]
@@ -1537,7 +1545,46 @@ def parseo756(archivo,directorio):
 				opcionales = 0
 
 		if (finMensaje):
-			print("Fin del mensaje")
+			bic = Configuracion.objects.all()[0].bic
+			if (receptorR == bic):
+				io = "I"
+			elif (emisorS == bic):
+				io = "O"
+			else:
+				msg = "Este mensaje no nos pertenece"
+				return ("error", msg)
+
+			if (io =="I"):
+				cuenta = Cuenta.objects.filter(banco_corresponsal_idbanco__codigo = emisorS) 
+			elif (io =="O"):
+				cuenta = Cuenta.objects.filter(banco_corresponsal_idbanco__codigo = receptorR) 
+			
+			if cuenta:
+				monedaCta = cuenta[0].moneda_idmoneda.codigo
+				if(monedaCta != moneda33A):
+					observacion = "Moneda Invalida, la moneda proveniente del mensaje es : " + moneda33A + ", deberia ser : " + monedaCta + ", Archivo: " + archivo
+					vali = "vali"
+				fecha_entrada = timenow()
+				mensaje_intra = MensajesIntraday.objects.create(tipo = "756",cuenta = cuenta[0],fecha_entrada=fecha_entrada,i_o=io,observacion=observacion) 
+				mensaje = Mt756.objects.create(mensaje_intraday = mensaje_intra,fecha_valor = fechaValor33A, moneda = moneda33A,monto = monto33A,remitente = emisorS,receptor = receptorR, ref_remitente = emisorRef20,ref_banco_present = refRel21,moneda_monto = montoTotal32B, corresponsal_remitente = emisorCorr53a, corresponsal_receptor = receptorCorr54a,info_remitente_a_receptor = info72)
+			else:
+				msg = "No se posee cuenta donde procesar este mensaje"
+				return ("error", msg)
+
+			emisorS = ""
+			receptorR = ""
+			emisorRef20 = ""
+			refRel21 = ""
+			montoTotal32B = ""
+			fechaValor33A = ""
+			moneda33A = ""
+			monto33A = ""			
+			emisorCorr53a = ""
+			receptorCorr54a = ""
+			info72 =""
+			msg = ""
+			io=""
+			observacion = ""
 			finMensaje = False		
 
 		lineaAct += 1

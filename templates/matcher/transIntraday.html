@@ -1,7 +1,7 @@
 {% extends "matcher/base.html" %}
 {% load humanize %}
 {% load staticfiles %}
-
+{% load formatofecha %}
 {% block title %}Intraday (Detalle de Transacciones){% endblock %}
 
 {%block head%}
@@ -50,7 +50,7 @@
             <th>MT</th>
             <th>Débitos</th>
             <th>Créditos</th>
-            <th>Fecha Entrada</th>
+            <th>Fecha Entrada / Hora</th>
             <th>Fecha Valor</th>
             <th>Observaciones</th>
             
@@ -59,6 +59,7 @@
         </thead>
         <tbody id="tb-conta" style="height:400px;overflow-y: auto;overflow-x: hidden;">
           {% for mensaje in mensajes %}
+          <!--{{mensaje.mensaje_intraday.tipo}}-->
             {% if mensaje.mensaje_intraday.tipo == "103" %}
 
               <tr>
@@ -81,7 +82,7 @@
                   <td>{{mensaje.monto|intcomma|cut:"-"}}</td>
                   {% endif %}
                 {% endif %}
-                <td>{{mensaje.mensaje_intraday.fecha_entrada}}</td>
+                <td>{{mensaje.mensaje_intraday.fecha_entrada|formato24hrs}}</td>
                 <td>{{mensaje.fecha_valor}}</td>
                 <td>{{mensaje.mensaje_intraday.observacion}}</td>
               </tr>
@@ -106,7 +107,32 @@
                   <td>{{mensaje.monto|intcomma|cut:"-"}}</td>
                   {% endif %}
                 {% endif %}
-                <td>{{mensaje.mensaje_intraday.fecha_entrada}}</td>
+                <td>{{mensaje.mensaje_intraday.fecha_entrada|formato24hrs}}</td>
+                <td>{{mensaje.fecha_valor}}</td>
+                <td>{{mensaje.mensaje_intraday.observacion}}</td>
+              </tr>
+            {% elif mensaje.mensaje_intraday.tipo == "756"%}
+              <tr>
+                <td>{{mensaje.mensaje_intraday.i_o}}</td>
+                <td><a id="mostrar_info" value = "{{mensaje.mensaje_intraday.idmensaje}}" name="{{mensaje.mensaje_intraday.idmensaje}}" tipo="{{mensaje.mensaje_intraday.tipo}}" refRemit="{{mensaje.ref_remitente}}" refBanPre="{{mensaje.ref_banco_present}}" monedaMonto="{{mensaje.moneda_monto}}" corrRemit="{{mensaje.corresponsal_remitente}}" corrRecept="{{mensaje.corresponsal_receptor}}" infoRemitARecept="{{mensaje.info_remitente_a_receptor}}" remitente="{{mensaje.remitente}}" receptor="{{mensaje.receptor}}" fechaVal="{{mensaje.fecha_valor}}" moneda="{{mensaje.moneda}}" monto="{{mensaje.monto}}" data-toggle="modal" href="#myModal">{{mensaje.mensaje_intraday.tipo}}</a></td>
+                {% if mensaje.mensaje_intraday.i_o == "O" %}
+                  {% if mensaje.mensaje_intraday.observacion != "" %}
+                  <td></td>
+                  <td></td>
+                  {% else %}
+                  <td>{{mensaje.monto|intcomma|cut:"-"}}</td>
+                  <td></td>
+                  {% endif %}
+                {% elif mensaje.mensaje_intraday.i_o == "I"%}
+                  {% if mensaje.mensaje_intraday.observacion != "" %}
+                  <td></td>
+                  <td></td>
+                  {% else %}
+                  <td></td>
+                  <td>{{mensaje.monto|intcomma|cut:"-"}}</td>
+                  {% endif %}
+                {% endif %}
+                <td>{{mensaje.mensaje_intraday.fecha_entrada|formato24hrs}}</td>
                 <td>{{mensaje.fecha_valor}}</td>
                 <td>{{mensaje.mensaje_intraday.observacion}}</td>
               </tr>

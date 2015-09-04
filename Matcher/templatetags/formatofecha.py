@@ -1,10 +1,9 @@
 from django import template
 
-def formato(value):
-    if value is None:
-        return None
+def formato24hrs(value):
 
-    aux = str(value).split(".")
-    elemento = intPuntos(int(aux[0]))
-    elemento = str(elemento) + "," + aux[1]
-    return elemento
+    nuevaFecha = value.strftime("%d/%m/%Y %I:%M %p")
+    return nuevaFecha
+
+register = template.Library()
+register.filter('formato24hrs', formato24hrs)
