@@ -43,7 +43,7 @@ function formatdate(date) {
   if (idiomaAux==="es"){
     var strTime = fecha[2]+"/"+fecha[1]+"/"+fecha[0]+" "+hours + ':' + tiempo[1] + ':' + tiempo[2] + ' ' + ampm;
   }else{
-    var strTime = fecha[1]+"/"+fecha[2]+"/"+fecha[0]+" "+hours + ':' + tiempo[1] + ':' + tiempo[2] + ' ' + ampm;
+    var strTime = fecha[0]+"/"+fecha[1]+"/"+fecha[2]+" "+hours + ':' + tiempo[1] + ':' + tiempo[2] + ' ' + ampm;
   }
   return strTime;
 }
@@ -224,9 +224,15 @@ $('#SearchButton').on('click', function(event) {
                 centinela = false;
             } else{
                 if (horas!=0){
-                    var hd_aux = parseInt(hd.substring(0,1)+hd.substring(3,4));
-                    var hh_aux = parseInt(hh.substring(0,1)+hh.substring(3,4));
-                    if (hd_aux > hh_aux){
+                    var hd_aux = parseInt(hd.substring(0,2)+hd.substring(3,5));
+                    var hh_aux = parseInt(hh.substring(0,2)+hh.substring(3,5));
+                    if(hd.substring(6,8)==="PM"){
+                        hd_aux = hd_aux + 1200;
+                    }
+                    if(hh.substring(6,8)==="PM"){
+                        hh_aux = hh_aux + 1200;
+                    }
+                    if (fd == fh && hd_aux > hh_aux){
                         swal("Ups!", '"From" hour must be less or equal than "To" hour.', "error");
                         centinela = false;
                     } else if (hd==="" || hh==="") {
@@ -248,9 +254,15 @@ $('#SearchButton').on('click', function(event) {
                 centinela = false;
             } else{
                 if (horas!=0){
-                    var hd_aux = parseInt(hd.substring(0,1)+hd.substring(3,4));
-                    var hh_aux = parseInt(hh.substring(0,1)+hh.substring(3,4));
-                    if (hd_aux > hh_aux){
+                    var hd_aux = parseInt(hd.substring(0,2)+hd.substring(3,5));
+                    var hh_aux = parseInt(hh.substring(0,2)+hh.substring(3,5));
+                    if(hd.substring(6,8)==="PM"){
+                        hd_aux = hd_aux + 1200;
+                    }
+                    if(hh.substring(6,8)==="PM"){
+                        hh_aux = hh_aux + 1200;
+                    }
+                    if (fd == fh && hd_aux > hh_aux){
                         swal("Ups!", 'La hora desde debe ser menor o igual que la hora hasta.', "error");
                         centinela = false;
                     }else if (hd==="" || hh==="") {

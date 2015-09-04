@@ -8,7 +8,6 @@
 {% block title %}Matches Confirmados{% endblock %}
 
 {%block head%}
-<input type="text" id="idioma" value="{{idioma}}" hidden/>
 <!-- No hace falta cargar dataTables.css original si se incluye el de bootstrap -->
 <link rel="stylesheet" href="{% static 'css/dataTables/dataTables.bootstrap.css' %}">
 <link rel="stylesheet" href="{% static 'css/dataTables/dataTables.scroller.css' %}">
@@ -37,12 +36,19 @@ table {
   margin-top:2%;
 }
 </style>
-
+<input type="text" id="idioma" value="{{idioma}}" hidden/>
 {% if msg %}
   <div id="msgAlert" class="text-center col-md-10 col-md-push-1 alert alert-success" role="alert">
     <strong>{{msg}}</strong></div>
 {%endif%}
-
+<legend>
+    {%if idioma == 0%}
+        Matches Confirmados
+    {%endif%}
+    {%if idioma == 1%}
+        Confirmed Matches
+    {%endif%}
+</legend>
 <!-- Select Basic -->
 <div class="form-group col-md-12">
   <label class="col-md-3" for="Cuenta-sel">
