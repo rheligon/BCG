@@ -1071,6 +1071,8 @@ function buscarEstado(tipo,cuentaid,moneda){
             var tipo = data.tipo;
             var moneda = data.moneda;
             var json_data = jQuery.parseJSON(data.query);
+
+            console.log(json_data)
            
             if (json_data[carg].length>=1){
                   

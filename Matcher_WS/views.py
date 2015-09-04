@@ -28,7 +28,7 @@ from Matcher_WS.Matcher_call import matcher, dma_millis
 from Matcher_WS.funciones_get import get_ops, get_cuentas, get_ci, get_idioma, get_bancos, get_archivosMT99, get_archivosMT96, get_codigos95,elimina_tildes, get_archivosLicencia,verificarDirectorio, get_ldap
 from Matcher_WS.generar_reporte import generarReporte, pdfView, xlsView
 from Matcher_WS.setConsolidado import setConsolidado
-from Matcher_WS.parsers import parsearTipoMT,parseo103,parseo202,parseo942
+from Matcher_WS.parsers import parsearTipoMT,parseo103,parseo202,parseo756,parseo942
 
 import time
 import os
@@ -2885,8 +2885,9 @@ def intraday(request,cuenta):
 
     if request.method == 'GET':
         empresa = Empresa.objects.all()[0]
-        idioma = Configuracion.objects.all()[0].idioma    
-        context = {'idioma':idioma, 'cuentas':get_cuentas(request),'ops':get_ops(request),'empresa':empresa,'ldap':get_ldap(request)}
+        idioma = Configuracion.objects.all()[0].idioma 
+        tiempoAct = Configuracion.objects.all()[0].tiempointraday   
+        context = {'tiempoAct':tiempoAct,'idioma':idioma, 'cuentas':get_cuentas(request),'ops':get_ops(request),'empresa':empresa,'ldap':get_ldap(request)}
         template = "matcher/intraday.html"
 
         return render(request, template, context)
@@ -2896,12 +2897,15 @@ def intraday(request,cuenta):
 
         if actn == 'buscarConci':
             msg = ""
+            msgParseo = ""
+
+
             res = ""
             
             conciliacion = Conciliacionconsolidado.objects.filter(cuenta_idcuenta = cuenta)
             json_cons =""
-            exitoconci = False
-            exito = False
+            exitoconci = True
+            exito = True
             exitoParseo = True
             fecha = ""
             fechaActual = ""
@@ -2911,7 +2915,7 @@ def intraday(request,cuenta):
                 cons = conciliacion[0]
                 cuentaId = cons.cuenta_idcuenta
                 fecha = cuentaId.ultimafechaconciliacion.strftime("%d/%m/%Y")
-                fechaActual = datetime.now().strftime("%d/%m/%Y %H:%M %p")
+                fechaActual = datetime.now().strftime("%d/%m/%Y %I:%M %p")
                 bfcon = cons.balancefinalcontabilidad
                 bfcor = cons.balancefinalcorresponsal
                 scon = cons.saldocontabilidad
@@ -2960,21 +2964,32 @@ def intraday(request,cuenta):
                             res = parseo103(elem,directorio)
 
                             if(res[0] == "True"):
-                                print("True")
-                                #Mover archivo a procesado
-                                pathsrc = direct 
-                                nuevo = directorioSalida +"\\MT" + tipo[0]  
-                                
-                                if not os.path.exists(nuevo):
-                                    os.makedirs(nuevo)
+                                if (res[1]==""):
+                                    #Mover archivo a procesado
+                                    pathsrc = direct 
+                                    nuevo = directorioSalida +"\\MT" + tipo[0]  
+                                    
+                                    if not os.path.exists(nuevo):
+                                        os.makedirs(nuevo)
 
-                                base, extension = os.path.splitext(elem)
-                                fech = datetime.now().strftime("%d%m%Y_%H%M%S")
-                                pathdest = nuevo + '\\' + base + "_" + fech +extension
-                                shutil.move(pathsrc,pathdest)
+                                    base, extension = os.path.splitext(elem)
+                                    fech = datetime.now().strftime("%d%m%Y_%H%M%S")
+                                    pathdest = nuevo + '\\' + base + "_" + fech +extension
+                                    shutil.move(pathsrc,pathdest)
+                                else:
+                                    ##Mover archivo a errores
+                                    pathsrc = direct 
+                                    nuevo = directorioError +"\\VALIDACION"  
+                                    
+                                    if not os.path.exists(nuevo):
+                                        os.makedirs(nuevo)
+                                    pathdest = nuevo + '\\' + elem
+                                    
+                                    shutil.move(pathsrc,pathdest)
+                                    continue
                             else:
                                 exitoParseo = False
-                                msg = res[1]
+                                msgParseo = res[1]
                                 #Mover archivo a errores
                                 pathsrc = direct 
                                 nuevo = directorioError +"\\FORMATO"  
@@ -2991,19 +3006,29 @@ def intraday(request,cuenta):
                             res = parseo202(elem,directorio)
                             
                             if(res[0] == "True"):
-                                print("True")
-                                
-                                #Mover archivo a procesado
-                                pathsrc = direct 
-                                nuevo = directorioSalida +"\\MT" + tipo[0]  
-                                
-                                if not os.path.exists(nuevo):
-                                    os.makedirs(nuevo)
-                                base, extension = os.path.splitext(elem)
-                                fech = datetime.now().strftime("%d%m%Y_%H%M%S")
-                                pathdest = nuevo + '\\' + base + "_" + fech +extension
-                                
-                                shutil.move(pathsrc,pathdest)
+                                if (res[1]==""):
+                                    #Mover archivo a procesado
+                                    pathsrc = direct 
+                                    nuevo = directorioSalida +"\\MT" + tipo[0]  
+                                    
+                                    if not os.path.exists(nuevo):
+                                        os.makedirs(nuevo)
+                                    base, extension = os.path.splitext(elem)
+                                    fech = datetime.now().strftime("%d%m%Y_%H%M%S")
+                                    pathdest = nuevo + '\\' + base + "_" + fech +extension
+                                    
+                                    shutil.move(pathsrc,pathdest)
+                                else:
+                                    ##Mover archivo a errores
+                                    pathsrc = direct 
+                                    nuevo = directorioError +"\\VALIDACION"  
+                                    
+                                    if not os.path.exists(nuevo):
+                                        os.makedirs(nuevo)
+                                    pathdest = nuevo + '\\' + elem
+                                    
+                                    shutil.move(pathsrc,pathdest)
+                                    continue
                             else:
                                 exitoParseo = False
                                 #Mover archivo a errores
@@ -3015,7 +3040,28 @@ def intraday(request,cuenta):
                                 pathdest = nuevo + '\\' + elem
                                 
                                 shutil.move(pathsrc,pathdest)
-                                msg = res[1]
+                                msgParseo = res[1]
+                                continue
+
+                        elif (tipo[0] == "756"):
+                            
+                            res = parseo756(elem,directorio)
+                            
+                            if(res[0] == "True"):
+                                print("True")
+                                
+                                #Mover archivo a procesado
+                                #pathsrc = direct 
+                                #nuevo = directorioSalida +"\\MT" + tipo[0]  
+                                
+                                #if not os.path.exists(nuevo):
+                                #    os.makedirs(nuevo)
+                                
+                                #pathdest = nuevo + '\\' + elem
+                                #shutil.move(pathsrc,pathdest)
+                            else:
+                                exitoParseo = False
+                                msgParseo = res[1]
                                 continue
 
                         elif (tipo[0] == "942"):
@@ -3036,8 +3082,10 @@ def intraday(request,cuenta):
                                 #shutil.move(pathsrc,pathdest)
                             else:
                                 exitoParseo = False
-                                msg = res[1]
+                                msgParseo = res[1]
                                 continue
+
+
 
                     else:
                         exito = False
@@ -3053,7 +3101,7 @@ def intraday(request,cuenta):
                         shutil.move(pathsrc,pathdest)
                         continue
               
-            return JsonResponse({'exitoParseo':exitoParseo,'exitoconci':exitoconci,'msg':msg,'fecha':fecha,'fechaActual':fechaActual, 'exito':exito, 'cuenta': json_cuenta, 'cons':json_cons, 'cod': cod})
+            return JsonResponse({'exitoParseo':exitoParseo,'exitoconci':exitoconci,'msg':msg,'msgParseo':msgParseo,'fecha':fecha,'fechaActual':fechaActual, 'exito':exito, 'cuenta': json_cuenta, 'cons':json_cons, 'cod': cod})
 
 
 @login_required(login_url='/login')
@@ -3073,17 +3121,42 @@ def transIntraday(request,cuenta):
     m103 = None
     m202 = None
     m942 = None
+    errores = False
+    archivosFormato = []
+    archivosValidacion = []
     arregloMensajes = []
     cuentaId = Cuenta.objects.filter(idcuenta=cuenta)[0]
     fecha = cuentaId.ultimafechaconciliacion.strftime("%d/%m/%Y")
-    fechaActual = datetime.now().strftime("%d/%m/%Y %H:%M %p")
+    fechaActual = datetime.now().strftime("%d/%m/%Y %I:%M %p")
                 
     idioma = Configuracion.objects.all()[0].idioma
 
     mensajes = MensajesIntraday.objects.filter(cuenta=cuenta).order_by('fecha_entrada')
+    obj = Configuracion.objects.all()[0]
+    directorioFormato = obj.dirintradayerror +"\\FORMATO"
+    directorioValidacion = obj.dirintradayerror +"\\VALIDACION"
+
+    try:
+        archivosFormato = os.listdir(directorioFormato)
+    except OSError:
+        print("No existe")
+
+    
+    if archivosFormato:
+        errores = True
+
+    try:
+        archivosValidacion = os.listdir(directorioValidacion)
+    except OSError:
+        print("No existe")
+
+    
+    if archivosValidacion:
+        errores = True
 
     if mensajes:
         for mensaje in mensajes:
+
             if mensaje.tipo == "103":
                 try:
                     m103 = Mt103.objects.get(mensaje_intraday=mensaje.idmensaje) 
@@ -3102,7 +3175,7 @@ def transIntraday(request,cuenta):
                     arregloMensajes.append(m942)
                 
     
-    context = {'mensajes':arregloMensajes,'idioma':idioma,'ops':get_ops(request),'cuenta':cuentaId,'fecha':fecha , 'fechaActual':fechaActual}
+    context = {'mensajes':arregloMensajes,'errores':errores,'idioma':idioma,'ops':get_ops(request),'cuenta':cuentaId,'fecha':fecha , 'fechaActual':fechaActual}
     template = "matcher/transIntraday.html"
 
     return render(request, template, context)

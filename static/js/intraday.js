@@ -1,15 +1,57 @@
 
 var csrftoken = $.cookie('csrftoken');
 
-/*
-$( document ).ready(function() {
-		setInterval(function() {
-            console.log("hola")
-        }, 2000);	
+var tiempo = $('#tiempoAct').val();
+tiempo = parseInt(tiempo)*60000
+
+/*setInterval(function() {
+    $('#boton_go').attr("disabled", true);
+     var cuentaId = $('#Cuenta-sel').val();
+    console.log(cuentaId)
+    //si se selecciona una cuenta mostramos su info
+    if (cuentaId>=0){
+        var codigoCuenta = $('#opt-'+cuentaId).attr("codigo");
+        console.log(codigoCuenta)
+        $('a[name="boton_trans"]').attr('href','/transIntraday/'+cuentaId);
+        $('#processing-modal').modal('toggle');
+        buscarUltimaConciliacion(cuentaId)
     
-});*/
+    }else{
 
+        //borramos los campos
+        $('#fecha_conci').html("");
+        $('#fecha_tran').html("");
+        $('#fecha_actual').html("");
+                    
+        $('#sald_fin_conta').val("");
+        $('#cdFinConta').html("");
+        
+        $('#sald_fin_corr').val("");
+        $('#cdFinCorr').html("");
 
+        $('#sald_ini_conta').val("");
+        $('#cdIniConta').html("");
+        
+        $('#sald_ini_corr').val("");
+        $('#cdIniCorr').html("");
+        
+        $('#ced_corr_nodeb').val("");
+        $('#deb_corr_noacr').val("");
+        $('#ced_banco_nodeb').val("");
+        $('#deb_banco_noacr').val("");
+
+        $('#sald_tot_conta').val("");
+        $('#cdTotalConta').html("");
+
+        $('#sald_tot_corr').val("");  
+        $('#cdTotalCorr').html("");
+
+        $('#boton_go').attr("disabled", true);
+
+    }  
+}, tiempo);	
+    
+*/
 $( document ).ready(function() {
     var url = window.location.href;
     var path = window.location.pathname;
@@ -72,7 +114,7 @@ $( document ).ready(function() {
 
         $('#boton_go').attr("disabled", true);
 
-    }
+    }  
 });
 
 $('#Cuenta-sel').change(function() {
@@ -257,7 +299,7 @@ function buscarUltimaConciliacion(cuenta){
                 if(data.exitoParseo){
 
                 }else{
-                    swal("Ups!", data.msg, "error");
+                    swal("Ups!", data.msgParseo, "error");
                     console.log("segundo");
                 }
 

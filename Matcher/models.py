@@ -645,6 +645,24 @@ class Mt202(models.Model):
     class Meta:
         db_table = 'MT202'
 
+class Mt756(models.Model):
+    idmt756 = sqlserver_ado.fields.BigAutoField(db_column='idMT756', primary_key=True)  
+    ref_remitente = models.CharField(db_column='ref_remitente', max_length=16)  
+    ref_banco_present = models.CharField(db_column='ref_banco_present', max_length=16)  
+    moneda_monto = models.CharField(db_column='moneda_monto', max_length=18)  
+    corresponsal_remitente = models.CharField(db_column='corresponsal_remitente', max_length=200,null=True)  
+    corresponsal_receptor = models.CharField(db_column='corresponsal_receptor', max_length=200,null=True)  
+    info_remitente_a_receptor = models.CharField(db_column='info_remitente_a_receptor', max_length=250,null=True)
+    remitente = models.CharField(db_column='remitente', max_length=12)  
+    receptor = models.CharField(db_column='receptor', max_length=12) 
+    fecha_valor = models.CharField(db_column='fecha_valor', max_length=10)  
+    moneda = models.CharField(db_column='moneda', max_length=3)  
+    monto = models.CharField(db_column='monto', max_length=15)  
+    mensaje_intraday = models.ForeignKey(MensajesIntraday, db_column='mensaje_intraday')
+
+    class Meta:
+        db_table = 'MT756'
+
 class Mt942(models.Model):
     idmt942 = sqlserver_ado.fields.BigAutoField(db_column='idMT942', primary_key=True)  
     ref_transaccion = models.CharField(db_column='ref_transaccion', max_length=16)  
