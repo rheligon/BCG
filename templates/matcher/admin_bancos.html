@@ -13,9 +13,16 @@
 {%endblock%}
 
 {% block content %}
-
+<input type="text" id="idioma" value="{{idioma}}" hidden/>
+<legend>
+    {%if idioma == 0%}
+        Bancos
+    {%endif%}
+    {%if idioma == 1%}
+        Banks
+    {%endif%}
+</legend>
 <div class="table-responsive col-md-7">
-  <input type="text" id="idioma" value="{{idioma}}" hidden/>
     <table id="table-bancos" class="table table-bordered table-striped tabla">
         <thead>
             <tr>

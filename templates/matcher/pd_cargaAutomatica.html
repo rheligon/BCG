@@ -29,6 +29,14 @@ li {
 
 {% block content %}
 <input type="text" id="idioma" value="{{idioma}}" hidden/>
+<legend>
+    {%if idioma == 0%}
+        Carga Automática
+    {%endif%}
+    {%if idioma == 1%}
+        Automatic Input
+    {%endif%}
+</legend>
 <div class="well col-md-5">
   <legend>
     {%if idioma == 0%}

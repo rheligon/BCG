@@ -16,6 +16,14 @@
 
 {% block content %}
 <input type="text" id="idioma" value="{{idioma}}" hidden/>
+<legend>
+    {%if idioma == 0%}
+        Creiterios y Reglas del Sistema
+    {%endif%}
+    {%if idioma == 1%}
+        Criterias and System Rules
+    {%endif%}
+</legend>
 <div class="table-responsive col-md-10">
     <table id="table-criterios" class="table table-bordered table-striped tabla">
         <thead>

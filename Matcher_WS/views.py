@@ -3508,16 +3508,24 @@ def seg_Usuarios(request):
     expirarSesion(request)
     if request.method == "POST":
         actn = request.POST.get('action')
+        idioma = Configuracion.objects.all()[0].idioma 
 
         if actn == 'desb':
             sessid = request.POST.get('sessid')
-            msg = "Usuario desbloqueado exitosamente."
+            if idioma == 0:
+                msg = "Usuario desbloqueado exitosamente."
+            else:
+                msg = "Successfully unlocked user."
             try:
                 sesion = Sesion.objects.filter(idsesion=sessid)[0]
                 sesion.estado = "Activo"
                 sesion.save()
             except:
-                msg = "No se encontro la sesion especificada, asegurese de hacer click en el usuario desbloquear."
+                if idioma == 0:
+                    msg = "No se encontro la sesion especificada, asegurese de hacer click en el usuario desbloquear."
+                else:
+                    msg = "Session not found. Be sure to click an user first."
+
                 return JsonResponse({'msg': msg, 'desb': False})
 
             return JsonResponse({'msg': msg, 'sessid':sessid, 'desb': True})
@@ -3532,7 +3540,11 @@ def seg_Usuarios(request):
             return JsonResponse(res_json, safe=False)
 
         if actn == "pwd":
-            msg = "Contraseña modificada exitosamente."
+            if idioma == 0:
+                msg = "Contraseña modificada exitosamente."
+            else:
+                msg="Successfully modified password."
+
             pwd = request.POST.get('newpass')
             sessid = request.POST.get('sessid')
             newp = make_password(pwd, hasher='pbkdf2_sha1')
@@ -3543,7 +3555,11 @@ def seg_Usuarios(request):
                 sesion.pass_field = hashp
                 sesion.save()
             except:
-                msg = "No se pudo encontrar el usuario especificado."
+                if idioma == 0:
+                    msg = "No se pudo encontrar el usuario especificado."
+                else:
+                    msg = "User not found."
+
                 return JsonResponse({'msg': msg, 'pwd': False})
 
             user = User.objects.get(username=sesion.login)
@@ -3555,13 +3571,21 @@ def seg_Usuarios(request):
             return JsonResponse({'msg': msg, 'pwd': True})
 
         if actn == "del":
-            msg = "Usuario eliminado exitosamente."
+            if idioma == 0:
+                msg = "Usuario eliminado exitosamente."
+            else:
+                msg= "Successfully deleted user."
+
             sessid = request.POST.get('sessid')
 
             try:
                 sesion = Sesion.objects.filter(idsesion=sessid)
             except Sesion.DoesNotExist:
-                msg = "No se encontro la sesion especificada, asegurese de hacer click en el usuario a eliminar."
+                if idioma == 0:
+                    msg = "No se encontro la sesion especificada, asegurese de hacer click en el usuario a eliminar."
+                else:
+                    msg = "Session not found, be sure to click an user first."
+                    
                 return JsonResponse({'msg': msg, 'usrid': usrid, 'elim': False})
 
             django_usr = User.objects.get(username=sesion[0].login)
@@ -3612,7 +3636,11 @@ def seg_Usuarios(request):
                 usuario.observaciones = usrobs
                 usuario.save()
             except:
-                msg = "No se pudo crear el usuario especificado."
+                if idioma == 0:
+                    msg = "No se pudo crear el usuario especificado."
+                else:
+                    msg = "User not created."
+
                 return JsonResponse({'msg': msg, 'usrid': usuario.idusuario, 'add': False})
 
             # Crear sesion
@@ -3622,7 +3650,10 @@ def seg_Usuarios(request):
                 estadoAux = "Activo"
             sesion, creado = Sesion.objects.get_or_create(login=usrlogin, defaults={'usuario_idusuario':usuario, 'estado':estadoAux, 'fecha_registro':timenow(), 'conexion':0, 'ldap':usrldap, 'salt':salt, 'pass_field':hashp})
             if not creado:
-                msg = "No se pudo crear el usuario especificado, debido a que ese login ya existe para otro usuario."
+                if idioma == 0:
+                    msg = "No se pudo crear el usuario especificado, debido a que ese login ya existe para otro usuario."
+                else:
+                    msg = "User not created. Login already exist for other user."
                 usuario.delete()
                 return JsonResponse({'msg': msg, 'add': False})
 
@@ -3632,7 +3663,10 @@ def seg_Usuarios(request):
                     cuenta = Cuenta.objects.filter(pk=cuenta)[0]
                     UsuarioCuenta.objects.create(usuario_idusuario=usuario, cuenta_idcuenta=cuenta)
                 except:
-                    msg = "No se pudo crear el usuario con las cuentas especificadas."
+                    if idioma == 0:
+                        msg = "No se pudo crear el usuario con las cuentas especificadas."
+                    else:
+                        msg = "User not created with selected accounts."
                     return JsonResponse({'msg': msg, 'add': False})
 
             user, created = User.objects.get_or_create(username=usrlogin, defaults={'password':newp})
@@ -3656,8 +3690,10 @@ def seg_Usuarios(request):
             usrobs = request.POST.get('usrobs')
             usrctas = request.POST.getlist('usrctas[]')
             usrldap = request.POST.get('usrldap')
-            msg = "Usuario modificado exitosamente."
-
+            if idioma == 0:
+                msg = "Usuario modificado exitosamente."
+            else:
+                msg ="Successfully modified user."
             # Obtener cuentas asignadas
             cuentas_asig =[cta.split('-')[1] for cta in usrctas]
 
@@ -3669,7 +3705,10 @@ def seg_Usuarios(request):
                 # Buscar perfil asignados
                 perfil = Perfil.objects.filter(pk=usrperf)[0]
             except:
-                msg = "No se pudo modificar el usuario especificado."
+                if idioma == 0:
+                    msg = "No se pudo modificar el usuario especificado."
+                else:
+                    msg = "User not modified."
                 return JsonResponse({'msg': msg, 'modif': False})
 
             # Chequear si el usuario posee permiso para modificar los datos
@@ -3702,7 +3741,11 @@ def seg_Usuarios(request):
                         cuenta = Cuenta.objects.filter(pk=cuenta)[0]
                         UsuarioCuenta.objects.create(usuario_idusuario=usuario, cuenta_idcuenta=cuenta)
                     except:
-                        msg = "No se pudo crear el usuario con las cuentas especificadas."
+                        if idioma == 0:
+                            msg = "No se pudo crear el usuario con las cuentas especificadas."
+                        else:
+                            msg ="User not created with selected accounts."
+                            
                         return JsonResponse({'msg': msg, 'modif': False})
 
             # Para el log

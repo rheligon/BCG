@@ -1,5 +1,16 @@
-var tabla = iniciar_tabla(idioma_tr);
 var csrftoken = $.cookie('csrftoken');
+var idioma = $('#idioma').val();
+var idiomaAux = "";
+var msj ="";
+var centinela = true;
+
+if (idioma == 0){
+    idiomaAux = "es"
+} else {
+    idiomaAux = "en"
+}
+
+var tabla = iniciar_tabla(idiomaAux);
 
 function EmptyNotNone(s){
     if (s==="None"){
@@ -262,7 +273,11 @@ function cerrar_usr(sessId){
             alert(jqXHR.responseText) //debug
             $('#processing-modal').modal('toggle');
             $btn.button('reset');
-            swal("Ups!", "Hubo un error en la clave", "error");
+            if (idioma == 0){
+                swal("Ups!", "Hubo un error en la clave", "error");
+            } else {
+                swal("Ups!", "Error occurred", "error");
+            }
         },
         dataType:'json',
         headers:{
@@ -301,7 +316,11 @@ $('#contrRstButton').on('click', function(event) {
                 alert(jqXHR.responseText) //debug
                 $('#processing-modal').modal('toggle');
                 $btn.button('reset');
-                swal("Ups!", "Hubo un error en la clave", "error");
+               if (idioma == 0){
+                    swal("Ups!", "Hubo un error en la clave", "error");
+                } else {
+                    swal("Ups!", "Error occurred", "error");
+                }
             },
             dataType:'json',
             headers:{
@@ -321,9 +340,17 @@ $('#contrRstButton').on('click', function(event) {
         reset_pass(newpass,sessid);
     }else{
         if (sessid<0){
-            swal("Ups!","Elija un usuario primero para resetear su contraseña.","error");
+            if (idioma == 0){
+                swal("Ups!","Elija un usuario primero para resetear su contraseña.","error");
+            } else {
+                swal("Ups!","Ypu must select an user first.","error");
+            }
         }else{
-            swal("Ups!","Las contraseñas no coinciden.","error");
+            if (idioma == 0){
+                swal("Ups!","Las contraseñas no coinciden.","error");
+            } else {
+                swal("Ups!","Passwords does not mathc.","error");
+            }
         }
     }
 });
@@ -372,8 +399,13 @@ $('#delButton').on('click', function () {
     var usr_nom = $('#'+usr_elim).attr("login");
 
     if (usr_elim > 0){
+        if (idioma == 0){
+            msj ="Seguro que desea eliminar el usuario "+ usr_nom +" ?";
+        } else {
+            msj ="Sure you want delete the user " + usr_nom + " ?";
+        }
         swal({   title: "",
-             text: "Seguro que desea eliminar el usuario "+ usr_nom +" ?",
+             text: msj,
              type: "warning",
              showCancelButton: true,
              confirmButtonText: "Ok"},
@@ -384,7 +416,11 @@ $('#delButton').on('click', function () {
              }
              );
     }else{
-        swal("","Por favor seleccionar un usuario primero","error");
+        if (idioma == 0){
+            swal("","Por favor seleccionar un usuario primero","error");
+        } else {
+            swal("","Select an user first please.","error");    
+        }
     }
 })
 
@@ -409,7 +445,11 @@ $('#desbButton').on('click', function () {
         $('#processing-modal').modal('toggle');
         desb_usr(sessid);
     }else{
-        swal('Ups!','Por favor seleccione el usuario a desbloquear primero.','error');
+       if (idioma == 0){
+            swal("","Por favor seleccionar el usuario a desbloquear primero","error");
+        } else {
+            swal("","Select an user first please.","error");    
+        }
     }
 });
 
@@ -421,7 +461,11 @@ $('#logoutButton').on('click', function () {
         $('#processing-modal').modal('toggle');
         cerrar_usr(sessid);
     }else{
-        swal('Ups!','Por favor seleccione el usuario al que se desea cerrar la sesion primero.','error');
+        if (idioma == 0){
+            swal("","Por favor seleccionar el usuario al que se le cerrará la sesión primero","error");
+        } else {
+            swal("","Select an user first please.","error");    
+        }
     }
 });
 
@@ -530,7 +574,11 @@ $('#acptButton').on('click', function () {
             error: function(jqXHR, error){
                 alert(jqXHR.responseText) //debug
                 $('#processing-modal').modal('toggle');
-                swal("Ups!", "Hubo un error creando la cuenta especificada.", "error");
+                if (idioma == 0){
+                    swal("Ups!", "Hubo un error creando la cuenta especificada.", "error");
+                } else {
+                    swal("Ups!", "Error occurred cerating the account.", "error");    
+                }
             },
             dataType:'json',
             headers:{
@@ -564,8 +612,14 @@ $('#acptButton').on('click', function () {
     };
 
     if (a_perf>=0 && ((a_ldap === 0 && a_pass.length>0) || a_ldap === 1 ) && a_pass === a_pass2 && a_login.length>0 && a_login.length<=20 && a_nom.length>0 && a_nom.length<=20 && a_apell.length>0 && a_apell.length<=20 && a_ci.length>0 && a_ci.length<=20){
+        if (idioma == 0){
+                msj = "Seguro que desea agregar el usuario "+ a_login +" ?";
+            } else {
+                msj = "Sure you want add the user " +a_login+" ?";
+            }
         swal({   title: "",
-             text: "Seguro que desea agregar el usuario "+ a_login +" ?",
+            
+             text: msj,
              type: "warning",
              showCancelButton: true,
              confirmButtonText: "Ok"},
@@ -577,19 +631,47 @@ $('#acptButton').on('click', function () {
              );
     }else{
       if (a_nom.length===0 || a_nom.length>20){
-        swal("Ups!","Por favor colocar un nombre para el usuario con un máximo de 20 caracteres.","error");
+        if (idioma == 0) {
+            swal("Ups!","Por favor colocar un nombre para el usuario con un máximo de 20 caracteres.","error");
+        } else {
+            swal("Ups!","Introduce a name for the user with 20 maximun characters please.","error");    
+        }
       }else if(a_apell.length===0 || a_apell.length>20){
-        swal("Ups!","Por favor colocar un apellido para el usuario con un máximo de 20 caracteres.","error");
+        if (idioma == 0) {
+            swal("Ups!","Por favor colocar un apellido para el usuario con un máximo de 20 caracteres.","error");
+        } else {
+            swal("Ups!","Introduce a last name for the user with 20 maximun characters please.","error");    
+        }
       }else if(a_ci.length===0 || a_ci.length>20){
-        swal("Ups!","Por favor colocar la C.I para el usuario con un máximo de 20 caracteres.","error");
+        if (idioma == 0) {
+            swal("Ups!","Por favor colocar la C.I para el usuario con un máximo de 20 caracteres.","error");
+        } else {
+            swal("Ups!","Intrude an ID for the user with maximum 20 characters please.","error");
+        }
       }else if(a_perf<0){
-        swal("Ups!","Por favor elegir un perfil para el usuario.","error");
+        if (idioma == 0){
+            swal("Ups!","Por favor elegir un perfil para el usuario.","error");
+        } else {
+            swal("Ups!","Select a profile for the user please.","error");
+        }
       }else if(a_login.length===0 || a_login.length>20){
-        swal("Ups!","Por favor colocar un login para el usuario con un máximo de 20 caracteres.","error");
+        if (idioma == 0){
+            swal("Ups!","Por favor colocar un login para el usuario con un máximo de 20 caracteres.","error");
+        } else {
+            swal("Ups!","Introduce a login for the user with maximum 20 characters please.","error");
+        }
       }else if ( a_ldap === 0 & a_pass.length === 0){
-        swal("Ups!","Por favor introducir una contraseña.","error");
+        if (idioma == 0){
+            swal("Ups!","Por favor introducir una contraseña.","error");
+        } else {
+            swal("Ups!","Introduce a password please.","error");
+        }
       }else if (a_ldap === 0 & a_pass != a_pass2){
-        swal("Ups!","Las contraseñas no coinciden.","error");
+         if (idioma == 0){
+            swal("Ups!","Las contraseñas no coincides.","error");
+        } else {
+            swal("Ups!","Passwords does not match.","error");
+        }
       };
     }
 })
@@ -652,7 +734,11 @@ $('#updButton').on('click', function () {
             error: function(jqXHR, error){
                 alert(jqXHR.responseText) //debug
                 $('#processing-modal').modal('toggle');
-                swal("Ups!", "Hubo un error creando la cuenta especificada.", "error");
+                if (idioma == 0){
+                    swal("Ups!", "Hubo un error creando la cuenta especificada.", "error");
+                } else {
+                    swal("Ups!", "Error occurred creating account.", "error");
+                }
             },
             dataType:'json',
             headers:{
@@ -685,8 +771,13 @@ $('#updButton').on('click', function () {
     };
 
     if (a_perf>=0 && a_nom.length>0 && a_nom.length<=20 && a_apell.length>0 && a_apell.length<=20 && a_ci.length>0 && a_ci.length<=20){
+        if (idioma == 0){
+            msj ="Seguro que desea modificar el usuario "+ a_login +" ?";
+        } else {
+            msj ="Sure you want modify the user "+a_login+" ?";
+        }
         swal({   title: "",
-             text: "Seguro que desea modificar el usuario "+ a_login +" ?",
+             text: msj,
              type: "warning",
              showCancelButton: true,
              confirmButtonText: "Ok"},
@@ -698,13 +789,29 @@ $('#updButton').on('click', function () {
              );
     }else{
       if (a_nom.length===0 || a_nom.length>20){
-        swal("Ups!","Por favor colocar un nombre para el usuario con un máximo de 20 caracteres.","error");
+        if (idioma == 0){
+            swal("Ups!","Por favor colocar un nombre para el usuario con un máximo de 20 caracteres.","error");
+        } else{
+            swal("Ups!","Introduce a name for the user with maximun 20 characters please.","error");
+        }
       }else if(a_apell.length===0 || a_apell.length>20){
-        swal("Ups!","Por favor colocar un apellido para el usuario con un máximo de 20 caracteres.","error");
+        if (idioma == 0){
+            swal("Ups!","Por favor colocar un apellido para el usuario con un máximo de 20 caracteres.","error");
+        } else{
+            swal("Ups!","Introduce a last name for the user with maximun 20 characters please.","error");
+        }
       }else if(a_ci.length===0 || a_ci.length>20){
-        swal("Ups!","Por favor colocar la C.I para el usuario con un máximo de 20 caracteres.","error");
+        if (idioma == 0){
+            swal("Ups!","Por favor colocar la C.I para el usuario con un máximo de 20 caracteres.","error");
+        } else{
+            swal("Ups!","Introduce an ID for the user with maximun 20 characters please.","error");
+        }
       }else if(a_perf<0){
-        swal("Ups!","Por favor elegir un perfil para el usuario.","error");
+        if (idioma == 0){
+            swal("Ups!","Por favor elegir un perfil para el usuario.","error");
+        } else{
+            swal("Ups!","Select a profile for the user please.","error");
+        }
       };
     }
 })

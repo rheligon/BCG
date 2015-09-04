@@ -35,6 +35,14 @@ table {
     <strong>{{msg}}</strong></div>
 {%endif%}
 <input type="text" id="idioma" value="{{idioma}}" hidden/>
+<legend>
+    {%if idioma == 0%}
+        Matches Propuestos
+    {%endif%}
+    {%if idioma == 1%}
+        Proposed Matches
+    {%endif%}
+</legend>
 <!-- Select Basic -->
 <div class="form-group col-md-6 well">
   <label class="col-md-5" for="Cuenta-sel">
