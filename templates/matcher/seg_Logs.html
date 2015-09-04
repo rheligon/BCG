@@ -12,10 +12,21 @@
 {% endblock%}
 
 {% block content %}
+<input type="text" id="idioma" value="{{idioma}}" hidden/>
+<legend>
+  Logs
+</legend>
 <div class="col-md-12 well">
   <div class="col-md-5">
       <div class="form-group">
-        <label class="col-md-2 control-label">Desde:</label>
+        <label class="col-md-2 control-label">
+        {%if idioma == 0%}
+          Desde:
+        {%endif%}
+        {%if idioma == 1%}
+          From:
+        {%endif%}
+        </label>
         <div class="col-md-4"><input id="f-desde" class="form-control" data-value="{{fecha_hoy}}"></div>
         <div class="col-md-1"></div>
         <div class="bootstrap-timepicker col-md-4">
@@ -24,7 +35,14 @@
       </div>
 
       <div class="form-group" style="padding-top:7%;">
-        <label class="col-md-2 control-label">Hasta:</label>
+        <label class="col-md-2 control-label">
+          {%if idioma == 0%}
+            Hasta:
+          {%endif%}
+          {%if idioma == 1%}
+            To:
+          {%endif%}
+        </label>
         <div class="col-md-4"><input id="f-hasta" class="form-control" data-value="{{fecha_hoy}}"></div>
         <div class="col-md-1"></div>
         <div class="bootstrap-timepicker col-md-4">
@@ -36,7 +54,12 @@
         <br/><br/>
         <label for="bhoras">
           <input type="checkbox" name="bhoras" id="bhoras" value="1" checked>
-          Activar búsqueda por horas
+          {%if idioma == 0%}
+            Activar búsqueda por horas
+          {%endif%}
+          {%if idioma == 1%}
+            Activate search for hours
+          {%endif%}
         </label>
       </div>
   </div>
@@ -45,7 +68,12 @@
 
     <div class="form-group">
       <label class="col-md-2 control-label">
-          Usuario:
+          {%if idioma == 0%}
+            Usuario:
+          {%endif%}
+          {%if idioma == 1%}
+            User:
+          {%endif%}
       </label>
       <div class="col-md-10">
           <select id="usr-sel" name="usr-sel" class="form-control">
@@ -59,7 +87,12 @@
 
     <div class="form-group" style="padding-top:7%;">
       <label class="col-md-2 control-label">
-          Evento:
+          {%if idioma == 0%}
+            Evento:
+          {%endif%}
+          {%if idioma == 1%}
+            Event:
+          {%endif%}
       </label>
       <div class="col-md-10">
           <select id="ev-sel" name="ev-sel" class="form-control">
@@ -74,13 +107,23 @@
 
   <div class="col-md-2">
       <button type="button" name="Buscar" id="SearchButton" data-loading-text="Cargando..." class="col-md-7 btn btn-success" autocomplete="off">
-          Buscar
+          {%if idioma == 0%}
+            Buscar
+          {%endif%}
+          {%if idioma == 1%}
+            Search
+          {%endif%}
       </button>
   </div>
 
   <div class="col-md-2" style="padding-top:1%;">
       <button type="button" name="limpiar" id="cleanButton" class="col-md-7 btn btn-primary" autocomplete="off">
-          Limpiar
+          {%if idioma == 0%}
+            Limpiar
+          {%endif%}
+          {%if idioma == 1%}
+            Clean
+          {%endif%}
       </button>
   </div>
 </div>
@@ -89,11 +132,20 @@
     <table id="table-logs" class="table table-bordered table-striped tabla">
         <thead>
             <tr>
+              {%if idioma == 0%}
                 <th>Fecha y Hora</th>
                 <th>Usuario</th>
                 <th>Evento</th>
                 <th>Detalles</th>
                 <th>Terminal</th>
+              {%endif%}
+              {%if idioma == 1%}
+                <th>Date and hour</th>
+                <th>User</th>
+                <th>Event</th>
+                <th>Details</th>
+                <th>Terminal</th>
+              {%endif%}
             </tr>
         </thead>
         <tbody>
@@ -105,46 +157,81 @@
     <form class="form-horizontal">
     <fieldset>
         <!-- Form Name -->
-        <legend>Detalles:</legend>
+        <legend>
+          {%if idioma == 0%}
+            Detalles
+          {%endif%}
+          {%if idioma == 1%}
+            Details
+          {%endif%}
+        </legend>
 
         <div class="row clearfix">
             
             <div class="col-md-5">
               <div class="form-group">
-                <label class="col-md-4" for="fyh_detalle">Fecha y hora:</label>  
+                <label class="col-md-4" for="fyh_detalle">
+                  {%if idioma == 0%}
+                    Fecha y hora:
+                  {%endif%}
+                  {%if idioma == 1%}
+                    Date and hour:
+                  {%endif%}
+                </label>  
                 <div class="col-md-8 col-md-pull-1">
-                  <input id="fyh_detalle" name="fyh_detalle" type="text" class="form-control input-md">
+                  <input id="fyh_detalle" name="fyh_detalle" type="text" class="form-control input-md" readonly>
                 </div>
               </div>
 
               <div class="form-group" style="padding-top:1%;">
-                <label class="col-md-4" for="usr_detalle">Usuario:</label>  
+                <label class="col-md-4" for="usr_detalle">
+                  {%if idioma == 0%}
+                    Usuario:
+                  {%endif%}
+                  {%if idioma == 1%}
+                    Users:
+                  {%endif%}
+                </label>  
                 <div class="col-md-8 col-md-pull-1">
-                  <input id="usr_detalle" name="usr_detalle" type="text" class="form-control input-md">
+                  <input id="usr_detalle" name="usr_detalle" type="text" class="form-control input-md" readonly>
                 </div>
               </div>
             </div>
 
             <div class="col-md-6">
               <div class="form-group">
-                <label class="col-md-2" for="evento_detalle">Evento:</label>  
+                <label class="col-md-2" for="evento_detalle">
+                  {%if idioma == 0%}
+                    Evento:
+                  {%endif%}
+                  {%if idioma == 1%}
+                    Event:
+                  {%endif%}
+                </label>  
                 <div class="col-md-9">
-                  <input id="evento_detalle" name="evento_detalle" type="text" class="form-control input-md">
+                  <input id="evento_detalle" name="evento_detalle" type="text" class="form-control input-md" readonly>
                 </div>
               </div>
 
               <div class="form-group" style="padding-top:1%;">  
                 <label class="col-md-2" for="terminal_detalle">Terminal:</label>  
                 <div class="col-md-7">
-                  <input id="terminal_detalle" name="terminal_detalle" type="text" class="form-control input-md">
+                  <input id="terminal_detalle" name="terminal_detalle" type="text" class="form-control input-md" readonly>
                 </div>
               </div>
             </div>
 
             <div class="form-group col-md-12">
-              <label class="col-md-1">Detalles:</label>  
+              <label class="col-md-1">
+                {%if idioma == 0%}
+                    Detalles:
+                  {%endif%}
+                  {%if idioma == 1%}
+                    Details:
+                  {%endif%}
+              </label>  
               <div class="col-md-8">
-                <input id="detalles_detalle" name="detalles_detalles" type="text" class="form-control input-md">
+                <input id="detalles_detalle" name="detalles_detalles" type="text" class="form-control input-md" readonly>
               </div>
             </div>
         </div>            
@@ -161,7 +248,12 @@
             <div class="modal-body">
                 <div class="text-center">
                     <img src="{% static 'images/procesando.gif' %}" class="icon" />
-                    <h4>Procesando, por favor espere.</h4>
+                     {%if idioma == 0%}
+                      <h4>Procesando, por favor espere.</h4>
+                    {%endif%}
+                    {%if idioma == 1%}
+                      <h4>Processing, wait please.</h4>
+                    {%endif%}
                 </div>
             </div>
         </div>
@@ -171,10 +263,9 @@
 {% endblock%}
 
 {% block script %}
-
-<script> //define el idioma de la tabla (es/en)
-         idioma_tr = "es"
-         eventos = {{eventos_acc|safe}} </script>
+<script>
+  eventos = {{eventos_acc|safe}}
+</script>
 <script src="{% static 'js/jquery.dataTables.min.js' %}" type="text/javascript"></script>
 <script src="{% static 'js/dataTables.bootstrap.js' %}" type="text/javascript"></script>
 <script type="text/javascript" src="{% static 'js/sweet-alert.min.js' %}"></script>
