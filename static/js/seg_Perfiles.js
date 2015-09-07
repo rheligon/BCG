@@ -1,17 +1,37 @@
-var tabla = iniciar_tabla(idioma_tr);
 var csrftoken = $.cookie('csrftoken');
+var idioma = $('#idioma').val();
 
-var m2 = ['Mensajes SWIFT', 'Seguridad', 'Procesamiento Diario', 'Administración', 'Configuracion', 'Avanzados', 'Estadísticas'];
+if (idioma ==0) {
+    var m2 = ['Mensajes SWIFT', 'Seguridad', 'Procesamiento Diario', 'Administración', 'Configuracion', 'Avanzados', 'Estadísticas'];
+    var m3 = ['Enviar y Recibir MTn99', 'Enviar y Recibir MTn95/MTn96'];
+    var m4 = ['Parámetros Generales Matcher', 'Parámetros de la Empresa'];
+    var m5 = ['Insertar y Modificar Datos Laborales', 'Reset Contraseña', 'Agregar y Eliminar Usuario', 'Asignar Cuentas'];
+    var m10 = ['Configurar Parámetros Generales', 'Eliminar Cuenta', 'Configurar Alertas', 'Asignar Reglas de Transformación', 'Agregar Cuenta', 'Asignar Criterios de Match']
+} else {
+    var m2 = ['SWIFT Messages', 'Security', 'Daily Processing', 'Administration', 'Configuration', 'Advanced', 'Statistics'];
+    var m3 = ['Send an Receive MTn99', 'Send an Receive MTn95/MTn96'];
+    var m4 = ['Matcher General Parameters', 'Company Setting'];
+    var m5 = ['Insert and Modify Laboral Information', 'Password Reset', 'Add and Delete User', 'Assign Accounts'];
+    var m10 = ['Set General Parameters', 'Delete Account', 'Set Alerts', 'Assign Transformation Rules', 'Add Account', 'Assign Match Criteria']
+}
+
 var m2id = ["1","3","4","30","33","35","36"];
-var m3 = ['Enviar y Recibir MT99', 'Enviar y Recibir MT95/MT96'];
 var m3id = ["22","25"];
-var m4 = ['Parámetros Generales Matcher', 'Parámetros de la Empresa'];
 var m4id = ["11","29"];
-var m5 = ['Insertar y Modificar Datos Laborales', 'Reset Contraseña', 'Agregar y Eliminar Usuario', 'Asignar Cuentas'];
 var m5id= ["14","27","31","32"];
-var m10 = ['Configurar Parámetros Generales', 'Eliminar Cuenta', 'Configurar Alertas', 'Asignar Reglas de Transformación', 'Agregar Cuenta', 'Asignar Criterios de Match']
 var m10id = ["6","7","12","16","17","23"];
 
+var idiomaAux = "";
+var msj ="";
+var centinela = true;
+
+if (idioma == 0){
+    idiomaAux = "es"
+} else {
+    idiomaAux = "en"
+}
+
+var tabla = iniciar_tabla(idiomaAux);
 
 Array.prototype.diff = function(a) {
     return this.filter(function(i) {return a.indexOf(i) < 0;});
@@ -67,12 +87,39 @@ function clean_all(){
     $('#Id_perfil').val(-1);
     $('#perf-nom').val("");
 
-    $left.append('<li class="list-group-item subindex" sub="1" name="rep">Reportes</li>');
-    $left.append('<li class="list-group-item subindex" sub="1" name="MT">Mensajes SWIFT</li>');
-    $left.append('<li class="list-group-item subindex" sub="1" name="conf">Configuración</li>');
-    $left.append('<li class="list-group-item subindex" sub="1" name="musr">Manejo de Usuarios</li>');
-    $left.append('<li class="list-group-item subindex" sub="1" name="mcta">Manejo de Cuentas</li>');
-
+    if (idioma == 0){
+        if (!pertenece(subindex,2)){
+            $left.append('<li class="list-group-item subindex" sub="1" name="rep">Reportes</li>');
+        }
+        if (!pertenece(subindex,3)){
+            $left.append('<li class="list-group-item subindex" sub="1" name="MT">Mensajes SWIFT</li>');
+        }
+        if (!pertenece(subindex,4)){
+            $left.append('<li class="list-group-item subindex" sub="1" name="conf">Configuración</li>');
+        }
+        if (!pertenece(subindex,5)){
+            $left.append('<li class="list-group-item subindex" sub="1" name="musr">Manejo de Usuarios</li>');
+        }
+        if (!pertenece(subindex,10)){
+            $left.append('<li class="list-group-item subindex" sub="1" name="mcta">Manejo de Cuentas</li>');
+        }
+    } else {
+        if (!pertenece(subindex,2)){
+            $left.append('<li class="list-group-item subindex" sub="1" name="rep">Reports</li>');
+        }
+        if (!pertenece(subindex,3)){
+            $left.append('<li class="list-group-item subindex" sub="1" name="MT">SWIFT Messages</li>');
+        }
+        if (!pertenece(subindex,4)){
+            $left.append('<li class="list-group-item subindex" sub="1" name="conf">Configuration</li>');
+        }
+        if (!pertenece(subindex,5)){
+            $left.append('<li class="list-group-item subindex" sub="1" name="musr">Users Management</li>');
+        }
+        if (!pertenece(subindex,10)){
+            $left.append('<li class="list-group-item subindex" sub="1" name="mcta">Accounts Management</li>');    
+        }
+    }
     for (var i=0;i<nosub.length;i++){
         $left.append('<li class="list-group-item" sub="0" id="op-'+nosubid[i]+'">'+nosub[i]+'</li>');
     };
@@ -128,37 +175,97 @@ function get_func(perfId){
 
             if (funcs2.length>0){
                 $('#acc-rep').val(funcs2.join("-"));
-                $right.append('<li class="list-group-item subindex" sub="1" name="rep">Reportes</li>');
+                if (!pertenece(subindex,2)){
+                    if (idioma == 0){
+                        $right.append('<li class="list-group-item subindex" sub="1" name="rep">Reportes</li>');
+                    } else {
+                        $right.append('<li class="list-group-item subindex" sub="1" name="rep">Reports</li>');    
+                    }
+                }
             }else if (funcs2.length===0){
-                $left.append('<li class="list-group-item subindex" sub="1" name="rep">Reportes</li>');
+                if (!pertenece(subindex,2)){
+                    if (idioma == 0){
+                        $left.append('<li class="list-group-item subindex" sub="1" name="rep">Reportes</li>');
+                    } else {
+                        $left.append('<li class="list-group-item subindex" sub="1" name="rep">Reports</li>');
+                    }
+                }
             }
 
             if (funcs3.length>0){
                 $('#acc-MT').val(funcs3.join("-"));
-                $right.append('<li class="list-group-item subindex" sub="1" name="MT">Mensajes SWIFT</li>');
+                if (!pertenece(subindex,3)){
+                    if (idioma == 0){
+                        $right.append('<li class="list-group-item subindex" sub="1" name="MT">Mensajes SWIFT</li>');
+                    } else {
+                        $right.append('<li class="list-group-item subindex" sub="1" name="MT">SWIFT Messages</li>');
+                    }
+                }
             }else if (funcs3.length===0){
-                $left.append('<li class="list-group-item subindex" sub="1" name="MT">Mensajes SWIFT</li>');
+                if (!pertenece(subindex,3)){
+                    if (idioma == 0){
+                        $left.append('<li class="list-group-item subindex" sub="1" name="MT">Mensajes SWIFT</li>');
+                    } else {
+                        $left.append('<li class="list-group-item subindex" sub="1" name="MT">SWIFT Messages</li>');
+                    }
+                }
             }
 
             if (funcs4.length>0){
                 $('#acc-conf').val(funcs4.join("-"));
-                $right.append('<li class="list-group-item subindex" sub="1" name="conf">Configuración</li>');
+                if (!pertenece(subindex,4)){
+                    if (idioma == 0){
+                        $right.append('<li class="list-group-item subindex" sub="1" name="conf">Configuración</li>');
+                    } else {
+                         $right.append('<li class="list-group-item subindex" sub="1" name="conf">Configuratiom</li>');
+                    }
+                }
             }else if (funcs4.length===0){
-                $left.append('<li class="list-group-item subindex" sub="1" name="conf">Configuración</li>');
+                if (!pertenece(subindex,4)){
+                    if (idioma == 0){
+                        $left.append('<li class="list-group-item subindex" sub="1" name="conf">Configuración</li>');
+                    } else {
+                        $left.append('<li class="list-group-item subindex" sub="1" name="conf">Configuratiom</li>');
+                    }
+                }
             }
 
             if (funcs5.length>0){
                 $('#acc-musr').val(funcs5.join("-"));
-                $right.append('<li class="list-group-item subindex" sub="1" name="musr">Manejo de Usuarios</li>');
+                if (!pertenece(subindex,5)){
+                    if (idioma == 0){
+                        $right.append('<li class="list-group-item subindex" sub="1" name="musr">Manejo de Usuarios</li>');
+                    } else {
+                        $right.append('<li class="list-group-item subindex" sub="1" name="conf">Users Management</li>');
+                    }
+                }
             }else if (funcs5.length===0){
-                $left.append('<li class="list-group-item subindex" sub="1" name="musr">Manejo de Usuarios</li>');
+                if (!pertenece(subindex,5)){
+                    if (idioma == 0){
+                        $left.append('<li class="list-group-item subindex" sub="1" name="musr">Manejo de Usuarios</li>');
+                    } else {
+                        $left.append('<li class="list-group-item subindex" sub="1" name="conf">Users Management</li>');
+                    }
+                }
             }
 
             if (funcs10.length>0){
                 $('#acc-mcta').val(funcs10.join("-"));
-                $right.append('<li class="list-group-item subindex" sub="1" name="mcta">Manejo de Cuentas</li>');
+                if (!pertenece(subindex,10)){
+                    if (idioma == 0){
+                        $right.append('<li class="list-group-item subindex" sub="1" name="mcta">Manejo de Cuentas</li>');
+                    } else {
+                        $right.append('<li class="list-group-item subindex" sub="1" name="mcta">Accounts Management</li>');
+                    }
+                }
             }else if (funcs10.length===0){
-                $left.append('<li class="list-group-item subindex" sub="1" name="mcta">Manejo de Cuentas</li>');
+                if (!pertenece(subindex,10)){
+                    if (idioma == 0){
+                        $left.append('<li class="list-group-item subindex" sub="1" name="mcta">Manejo de Cuentas</li>');
+                    } else {
+                        $left.append('<li class="list-group-item subindex" sub="1" name="mcta">Accounts Management</li>');
+                    }
+                }
             }
 
             
@@ -179,9 +286,14 @@ function get_func(perfId){
 
             $('#processing-modal').modal('toggle');
         },
-        error: function(error){
+        error: function(jqXHR,error){
             $('#processing-modal').modal('toggle');
-            swal("Ups!", "Hubo un error buscando las funciones del perfil especificado.", "error");
+            alert(jqXHR.responseText) //debug
+            if (idioma == 0){
+                swal("Ups!", "Hubo un error buscando las funciones del perfil especificado.", "error");
+            } else {
+                swal("Ups!", "Error occurred searching functions.", "error");    
+            }
         },
         dataType:'json',
         headers:{
@@ -438,8 +550,13 @@ $('#delButton').on('click', function () {
     var nom = $('#perf-nom').val();
     var idp = $("#Id_perfil").val();
     if (idp>=0){
+        if (idioma == 0){
+            msj = "Seguro que desea eliminar el perfil "+ nom +" ?";
+        } else {
+            msj = "Sure you want delete profile"+nom+" ?";
+        }
         swal({   title: "",
-             text: "Seguro que desea eliminar el perfil "+ nom +" ?",
+             text: msj,
              type: "warning",
              showCancelButton: true,
              confirmButtonText: "Ok"},
@@ -450,7 +567,11 @@ $('#delButton').on('click', function () {
              }
              );
     }else{
-        swal("Ups!","Por favor seleccionar el perfil a eliminar previamente.","error");
+        if (idioma ==0){
+            swal("Ups!","Por favor seleccionar el perfil a eliminar previamente.","error");
+        } else {
+            swal("Ups!","Select a profile first please.","error");   
+        }
     }
 
 });
@@ -524,8 +645,13 @@ $('#acptButton').on('click', function () {
     });
 
     if (nom.length>0 && nom.length<50){
+        if (idioma == 0){
+            msj ="Seguro que desea agregar el perfil "+ nom +" ?";
+        } else {
+            msj ="Sure you want add profile "+ nom +" ?";
+        }
         swal({   title: "",
-             text: "Seguro que desea agregar el perfil "+ nom +" ?",
+             text: msj,
              type: "warning",
              showCancelButton: true,
              confirmButtonText: "Ok"},
@@ -537,9 +663,17 @@ $('#acptButton').on('click', function () {
              );
     }else{
         if (nom.length===0){
-            swal("Ups!","Por favor indicar un nombre para el perfil.","error");
+            if (idioma == 0){
+                swal("Ups!","Por favor indicar un nombre para el perfil.","error");
+            } else {
+                swal("Ups!","Introduce a profile name first please.","error");
+            }
         }else{
-            swal("Ups!","El nombre del perfil tiene un máximo de 50 caracteres.","error");
+            if (idioma == 0){
+                swal("Ups!","El nombre del perfil tiene un máximo de 50 caracteres.","error");
+             } else {
+                swal("Ups!","Profile name has a 50 characters maximum length.","error");
+            }
         }
     }
 });
@@ -609,8 +743,13 @@ $('#updButton').on('click', function () {
     };
 
     if (pId>=0 && nom.length>0 && nom.length<50){
+        if (idioma == 0){
+            msj ="Seguro que desea modificar el perfil "+ nom +" ?";
+        } else {
+            msj ="Sure you want modify profile "+ nom +" ?";
+        }
         swal({   title: "",
-             text: "Seguro que desea modificar el perfil "+ nom +" ?",
+             text: msj,
              type: "warning",
              showCancelButton: true,
              confirmButtonText: "Ok"},
@@ -622,11 +761,28 @@ $('#updButton').on('click', function () {
              );
     }else{
         if (pId<0){
-            swal("Ups!","Por favor elija el perfil a modificar.","error");
+            if (idioma == 0){
+                swal("Ups!","Por favor elija el perfil a modificar.","error");
+            } else {
+                swal("Ups!","Select a profile first please.","error");
+            }
         }else if (nom.length===0){
-            swal("Ups!","Por favor indicar un nombre para el perfil.","error");
+            if (idioma == 0){
+                swal("Ups!","Por favor indicar un nombre para el perfil.","error");
+            } else {
+                swal("Ups!","Introduce a profile name pelase.","error");
+            }
         }else{
-            swal("Ups!","El nombre del perfil tiene un máximo de 50 caracteres.","error");
+            if (idioma == 0){
+                swal("Ups!","El nombre del perfil tiene un máximo de 50 caracteres.","error");
+            } else {
+                swal("Ups!","Profile name has a 50 characters maximum length.","error");
+            }
         }
     }
 });
+
+//chequea pertenencia a rreglo de un elemento
+function pertenece(arr,obj) {
+    return (arr.indexOf(obj) != -1);
+};
