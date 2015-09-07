@@ -28,7 +28,7 @@ from Matcher_WS.Matcher_call import matcher, dma_millis
 from Matcher_WS.funciones_get import get_ops, get_cuentas, get_ci, get_idioma, get_bancos, get_archivosMT99, get_archivosMT96, get_codigos95,elimina_tildes, get_archivosLicencia,verificarDirectorio, get_ldap
 from Matcher_WS.generar_reporte import generarReporte, pdfView, xlsView
 from Matcher_WS.setConsolidado import setConsolidado
-from Matcher_WS.parsers import parsearTipoMT,parseo103,parseo202,parseo756,parseo942
+from Matcher_WS.parsers import parsearTipoMT,parseo103,parseo202,parseo752,parseo754,parseo756,parseo942
 
 import time
 import os
@@ -3044,6 +3044,91 @@ def intraday(request,cuenta):
                                 msgParseo = res[1]
                                 continue
 
+                        elif (tipo[0] == "752"):
+                            
+                            res = parseo752(elem,directorio)
+                            
+                            if(res[0] == "True"):
+                                if (res[1]==""):
+                                    #Mover archivo a procesado
+                                    pathsrc = direct 
+                                    nuevo = directorioSalida +"\\MT" + tipo[0]  
+                                    
+                                    if not os.path.exists(nuevo):
+                                        os.makedirs(nuevo)
+                                    base, extension = os.path.splitext(elem)
+                                    fech = datetime.now().strftime("%d%m%Y_%H%M%S")
+                                    pathdest = nuevo + '\\' + base + "_" + fech +extension
+                                    
+                                    shutil.move(pathsrc,pathdest)
+                                else:
+                                    ##Mover archivo a errores
+                                    pathsrc = direct 
+                                    nuevo = directorioError +"\\VALIDACION"  
+                                    
+                                    if not os.path.exists(nuevo):
+                                        os.makedirs(nuevo)
+                                    pathdest = nuevo + '\\' + elem
+                                    
+                                    shutil.move(pathsrc,pathdest)
+                                    continue
+                            else:
+                                exitoParseo = False
+                                #Mover archivo a errores
+                                pathsrc = direct 
+                                nuevo = directorioError +"\\FORMATO"  
+                                
+                                if not os.path.exists(nuevo):
+                                    os.makedirs(nuevo)
+                                pathdest = nuevo + '\\' + elem
+                                
+                                shutil.move(pathsrc,pathdest)
+                                msgParseo = res[1]
+                                continue
+
+
+                        elif (tipo[0] == "754"):
+                            
+                            res = parseo754(elem,directorio)
+                            
+                            if(res[0] == "True"):
+                                if (res[1]==""):
+                                    #Mover archivo a procesado
+                                    pathsrc = direct 
+                                    nuevo = directorioSalida +"\\MT" + tipo[0]  
+                                    
+                                    if not os.path.exists(nuevo):
+                                        os.makedirs(nuevo)
+                                    base, extension = os.path.splitext(elem)
+                                    fech = datetime.now().strftime("%d%m%Y_%H%M%S")
+                                    pathdest = nuevo + '\\' + base + "_" + fech +extension
+                                    
+                                    shutil.move(pathsrc,pathdest)
+                                else:
+                                    ##Mover archivo a errores
+                                    pathsrc = direct 
+                                    nuevo = directorioError +"\\VALIDACION"  
+                                    
+                                    if not os.path.exists(nuevo):
+                                        os.makedirs(nuevo)
+                                    pathdest = nuevo + '\\' + elem
+                                    
+                                    shutil.move(pathsrc,pathdest)
+                                    continue
+                            else:
+                                exitoParseo = False
+                                #Mover archivo a errores
+                                pathsrc = direct 
+                                nuevo = directorioError +"\\FORMATO"  
+                                
+                                if not os.path.exists(nuevo):
+                                    os.makedirs(nuevo)
+                                pathdest = nuevo + '\\' + elem
+                                
+                                shutil.move(pathsrc,pathdest)
+                                msgParseo = res[1]
+                                continue
+
                         elif (tipo[0] == "756"):
                             
                             res = parseo756(elem,directorio)
@@ -3144,6 +3229,8 @@ def transIntraday(request,cuenta):
     m103 = None
     m202 = None
     m942 = None
+    m752 = None
+    m754 = None
     m756 = None
     errores = False
     archivosFormato = []
@@ -3191,6 +3278,18 @@ def transIntraday(request,cuenta):
                 try:
                     m202 = Mt202.objects.get(mensaje_intraday=mensaje.idmensaje) 
                     arregloMensajes.append(m202)
+                except:
+                    print("no")
+            if mensaje.tipo == "752":
+                try:
+                    m752 = Mt752.objects.get(mensaje_intraday=mensaje.idmensaje) 
+                    arregloMensajes.append(m752)
+                except:
+                    print("no")
+            if mensaje.tipo == "754":
+                try:
+                    m754 = Mt754.objects.get(mensaje_intraday=mensaje.idmensaje) 
+                    arregloMensajes.append(m754)
                 except:
                     print("no")
             if mensaje.tipo == "756":

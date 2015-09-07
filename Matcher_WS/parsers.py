@@ -1267,6 +1267,820 @@ def parseo202(archivo,directorio):
 	return ("True",vali)
 
 
+def parseo752(archivo,directorio):
+	dirArch = directorio + "\\" + archivo
+
+	#abrir archivo
+	info = open(dirArch, 'r')
+
+	lines = info.readlines()
+	numLineas = len(lines)
+	for i in range(0,numLineas):
+		lines[i]=lines[i].strip()
+
+
+	lineaAct = 0
+	lineaAux = 0
+	contador = 0
+	opcionales = 0
+	largoMensajes = []
+	verificarOps = []
+	numLineasActual = 0
+
+	opcional = False
+	error = False
+	finMensaje = False
+	es72 = False
+	contenidoLinea = ""
+	mensajeTipoM = ""
+	emisorS = ""
+	receptorR = ""
+	emisorRef20 = ""
+	refRel21 = ""
+	id23 = ""
+	fecha30 = ""
+	montoTotal32B = ""
+	cargosDed71B = ""
+	fechaValor33A = ""
+	moneda33A = ""
+	monto33A = ""
+	emisorCorr53a = ""
+	receptorCorr54a = ""
+	info72 = ""
+	cuantos = 0
+	msg = ""
+	io=""
+	vali=""
+	observacion = ""
+
+	while contador < numLineas:
+
+		contenidoLinea = lines[contador]
+		#Caso para primera Linea $
+		if (lineaAct == 0):
+			opcion = contenidoLinea
+
+			if (opcion != "$"):
+				msg = "Caracter inesperado, en la línea número " +str(contador+1)+ " del archivo " + archivo
+				return ("error", msg)
+		
+		#Caso para Linea campo [M] Tipo de Mensaje
+		if (lineaAct == 1):
+			opcion = contenidoLinea[:3] 
+			
+			if (opcion != "[M]"):
+				msg = "Caracter inesperado, en la línea número " +str(contador+1)+ " del archivo " + archivo
+				return ("error", msg)
+			else:
+				mensajeTipoM = contenidoLinea[3:]
+				print ("[M]: ",mensajeTipoM)
+
+		#Caso para Linea campo [S] Emisor
+		if (lineaAct == 2):
+			opcion = contenidoLinea[:3] 
+			
+			if (opcion != "[S]"):
+				msg = "Caracter inesperado, en la línea número " +str(contador+1)+ " del archivo " + archivo
+				return ("error", msg)
+			else:
+				emisorS = contenidoLinea[3:]
+				print ("[S]: ",emisorS)
+
+		#Caso para Linea campo [R] Receptor
+		if (lineaAct == 3):
+			opcion = contenidoLinea[:3] 
+			
+			if (opcion != "[R]"):
+				msg = "Caracter inesperado, en la línea número " +str(contador+1)+ " del archivo " + archivo
+				return ("error", msg)
+			else:
+				receptorR = contenidoLinea[3:]
+				print ("[R]: ",receptorR)
+
+		#Caso para Linea campo [20]
+		if (lineaAct == 4):
+			opcion = contenidoLinea[:4] 
+			
+			if (opcion != "[20]"):
+				msg = "Caracter inesperado, en la línea número " +str(contador+1)+ " del archivo " + archivo
+				return ("error", msg)
+			else:
+				emisorRef20 = contenidoLinea[4:]
+				print ("[20]: ",emisorRef20)
+		
+		#Caso para Campo [21] 
+		if (lineaAct == 5):
+			opcion = contenidoLinea[:4]  
+			
+			if (opcion != "[21]"):
+				msg = "Caracter inesperado, en la línea número " +str(contador+1)+ " del archivo " + archivo
+				return ("error", msg)
+			else:
+				refRel21 = contenidoLinea[4:]
+				print ("[21]: ",refRel21)
+		
+		#Caso para Linea campo [23] 
+		if (lineaAct == 6):
+			
+			opcion = contenidoLinea[:4]
+		
+			if (opcion != "[23]"): 
+				msg = "Caracter inesperado, en la línea número " +str(contador+1)+ " del archivo " + archivo
+				return ("error", msg)
+			else: 
+				id23 = contenidoLinea[4:]
+				print ("[23]: ",id23)
+
+		#Caso para Linea campo [30] 
+		if (lineaAct == 7):
+			
+			opcion = contenidoLinea[:4]
+		
+			if (opcion != "[30]"): 
+				msg = "Caracter inesperado, en la línea número " +str(contador+1)+ " del archivo " + archivo
+				return ("error", msg)
+			else: 
+				fecha30 = contenidoLinea[4:]
+				fecha30 = datetime.strptime(fecha30, "%y%m%d").date()
+				fecha30 = fecha30.strftime("%d/%m/%Y")
+				print ("[30]: ",fecha30)
+
+		#caso para opcionales si existen
+		if (lineaAct == 8):
+			opcion0 = contenidoLinea[:4]
+			opcion1 = contenidoLinea[:5]
+			verificarOps = ["[32B]","[71B]","[33A]","[33B]","[53A]","[53B]","[53D]","[54A]","[54B]","[54D]","[72]"]
+
+
+			while (opcion0 == "[72]" or opcion1 == "[32B]" or opcion1 == "[33A]" or opcion1 == "[33B]" or opcion1 == "[53A]" or opcion1 == "[53B]" or opcion1 == "[53D]" or opcion1 == "[54A]" or opcion1 == "[54B]" or opcion1 == "[54D]" or opcion1 == "[71B]"  ):
+				if (opcion0 == "[72]"):
+					es72 = True
+				if (es72):			
+					if(opcion0 not in verificarOps):
+						msg = "Caracter inesperado, en la línea número " +str(contador+1)+ " del archivo " + archivo
+						return ("error", msg)
+				else: 
+					if(opcion1 not in verificarOps):
+						msg = "Caracter inesperado, en la línea número " +str(contador+1)+ " del archivo " + archivo
+						return ("error", msg)	
+				if (opcion1 == "[32B]"):
+					montoTotal32B = contenidoLinea[5:]
+					print ("[32B]: ",montoTotal32B)
+				if (opcion1 == "[71B]"):
+					cargosDed71B = contenidoLinea[5:]
+					contenidoLinea = lines[contador+1]
+					opcion3 = contenidoLinea[:5]
+					opcion2 = contenidoLinea[:4]
+					while (opcion2 != "[72]" and opcion3 != "[33A]" and opcion3 != "[33B]" and opcion3 != "[53A]" and opcion3 != "[53B]" and opcion3 != "[53D]" and opcion3 != "[54A]" and opcion3 != "[54B]" and opcion3 != "[54D]" and opcion3 != "@@"):
+						cargosDed71B = cargosDed71B+"\n"+contenidoLinea
+						lineaAct += 1
+						contador += 1
+						opcionales +=1
+						contenidoLinea = lines[contador+1]
+						opcion3 = contenidoLinea[:5]
+						opcion2 = contenidoLinea[:4]
+					
+					print ("[71B]: ",cargosDed71B)
+				if (opcion1 == "[33A]"):
+					cuantos = 1
+					fechaValor33A = contenidoLinea[5:11]
+					fechaValor33A = datetime.strptime(fechaValor33A, "%y%m%d").date()
+					fechaValor33A = fechaValor33A.strftime("%d/%m/%Y")
+					moneda33A = contenidoLinea[11:14]
+					monto33A = contenidoLinea[14:]
+					print ("[33A]: ",fechaValor33A)
+					print ("[33A]: ",moneda33A)
+					print ("[33A]: ",monto33A)
+				if (opcion1 == "[33B]"):
+					moneda33A = contenidoLinea[5:8]
+					monto33A = contenidoLinea[8:]
+					print ("[33B]: ",moneda33A)
+					print ("[33B]: ",monto33A)
+				if (opcion1 == "[53A]"):
+					emisorCorr53a = opcion1 + contenidoLinea[5:]
+					cuantos = 2
+					contenidoLinea = lines[contador+1]
+					opcion2 = contenidoLinea[:5]
+					opcion3 = contenidoLinea[:4]
+					
+					while (opcion2 != "[54A]" and opcion2 != "[54B]" and opcion2 != "[54D]" and opcion3 != "[72]" and opcion3 != "@@"):
+						emisorCorr53a = emisorCorr53a+"\n"+contenidoLinea
+						lineaAct += 1
+						contador += 1
+						opcionales +=1
+						contenidoLinea = lines[contador+1]
+						opcion2 = contenidoLinea[:5]
+						opcion3 = contenidoLinea[:4]
+					
+					print ("[53A]: ",emisorCorr53a)
+				if (opcion1 == "[53B]"):
+					emisorCorr53a = opcion1 + contenidoLinea[5:]
+					cuantos = 1
+					contenidoLinea = lines[contador+1]
+					opcion2 = contenidoLinea[:5]
+					opcion3 = contenidoLinea[:4]
+					
+					while (opcion2 != "[54A]" and opcion2 != "[54B]" and opcion2 != "[54D]" and opcion3 != "[72]" and opcion3 != "@@"):
+						emisorCorr53a = emisorCorr53a+"\n"+contenidoLinea
+						lineaAct += 1
+						contador += 1
+						opcionales +=1
+						contenidoLinea = lines[contador+1]
+						opcion2 = contenidoLinea[:5]
+						opcion3 = contenidoLinea[:4]
+					print ("[53B]: ",emisorCorr53a)
+				if (opcion1 == "[53D]"):
+					emisorCorr53a = opcion1 + contenidoLinea[5:]
+					contenidoLinea = lines[contador+1]
+					opcion2 = contenidoLinea[:5]
+					opcion3 = contenidoLinea[:4]
+					
+					while (opcion2 != "[54A]" and opcion2 != "[54B]" and opcion2 != "[54D]" and opcion3 != "[72]" and opcion3 != "@@"):
+						emisorCorr53a = emisorCorr53a+"\n"+contenidoLinea
+						lineaAct += 1
+						contador += 1
+						opcionales +=1
+						contenidoLinea = lines[contador+1]
+						opcion2 = contenidoLinea[:5]
+						opcion3 = contenidoLinea[:4]
+					print ("[53D]: ",emisorCorr53a)
+				if (opcion1 == "[54A]"):
+					receptorCorr54a = opcion1 + contenidoLinea[5:]
+					cuantos = 2
+					contenidoLinea = lines[contador+1]
+					opcion3 = contenidoLinea[:4]
+					
+					while (opcion3 != "[72]" and opcion3 != "@@"):
+						receptorCorr54a = receptorCorr54a+"\n"+contenidoLinea
+						lineaAct += 1
+						contador += 1
+						opcionales +=1
+						contenidoLinea = lines[contador+1]
+						opcion3 = contenidoLinea[:4]
+					print ("[54A]: ",receptorCorr54a)
+				if (opcion1 == "[54B]"):
+					receptorCorr54a = opcion1 + contenidoLinea[5:]
+					cuantos = 1
+					contenidoLinea = lines[contador+1]
+					opcion3 = contenidoLinea[:4]
+					
+					while (opcion3 != "[72]" and opcion3 != "@@"):
+						receptorCorr54a = receptorCorr54a+"\n"+contenidoLinea
+						lineaAct += 1
+						contador += 1
+						opcionales +=1
+						contenidoLinea = lines[contador+1]
+						opcion3 = contenidoLinea[:4]
+					print ("[54B]: ",receptorCorr54a)
+				if (opcion1 == "[54D]"):
+					receptorCorr54a = opcion1 + contenidoLinea[5:]
+					contenidoLinea = lines[contador+1]
+					opcion3 = contenidoLinea[:4]
+					
+					while (opcion3 != "[72]" and opcion3 != "@@"):
+						receptorCorr54a = receptorCorr54a+"\n"+contenidoLinea
+						lineaAct += 1
+						contador += 1
+						opcionales +=1
+						contenidoLinea = lines[contador+1]
+						opcion3 = contenidoLinea[:4]
+					print ("[54D]: ",receptorCorr54a)
+				if (opcion0 == "[72]"):
+					info72 = contenidoLinea[4:]
+					contenidoLinea = lines[contador+1]
+					opcion3 = contenidoLinea[:2]
+					
+					while (opcion3 != "@@"):
+						info72 = info72+"\n"+contenidoLinea
+						lineaAct += 1
+						contador += 1
+						opcionales +=1
+						contenidoLinea = lines[contador+1]
+						opcion3 = contenidoLinea[:2]
+					print ("[72]: ",info72)
+				if (es72):
+					indice = verificarOps.index(opcion0)
+					verificarOps = verificarOps[indice+1:]
+				else:
+					indice = verificarOps.index(opcion1)
+					sumaT = cuantos + indice + 1
+					verificarOps = verificarOps[sumaT:]
+				lineaAct += 1
+				contador += 1
+				opcionales +=1
+				contenidoLinea = lines[contador]
+				opcion0 = contenidoLinea[:4]
+				opcion1 = contenidoLinea[:5]
+				es72 = False
+				cuantos = 0
+
+			if (opcion0 != "@@"): 
+				msg = "Caracter inesperado, en la línea número " +str(contador+1)+ " del archivo " + archivo
+				return ("error", msg)
+			else: 
+				finMensaje =True
+				largoMensajes.append(lineaAct+1)
+				numLineasActual = sumaLineas(largoMensajes)
+				lineaAct = contador - numLineasActual
+				opcionales = 0
+
+		if (finMensaje):
+			bic = Configuracion.objects.all()[0].bic
+			if (receptorR == bic):
+				io = "I"
+			elif (emisorS == bic):
+				io = "O"
+			else:
+				msg = "Este mensaje no nos pertenece"
+				return ("error", msg)
+
+			if (io =="I"):
+				cuenta = Cuenta.objects.filter(banco_corresponsal_idbanco__codigo = emisorS) 
+			elif (io =="O"):
+				cuenta = Cuenta.objects.filter(banco_corresponsal_idbanco__codigo = receptorR) 
+			
+			if cuenta:
+				#monedaCta = cuenta[0].moneda_idmoneda.codigo
+				#if(monedaCta != moneda33A):
+					#observacion = "Moneda Invalida, la moneda proveniente del mensaje es : " + moneda33A + ", deberia ser : " + monedaCta + ", Archivo: " + archivo
+					#vali = "vali"
+				fecha_entrada = timenow()
+				mensaje_intra = MensajesIntraday.objects.create(tipo = "752",cuenta = cuenta[0],fecha_entrada=fecha_entrada,i_o=io,observacion=observacion) 
+				mensaje = Mt752.objects.create(mensaje_intraday = mensaje_intra,fecha_valor = fechaValor33A, moneda = moneda33A,monto = monto33A,remitente = emisorS,receptor = receptorR, num_credito = emisorRef20,ref_banco_present = refRel21,proposito = id23, fecha_aviso = fecha30, monto_total = montoTotal32B, cargos_deducidos = cargosDed71B,corresponsal_remitente = emisorCorr53a, corresponsal_receptor = receptorCorr54a,info_remitente_a_receptor = info72)
+			else:
+				msg = "No se posee cuenta donde procesar este mensaje"
+				return ("error", msg)
+			emisorS = ""
+			receptorR = ""
+			emisorRef20 = ""
+			refRel21 = ""
+			id23 = ""
+			fecha30 = ""
+			montoTotal32B = ""
+			cargosDed71B = ""
+			emisorCorr53a = ""
+			receptorCorr54a = ""
+			info72 = ""
+			fechaValor33A = ""
+			moneda33A = ""
+			monto33A = ""
+			msg = ""
+			io=""
+			observacion = ""
+			finMensaje = False	
+
+		lineaAct += 1
+		contador += 1
+
+	#cerrar archivo
+	info.close()
+	return ("True",vali)
+
+
+
+def parseo754(archivo,directorio):
+	dirArch = directorio + "\\" + archivo
+
+	#abrir archivo
+	info = open(dirArch, 'r')
+
+	lines = info.readlines()
+	numLineas = len(lines)
+	for i in range(0,numLineas):
+		lines[i]=lines[i].strip()
+
+
+
+	lineaAct = 0
+	lineaAux = 0
+	contador = 0
+	opcionales = 0
+	largoMensajes = []
+	verificarOps = []
+	numLineasActual = 0
+
+	opcional = False
+	error = False
+	finMensaje = False
+	es72 = False
+	contenidoLinea = ""
+	mensajeTipoM = ""
+	emisorS = ""
+	receptorR = ""
+	emisorRef20 = ""
+	refRel21 = ""
+	fechaValor32 = ""
+	moneda32 = ""
+	monto32 = ""
+	montoT =""
+	montoAdic33B = ""
+	montoDed71B = ""
+	cargosAdd73 = ""
+	reemBank53a = ""
+	cuentaBank57a = ""
+	beneBank58a = ""
+	info72 =""
+	narrativa77A = ""
+
+	cuantos = 0
+	msg = ""
+	io=""
+	vali=""
+	observacion = ""
+
+	while contador < numLineas:
+
+		contenidoLinea = lines[contador]
+		#Caso para primera Linea $
+		if (lineaAct == 0):
+			opcion = contenidoLinea
+
+			if (opcion != "$"):
+				msg = "Caracter inesperado, en la línea número " +str(contador+1)+ " del archivo " + archivo
+				return ("error", msg)
+		
+		#Caso para Linea campo [M] Tipo de Mensaje
+		if (lineaAct == 1):
+			opcion = contenidoLinea[:3] 
+			
+			if (opcion != "[M]"):
+				msg = "Caracter inesperado, en la línea número " +str(contador+1)+ " del archivo " + archivo
+				return ("error", msg)
+			else:
+				mensajeTipoM = contenidoLinea[3:]
+				print ("[M]: ",mensajeTipoM)
+
+		#Caso para Linea campo [S] Emisor
+		if (lineaAct == 2):
+			opcion = contenidoLinea[:3] 
+			
+			if (opcion != "[S]"):
+				msg = "Caracter inesperado, en la línea número " +str(contador+1)+ " del archivo " + archivo
+				return ("error", msg)
+			else:
+				emisorS = contenidoLinea[3:]
+				print ("[S]: ",emisorS)
+
+		#Caso para Linea campo [R] Receptor
+		if (lineaAct == 3):
+			opcion = contenidoLinea[:3] 
+			
+			if (opcion != "[R]"):
+				msg = "Caracter inesperado, en la línea número " +str(contador+1)+ " del archivo " + archivo
+				return ("error", msg)
+			else:
+				receptorR = contenidoLinea[3:]
+				print ("[R]: ",receptorR)
+
+		#Caso para Linea campo [20]
+		if (lineaAct == 4):
+			opcion = contenidoLinea[:4] 
+			
+			if (opcion != "[20]"):
+				msg = "Caracter inesperado, en la línea número " +str(contador+1)+ " del archivo " + archivo
+				return ("error", msg)
+			else:
+				emisorRef20 = contenidoLinea[4:]
+				print ("[20]: ",emisorRef20)
+		
+		#Caso para Campo [21] 
+		if (lineaAct == 5):
+			opcion = contenidoLinea[:4]  
+			
+			if (opcion != "[21]"):
+				msg = "Caracter inesperado, en la línea número " +str(contador+1)+ " del archivo " + archivo
+				return ("error", msg)
+			else:
+				refRel21 = contenidoLinea[4:]
+				print ("[21]: ",refRel21)
+		
+		#Caso para Linea campo [32a] 
+		if (lineaAct == 6):
+			
+			opcion = contenidoLinea[:5]
+		
+			if (opcion != "[32A]" and opcion != "[32B]"): 
+				msg = "Caracter inesperado, en la línea número " +str(contador+1)+ " del archivo " + archivo
+				return ("error", msg)
+			elif(opcion == "[32A]" ): 
+				fechaValor32 = contenidoLinea[5:11]
+				fechaValor32 = datetime.strptime(fechaValor32, "%y%m%d").date()
+				fechaValor32 = fechaValor32.strftime("%d/%m/%Y")
+				moneda32 = contenidoLinea[11:14]
+				monto32 = contenidoLinea[14:]
+				montoT = opcion + fechaValor32 + moneda32 + monto32
+				print ("[32A]: ",fechaValor32)
+				print ("[32A]: ",moneda32)
+				print ("[32A]: ",monto32)
+
+			elif(opcion == "[32B]" ): 
+				moneda32 = contenidoLinea[5:8]
+				monto32 = contenidoLinea[8:]
+				montoT = opcion + moneda32 + monto32
+				print ("[32B]: ",moneda32)
+				print ("[32B]: ",monto32)
+
+		#caso para opcionales si existen
+		if (lineaAct == 7):
+			opcion0 = contenidoLinea[:4]
+			opcion1 = contenidoLinea[:5]
+			verificarOps = ["[33B]","[71B]","[73]","[34A]","[34B]","[53A]","[53B]","[53D]","[57A]","[57B]","[57D]","[58A]","[58B]","[72]","[77A]"]
+
+			while (opcion0 == "[72]" or opcion0 == "[73]" or opcion1 == "[33B]" or opcion1 == "[34A]" or opcion1 == "[34B]" or opcion1 == "[53A]" or opcion1 == "[53B]"or opcion1 == "[53D]" or opcion1 == "[57A]" or opcion1 == "[57B]" or opcion1 == "[57D]" or opcion1 == "[58A]" or opcion1 == "[58B]" or opcion1 == "[71B]" or opcion1 == "[77A]" and opcion3 != "@@"):
+				if (opcion0 == "[72]" or opcion0 == "[73]"):
+					es72 = True
+				if (es72):			
+					if(opcion0 not in verificarOps):
+						msg = "Caracter inesperado, en la línea número " +str(contador+1)+ " del archivo " + archivo
+						return ("error", msg)
+				else: 
+					if(opcion1 not in verificarOps):
+						msg = "Caracter inesperado, en la línea número " +str(contador+1)+ " del archivo " + archivo
+						return ("error", msg)
+				if (opcion1 == "[33B]"):
+					montoAdic33B = contenidoLinea[5:]
+					print ("[33B]: ",montoAdic33B)
+				if (opcion1 == "[71B]"):
+					montoDed71B = contenidoLinea[5:]
+					contenidoLinea = lines[contador+1]
+					opcion2 = contenidoLinea[:5]
+					opcion3 = contenidoLinea[:4]
+					while (opcion3 != "[73]" and opcion2 != "[34A]" and opcion2 != "[34B]" and opcion2 !="[53A]" and opcion2 !="[53B]" and opcion2 !="[53D]" and opcion2 !="[57A]" and opcion2 !="[57B]" and opcion2 !="[57D]" and opcion2 !="[58A]" and opcion2 !="[58D]" and opcion3 != "[72]" and opcion2 !="[77A]" and opcion3 != "@@"):
+						montoDed71B = montoDed71B+"\n"+contenidoLinea
+						lineaAct += 1
+						contador += 1
+						opcionales +=1
+						contenidoLinea = lines[contador+1]
+						opcion2 = contenidoLinea[:5]
+						opcion3 = contenidoLinea[:4]
+					print ("[71B]: ",montoDed71B)
+				if (opcion0 == "[73]"):
+					cargosAdd73 = contenidoLinea[4:]
+					contenidoLinea = lines[contador+1]
+					opcion2 = contenidoLinea[:5]
+					opcion3 = contenidoLinea[:4]
+					while (opcion2 != "[34A]" and opcion2 != "[34B]" and opcion2 !="[53A]" and opcion2 !="[53B]" and opcion2 !="[53D]" and opcion2 !="[57A]" and opcion2 !="[57B]" and opcion2 !="[57D]" and opcion2 !="[58A]" and opcion2 !="[58D]" and opcion3 != "[72]" and opcion2 !="[77A]" and opcion3 != "@@"):
+						cargosAdd73 = cargosAdd73+"\n"+contenidoLinea
+						lineaAct += 1
+						contador += 1
+						opcionales +=1
+						contenidoLinea = lines[contador+1]
+						opcion2 = contenidoLinea[:5]
+						opcion3 = contenidoLinea[:4]
+					print ("[73]: ",cargosAdd73)
+				if (opcion1 == "[34A]"):
+					cuantos = 1
+					fechaValor32 = contenidoLinea[5:11]
+					fechaValor32 = datetime.strptime(fechaValor32, "%y%m%d").date()
+					fechaValor32 = fechaValor32.strftime("%d/%m/%Y")
+					if(contenidoLinea[11:14] != moneda32):
+						observacion = "Los campos 32a y 34a deben tener el mismo tipo de moneda, Archivo: " + archivo
+						vali = "vali"
+					moneda32 = contenidoLinea[11:14]
+					monto32 = contenidoLinea[14:]
+					print ("[34A]: ",fechaValor32)
+					print ("[34A]: ",moneda32)
+					print ("[34A]: ",monto32)
+				if (opcion1 == "[34B]"):
+					moneda32 = contenidoLinea[5:8]
+					monto32 = contenidoLinea[8:]
+					print ("[34B]: ",moneda32)
+					print ("[34B]: ",monto32)
+				if (opcion1 == "[53A]"):
+					reemBank53a = opcion1 + contenidoLinea[5:]
+					cuantos = 2
+					contenidoLinea = lines[contador+1]
+					opcion2 = contenidoLinea[:5]
+					opcion3 = contenidoLinea[:4]
+					while (opcion2 !="[57A]" and opcion2 !="[57B]" and opcion2 !="[57D]" and opcion2 !="[58A]" and opcion2 !="[58D]" and opcion3 != "[72]" and opcion2 !="[77A]" and opcion3 != "@@"):
+						reemBank53a = reemBank53a+"\n"+contenidoLinea
+						lineaAct += 1
+						contador += 1
+						opcionales +=1
+						contenidoLinea = lines[contador+1]
+						opcion2 = contenidoLinea[:5]
+						opcion3 = contenidoLinea[:4]
+					print ("[53A]: ",reemBank53a)
+				if (opcion1 == "[53B]"):
+					reemBank53a = opcion1 + contenidoLinea[5:]
+					cuantos = 1
+					contenidoLinea = lines[contador+1]
+					opcion2 = contenidoLinea[:5]
+					opcion3 = contenidoLinea[:4]
+					while (opcion2 !="[57A]" and opcion2 !="[57B]" and opcion2 !="[57D]" and opcion2 !="[58A]" and opcion2 !="[58D]" and opcion3 != "[72]" and opcion2 !="[77A]" and opcion3 != "@@"):
+						reemBank53a = reemBank53a+"\n"+contenidoLinea
+						lineaAct += 1
+						contador += 1
+						opcionales +=1
+						contenidoLinea = lines[contador+1]
+						opcion2 = contenidoLinea[:5]
+						opcion3 = contenidoLinea[:4]
+					print ("[53B]: ",reemBank53a)
+				if (opcion1 == "[53D]"):
+					reemBank53a = opcion1 + contenidoLinea[5:]
+					contenidoLinea = lines[contador+1]
+					opcion2 = contenidoLinea[:5]
+					opcion3 = contenidoLinea[:4]
+					while (opcion2 !="[57A]" and opcion2 !="[57B]" and opcion2 !="[57D]" and opcion2 !="[58A]" and opcion2 !="[58D]" and opcion3 != "[72]" and opcion2 !="[77A]" and opcion3 != "@@"):
+						reemBank53a = reemBank53a+"\n"+contenidoLinea
+						lineaAct += 1
+						contador += 1
+						opcionales +=1
+						contenidoLinea = lines[contador+1]
+						opcion2 = contenidoLinea[:5]
+						opcion3 = contenidoLinea[:4]
+					print ("[53D]: ",reemBank53a)
+				if (opcion1 == "[57A]"):
+					
+					cuentaBank57a = opcion1 + contenidoLinea[5:]
+					cuantos = 2
+					contenidoLinea = lines[contador+1]
+					opcion2 = contenidoLinea[:5]
+					opcion3 = contenidoLinea[:4]
+					while (opcion2 !="[58A]" and opcion2 !="[58D]" and opcion3 != "[72]" and opcion2 !="[77A]" and opcion3 != "@@"):
+						cuentaBank57a = cuentaBank57a+"\n"+contenidoLinea
+						lineaAct += 1
+						contador += 1
+						opcionales +=1
+						contenidoLinea = lines[contador+1]
+						opcion2 = contenidoLinea[:5]
+						opcion3 = contenidoLinea[:4]
+					print ("[57A]: ",cuentaBank57a)
+				if (opcion1 == "[57B]"):
+					cuentaBank57a = opcion1 + contenidoLinea[5:]
+					cuantos = 1
+					contenidoLinea = lines[contador+1]
+					opcion2 = contenidoLinea[:5]
+					opcion3 = contenidoLinea[:4]
+					while (opcion2 !="[58A]" and opcion2 !="[58D]" and opcion3 != "[72]" and opcion2 !="[77A]" and opcion3 != "@@"):
+						cuentaBank57a = cuentaBank57a+"\n"+contenidoLinea
+						lineaAct += 1
+						contador += 1
+						opcionales +=1
+						contenidoLinea = lines[contador+1]
+						opcion2 = contenidoLinea[:5]
+						opcion3 = contenidoLinea[:4]
+					print ("[57B]: ",cuentaBank57a)
+				if (opcion1 == "[57D]"):
+					cuentaBank57a = opcion1 + contenidoLinea[5:]
+					contenidoLinea = lines[contador+1]
+					opcion2 = contenidoLinea[:5]
+					opcion3 = contenidoLinea[:4]
+					while (opcion2 !="[58A]" and opcion2 !="[58D]" and opcion3 != "[72]" and opcion2 !="[77A]" and opcion3 != "@@"):
+						cuentaBank57a = cuentaBank57a+"\n"+contenidoLinea
+						lineaAct += 1
+						contador += 1
+						opcionales +=1
+						contenidoLinea = lines[contador+1]
+						opcion2 = contenidoLinea[:5]
+						opcion3 = contenidoLinea[:4]
+					print ("[57D]: ",cuentaBank57a)
+				if (opcion1 == "[58A]"):
+					beneBank58a = opcion1 + contenidoLinea[5:]
+					cuantos = 1
+					contenidoLinea = lines[contador+1]
+					opcion2 = contenidoLinea[:5]
+					opcion3 = contenidoLinea[:4]
+					while (opcion3 != "[72]" and opcion2 !="[77A]" and opcion3 != "@@"):
+						beneBank58a = beneBank58a+"\n"+contenidoLinea
+						lineaAct += 1
+						contador += 1
+						opcionales +=1
+						contenidoLinea = lines[contador+1]
+						opcion2 = contenidoLinea[:5]
+						opcion3 = contenidoLinea[:4]
+					print ("[58A]: ",beneBank58a)
+				if (opcion1 == "[58B]"):
+					beneBank58a = opcion1 + contenidoLinea[5:]
+					contenidoLinea = lines[contador+1]
+					opcion2 = contenidoLinea[:5]
+					opcion3 = contenidoLinea[:4]
+					while (opcion3 != "[72]" and opcion2 !="[77A]" and opcion3 != "@@"):
+						beneBank58a = beneBank58a+"\n"+contenidoLinea
+						lineaAct += 1
+						contador += 1
+						opcionales +=1
+						contenidoLinea = lines[contador+1]
+						opcion2 = contenidoLinea[:5]
+						opcion3 = contenidoLinea[:4]
+					print ("[58B]: ",beneBank58a)
+				if (opcion0 == "[72]"):
+					info72 = contenidoLinea[4:]
+					contenidoLinea = lines[contador+1]
+					opcion2 = contenidoLinea[:5]
+					opcion3 = contenidoLinea[:2]
+					while (opcion2 !="[77A]" and opcion3 != "@@"):
+						info72 = info72+"\n"+contenidoLinea
+						lineaAct += 1
+						contador += 1
+						opcionales +=1
+						contenidoLinea = lines[contador+1]
+						opcion2 = contenidoLinea[:5]
+						opcion3 = contenidoLinea[:4]
+					print ("[72]: ",info72)
+				if (opcion1 == "[77A]"):
+					
+					narrativa77A = contenidoLinea[5:]
+					contenidoLinea = lines[contador+1]
+					opcion3 = contenidoLinea[:2]
+					
+					while (opcion3 != "@@"):
+						narrativa77A = narrativa77A+"\n"+contenidoLinea
+						lineaAct += 1
+						contador += 1
+						opcionales +=1
+						contenidoLinea = lines[contador+1]
+						opcion3 = contenidoLinea[:2]
+					print ("[77A]: ",narrativa77A)
+				if (es72):
+					indice = verificarOps.index(opcion0)
+					verificarOps = verificarOps[indice+1:]
+				else:
+					indice = verificarOps.index(opcion1)
+					sumaT = cuantos + indice + 1
+					verificarOps = verificarOps[sumaT:]
+				lineaAct += 1
+				contador += 1
+				opcionales +=1
+				contenidoLinea = lines[contador]
+				opcion0 = contenidoLinea[:4]
+				opcion1 = contenidoLinea[:5]
+				es72 = False
+				cuantos = 0
+
+			if (opcion0 != "@@"): 
+				msg = "Caracter inesperado, en la línea número " +str(contador+1)+ " del archivo " + archivo
+				return ("error", msg)
+			else: 
+				finMensaje =True
+				largoMensajes.append(lineaAct+1)
+				numLineasActual = sumaLineas(largoMensajes)
+				lineaAct = contador - numLineasActual
+				opcionales = 0
+
+		if (finMensaje):
+			bic = Configuracion.objects.all()[0].bic
+			if (receptorR == bic):
+				io = "I"
+			elif (emisorS == bic):
+				io = "O"
+			else:
+				msg = "Este mensaje no nos pertenece"
+				return ("error", msg)
+
+			if (io =="I"):
+				cuenta = Cuenta.objects.filter(banco_corresponsal_idbanco__codigo = emisorS) 
+			elif (io =="O"):
+				cuenta = Cuenta.objects.filter(banco_corresponsal_idbanco__codigo = receptorR) 
+			
+			if cuenta:
+				monedaCta = cuenta[0].moneda_idmoneda.codigo
+				if(monedaCta != moneda32):
+					observacion = "Moneda Invalida, la moneda proveniente del mensaje es : " + moneda32 + ", deberia ser : " + monedaCta + ", Archivo: " + archivo
+					vali = "vali"
+				if(reemBank53a != "" and cuentaBank57a != ""):
+					observacion = "Los Campos 53a y 57a pueden estar presentes, pero no ambos"
+					vali = "vali"
+				if(info72 != "" and narrativa77A != ""):
+					observacion = "Los Campos 72 y 77A pueden estar presentes, pero no ambos"
+					vali = "vali"
+				fecha_entrada = timenow()
+				mensaje_intra = MensajesIntraday.objects.create(tipo = "754",cuenta = cuenta[0],fecha_entrada=fecha_entrada,i_o=io,observacion=observacion) 
+				mensaje = Mt754.objects.create(monto_total=montoT,mensaje_intraday = mensaje_intra,fecha_valor = fechaValor32, moneda = moneda32,monto = monto32,remitente = emisorS,receptor = receptorR, ref_remitente = emisorRef20,ref_relacion = refRel21,monto_adicional = montoAdic33B, cargos_deducidos = montoDed71B,cargos_agregados = cargosAdd73, banco_reembolso = reemBank53a, cuenta_institucion = cuentaBank57a,banco_beneficiario = beneBank58a,info_remitente_a_receptor = info72,narrativa = narrativa77A)
+			else:
+				msg = "No se posee cuenta donde procesar este mensaje"
+				return ("error", msg)
+			emisorS = ""
+			receptorR = ""
+			emisorRef20 = ""
+			refRel21 = ""
+			fechaValor32 = ""
+			moneda32 = ""
+			monto32 = ""
+			montoAdic33B = ""
+			montoDed71B = ""
+			cargosAdd73 = ""
+			reemBank53a = ""
+			cuentaBank57a = ""
+			beneBank58a = ""
+			info72 =""
+			narrativa77A = ""
+			montoT=""
+			msg = ""
+			io=""
+			observacion = ""
+			finMensaje = False	
+
+		lineaAct += 1
+		contador += 1
+
+
+	#cerrar archivo
+	info.close()
+	return ("True",vali)
+
+
+
 def parseo756(archivo,directorio):
 	dirArch = directorio + "\\" + archivo
 
@@ -1428,7 +2242,7 @@ def parseo756(archivo,directorio):
 					contenidoLinea = lines[contador+1]
 					opcion2 = contenidoLinea[:5]
 					opcion3 = contenidoLinea[:4]
-					while (opcion2 != "[54A]" and opcion2 != "[54B]" and opcion2 != "[54D]" and opcion3 !="[72]" ):
+					while (opcion2 != "[54A]" and opcion2 != "[54B]" and opcion2 != "[54D]" and opcion3 !="[72]" and opcion3 != "@@"):
 						emisorCorr53a = emisorCorr53a+"\n"+contenidoLinea
 						lineaAct += 1
 						contador += 1
@@ -1443,7 +2257,7 @@ def parseo756(archivo,directorio):
 					contenidoLinea = lines[contador+1]
 					opcion2 = contenidoLinea[:5]
 					opcion3 = contenidoLinea[:4]
-					while (opcion2 != "[54A]" and opcion2 != "[54B]" and opcion2 != "[54D]" and opcion3 !="[72]" ):
+					while (opcion2 != "[54A]" and opcion2 != "[54B]" and opcion2 != "[54D]" and opcion3 !="[72]" and opcion3 != "@@"):
 						emisorCorr53a = emisorCorr53a+"\n"+contenidoLinea
 						lineaAct += 1
 						contador += 1
@@ -1457,7 +2271,7 @@ def parseo756(archivo,directorio):
 					contenidoLinea = lines[contador+1]
 					opcion2 = contenidoLinea[:5]
 					opcion3 = contenidoLinea[:4]
-					while (opcion2 != "[54A]" and opcion2 != "[54B]" and opcion2 != "[54D]" and opcion3 !="[72]" ):
+					while (opcion2 != "[54A]" and opcion2 != "[54B]" and opcion2 != "[54D]" and opcion3 !="[72]" and opcion3 != "@@"):
 						emisorCorr53a = emisorCorr53a+"\n"+contenidoLinea
 						lineaAct += 1
 						contador += 1
@@ -1471,7 +2285,7 @@ def parseo756(archivo,directorio):
 					cuantos = 2
 					contenidoLinea = lines[contador+1]
 					opcion3 = contenidoLinea[:4]
-					while (opcion3 !="[72]" ):
+					while (opcion3 !="[72]" and opcion3 != "@@"):
 						receptorCorr54a = receptorCorr54a+"\n"+contenidoLinea
 						lineaAct += 1
 						contador += 1
@@ -1484,7 +2298,7 @@ def parseo756(archivo,directorio):
 					cuantos = 1
 					contenidoLinea = lines[contador+1]
 					opcion3 = contenidoLinea[:4]
-					while (opcion3 !="[72]" ):
+					while (opcion3 !="[72]" and opcion3 != "@@"):
 						receptorCorr54a = receptorCorr54a+"\n"+contenidoLinea
 						lineaAct += 1
 						contador += 1
@@ -1496,7 +2310,7 @@ def parseo756(archivo,directorio):
 					receptorCorr54a = opcion1 + contenidoLinea[5:]
 					contenidoLinea = lines[contador+1]
 					opcion3 = contenidoLinea[:4]
-					while (opcion3 !="[72]" ):
+					while (opcion3 !="[72]" and opcion3 != "@@"):
 						receptorCorr54a = receptorCorr54a+"\n"+contenidoLinea
 						lineaAct += 1
 						contador += 1
@@ -1634,7 +2448,6 @@ def parseo942(archivo,directorio):
 	msg = ""
 	io=""
 	vali=""
-
 
 	while contador < numLineas:
 
