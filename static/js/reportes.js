@@ -1,4 +1,14 @@
 var csrftoken = $.cookie('csrftoken');
+var idioma = $('#idioma').val();
+var idiomaAux = "";
+var msj ="";
+var centinela = true;
+
+if (idioma == 0){
+    idiomaAux = "es"
+} else {
+    idiomaAux = "en"
+}
 var prevrep;
 var prevrad;
 
@@ -62,7 +72,7 @@ $.fn.extend({
 $('#treerep').treed({openedClass:'glyphicon-folder-open', closedClass:'glyphicon-folder-close'});
 
 
-if (idioma_tr==="es"){
+if (idiomaAux==="es"){
     //Cambiar el idioma del date picker a español si este es el seleccionado
     $.extend($.fn.pickadate.defaults, {
       monthsFull: ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'],

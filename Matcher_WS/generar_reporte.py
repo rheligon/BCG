@@ -12,8 +12,8 @@ def generarReporte(message):
         # No existe una configuracion previa
         return("No hay configuracion previa en la BD")
 
-
-    host = 'localhost'
+    #ip del servidor de reportes
+    host = '190.168.1.103'
     port = 9999
     message += '\r\n'
 

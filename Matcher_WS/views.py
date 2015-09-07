@@ -2148,19 +2148,20 @@ def reportes(request):
             hdesde = hdesde.split(' ')[0]
             hhasta = hhasta.split(' ')[0]
 
+
             respuesta = 'reportelogsporfechas'
 
             if usuario == '-1' and evento == '-1':
-                respuesta += '*'+fdesde+','+fhasta+','+hdesde+','+hhasta+','+bhoras
+                respuesta += '*'+tipoarch+'*'+fdesde+','+fhasta+','+hdesde+','+hhasta+','+bhoras
             
             elif usuario == '-1' and evento != '-1':
-                respuesta += 'event*'+fdesde+','+fhasta+','+hdesde+','+hhasta+','+bhoras+','+evento
+                respuesta += 'event*'+tipoarch+'*'+fdesde+','+fhasta+','+hdesde+','+hhasta+','+bhoras+','+evento
 
             elif usuario != '-1' and evento == '-1':
-                respuesta += 'usuarios*'+fdesde+','+fhasta+','+hdesde+','+hhasta+','+bhoras+','+usuario
+                respuesta += 'usuarios*'+tipoarch+'*'+fdesde+','+fhasta+','+hdesde+','+hhasta+','+bhoras+','+usuario
 
             else:
-                respuesta += 'usuariosevent*'+fdesde+','+fhasta+','+hdesde+','+hhasta+','+bhoras+','+usuario+','+evento
+                respuesta += 'usuariosevent*'+tipoarch+'*'+fdesde+','+fhasta+','+hdesde+','+hhasta+','+bhoras+','+usuario+','+evento
 
         #####
         # REPORTES DE ADMINISTRACION
@@ -2287,8 +2288,8 @@ def reportes(request):
 
     if request.method == 'GET':
         template = "matcher/reportes.html"
-        usuarios = Usuario.objects.all().order_by('apellidos')
-        perfiles = Perfil.objects.all().order_by('nombre')
+        usuarios = Usuario.objects.exclude(nombres='BCG').order_by('apellidos')
+        perfiles = Perfil.objects.exclude(nombre='SysAdmin').order_by('nombre')
         eventos = Evento.objects.all().order_by('accion')
         fecha_hoy = ("/").join(str(timenow().date()).split("-")[::-1])
 
