@@ -701,11 +701,11 @@ $('a').on('click', function () {
 	    infoRemitARecept = idMensaje.attr("infoRemitARecept");
 	    if(infoRemitARecept.length > 0){
 	    	institucion = infoRemitARecept.replace(/\n/g,"<br>");
-    		var td1 = '<td >70</td>';
+    		var td1 = '<td >72</td>';
     		if (idioma == 0){
-	    		var td2 = '<td >Información de Remesas</td>';
+	    		var td2 = '<td >Información del Remitente al Receptor</td>';
 	    	}else {
-	    		var td2 = '<td >Remittance Information</td>';
+	    		var td2 = '<td >Sender to Receiver Information</td>';
 	    	}
 	    	var td3 = '<td >'+institucion+'</td>'; 
 		    //creamos la fila con los elementos y la mostramos
@@ -717,6 +717,511 @@ $('a').on('click', function () {
 	    t_conta.draw();
   	}
 
+  	if(tipo=="752"){
+  		if (idioma == 0){
+    		$('#myModalLabel').append('Detalles MT '+tipo);
+    	}else {
+    		$('#myModalLabel').append('Details MT '+tipo);
+    	}
+  		
+
+  		//Remitente- Receptor
+  		remitente = idMensaje.attr("remitente");     
+	  	receptor = idMensaje.attr("receptor");     
+	  	var td1 = '<td ></td>';
+	  	if (idioma == 0){
+    		var td2 = '<td >Remitente/Receptor</td>';
+    	}else {
+    		var td2 = '<td >Sender/Receiver</td>';
+    	}
+	    var td3 = '<td >'+remitente+' '+receptor+'</td>'; 
+	    //creamos la fila con los elementos y la mostramos
+	    $('#table-info > tbody').append('<tr id= "remit_recept"></tr>');
+	    var jRow = $("#remit_recept").append(td1,td2,td3);
+	    t_conta.row.add(jRow);
+
+  		//Campo 20: Obligatorio
+  		numCredit = idMensaje.attr("numCredit");     
+	  	var td1 = '<td >20</td>';
+	  	if (idioma == 0){
+    		var td2 = '<td >Número de Credito Documental</td>';
+    	}else {
+    		var td2 = '<td >Documentary Credit Number</td>';
+    	}
+	    var td3 = '<td >'+numCredit+'</td>'; 
+	    //creamos la fila con los elementos y la mostramos
+	    $('#table-info > tbody').append('<tr id= "numCredit"></tr>');
+	    var jRow = $("#numCredit").append(td1,td2,td3);
+	    t_conta.row.add(jRow);
+
+	    //Campo 21: Obligatorio
+  		refRel = idMensaje.attr("refBanPre");     
+	  	var td1 = '<td >21</td>';
+	  	if (idioma == 0){
+    		var td2 = '<td >Referencia del Banco Presentante</td>';
+    	}else {
+    		var td2 = '<td >Presenting Bank\'s Reference</td>';
+    	}
+	    var td3 = '<td >'+refRel+'</td>'; 
+	    //creamos la fila con los elementos y la mostramos
+	    $('#table-info > tbody').append('<tr id= "refRel"></tr>');
+	    var jRow = $("#refRel").append(td1,td2,td3);
+	    t_conta.row.add(jRow);
+
+	    //Campo 23: Obligatorio
+  		proposito = idMensaje.attr("proposito");     
+	  	var td1 = '<td >23</td>';
+	  	if (idioma == 0){
+    		var td2 = '<td >Identificador de Proposito</td>';
+    	}else {
+    		var td2 = '<td >Further Identification</td>';
+    	}
+	    var td3 = '<td >'+proposito+'</td>'; 
+	    //creamos la fila con los elementos y la mostramos
+	    $('#table-info > tbody').append('<tr id= "proposito"></tr>');
+	    var jRow = $("#proposito").append(td1,td2,td3);
+	    t_conta.row.add(jRow);
+	    
+	    //Campo 30: Obligatorio
+  		fechaAviso = idMensaje.attr("fechaAviso");     
+	  	var td1 = '<td >30</td>';
+	  	if (idioma == 0){
+    		var td2 = '<td >Fecha de Aviso de Discrepancia o Correo</td>';
+    	}else {
+    		var td2 = '<td >Date of Advice of Discrepancy or Mailing</td>';
+    	}
+	    var td3 = '<td >'+fechaAviso+'</td>'; 
+	    //creamos la fila con los elementos y la mostramos
+	    $('#table-info > tbody').append('<tr id= "fechaAviso"></tr>');
+	    var jRow = $("#fechaAviso").append(td1,td2,td3);
+	    t_conta.row.add(jRow);
+
+	    //Campo 32B: Opcional
+	    montoT = idMensaje.attr("montoT");
+	    if(montoT.length > 0){
+    		var td1 = '<td >32B</td>';
+    		if (idioma == 0){
+	    		var td2 = '<td >Monto Total Avisado</td>';
+	    	}else {
+	    		var td2 = '<td >Total Amount Advised</td>';
+	    	}
+	    	var td3 = '<td >'+montoT+'</td>'; 
+		    //creamos la fila con los elementos y la mostramos
+		    $('#table-info > tbody').append('<tr id= "montoT"></tr>');
+		    var jRow = $("#montoT").append(td1,td2,td3);
+		    t_conta.row.add(jRow);
+	    } 
+
+	    //Campo 71B: Opcional varias lineas
+	    cargDed = idMensaje.attr("cargDed");
+	    if(cargDed.length > 0){
+	    	cargos = cargDed.replace(/\n/g,"<br>");
+    		var td1 = '<td >71B</td>';
+    		if (idioma == 0){
+	    		var td2 = '<td >Cargos Deducidos</td>';
+	    	}else {
+	    		var td2 = '<td >Charges Deducted</td>';
+	    	}
+	    	var td3 = '<td >'+cargos+'</td>'; 
+		    //creamos la fila con los elementos y la mostramos
+		    $('#table-info > tbody').append('<tr id= "cargDed"></tr>');
+		    var jRow = $("#cargDed").append(td1,td2,td3);
+		    t_conta.row.add(jRow);
+	    } 
+
+	    //Campo 53a: Opcional con Opciones de varias lineas
+	    fecha_valor = idMensaje.attr("fechaVal");
+	    moneda = idMensaje.attr("moneda");
+	    monto = idMensaje.attr("monto");
+	    if(moneda.length > 0){
+	    	
+	    	if(fecha_valor.length >0 ){
+	    		var td1 = '<td >33A</td>';
+	    		if (idioma == 0){
+		    		var td2 = '<td >Fecha Valor<br>Moneda/Monto Neto</td>';
+		    	}else {
+		    		var td2 = '<td >Value Date<br>Currency/Net Amount</td>';
+		    	}
+		    	var td3 = '<td >'+fecha_valor+'<br>'+moneda+monto+'</td>'; 
+			    //creamos la fila con los elementos y la mostramos
+			    $('#table-info > tbody').append('<tr id= "fecha_valor_moneda_monto"></tr>');
+			    var jRow = $("#fecha_valor_moneda_monto").append(td1,td2,td3);
+			    t_conta.row.add(jRow);
+	    	}else{
+	    		var td1 = '<td >33B</td>';
+	    		if (idioma == 0){
+		    		var td2 = '<td >Moneda/Monto Neto</td>';
+		    	}else {
+		    		var td2 = '<td >Currency/Net Amount</td>';
+		    	}
+		    	var td3 = '<td >'+moneda+monto+'</td>'; 
+			    //creamos la fila con los elementos y la mostramos
+			    $('#table-info > tbody').append('<tr id= "fecha_valor_moneda_monto"></tr>');
+			    var jRow = $("#fecha_valor_moneda_monto").append(td1,td2,td3);
+			    t_conta.row.add(jRow);
+	    	}
+	    }
+
+	    //Campo 53a: Opcional con Opciones de varias lineas
+	    corrRemit = idMensaje.attr("corrRemit");
+	    if(corrRemit.length > 0){
+	    	tag = corrRemit.substr(1,3);
+		
+	    	corresponsal = corrRemit.substr(5).replace(/\n/g,"<br>");
+    		var td1 = '<td >'+tag+'</td>';
+    		if (idioma == 0){
+	    		var td2 = '<td >Corresponsal del Remitente</td>';
+	    	}else {
+	    		var td2 = '<td >Sender\'s Correspondent</td>';
+	    	}
+	    	var td3 = '<td >'+corresponsal+'</td>'; 
+		    //creamos la fila con los elementos y la mostramos
+		    $('#table-info > tbody').append('<tr id= "corrRemit"></tr>');
+		    var jRow = $("#corrRemit").append(td1,td2,td3);
+		    t_conta.row.add(jRow);
+	    }
+
+	    //Campo 54a: Opcional con Opciones de varias lineas
+	    corrRecept = idMensaje.attr("corrRecept");
+	    if(corrRecept.length > 0){
+	    	tag = corrRecept.substr(1,3);
+		
+	    	receptor = corrRecept.substr(5).replace(/\n/g,"<br>");
+    		var td1 = '<td >'+tag+'</td>';
+    		if (idioma == 0){
+	    		var td2 = '<td >Corresponsal del Receptor</td>';
+	    	}else {
+	    		var td2 = '<td >Receiver\'s Correspondent</td>';
+	    	}
+	    	var td3 = '<td >'+receptor+'</td>'; 
+		    //creamos la fila con los elementos y la mostramos
+		    $('#table-info > tbody').append('<tr id= "corrRecept"></tr>');
+		    var jRow = $("#corrRecept").append(td1,td2,td3);
+		    t_conta.row.add(jRow);
+	    }
+
+	    //Campo 72: Opcional varias lineas
+	    infoRemitARecept = idMensaje.attr("infoRemitARecept");
+	    if(infoRemitARecept.length > 0){
+	    	institucion = infoRemitARecept.replace(/\n/g,"<br>");
+    		var td1 = '<td >72</td>';
+    		if (idioma == 0){
+	    		var td2 = '<td >Información del Remitente al Receptor</td>';
+	    	}else {
+	    		var td2 = '<td >Sender to Receiver Information</td>';
+	    	}
+	    	var td3 = '<td >'+institucion+'</td>'; 
+		    //creamos la fila con los elementos y la mostramos
+		    $('#table-info > tbody').append('<tr id= "infoRemitARecept"></tr>');
+		    var jRow = $("#infoRemitARecept").append(td1,td2,td3);
+		    t_conta.row.add(jRow);
+	    } 
+
+	    t_conta.draw();
+  	}
+
+  	if(tipo=="754"){
+  		if (idioma == 0){
+    		$('#myModalLabel').append('Detalles MT '+tipo);
+    	}else {
+    		$('#myModalLabel').append('Details MT '+tipo);
+    	}
+  		
+
+  		//Remitente- Receptor
+  		remitente = idMensaje.attr("remitente");     
+	  	receptor = idMensaje.attr("receptor");     
+	  	var td1 = '<td ></td>';
+	  	if (idioma == 0){
+    		var td2 = '<td >Remitente/Receptor</td>';
+    	}else {
+    		var td2 = '<td >Sender/Receiver</td>';
+    	}
+	    var td3 = '<td >'+remitente+' '+receptor+'</td>'; 
+	    //creamos la fila con los elementos y la mostramos
+	    $('#table-info > tbody').append('<tr id= "remit_recept"></tr>');
+	    var jRow = $("#remit_recept").append(td1,td2,td3);
+	    t_conta.row.add(jRow);
+
+  		//Campo 20: Obligatorio
+  		refRemit = idMensaje.attr("refRemit");     
+	  	var td1 = '<td >20</td>';
+	  	if (idioma == 0){
+    		var td2 = '<td >Referencia del Remitente</td>';
+    	}else {
+    		var td2 = '<td >Sender\'s Reference</td>';
+    	}
+	    var td3 = '<td >'+refRemit+'</td>'; 
+	    //creamos la fila con los elementos y la mostramos
+	    $('#table-info > tbody').append('<tr id= "refRemit"></tr>');
+	    var jRow = $("#refRemit").append(td1,td2,td3);
+	    t_conta.row.add(jRow);
+
+	    //Campo 21: Obligatorio
+  		refRel = idMensaje.attr("refRel");     
+	  	var td1 = '<td >21</td>';
+	  	if (idioma == 0){
+    		var td2 = '<td >Referencia de la Relación</td>';
+    	}else {
+    		var td2 = '<td >Related Reference</td>';
+    	}
+	    var td3 = '<td >'+refRel+'</td>'; 
+	    //creamos la fila con los elementos y la mostramos
+	    $('#table-info > tbody').append('<tr id= "refRel"></tr>');
+	    var jRow = $("#refRel").append(td1,td2,td3);
+	    t_conta.row.add(jRow);
+
+	    //Campo 32A: Obligatorio con Opciones de una linea
+	    cargDed = idMensaje.attr("cargDed");
+	    cargAgreg = idMensaje.attr("cargAgreg");
+	    if(cargDed.length < 1  && cargAgreg.length < 1){
+    		fecha_valor = idMensaje.attr("fechaVal");
+		    moneda = idMensaje.attr("moneda");
+		    monto = idMensaje.attr("monto");
+		    	
+	    	if(fecha_valor.length >0 ){
+	    		var td1 = '<td >32A</td>';
+	    		if (idioma == 0){
+		    		var td2 = '<td >Fecha Valor<br>Moneda/Monto Principal Pagado/Aceptado/Negociado</td>';
+		    	}else {
+		    		var td2 = '<td >Value Date<br>Currency/Principal Amount Paid/Accepted/Negotiated</td>';
+		    	}
+		    	var td3 = '<td >'+fecha_valor+'<br>'+moneda+monto+'</td>'; 
+			    //creamos la fila con los elementos y la mostramos
+			    $('#table-info > tbody').append('<tr id= "fecha_valor_moneda_monto"></tr>');
+			    var jRow = $("#fecha_valor_moneda_monto").append(td1,td2,td3);
+			    t_conta.row.add(jRow);
+	    	}else{
+	    		var td1 = '<td >32B</td>';
+	    		if (idioma == 0){
+		    		var td2 = '<td >Moneda/Monto Principal Pagado/Aceptado/Negociado</td>';
+		    	}else {
+		    		var td2 = '<td >Currency/Principal Amount Paid/Accepted/Negotiated</td>';
+		    	}
+		    	var td3 = '<td >'+moneda+monto+'</td>'; 
+			    //creamos la fila con los elementos y la mostramos
+			    $('#table-info > tbody').append('<tr id= "fecha_valor_moneda_monto"></tr>');
+			    var jRow = $("#fecha_valor_moneda_monto").append(td1,td2,td3);
+			    t_conta.row.add(jRow);
+	    	}
+		    
+    	}else{
+    		montoTotal= idMensaje.attr("montoT");
+    		tag = montoTotal.substr(1,3);
+			if(tag = "32A"){
+				var td1 = '<td>'+tag+'</td>';
+				fecha_valor = montoTotal.substr(5,10);
+				moneda = montoTotal.substr(15,3);
+				monto = montoTotal.substr(18); 
+				if (idioma == 0){
+		    		var td2 = '<td >Fecha Valor<br>Moneda/Monto Principal Pagado/Aceptado/Negociado</td>';
+		    	}else {
+		    		var td2 = '<td >Value Date<br>Currency/Principal Amount Paid/Accepted/Negotiated</td>';
+		    	}
+		    	var td3 = '<td >'+fecha_valor+'<br>'+moneda+monto+'</td>'; 
+			    //creamos la fila con los elementos y la mostramos
+			    $('#table-info > tbody').append('<tr id= "fecha_valor_moneda_monto"></tr>');
+			    var jRow = $("#fecha_valor_moneda_monto").append(td1,td2,td3);
+			    t_conta.row.add(jRow);
+			}else if(tag = "32B"){
+				var td1 = '<td>'+tag+'</td>';
+				moneda = montoTotal.substr(5,3);
+				monto = montoTotal.substr(8);
+				if (idioma == 0){
+		    		var td2 = '<td >Moneda/Monto Principal Pagado/Aceptado/Negociado</td>';
+		    	}else {
+		    		var td2 = '<td >Currency/Principal Amount Paid/Accepted/Negotiated</td>';
+		    	}
+		    	var td3 = '<td >'+moneda+monto+'</td>'; 
+			    //creamos la fila con los elementos y la mostramos
+			    $('#table-info > tbody').append('<tr id= "fecha_valor_moneda_monto"></tr>');
+			    var jRow = $("#fecha_valor_moneda_monto").append(td1,td2,td3);
+			    t_conta.row.add(jRow);
+			}
+	    	
+    	}
+	    
+	    //Campo 33B: Opcional
+	    montoAdi = idMensaje.attr("montoAdi");
+	    if(montoAdi.length > 0){
+    		var td1 = '<td >33B</td>';
+    		if (idioma == 0){
+	    		var td2 = '<td >Montos Adicionales</td>';
+	    	}else {
+	    		var td2 = '<td >Additional Amounts</td>';
+	    	}
+	    	var td3 = '<td >'+montoAdi+'</td>'; 
+		    //creamos la fila con los elementos y la mostramos
+		    $('#table-info > tbody').append('<tr id= "montoAdi"></tr>');
+		    var jRow = $("#montoAdi").append(td1,td2,td3);
+		    t_conta.row.add(jRow);
+	    } 
+
+	    //Campo 71B: Opcional varias lineas
+	    cargDed = idMensaje.attr("cargDed");
+	    if(cargDed.length > 0){
+	    	cargos = cargDed.replace(/\n/g,"<br>");
+    		var td1 = '<td >71B</td>';
+    		if (idioma == 0){
+	    		var td2 = '<td >Cargos Deducidos</td>';
+	    	}else {
+	    		var td2 = '<td >Charges Deducted</td>';
+	    	}
+	    	var td3 = '<td >'+cargos+'</td>'; 
+		    //creamos la fila con los elementos y la mostramos
+		    $('#table-info > tbody').append('<tr id= "cargDed"></tr>');
+		    var jRow = $("#cargDed").append(td1,td2,td3);
+		    t_conta.row.add(jRow);
+	    } 
+
+	    //Campo 73: Opcional varias lineas
+	    cargAgreg = idMensaje.attr("cargAgreg");
+	    if(cargAgreg.length > 0){
+	    	cargosA = cargAgreg.replace(/\n/g,"<br>");
+    		var td1 = '<td >73</td>';
+    		if (idioma == 0){
+	    		var td2 = '<td >Cargos Agregados</td>';
+	    	}else {
+	    		var td2 = '<td >Charges Added</td>';
+	    	}
+	    	var td3 = '<td >'+cargosA+'</td>'; 
+		    //creamos la fila con los elementos y la mostramos
+		    $('#table-info > tbody').append('<tr id= "cargAgreg"></tr>');
+		    var jRow = $("#cargAgreg").append(td1,td2,td3);
+		    t_conta.row.add(jRow);
+	    } 
+
+	    //Campo 34A: Obligatorio con Opciones de una linea
+	    cargDed = idMensaje.attr("cargDed");
+	    cargAgreg = idMensaje.attr("cargAgreg");
+	    if(cargDed.length >0  || cargAgreg.length < 0){
+    		fecha_valor = idMensaje.attr("fechaVal");
+		    moneda = idMensaje.attr("moneda");
+		    monto = idMensaje.attr("monto");
+		    	
+	    	if(fecha_valor.length >0 ){
+	    		var td1 = '<td >34A</td>';
+	    		if (idioma == 0){
+		    		var td2 = '<td >Fecha Valor<br>Moneda/Monto Total Reclamado</td>';
+		    	}else {
+		    		var td2 = '<td >Value Date<br>Currency/Total Amount Claimed</td>';
+		    	}
+		    	var td3 = '<td >'+fecha_valor+'<br>'+moneda+monto+'</td>'; 
+			    //creamos la fila con los elementos y la mostramos
+			    $('#table-info > tbody').append('<tr id= "monto_total"></tr>');
+			    var jRow = $("#monto_total").append(td1,td2,td3);
+			    t_conta.row.add(jRow);
+	    	}else{
+	    		var td1 = '<td >34B</td>';
+	    		if (idioma == 0){
+		    		var td2 = '<td >Moneda/Monto Total Reclamado</td>';
+		    	}else {
+		    		var td2 = '<td >Currency/Total Amount Claimed</td>';
+		    	}
+		    	var td3 = '<td >'+moneda+monto+'</td>'; 
+			    //creamos la fila con los elementos y la mostramos
+			    $('#table-info > tbody').append('<tr id= "monto_total"></tr>');
+			    var jRow = $("#monto_total").append(td1,td2,td3);
+			    t_conta.row.add(jRow);
+	    	}
+		    
+    	}
+
+
+	    //Campo 53a: Opcional con Opciones de varias lineas
+	    banReemb = idMensaje.attr("banReemb");
+	    if(banReemb.length > 0){
+	    	tag = banReemb.substr(1,3);
+		
+	    	banco = banReemb.substr(5).replace(/\n/g,"<br>");
+    		var td1 = '<td >'+tag+'</td>';
+    		if (idioma == 0){
+	    		var td2 = '<td >Banco Reembolso</td>';
+	    	}else {
+	    		var td2 = '<td >Reimbursing Bank</td>';
+	    	}
+	    	var td3 = '<td >'+banco+'</td>'; 
+		    //creamos la fila con los elementos y la mostramos
+		    $('#table-info > tbody').append('<tr id= "banReemb"></tr>');
+		    var jRow = $("#banReemb").append(td1,td2,td3);
+		    t_conta.row.add(jRow);
+	    }
+
+	    //Campo 57a: Opcional con Opciones de varias lineas
+	    ctaInsti = idMensaje.attr("ctaInsti");
+	    if(ctaInsti.length > 0){
+	    	tag = ctaInsti.substr(1,3);
+		
+	    	cuenta = ctaInsti.substr(5).replace(/\n/g,"<br>");
+    		var td1 = '<td >'+tag+'</td>';
+    		if (idioma == 0){
+	    		var td2 = '<td >Cuenta con Banco</td>';
+	    	}else {
+	    		var td2 = '<td >Account With Bank</td>';
+	    	}
+	    	var td3 = '<td >'+cuenta+'</td>'; 
+		    //creamos la fila con los elementos y la mostramos
+		    $('#table-info > tbody').append('<tr id= "ctaInsti"></tr>');
+		    var jRow = $("#ctaInsti").append(td1,td2,td3);
+		    t_conta.row.add(jRow);
+	    }
+
+	    //Campo 58a: Opcional con Opciones de varias lineas
+	    banBene = idMensaje.attr("banBene");
+	    if(banBene.length > 0){
+	    	tag = banBene.substr(1,3);
+		
+	    	bancoB = banBene.substr(5).replace(/\n/g,"<br>");
+    		var td1 = '<td >'+tag+'</td>';
+    		if (idioma == 0){
+	    		var td2 = '<td >Banco Beneficiario</td>';
+	    	}else {
+	    		var td2 = '<td >Beneficiary Bank</td>';
+	    	}
+	    	var td3 = '<td >'+bancoB+'</td>'; 
+		    //creamos la fila con los elementos y la mostramos
+		    $('#table-info > tbody').append('<tr id= "banBene"></tr>');
+		    var jRow = $("#banBene").append(td1,td2,td3);
+		    t_conta.row.add(jRow);
+	    }
+
+	    //Campo 72: Opcional varias lineas
+	    infoRemitARecept = idMensaje.attr("infoRemitARecept");
+	    if(infoRemitARecept.length > 0){
+	    	institucion = infoRemitARecept.replace(/\n/g,"<br>");
+    		var td1 = '<td >72</td>';
+    		if (idioma == 0){
+	    		var td2 = '<td >Información del Remitente al Receptor</td>';
+	    	}else {
+	    		var td2 = '<td >Sender to Receiver Information</td>';
+	    	}
+	    	var td3 = '<td >'+institucion+'</td>'; 
+		    //creamos la fila con los elementos y la mostramos
+		    $('#table-info > tbody').append('<tr id= "infoRemitARecept"></tr>');
+		    var jRow = $("#infoRemitARecept").append(td1,td2,td3);
+		    t_conta.row.add(jRow);
+	    }
+
+	    //Campo 77A: Opcional varias lineas
+	    narrativa = idMensaje.attr("narrativa");
+	    if(narrativa.length > 0){
+	    	narra = narrativa.replace(/\n/g,"<br>");
+    		var td1 = '<td >72</td>';
+    		if (idioma == 0){
+	    		var td2 = '<td >Narrativa</td>';
+	    	}else {
+	    		var td2 = '<td >Narrative</td>';
+	    	}
+	    	var td3 = '<td >'+narra+'</td>'; 
+		    //creamos la fila con los elementos y la mostramos
+		    $('#table-info > tbody').append('<tr id= "narrativa"></tr>');
+		    var jRow = $("#narrativa").append(td1,td2,td3);
+		    t_conta.row.add(jRow);
+	    } 
+
+	    t_conta.draw();
+  	}
+  	
   	if(tipo=="756"){
   		if (idioma == 0){
     		$('#myModalLabel').append('Detalles MT '+tipo);
@@ -770,7 +1275,7 @@ $('a').on('click', function () {
 
 	     //Campo 32B: Obligatorio
   		montoRec = idMensaje.attr("MonedaMonto");     
-	  	var td1 = '<td >21</td>';
+	  	var td1 = '<td >32B</td>';
 	  	if (idioma == 0){
     		var td2 = '<td >Monto Total Reclamado</td>';
     	}else {
@@ -840,7 +1345,7 @@ $('a').on('click', function () {
 	    infoRemitARecept = idMensaje.attr("infoRemitARecept");
 	    if(infoRemitARecept.length > 0){
 	    	institucion = infoRemitARecept.replace(/\n/g,"<br>");
-    		var td1 = '<td >70</td>';
+    		var td1 = '<td >72</td>';
     		if (idioma == 0){
 	    		var td2 = '<td >Información del Remitente al Receptor</td>';
 	    	}else {
@@ -855,6 +1360,4 @@ $('a').on('click', function () {
 
 	    t_conta.draw();
   	}
-  	
-  	
     });
