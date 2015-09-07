@@ -249,7 +249,7 @@ def usr_login(request):
                             sesion.save()
                             # Para el log
                             log(request,1)
-                            return HttpResponseRedirect('/cambioClave/')
+                            return JsonResponse({'mens':"Cambiar contraseña"})
 
                         else:
 
@@ -3879,6 +3879,7 @@ def seg_Perfiles(request):
 
     expirarSesion(request)
     if request.method == "POST":
+        idioma = Configuracion.objects.all()[0].idioma
         actn = request.POST.get('action')
         
         if actn == 'sel':
@@ -3890,13 +3891,22 @@ def seg_Perfiles(request):
             return JsonResponse(res_json, safe=False)
 
         if actn == "del":
-            msg = "Perfil eliminado exitosamente."
+            if idioma == 0:
+                msg = "Perfil eliminado exitosamente."
+            else:
+                msg = "Successfully deleted profile."
+
             perfid = request.POST.get('perfid')
 
             try:
                 perfil = Perfil.objects.get(idperfil=perfid)
+
             except Perfil.DoesNotExist:
-                msg = "No se encontro el perfil especificado, asegurese de hacer click en el perfil a eliminar."
+                if idioma == 0:
+                    msg = "No se encontro el perfil especificado, asegurese de hacer click en el perfil a eliminar."
+                else:
+                    msg = "Profile not found, be sure to click a profile first please."
+
                 return JsonResponse({'msg': msg, 'perfid': perfid, 'elim': False})
 
             #Para el log
@@ -3906,7 +3916,11 @@ def seg_Perfiles(request):
             return JsonResponse({'msg': msg, 'perfid': perfid, 'elim': True})
 
         if actn == "add":
-            msg = "Perfil agregado exitosamente."
+            if idioma == 0:
+                msg = "Perfil agregado exitosamente."
+            else:
+                msg = "Successfully added profile."
+
             perfnom = request.POST.get('perfNom')
             funcs = request.POST.getlist('perfFuncs[]')
 
@@ -3916,7 +3930,11 @@ def seg_Perfiles(request):
                     opcion = Opcion.objects.get(idopcion=functid)
                     PerfilOpcion.objects.create(opcion_idopcion=opcion, perfil_idperfil=perfil)
             except:
-                msg = "No se pudo crear el perfil especificado."
+                if idiona == 0:
+                    msg = "No se pudo crear el perfil especificado."
+                else:
+                    msg = "Profile not created." 
+
                 return JsonResponse({'msg': msg, 'add': False})
 
             #Para el log
@@ -3925,7 +3943,11 @@ def seg_Perfiles(request):
             return JsonResponse({'msg': msg, 'perfid': perfil.pk, 'perfnom':perfnom, 'add': True})
 
         if actn == "upd":
-            msg = "Perfil modificado exitosamente."
+            if idioma == 0:
+                msg = "Perfil modificado exitosamente."
+            else:
+                msg = "Successfully modified profile."
+
             perfid = request.POST.get('perfid')
             perfnom = request.POST.get('perfNom')
             funcs = request.POST.getlist('perfFuncs[]')
@@ -3948,7 +3970,11 @@ def seg_Perfiles(request):
                 perfil.save()
 
             except:
-                msg = "No se pudo modificar el perfil especificado."
+                if idioma == 0:
+                    msg = "No se pudo modificar el perfil especificado."
+                else:
+                    msg = "Profile not modified."        
+
                 return JsonResponse({'msg': msg, 'modif': False})
 
             #Para el log
@@ -3966,8 +3992,18 @@ def seg_Perfiles(request):
         opciones = Opcion.objects.exclude(funprincipal__in=sub_index2).exclude(funprincipal__in=sub_index).order_by('nombre')
         nosub = [opcion.nombre for opcion in opciones]
         nosubid = [str(opcion.idopcion) for opcion in opciones]
+ 
+        opcionesIngles = Opcion_Ingles.objects.exclude(funprincipal__in=sub_index2).exclude(funprincipal__in=sub_index).order_by('nombre')  
+        nosubIngles = [opcion.nombre for opcion in opcionesIngles]
+        nosubidIngles = [str(opcion.idopcion) for opcion in opcionesIngles]
 
-        idioma = Configuracion.objects.all()[0].idioma    
+        idioma = Configuracion.objects.all()[0].idioma 
+        
+        if idioma == 1:
+            opciones = opcionesIngles
+            nosub = nosubIngles
+            nosubid = nosubidIngles
+
         context = {'idioma':idioma, 'perfiles': perfiles, 'opciones':opciones, 'nosub':nosub, 'nosubid':nosubid, 'ops':get_ops(request), 'subindex':sub_index2,'ldap':get_ldap(request)}
         template = "matcher/seg_Perfiles.html"
 

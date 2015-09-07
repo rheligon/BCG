@@ -48,7 +48,7 @@ function guardarContraseña(clave){
         data: {"clave":clave,"action":"guardarContraseña"},
         success: function(data){
             var mensaje = data.mens;
-            if (mensaje === "Contraseña actualizada exitosamente" || mensaje === "Successful updated password"){
+            if (mensaje === "Contraseña actualizada exitosamente" || mensaje === "Successfully updated password"){
                 $('#processing-modal').modal('toggle');
                 swal("OK", mensaje, "success");
                 setTimeout(function(){

@@ -28,12 +28,25 @@
 }
 
 </style>
-
+<input type="text" id="idioma" value="{{idioma}}" hidden/>
+<legend>
+    {%if idioma == 0%}
+        Manejo de Perfiles
+    {%endif%}
+    {%if idioma == 1%}
+        Profile Configuration
+    {%endif%}
+</legend>
 <div class="table-responsive col-md-8">
     <table id="table-perfiles" class="table table-bordered table-striped tabla">
         <thead>
             <tr>
-                <th>Nombre</th>
+                {%if idioma == 0%}
+                    <th>Nombre</th>
+                {%endif%}
+                {%if idioma == 1%}
+                    <th>Name</th>
+                {%endif%}
             </tr>
         </thead>
         <tbody>
@@ -51,17 +64,32 @@
 
 <div class="col-md-3">
     <button type="button" id="addButton" data-loading-text="Cargando..." class="col-md-5 btn btn-success" autocomplete="off" data-toggle="modal" data-target="#add-banco-modal">
-        Agregar
+        {%if idioma == 0%}
+            Agregar
+        {%endif%}
+        {%if idioma == 1%}
+            Add
+        {%endif%}
     </button>
 </div>
 <div style="padding-top:1%;" class="col-md-3">
     <button type="button" id="delButton" data-loading-text="Cargando..." class="col-md-5 btn btn-danger" autocomplete="off">
-        Eliminar
+        {%if idioma == 0%}
+            Eliminar
+        {%endif%}
+        {%if idioma == 1%}
+            Delete
+        {%endif%}
     </button>
 </div>
 <div style="padding-top:1%;" class="col-md-3">
     <button type="button" id="updButton" data-loading-text="Cargando..." class="col-md-5 btn btn-primary" autocomplete="off">
-        Modificar
+        {%if idioma == 0%}
+            Modificar
+        {%endif%}
+        {%if idioma == 1%}
+            Modify
+        {%endif%}
     </button>
 </div>
 
@@ -69,23 +97,47 @@
 
 <div class="row">
   <div class="col-md-6">
-    <legend>Detalles:</legend>
+    <legend>
+        {%if idioma == 0%}
+            Detalles:
+        {%endif%}
+        {%if idioma == 1%}
+            Details:
+        {%endif%}
+    </legend>
   </div>
   <div class="col-md-2 col-md-push-1" hidden>
       <button type="button" name="Aceptar" id="acptButton" data-loading-text="Cargando..." class="col-md-7 btn btn-info" autocomplete="off">
-          Aceptar
+        {%if idioma == 0%}
+           Aceptar
+        {%endif%}
+        {%if idioma == 1%}
+            Accept
+        {%endif%}
       </button>
   </div>
   <div class="col-md-2" hidden>
       <button type="button" name="Cancelar" id="cancelButton" data-loading-text="Cargando..." class="col-md-7 btn btn-default" autocomplete="off">
-          Cancelar
+        {%if idioma == 0%}
+            Cancelar
+        {%endif%}
+        {%if idioma == 1%}
+            Cancel
+        {%endif%}
       </button>
   </div>
 </div>
 
 <div class="row">
   <div class="col-md-12">
-    <label class="col-md-1 control-label">Nombre:</label>
+    <label class="col-md-1 control-label">
+        {%if idioma == 0%}
+            Nombre:
+        {%endif%}
+        {%if idioma == 1%}
+            Name:
+        {%endif%}
+    </label>
     <div class="col-md-3">
         <input type="text" class="form-control" id="perf-nom" value="" name="nomperf" />
     </div>
@@ -98,7 +150,14 @@
         <div class="well text-right well-list">
             <div class="row">
                 <div class="col-md-12" style="text-align:center;">
-                        <h4>Funciones Disponibles</h4>
+                    <h4>
+                        {%if idioma == 0%}
+                            Funciones Disponibles
+                        {%endif%}
+                        {%if idioma == 1%}
+                            Available Functions
+                        {%endif%}
+                    </h4>
                 </div>
                 <div class="col-md-9">
                     <div class="input-group">
@@ -115,19 +174,54 @@
             <div class="scrollDiv">
                 <ul class="list-group" type="camposl">
                     {%if 2 not in subindex%}
-                        <li class="list-group-item subindex" sub="1" name="rep">Reportes</li>
+                        <li class="list-group-item subindex" sub="1" name="rep">
+                            {%if idioma == 0%}
+                                Reportes
+                            {%endif%}
+                            {%if idioma == 1%}
+                                Reports
+                            {%endif%}
+                        </li>
                     {%endif%}
                     {%if 3 not in subindex%}
-                        <li class="list-group-item subindex" sub="1" name="MT">Mensajes SWIFT</li>
+                        <li class="list-group-item subindex" sub="1" name="MT">
+                            {%if idioma == 0%}
+                                Mensajes SWIFT
+                            {%endif%}
+                            {%if idioma == 1%}
+                                SWIFT Messages
+                            {%endif%}
+                        </li>
                     {%endif%}
                     {%if 4 not in subindex%}
-                        <li class="list-group-item subindex" sub="1" name="conf">Configuración</li>
+                        <li class="list-group-item subindex" sub="1" name="conf">
+                            {%if idioma == 0%}
+                                Configuración
+                            {%endif%}
+                            {%if idioma == 1%}
+                                Configuration
+                            {%endif%}
+                        </li>
                     {%endif%}
                     {%if 5 not in subindex%}
-                    <li class="list-group-item subindex" sub="1" name="musr">Manejo de Usuarios</li>
+                    <li class="list-group-item subindex" sub="1" name="musr">
+                        {%if idioma == 0%}
+                            Manejo de Usuarios
+                        {%endif%}
+                        {%if idioma == 1%}
+                            Users Management
+                        {%endif%}
+                    </li>
                     {%endif%}
                     {%if 10 not in subindex%}
-                    <li class="list-group-item subindex" sub="1" name="mcta">Manejo de Cuentas</li>
+                    <li class="list-group-item subindex" sub="1" name="mcta">
+                        {%if idioma == 0%}
+                            Manejo de Cuentas
+                        {%endif%}
+                        {%if idioma == 1%}
+                            Accounts Management
+                        {%endif%}
+                    </li>
                     {%endif%}
                     {% for opcion in opciones %}
                         <li class="list-group-item" sub="0" id="op-{{opcion.idopcion}}">{{opcion.nombre}}</li>
@@ -152,7 +246,14 @@
         <div class="well text-right">
             <div class="row">
                 <div class="col-md-12" style="text-align:center;">
-                     <h4>Funciones Asignadas</h4>
+                     <h4>
+                         {%if idioma == 0%}
+                            Funciones Asignadas
+                        {%endif%}
+                        {%if idioma == 1%}
+                            Assigned Functions
+                        {%endif%}
+                     </h4>
                 </div>
 
                 <div class="col-md-3 pull-right">
@@ -175,7 +276,14 @@
         <div class="well text-right well-list">
             <div class="row">
                 <div class="col-md-12" style="text-align:center;">
-                        <h4>Accesos Disponibles</h4>
+                        <h4>
+                            {%if idioma == 0%}
+                                Accesos Disponibles
+                            {%endif%}
+                            {%if idioma == 1%}
+                                Available Access
+                            {%endif%}
+                        </h4>
                 </div>
             </div>
             <div class="scrollDiv">
@@ -200,7 +308,14 @@
         <div class="well text-right">
             <div class="row">
                 <div class="col-md-12" style="text-align:center;">
-                     <h4>Accesos Asignados</h4>
+                     <h4>
+                         {%if idioma == 0%}
+                            Accesos Asignados
+                        {%endif%}
+                        {%if idioma == 1%}
+                            Assigned Access
+                        {%endif%}
+                     </h4>
                 </div>
             </div>
             <div class="scrollDiv">
@@ -225,7 +340,12 @@
             <div class="modal-body">
                 <div class="text-center">
                     <img src="{% static 'images/procesando.gif' %}" class="icon" />
-                    <h4>Procesando, por favor espere.</h4>
+                    {%if idioma == 0%}
+                      <h4>Procesando, por favor espere.</h4>
+                    {%endif%}
+                    {%if idioma == 1%}
+                      <h4>Processing, wait please.</h4>
+                    {%endif%}
                 </div>
             </div>
         </div>
@@ -236,10 +356,9 @@
 {% block script %}
 
 <script> 
-//define el idioma de la tabla (es/en)
-idioma_tr = "es"
 nosub = {{nosub|safe}};
 nosubid = {{nosubid|safe}};
+subindex = {{subindex}};
 </script>
 <script src="{% static 'js/jquery.dataTables.min.js' %}" type="text/javascript"></script>
 <script src="{% static 'js/dataTables.bootstrap.js' %}" type="text/javascript"></script>
