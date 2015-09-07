@@ -44,6 +44,15 @@ function login(user,pass){
                 setTimeout(function(){
                     $(location).attr("href", '/');
                 },2000)
+            } else if (mensaje === "Cambiar contraseña") {
+                if (idioma == 0) {
+                    swal("OK","Login Exitoso, deberá cambiar su contraseña.", "success");
+                } else {
+                    swal("OK", "Successful Login. You must now change your password.", "success");
+                }
+                setTimeout(function(){
+                    $(location).attr("href", '/cambioClave/');
+                },2000)
             } else {
                 swal("Ups!", mensaje, "error");
             }

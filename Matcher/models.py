@@ -807,6 +807,14 @@ class Opcion(models.Model):
     class Meta:
         db_table = 'Opcion'
 
+class Opcion_Ingles(models.Model):
+    idopcion = sqlserver_ado.fields.BigAutoField(db_column='idOpcion', primary_key=True)  
+    nombre = models.CharField(db_column='Nombre', max_length=50)  
+    funprincipal = models.BigIntegerField(db_column='FunPrincipal')  
+
+    class Meta:
+        db_table = 'Opcion_Ingles'
+
 class PerfilOpcion(models.Model):
     opcion_idopcion = models.ForeignKey(Opcion, db_column='Opcion_idOpcion', primary_key=True)  
     perfil_idperfil = models.ForeignKey(Perfil, db_column='Perfil_idPerfil')  
