@@ -612,7 +612,7 @@ class Mt103(models.Model):
     cargos_remitente = models.TextField(db_column='cargos_remitente',null=True)  
     cargos_receptor = models.CharField(db_column='cargos_receptor', max_length=18,null=True)  
     info_remitente_a_receptor = models.CharField(db_column='info_remitente_a_receptor', max_length=250,null=True)
-    reporte_regulatorio = models.CharField(db_column='reporte_regulatorio', max_length=120,null=True)
+    reporte_regulatorio = models.CharField(db_column='reporte_regulatorio', max_length=150,null=True)
     remitente = models.CharField(db_column='remitente', max_length=12)  
     receptor = models.CharField(db_column='receptor', max_length=12)  
     fecha_valor = models.CharField(db_column='fecha_valor', max_length=10)  
@@ -644,6 +644,50 @@ class Mt202(models.Model):
 
     class Meta:
         db_table = 'MT202'
+
+class Mt752(models.Model):
+    idmt752 = sqlserver_ado.fields.BigAutoField(db_column='idMT752', primary_key=True)  
+    num_credito = models.CharField(db_column='num_credito', max_length=16)  
+    ref_banco_present = models.CharField(db_column='ref_banco_present', max_length=16)  
+    proposito = models.CharField(db_column='proposito', max_length=16)  
+    fecha_aviso = models.CharField(db_column='fecha_aviso', max_length=10)  
+    monto_total = models.CharField(db_column='monto_total', max_length=18,null=True)  
+    cargos_deducidos = models.CharField(db_column='cargos_deducidos', max_length=250,null=True)
+    corresponsal_remitente = models.CharField(db_column='corresponsal_remitente', max_length=200,null=True)  
+    corresponsal_receptor = models.CharField(db_column='corresponsal_receptor', max_length=200,null=True)  
+    info_remitente_a_receptor = models.CharField(db_column='info_remitente_a_receptor', max_length=250,null=True)
+    remitente = models.CharField(db_column='remitente', max_length=12)  
+    receptor = models.CharField(db_column='receptor', max_length=12) 
+    fecha_valor = models.CharField(db_column='fecha_valor', max_length=10,null=True)  
+    moneda = models.CharField(db_column='moneda', max_length=3)  
+    monto = models.CharField(db_column='monto', max_length=15)  
+    mensaje_intraday = models.ForeignKey(MensajesIntraday, db_column='mensaje_intraday')
+
+    class Meta:
+        db_table = 'MT752'
+
+class Mt754(models.Model):
+    idmt754 = sqlserver_ado.fields.BigAutoField(db_column='idMT754', primary_key=True)  
+    ref_remitente = models.CharField(db_column='ref_remitente', max_length=16)  
+    ref_relacion = models.CharField(db_column='ref_relacion', max_length=16)  
+    monto_adicional = models.CharField(db_column='monto_adicional', max_length=18,null=True)  
+    cargos_deducidos = models.CharField(db_column='cargos_deducidos', max_length=250,null=True)
+    cargos_agregados = models.CharField(db_column='cargos_agregados', max_length=250,null=True)
+    monto_total = models.CharField(db_column='monto_total', max_length=18,null=True)  
+    banco_reembolso = models.CharField(db_column='banco_reembolso', max_length=200,null=True)  
+    cuenta_institucion = models.CharField(db_column='cuenta_institucion', max_length=200,null=True)  
+    banco_beneficiario = models.CharField(db_column='banco_beneficiario', max_length=200,null=True)  
+    info_remitente_a_receptor = models.CharField(db_column='info_remitente_a_receptor', max_length=250,null=True)
+    narrativa = models.CharField(db_column='narrativa',max_length = 1000,null=True)
+    remitente = models.CharField(db_column='remitente', max_length=12)  
+    receptor = models.CharField(db_column='receptor', max_length=12) 
+    fecha_valor = models.CharField(db_column='fecha_valor', max_length=10,null=True)  
+    moneda = models.CharField(db_column='moneda', max_length=3)  
+    monto = models.CharField(db_column='monto', max_length=15)  
+    mensaje_intraday = models.ForeignKey(MensajesIntraday, db_column='mensaje_intraday')
+
+    class Meta:
+        db_table = 'MT754'
 
 class Mt756(models.Model):
     idmt756 = sqlserver_ado.fields.BigAutoField(db_column='idMT756', primary_key=True)  
