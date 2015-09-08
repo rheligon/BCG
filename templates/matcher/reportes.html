@@ -16,14 +16,29 @@
   li { cursor: pointer;}
 
 </style>
-
+<input type="text" id="idioma" value="{{idioma}}" hidden/>
+<legend>
+{%if idioma == 0%}
+    Reportes
+{%endif%}
+{%if idioma == 1%}
+    Reports
+{%endif%}
+</legend>
 <div class="container" style="margin-top:30px;">
     <div class="row">
         <div class="well col-md-4">
             <ul id="treerep">
                 {% if 4 in ops %}
-                <li>Procesamiento Diario
+                <li>
+                  {%if idioma == 0%}
+                    Procesamiento Diario
+                  {%endif%}
+                  {%if idioma == 1%}
+                    Daily Processing
+                  {%endif%}
                     <ul>
+                      {%if idioma == 0%}
                         <li type="reporte" id="pd_conc">Conciliación</li>
                         <li type="reporte" id="pd_mprop">Matches Propuestos</li>
                         <li type="reporte" id="pd_partab">Partidas Abiertas</li>
@@ -32,12 +47,29 @@
                         <li type="reporte" id="pd_posmon">Posición de Moneda Extranjera</li>
                         <li type="reporte" id="pd_giro">Giros</li>
                         <li type="reporte" id="pd_edcs">Estados de Cuenta</li>
+                      {%endif%}
+                      {%if idioma == 1%}
+                        <li type="reporte" id="pd_conc">Reconciliation</li>
+                        <li type="reporte" id="pd_mprop">Proposed Matches</li>
+                        <li type="reporte" id="pd_partab">Open Entries</li>
+                        <li type="reporte" id="pd_mconf">Confirmed Matches</li>
+                        <li type="reporte" id="pd_hist">Historic</li>
+                        <li type="reporte" id="pd_posmon">Currency Position</li>
+                        <li type="reporte" id="pd_giro">Drafts</li>
+                        <li type="reporte" id="pd_edcs">Account Statements</li>
+                      {%endif%}
                     </ul>
                 </li>
                 {%endif%}
 
                 {% if 1 in ops %}
-                <li>Mensajes SWIFT
+                <li>
+                  {%if idioma == 0%}
+                    Mensajes SWIFT
+                  {%endif%}
+                  {%if idioma == 1%}
+                    SWIFT Messages
+                  {%endif%}
                     <ul>
                         <li type="reporte" id="ms_mt">MTn95/MTn96</li>
                     </ul>
@@ -45,53 +77,120 @@
                 {%endif%}
 
                 {% if 33 in ops %}
-                <li>Configuración
+                <li>
+                  {%if idioma == 0%}
+                    Configuración
+                  {%endif%}
+                  {%if idioma == 1%}
+                    Configuration
+                  {%endif%}
                     <ul>
+                      {%if idioma == 0%}
                         <li type="reporte" id="conf_emp">Configuración por Empresa</li>
                         <li type="reporte" id="conf_gys">Configuración General y de Seguridad</li>
+                      {%endif%}
+                      {%if idioma == 1%}
+                        <li type="reporte" id="conf_emp">Company Setting</li>
+                        <li type="reporte" id="conf_gys">General and Security Settings</li>
+                      {%endif%}
                     </ul>
                 </li>
                 {%endif%}
 
                 {% if 3 in ops %}
-                <li>Seguridad
+                <li>
+                  {%if idioma == 0%}
+                    Seguridad
+                  {%endif%}
+                  {%if idioma == 1%}
+                    Security
+                  {%endif%}
                     <ul>
+                      {%if idioma == 0%}
                         <li type="reporte" id="seg_usr">Usuarios</li>
                         <li type="reporte" id="seg_per">Perfiles</li>
                         <li type="reporte" id="seg_log">Logs</li>
+                      {%endif%}
+                      {%if idioma == 1%}
+                        <li type="reporte" id="seg_usr">Users</li>
+                        <li type="reporte" id="seg_per">Profiles</li>
+                        <li type="reporte" id="seg_log">Logs</li>
+                      {%endif%}
                     </ul>
                 </li>
                 {%endif%}
 
                 {% if 30 in ops %}
-                <li>Administración
+                <li>
+                   {%if idioma == 0%}
+                    Administración
+                  {%endif%}
+                  {%if idioma == 1%}
+                    Administration
+                  {%endif%}
                     <ul>
+                      {%if idioma == 0%}
                         <li type="reporte" id="adm_cta">Cuentas</li>
                         <li type="reporte" id="adm_rdt">Reglas de Transformación</li>
                         <li type="reporte" id="adm_cdm">Criterios de Match</li>
                         <li type="reporte" id="adm_ban">Bancos</li>
                         <li type="reporte" id="adm_mon">Monedas</li>
+                      {%endif%}
+                      {%if idioma == 1%}
+                        <li type="reporte" id="adm_cta">Accounts</li>
+                        <li type="reporte" id="adm_rdt">Transformation Rules</li>
+                        <li type="reporte" id="adm_cdm">Match Criteria</li>
+                        <li type="reporte" id="adm_ban">Banks</li>
+                        <li type="reporte" id="adm_mon">Currency</li>
+                      {%endif%}
                     </ul>
                 </li>
                 {%endif%}
 
                 {% if 35 in ops %}
-                <li>Avanzados
+                <li>
+                  {%if idioma == 0%}
+                    Avanzados
+                  {%endif%}
+                  {%if idioma == 1%}
+                    Advanced
+                  {%endif%}
                     <ul>
+                      {%if idioma == 0%}
                         <li type="reporte" id="avz_ctas">Cuentas Sobregiradas</li>
                         <li type="reporte" id="avz_sconc">Saldos por Conciliación</li>
                         <li type="reporte" id="avz_obs">Observaciones</li>
                         <li type="reporte" id="avz_paavz">Partidas Abiertas - Avanzado</li>
+                      {%endif%}
+                      {%if idioma == 1%}
+                        <li type="reporte" id="avz_ctas">Overdrawn Accounts</li>
+                        <li type="reporte" id="avz_sconc">Reconciliation Balances</li>
+                        <li type="reporte" id="avz_obs">Observations</li>
+                        <li type="reporte" id="avz_paavz">Open Entries - Advanced</li>
+                      {%endif%}
                     </ul>
                 </li>
                 {%endif%}
 
                 {% if 36 in ops %}
-                <li>Estadísticas
+                <li>
+                  {%if idioma == 0%}
+                    Estadísticas
+                  {%endif%}
+                  {%if idioma == 1%}
+                    Statistics
+                  {%endif%}
                     <ul>
+                      {%if idioma == 0%}
                         <li type="reporte" id="est_pa">Estadísticas Partidas Abiertas</li>
                         <li type="reporte" id="est_pcon">Estadísticas Partidas Conciliadas</li>
                         <li type="reporte" id="est_pcar">Estadísticas Partidas Cargadas</li>
+                       {%endif%}
+                      {%if idioma == 1%}
+                        <li type="reporte" id="est_pa">Open Entries Statistics</li>
+                        <li type="reporte" id="est_pcon">Reconciled Entries Statistics</li>
+                        <li type="reporte" id="est_pcar">Loaded Entries Statistics</li>
+                       {%endif%}
                     </ul>
                 </li>
                 {%endif%}
@@ -106,7 +205,14 @@
             <form name="pd_concform" id="pd_concform" method="POST" target="_bank" hidden>
                 {% csrf_token %}
                 <div class="col-md-12 form-group">
-                  <label class="col-md-4 control-label" for="pd_conc_codcta">Codigo Cuenta:</label>
+                  <label class="col-md-4 control-label" for="pd_conc_codcta">
+                    {%if idioma == 0%}
+                      Codigo Cuenta:
+                    {%endif%}
+                    {%if idioma == 1%}
+                      Account Code:
+                    {%endif%}
+                  </label>
                   <div class="col-md-7">
                     <select id="pd_conc_codcta" name="pd_conc_codcta" class="form-control">
                         <option value="-1" ufc="" ufh="">------------</option>
@@ -118,21 +224,45 @@
                 </div>
 
                 <div class="col-md-12 form-group">
-                  <label class="col-md-4 control-label" for="pd_conc_tipocta">Tipo Cuenta:</label>
+                  <label class="col-md-4 control-label" for="pd_conc_tipocta">
+                    {%if idioma == 0%}
+                      Tipo Cuenta:
+                    {%endif%}
+                    {%if idioma == 1%}
+                      Account Type:
+                    {%endif%}
+                  </label>
                   <div class="col-md-7">
                     <select id="pd_conc_tipocta" name="pd_conc_tipocta" class="form-control">
+                      {%if idioma == 0%}
                         <option value="-1">------------</option>
                         <option value="0">Nacional</option>
                         <option value="1">Exterior</option>
                         <option value="2">Cuenta Propia</option>
                         <option value="3">Banco Central</option>
                         <option value="4">Auxiliar</option>
+                      {%endif%}
+                    {%if idioma == 1%}
+                      <option value="-1">------------</option>
+                        <option value="0">National</option>
+                        <option value="1">Foreign</option>
+                        <option value="2">Own Account</option>
+                        <option value="3">Central Bank</option>
+                        <option value="4">Assistant</option>
+                      {%endif%}
                     </select>
                   </div>
                 </div>
 
                 <div class="col-md-12 form-group">
-                    <label class="col-md-4 control-label">Fecha:</label>
+                    <label class="col-md-4 control-label">
+                      {%if idioma == 0%}
+                        Fecha:
+                      {%endif%}
+                      {%if idioma == 1%}
+                        Date:
+                      {%endif%}
+                    </label>
                     <div class="col-md-5">
                       <input id="pd_conc_fecha" name="pd_conc_fecha"  data-value="{{fecha_hoy}}" class="form-control">
                     </div>
@@ -152,33 +282,65 @@
                 <input name="rep" value="reporteconciliacion" hidden>
                 
                 {% if 20 in ops %}
-                <div class="col-md-6">
-                    <input type="submit" value="Autorizar conciliación" id="pd_conc_submit_aut" class="col-md-10 btn btn-success boton autcon">
-                </div>
+                  {%if idioma == 0%}
+                    <div class="col-md-6">
+                        <input type="submit" value="Autorizar conciliación" id="pd_conc_submit_aut" class="col-md-10 btn btn-success boton autcon">
+                    </div>
 
-                <div class="col-md-6">
-                    <input type="submit" value="Ejecutar PDF" id="pd_conc_submit" class="col-md-8 btn btn-primary boton pdf">
-                </div>
+                    <div class="col-md-6">
+                        <input type="submit" value="Ejecutar PDF" id="pd_conc_submit" class="col-md-8 btn btn-primary boton pdf">
+                    </div>
 
-                <div class="col-md-6 pull-right" style="margin-top:2%;">
-                    <input type="submit" value="Ejecutar Excel" id="pd_conc_submit_ex" class="col-md-8 btn btn-primary boton xls">
-                </div>
+                    <div class="col-md-6 pull-right" style="margin-top:2%;">
+                        <input type="submit" value="Ejecutar Excel" id="pd_conc_submit_ex" class="col-md-8 btn btn-primary boton xls">
+                    </div>
+                  {%endif%}
+                  {%if idioma == 1%}
+                    <div class="col-md-6">
+                        <input type="submit" value="Authorize Reconciliation" id="pd_conc_submit_aut" class="col-md-12 btn btn-success boton autcon">
+                    </div>
+
+                    <div class="col-md-6">
+                        <input type="submit" value="Execute PDF" id="pd_conc_submit" class="col-md-8 btn btn-primary boton pdf">
+                    </div>
+
+                    <div class="col-md-6 pull-right" style="margin-top:2%;">
+                        <input type="submit" value="Execute Excel" id="pd_conc_submit_ex" class="col-md-8 btn btn-primary boton xls">
+                    </div>
+                  {%endif%}
                 {% else %}
-                
-                <div class="col-md-6">
-                    <input type="submit" value="Ejecutar Excel" id="pd_conc_submit_ex" class="col-md-8 btn btn-primary boton xls">
-                </div>
+                  {%if idioma == 0%}  
+                    <div class="col-md-6">
+                        <input type="submit" value="Ejecutar Excel" id="pd_conc_submit_ex" class="col-md-8 btn btn-primary boton xls">
+                    </div>
 
-                <div class="col-md-6">
-                    <input type="submit" value="Ejecutar PDF" id="pd_conc_submit" class="col-md-8 btn btn-primary boton pdf">
-                </div>
+                    <div class="col-md-6">
+                        <input type="submit" value="Ejecutar PDF" id="pd_conc_submit" class="col-md-8 btn btn-primary boton pdf">
+                    </div>
+                  {%endif%}
+                  {%if idioma == 1%}  
+                    <div class="col-md-6">
+                        <input type="submit" value="Execute Excel" id="pd_conc_submit_ex" class="col-md-8 btn btn-primary boton xls">
+                    </div>
+
+                    <div class="col-md-6">
+                        <input type="submit" value="Execute PDF" id="pd_conc_submit" class="col-md-8 btn btn-primary boton pdf">
+                    </div>
+                  {%endif%}
                 {% endif %}
             </form>
 
             <form name="pd_mpropform" id="pd_mpropform" method="POST" target="_bank" hidden>
                 {% csrf_token %}
                 <div class="col-md-12 form-group">
-                  <label class="col-md-4 control-label" for="pd_mprop_codcta">Codigo Cuenta:</label>
+                  <label class="col-md-4 control-label" for="pd_mprop_codcta">
+                    {%if idioma == 0%}  
+                      Código Cuenta:
+                    {%endif%}
+                    {%if idioma == 1%}  
+                      Account Code:
+                    {%endif%}
+                  </label>
                   <div class="col-md-7">
                     <select id="pd_mprop_codcta" name="pd_mprop_codcta" class="form-control">
                         <option value="-1">------------</option>
@@ -192,18 +354,35 @@
                 <input name="rep" value="reportematchespropuestos" hidden>
                 
                 <div class="col-md-6">
+                  {%if idioma == 0%}
                     <input type="submit" value="Ejecutar Excel" id="pd_mprop_submit_ex" class="col-md-8 btn btn-primary boton xls">
+                  {%endif%}
+                  {%if idioma == 1%} 
+                    <input type="submit" value="Execute Excel" id="pd_mprop_submit_ex" class="col-md-8 btn btn-primary boton xls">
+                  {%endif%}
                 </div>
                 
                 <div class="col-md-6">
+                  {%if idioma == 0%}
                     <input type="submit" value="Ejecutar PDF" id="pd_mprop_submit" class="col-md-8 btn btn-primary boton pdf">
+                  {%endif%}
+                  {%if idioma == 1%} 
+                    <input type="submit" value="Execute PDF" id="pd_mprop_submit" class="col-md-8 btn btn-primary boton pdf">
+                  {%endif%}
                 </div>
             </form>
 
             <form name="pd_partabform" id="pd_partabform" method="POST" target="_bank" hidden>
                 {% csrf_token %}
                 <div class="col-md-12 form-group">
-                  <label class="col-md-4 control-label" for="pd_partab_codcta">Codigo Cuenta:</label>
+                  <label class="col-md-4 control-label" for="pd_partab_codcta">
+                    {%if idioma == 0%}  
+                      Código Cuenta:
+                    {%endif%}
+                    {%if idioma == 1%}  
+                      Account Code:
+                    {%endif%}
+                  </label>
                   <div class="col-md-7">
                     <select id="pd_partab_codcta" name="pd_partab_codcta" class="form-control">
                         <option value="-1">------------</option>
@@ -221,21 +400,36 @@
                     <div class="radio col-md-4">
                       <label>
                         <input type="radio" class="pdpafilter" id="pd_partab-monto" name="radiopa" value="monto">
-                        Monto
+                          {%if idioma == 0%}  
+                            Monto
+                          {%endif%}
+                          {%if idioma == 1%}  
+                            Amount
+                          {%endif%}
                       </label>
                     </div>
 
                     <div class="radio col-md-4" style="margin-top: 10px;">
                       <label>
                         <input type="radio" class="pdpafilter" id="pd_partab-ref" name="radiopa" value="ref">
-                        Referencia
+                          {%if idioma == 0%}  
+                            Referencia
+                          {%endif%}
+                          {%if idioma == 1%}  
+                            Reference
+                          {%endif%}
                       </label>
                     </div>
 
                     <div class="radio col-md-4" style="margin-top: 10px;">
                       <label>
                         <input type="radio" class="pdpafilter" id="pd_partab-trans" name="radiopa" value="trans">
-                        Transacción
+                          {%if idioma == 0%}  
+                            Transacción
+                          {%endif%}
+                          {%if idioma == 1%}  
+                            Transaction
+                          {%endif%}
                       </label>
                     </div>
                   </div>
@@ -244,14 +438,24 @@
                     <div class="radio col-md-4">
                       <label>
                         <input type="radio" class="pdpafilter" id="pd_partab-fecha" name="radiopa" value="fecha">
-                        Fecha
+                          {%if idioma == 0%}  
+                            Fecha
+                          {%endif%}
+                          {%if idioma == 1%}  
+                            Date
+                          {%endif%}
                       </label>
                     </div>
 
                     <div class="radio col-md-4" style="margin-top: 10px;">
                       <label>
                         <input type="radio" class="pdpafilter" id="pd_partab-todas" name="radiopa" value="todas" checked>
-                        Todas
+                          {%if idioma == 0%}  
+                            Todas
+                          {%endif%}
+                          {%if idioma == 1%}  
+                            All
+                          {%endif%}
                       </label>
                     </div>
                   </div>
@@ -263,7 +467,14 @@
                     <div id="pd_partab_campos_monto" hidden>
                       <!-- Text input-->
                       <div class="form-group col-md-6">
-                        <label class="control-label">Desde: </label>  
+                        <label class="control-label">
+                          {%if idioma == 0%}  
+                            Desde:
+                          {%endif%}
+                          {%if idioma == 1%}  
+                            From:
+                          {%endif%}
+                        </label>  
                         <div>
                         <input id="pd_partab_monto-desde" name="pd_partab_monto-desde" type="text"class="form-control input-md" value="0">
                         </div>
@@ -271,7 +482,14 @@
 
                       <!-- Text input-->
                       <div class="form-group col-md-6">
-                        <label class="control-label">Hasta: </label>  
+                        <label class="control-label">
+                          {%if idioma == 0%}  
+                            Hasta:
+                          {%endif%}
+                          {%if idioma == 1%}  
+                            Until:
+                          {%endif%}
+                        </label>  
                         <div>
                         <input id="pd_partab_monto-hasta" name="pd_partab_monto-hasta" type="text"class="form-control input-md" value="0">
                         </div>
@@ -304,21 +522,31 @@
 
                       <div class="form-group col-md-4"> 
                         <label class="control-label">
-                          Edo
+                          {%if idioma == 0%}  
+                            Edo.
+                          {%endif%}
+                          {%if idioma == 1%}  
+                            Stat.
+                          {%endif%}
                         </label>
                           <input type="text" name="pd_partab_edo" id="pd_partab_edo" class="form-control input-md" value="0">
                       </div>
 
                       <div class="form-group col-md-4"> 
                         <label class="control-label">
-                          Pag
+                          {%if idioma == 0%}  
+                            Pag.
+                          {%endif%}
+                          {%if idioma == 1%}  
+                            Page
+                          {%endif%}
                         </label> 
                           <input type="text" name="pd_partab_pag" id="pd_partab_pag" class="form-control input-md" value="1">
                       </div>
 
                       <div class="form-group col-md-4"> 
                         <label class="control-label">
-                          Trans
+                          Trans.
                         </label> 
                           <input type="text" name="pd_partab_trans" id="pd_partab_trans" class="form-control input-md" value="0">
                       </div>
@@ -326,12 +554,26 @@
 
                     <div id="pd_partab_campos_fecha" hidden>
                       <div class="form-group">
-                        <label class="col-md-2 control-label">Desde:</label>
+                        <label class="col-md-2 control-label">
+                          {%if idioma == 0%}  
+                            Desde:
+                          {%endif%}
+                          {%if idioma == 1%}  
+                            From:
+                          {%endif%}
+                        </label>
                         <div class="col-md-4"><input id="pd_partab_f-desde" name="pd_partab_f-desde" class="form-control" data-value="{{fecha_hoy}}"></div>
                       </div>
 
                       <div class="form-group">
-                        <label class="col-md-2 control-label">Hasta:</label>
+                        <label class="col-md-2 control-label">
+                          {%if idioma == 0%}  
+                            Hasta:
+                          {%endif%}
+                          {%if idioma == 1%}  
+                            To:
+                          {%endif%}
+                        </label>
                         <div class="col-md-4"><input id="pd_partab_f-hasta" name="pd_partab_f-hasta" class="form-control" data-value="{{fecha_hoy}}"></div>
                       </div>
                     </div>
@@ -339,20 +581,37 @@
 
 
                 <input name="rep" value="reportepartabiertas" hidden>
+                {%if idioma == 0%} 
+                  <div class="col-md-6">
+                      <input type="submit" value="Ejecutar Excel" id="pd_partab_submit_ex" class="col-md-8 btn btn-primary boton xls">
+                  </div>
 
-                <div class="col-md-6">
-                    <input type="submit" value="Ejecutar Excel" id="pd_partab_submit_ex" class="col-md-8 btn btn-primary boton xls">
-                </div>
+                  <div class="col-md-6">
+                      <input type="submit" value="Ejecutar PDF" id="pd_partab_submit" class="col-md-8 btn btn-primary boton pdf">
+                  </div>
+                {%endif%}
+                {%if idioma == 1%} 
+                  <div class="col-md-6">
+                      <input type="submit" value="Execute Excel" id="pd_partab_submit_ex" class="col-md-8 btn btn-primary boton xls">
+                  </div>
 
-                <div class="col-md-6">
-                    <input type="submit" value="Ejecutar PDF" id="pd_partab_submit" class="col-md-8 btn btn-primary boton pdf">
-                </div>
+                  <div class="col-md-6">
+                      <input type="submit" value="Execute PDF" id="pd_partab_submit" class="col-md-8 btn btn-primary boton pdf">
+                  </div>
+                {%endif%}
             </form>
 
             <form name="pd_mconfform" id="pd_mconfform" method="POST" target="_bank" hidden>
                 {% csrf_token %}
                 <div class="col-md-12 form-group">
-                  <label class="col-md-4 control-label" for="pd_mconf_codcta">Codigo Cuenta:</label>
+                  <label class="col-md-4 control-label" for="pd_mconf_codcta">
+                    {%if idioma == 0%}  
+                      Código Cuenta:
+                    {%endif%}
+                    {%if idioma == 1%}  
+                      Account Code:
+                    {%endif%}
+                  </label>
                   <div class="col-md-7">
                     <select id="pd_mconf_codcta" name="pd_mconf_codcta" class="form-control">
                         <option value="-1">------------</option>
@@ -369,14 +628,24 @@
                     <div class="radio col-md-4">
                       <label>
                         <input type="radio" class="pdmcfilter" id="pd_mconf-monto" name="radiomc" value="monto">
-                        Monto
+                          {%if idioma == 0%}  
+                            Monto
+                          {%endif%}
+                          {%if idioma == 1%}  
+                            Amount
+                          {%endif%}
                       </label>
                     </div>
 
                     <div class="radio col-md-4" style="margin-top: 10px;">
                       <label>
                         <input type="radio" class="pdmcfilter" id="pd_mconf-ref" name="radiomc" value="ref">
-                        Referencia
+                          {%if idioma == 0%}  
+                            Referencia
+                          {%endif%}
+                          {%if idioma == 1%}  
+                            Reference
+                          {%endif%}
                       </label>
                     </div>
 
@@ -392,14 +661,24 @@
                     <div class="radio col-md-4">
                       <label>
                         <input type="radio" class="pdmcfilter" id="pd_mconf-fecha" name="radiomc" value="fecha">
-                        Fecha
+                          {%if idioma == 0%}  
+                            Fecha
+                          {%endif%}
+                          {%if idioma == 1%}  
+                            Date
+                          {%endif%}
                       </label>
                     </div>
 
                     <div class="radio col-md-4" style="margin-top: 10px;">
                       <label>
                         <input type="radio" class="pdmcfilter" id="pd_mconf-todas" name="radiomc" value="todas" checked>
-                        Todas
+                          {%if idioma == 0%}  
+                            Todas
+                          {%endif%}
+                          {%if idioma == 1%}  
+                            All
+                          {%endif%}
                       </label>
                     </div>
                   </div>
@@ -411,7 +690,14 @@
                     <div id="pd_mconf_campos_monto" hidden>
                       <!-- Text input-->
                       <div class="form-group col-md-6">
-                        <label class="control-label">Desde: </label>  
+                        <label class="control-label">
+                          {%if idioma == 0%}  
+                            Desde:
+                          {%endif%}
+                          {%if idioma == 1%}  
+                            From:
+                          {%endif%}
+                        </label>  
                         <div>
                         <input id="pd_mconf_monto-desde" name="pd_mconf_monto-desde" type="text"class="form-control input-md">
                         </div>
@@ -419,7 +705,14 @@
 
                       <!-- Text input-->
                       <div class="form-group col-md-6">
-                        <label class="control-label">Hasta: </label>  
+                        <label class="control-label">
+                          {%if idioma == 0%}  
+                            Hasta:
+                          {%endif%}
+                          {%if idioma == 1%}  
+                            Until:
+                          {%endif%}
+                        </label>  
                         <div>
                         <input id="pd_mconf_monto-hasta" name="pd_mconf_monto-hasta" type="text"class="form-control input-md">
                         </div>
@@ -453,12 +746,26 @@
 
                     <div id="pd_mconf_campos_fecha" hidden>
                       <div class="form-group">
-                        <label class="col-md-2 control-label">Desde:</label>
+                        <label class="col-md-2 control-label">
+                          {%if idioma == 0%}  
+                            Desde:
+                          {%endif%}
+                          {%if idioma == 1%}  
+                            From:
+                          {%endif%}
+                        </label>
                         <div class="col-md-4"><input id="pd_mconf_f-desde" name="pd_mconf_f-desde" class="form-control" data-value="{{fecha_hoy}}"></div>
                       </div>
 
                       <div class="form-group">
-                        <label class="col-md-2 control-label">Hasta:</label>
+                        <label class="col-md-2 control-label">
+                          {%if idioma == 0%}  
+                            Hasta:
+                          {%endif%}
+                          {%if idioma == 1%}  
+                            To:
+                          {%endif%}
+                        </label>
                         <div class="col-md-4"><input id="pd_mconf_f-hasta" name="pd_mconf_f-hasta" class="form-control" data-value="{{fecha_hoy}}"></div>
                       </div>
                     </div>
@@ -467,19 +774,38 @@
 
                 <input name="rep" value="reportematchesconfirmados" hidden>
 
-                <div class="col-md-6">
-                    <input type="submit" value="Ejecutar Excel" id="pd_mconf_submit_ex" class="col-md-8 btn btn-primary boton xls">
-                </div>
+                {%if idioma == 0%}
+                  <div class="col-md-6">
+                      <input type="submit" value="Ejecutar Excel" id="pd_mconf_submit_ex" class="col-md-8 btn btn-primary boton xls">
+                  </div>
 
-                <div class="col-md-6">
-                    <input type="submit" value="Ejecutar PDF" id="pd_mconf_submit" class="col-md-8 btn btn-primary boton pdf">
-                </div>
+                  <div class="col-md-6">
+                      <input type="submit" value="Ejecutar PDF" id="pd_mconf_submit" class="col-md-8 btn btn-primary boton pdf">
+                  </div>
+                {%endif%}
+                {%if idioma == 1%}
+                  <div class="col-md-6">
+                      <input type="submit" value="Execute Excel" id="pd_mconf_submit_ex" class="col-md-8 btn btn-primary boton xls">
+                  </div>
+
+                  <div class="col-md-6">
+                      <input type="submit" value="Execute PDF" id="pd_mconf_submit" class="col-md-8 btn btn-primary boton pdf">
+                  </div>
+                {%endif%}
+
             </form>
 
             <form name="pd_histform" id="pd_histform" method="POST" target="_bank" hidden>
                 {% csrf_token %}
                 <div class="col-md-12 form-group">
-                  <label class="col-md-4 control-label" for="pd_hist_codcta">Codigo Cuenta:</label>
+                  <label class="col-md-4 control-label" for="pd_hist_codcta">
+                    {%if idioma == 0%}  
+                      Código Cuenta:
+                    {%endif%}
+                    {%if idioma == 1%}  
+                      Account Code:
+                    {%endif%}
+                  </label>
                   <div class="col-md-7">
                     <select id="pd_hist_codcta" name="pd_hist_codcta" class="form-control">
                         <option value="-1">------------</option>
@@ -491,41 +817,82 @@
                 </div>
 
                 <div class="col-md-12 form-group">
-                  <label class="col-md-4 control-label" for="pd_hist_tipocta">Tipo Cuenta:</label>
+                  <label class="col-md-4 control-label" for="pd_hist_tipocta">
+                    {%if idioma == 0%}  
+                      Tipo Cuenta:
+                    {%endif%}
+                    {%if idioma == 1%}  
+                      Account Type:
+                    {%endif%}
+                  </label>
                   <div class="col-md-7">
                     <select id="pd_hist_tipocta" name="pd_hist_tipocta" class="form-control">
+                      {%if idioma == 0%}
                         <option value="-1">------------</option>
                         <option value="0">Nacional</option>
                         <option value="1">Exterior</option>
                         <option value="2">Cuenta Propia</option>
                         <option value="3">Banco Central</option>
                         <option value="4">Auxiliar</option>
+                      {%endif%}
+                      {%if idioma == 1%}
+                        <option value="-1">------------</option>
+                        <option value="0">National</option>
+                        <option value="1">Foreign</option>
+                        <option value="2">Own Account</option>
+                        <option value="3">Central Bank</option>
+                        <option value="4">Assistant</option>
+                      {%endif%}
                     </select>
                   </div>
                 </div>
 
                 <div class="col-md-12 form-group">
-                    <label class="col-md-4 control-label">Fecha:</label>
+                    <label class="col-md-4 control-label">
+                      {%if idioma == 0%}  
+                        Fecha:
+                      {%endif%}
+                      {%if idioma == 1%}  
+                        Date:
+                      {%endif%}
+                    </label>
                     <div class="col-md-5">
                       <input id="pd_hist_fecha" name="pd_hist_fecha" value="" class="form-control" data-value="{{fecha_hoy}}">
                     </div>
                 </div>
 
                 <input name="rep" value="reportehistoricoconciliacion" hidden>
+                {%if idioma == 0%}
+                  <div class="col-md-6">
+                      <input type="submit" value="Ejecutar Excel" id="pd_hist_submit_ex" class="col-md-8 btn btn-primary boton xls">
+                  </div>
 
-                <div class="col-md-6">
-                    <input type="submit" value="Ejecutar Excel" id="pd_hist_submit_ex" class="col-md-8 btn btn-primary boton xls">
-                </div>
+                  <div class="col-md-6 ">
+                      <input type="submit" value="Ejecutar PDF" id="pd_hist_submit" class="col-md-8 btn btn-primary boton pdf">
+                  </div>
+                {%endif%}
+                {%if idioma == 1%}
+                  <div class="col-md-6">
+                      <input type="submit" value="Execute Excel" id="pd_hist_submit_ex" class="col-md-8 btn btn-primary boton xls">
+                  </div>
 
-                <div class="col-md-6 ">
-                    <input type="submit" value="Ejecutar PDF" id="pd_hist_submit" class="col-md-8 btn btn-primary boton pdf">
-                </div>
+                  <div class="col-md-6 ">
+                      <input type="submit" value="Execute PDF" id="pd_hist_submit" class="col-md-8 btn btn-primary boton pdf">
+                  </div>
+                {%endif%}
             </form>
 
             <form name="pd_posmonform" id="pd_posmonform" method="POST" target="_bank" hidden>
               {% csrf_token %}
               <div class="col-md-12 form-group">
-                  <label class="col-md-3 control-label">Fecha:</label>
+                  <label class="col-md-3 control-label">
+                    {%if idioma == 0%}
+                      Fecha:
+                    {%endif%}
+                    {%if idioma == 1%}
+                      Date:
+                    {%endif%}
+                  </label>
                   <div class="col-md-5">
                     <input id="pd_posmon_fecha" name="pd_posmon_fecha"  data-value="{{fecha_hoy}}" class="form-control">
                   </div>
@@ -533,7 +900,12 @@
 
               <div class="form-group col-md-12"> 
                 <label class="control-label col-md-4">
-                  Moneda Local:
+                  {%if idioma == 0%}
+                    Moneda Local:
+                  {%endif%}
+                  {%if idioma == 1%}
+                    Local Currency:
+                  {%endif%}
                 </label> 
                 <div class="col-md-4">
                   <input type="text" name="pd_posmon_monl" id="pd_posmon_monl" class="form-control input-md">
@@ -541,20 +913,37 @@
               </div>
 
               <input name="rep" value="reporteposforex" hidden>
+              {%if idioma == 0%}
+                <div class="col-md-6">
+                    <input type="submit" value="Ejecutar Excel" id="pd_posmon_submit_ex" class="col-md-8 btn btn-primary boton xls">
+                </div>
 
-              <div class="col-md-6">
-                  <input type="submit" value="Ejecutar Excel" id="pd_posmon_submit_ex" class="col-md-8 btn btn-primary boton xls">
-              </div>
+                <div class="col-md-6">
+                    <input type="submit" value="Ejecutar PDF" id="pd_posmon_submit" class="col-md-8 btn btn-primary boton pdf">
+                </div>
+              {%endif%}
+              {%if idioma == 1%}
+                <div class="col-md-6">
+                    <input type="submit" value="Execute Excel" id="pd_posmon_submit_ex" class="col-md-8 btn btn-primary boton xls">
+                </div>
 
-              <div class="col-md-6">
-                  <input type="submit" value="Ejecutar PDF" id="pd_posmon_submit" class="col-md-8 btn btn-primary boton pdf">
-              </div>
+                <div class="col-md-6">
+                    <input type="submit" value="Execute PDF" id="pd_posmon_submit" class="col-md-8 btn btn-primary boton pdf">
+                </div>
+              {%endif%}
             </form>
 
             <form name="pd_giroform" id="pd_giroform" method="POST" target="_bank" hidden>
                 {% csrf_token %}
                 <div class="col-md-12 form-group">
-                  <label class="col-md-4 control-label" for="pd_giro_codcta">Codigo Cuenta:</label>
+                  <label class="col-md-4 control-label" for="pd_giro_codcta">
+                    {%if idioma == 0%}  
+                      Código Cuenta:
+                    {%endif%}
+                    {%if idioma == 1%}  
+                      Account Code:
+                    {%endif%}
+                  </label>
                   <div class="col-md-7">
                     <select id="pd_giro_codcta" name="pd_giro_codcta" class="form-control">
                         <option value="-1">------------</option>
@@ -567,7 +956,12 @@
 
                 <div class="form-group col-md-12"> 
                   <label class="control-label col-md-5">
-                    Tipo Transacción Giro:
+                    {%if idioma == 0%}  
+                      Tipo Transacción Giro:
+                    {%endif%}
+                    {%if idioma == 1%}  
+                      Draft Transaction Type:
+                    {%endif%}
                   </label> 
                   <div class="col-md-4 col-md-pull-1">
                     <input type="text" name="pd_giro_tipo" id="pd_giro_tipo" class="form-control input-md">
@@ -575,59 +969,117 @@
                 </div>
 
                 <input name="rep" value="reportegiros" hidden>
-                
-                <div class="col-md-6">
-                    <input type="submit" value="Ejecutar Excel" id="pd_giro_submit_ex" class="col-md-8 btn btn-primary boton xls">
-                </div>
+                {%if idioma == 0%}
+                  <div class="col-md-6">
+                      <input type="submit" value="Ejecutar Excel" id="pd_giro_submit_ex" class="col-md-8 btn btn-primary boton xls">
+                  </div>
 
-                <div class="col-md-6">
-                    <input type="submit" value="Ejecutar PDF" id="pd_giro_submit" class="col-md-8 btn btn-primary boton pdf">
-                </div>
+                  <div class="col-md-6">
+                      <input type="submit" value="Ejecutar PDF" id="pd_giro_submit" class="col-md-8 btn btn-primary boton pdf">
+                  </div>
+                {%endif%}
+                {%if idioma == 1%}
+                  <div class="col-md-6">
+                      <input type="submit" value="Execute Excel" id="pd_giro_submit_ex" class="col-md-8 btn btn-primary boton xls">
+                  </div>
+
+                  <div class="col-md-6">
+                      <input type="submit" value="Execute PDF" id="pd_giro_submit" class="col-md-8 btn btn-primary boton pdf">
+                  </div>
+                {%endif%}
             </form>
 
             <form name="pd_edcsform" id="pd_edcsform" method="POST" target="_bank" hidden>
                 {% csrf_token %}
                 <div class="col-md-12 form-group">
-                  <label class="col-md-4 control-label" for="pd_edcs_tipocta">Tipo Cuenta:</label>
+                  <label class="col-md-4 control-label" for="pd_edcs_tipocta">
+                    {%if idioma == 0%}  
+                      Tipo Cuenta:
+                    {%endif%}
+                    {%if idioma == 1%}  
+                      Account Type:
+                    {%endif%}
+                  </label>
                   <div class="col-md-7">
                     <select id="pd_edcs_tipocta" name="pd_edcs_tipocta" class="form-control">
+                      {%if idioma == 0%}
                         <option value="-1">------------</option>
                         <option value="0">Nacional</option>
                         <option value="1">Exterior</option>
                         <option value="2">Cuenta Propia</option>
                         <option value="3">Banco Central</option>
                         <option value="4">Auxiliar</option>
+                      {%endif%}
+                      {%if idioma == 1%}
+                        <option value="-1">------------</option>
+                        <option value="0">National</option>
+                        <option value="1">Foreign</option>
+                        <option value="2">Own Account</option>
+                        <option value="3">Central Bank</option>
+                        <option value="4">Assistant</option>
+                      {%endif%}
                     </select>
                   </div>
                 </div>
 
                 <div class="col-md-12 form-group well">
                   <div class="col-md-6 form-group">
-                    <label class="col-md-4 control-label">Desde:</label>
+                    <label class="col-md-4 control-label">
+                      {%if idioma == 0%}  
+                        Desde:
+                      {%endif%}
+                      {%if idioma == 1%}  
+                        From:
+                      {%endif%}
+                    </label>
                     <div class="col-md-9"><input id="pd_edcs_f-desde" name="pd_edcs_f-desde" class="form-control" data-value="{{fecha_hoy}}"></div>
                   </div>
 
                   <div class="col-md-6 form-group">
-                    <label class="col-md-4 control-label">Hasta:</label>
+                    <label class="col-md-4 control-label">
+                      {%if idioma == 0%}  
+                        Hasta:
+                      {%endif%}
+                      {%if idioma == 1%}  
+                        To:
+                      {%endif%}
+                    </label>
                     <div class="col-md-9"><input id="pd_edcs_f-hasta" name="pd_edcs_f-hasta" class="form-control" data-value="{{fecha_hoy}}"></div>
                   </div>
                 </div>
 
                 <input name="rep" value="reporteedoscuenta" hidden>
+                {%if idioma == 0%}
+                  <div class="col-md-6">
+                      <input type="submit" value="Ejecutar Excel" id="pd_edcs_submit_ex" class="col-md-8 btn btn-primary boton xls">
+                  </div>
 
-                <div class="col-md-6">
-                    <input type="submit" value="Ejecutar Excel" id="pd_edcs_submit_ex" class="col-md-8 btn btn-primary boton xls">
-                </div>
+                  <div class="col-md-6">
+                      <input type="submit" value="Ejecutar PDF" id="pd_edcs_submit" class="col-md-8 btn btn-primary boton pdf">
+                  </div>
+                {%endif%}
+                {%if idioma == 1%}
+                  <div class="col-md-6">
+                      <input type="submit" value="Execute Excel" id="pd_edcs_submit_ex" class="col-md-8 btn btn-primary boton xls">
+                  </div>
 
-                <div class="col-md-6">
-                    <input type="submit" value="Ejecutar PDF" id="pd_edcs_submit" class="col-md-8 btn btn-primary boton pdf">
-                </div>
+                  <div class="col-md-6">
+                      <input type="submit" value="Execute PDF" id="pd_edcs_submit" class="col-md-8 btn btn-primary boton pdf">
+                  </div>
+                {%endif%}
             </form>
 
             <form name="ms_mtform" id="ms_mtform" method="POST" target="_bank" hidden>
                 {% csrf_token %}
                 <div class="col-md-12 form-group">
-                  <label class="col-md-4 control-label" for="ms_mt_codcta">Codigo Cuenta:</label>
+                  <label class="col-md-4 control-label" for="ms_mt_codcta">
+                    {%if idioma == 0%}  
+                      Código Cuenta:
+                    {%endif%}
+                    {%if idioma == 1%}  
+                      Account Code:
+                    {%endif%}
+                  </label>
                   <div class="col-md-7">
                     <select id="ms_mt_codcta" name="ms_mt_codcta" class="form-control">
                         <option value="-1">------------</option>
@@ -639,14 +1091,24 @@
                 </div>
 
                 <input name="rep" value="reportemt95mt96" hidden>
+                {%if idioma == 0%}
+                  <div class="col-md-6">
+                      <input type="submit" value="Ejecutar Excel" id="ms_mt_submit_ex" class="col-md-8 btn btn-primary boton xls">
+                  </div>
 
-                <div class="col-md-6">
-                    <input type="submit" value="Ejecutar Excel" id="ms_mt_submit_ex" class="col-md-8 btn btn-primary boton xls">
-                </div>
+                  <div class="col-md-6">
+                      <input type="submit" value="Ejecutar PDF" id="ms_mt_submit" class="col-md-8 btn btn-primary boton pdf">
+                  </div>
+                {%endif%}
+                {%if idioma == 1%}
+                  <div class="col-md-6">
+                      <input type="submit" value="Execute Excel" id="ms_mt_submit_ex" class="col-md-8 btn btn-primary boton xls">
+                  </div>
 
-                <div class="col-md-6">
-                    <input type="submit" value="Ejecutar PDF" id="ms_mt_submit" class="col-md-8 btn btn-primary boton pdf">
-                </div>
+                  <div class="col-md-6">
+                      <input type="submit" value="Execute PDF" id="ms_mt_submit" class="col-md-8 btn btn-primary boton pdf">
+                  </div>
+                {%endif%}
             </form>
 
             <form name="conf_empform" id="conf_empform" method="POST" target="_bank" hidden>
@@ -655,14 +1117,24 @@
                 <input name="tipo" value="0" hidden>
 
                 <input name="rep" value="reporteconfiguracion" hidden>
+                {%if idioma == 0%}
+                  <div class="col-md-6">
+                      <input type="submit" value="Ejecutar Excel" id="conf_emp_submit_ex" class="col-md-8 btn btn-primary boton xls">
+                  </div>
 
-                <div class="col-md-6">
-                    <input type="submit" value="Ejecutar Excel" id="conf_emp_submit_ex" class="col-md-8 btn btn-primary boton xls">
-                </div>
+                  <div class="col-md-6">
+                      <input type="submit" value="Ejecutar PDF" id="conf_emp_submit" class="col-md-8 btn btn-primary boton pdf">
+                  </div>
+                {%endif%}
+                {%if idioma == 1%}
+                  <div class="col-md-6">
+                      <input type="submit" value="Execute Excel" id="conf_emp_submit_ex" class="col-md-8 btn btn-primary boton xls">
+                  </div>
 
-                <div class="col-md-6">
-                    <input type="submit" value="Ejecutar PDF" id="conf_emp_submit" class="col-md-8 btn btn-primary boton pdf">
-                </div>
+                  <div class="col-md-6">
+                      <input type="submit" value="Execute PDF" id="conf_emp_submit" class="col-md-8 btn btn-primary boton pdf">
+                  </div>
+                {%endif%}
             </form>
 
             <form name="conf_gysform" id="conf_gysform" method="POST" target="_bank" hidden>
@@ -671,20 +1143,37 @@
                 <input name="tipo" value="1" hidden>
 
                 <input name="rep" value="reporteconfiguracion" hidden>
+                {%if idioma == 0%}
+                  <div class="col-md-6">
+                      <input type="submit" value="Ejecutar Excel" id="conf_gys_submit_ex" class="col-md-8 btn btn-primary boton xls">
+                  </div>
 
-                <div class="col-md-6">
-                    <input type="submit" value="Ejecutar Excel" id="conf_gys_submit_ex" class="col-md-8 btn btn-primary boton xls">
-                </div>
+                  <div class="col-md-6">
+                      <input type="submit" value="Ejecutar PDF" id="conf_gys_submit" class="col-md-8 btn btn-primary boton pdf">
+                  </div>
+                {%endif%}
+                {%if idioma == 1%}
+                  <div class="col-md-6">
+                      <input type="submit" value="Execute Excel" id="conf_gys_submit_ex" class="col-md-8 btn btn-primary boton xls">
+                  </div>
 
-                <div class="col-md-6">
-                    <input type="submit" value="Ejecutar PDF" id="conf_gys_submit" class="col-md-8 btn btn-primary boton pdf">
-                </div>
+                  <div class="col-md-6">
+                      <input type="submit" value="Execute PDF" id="conf_gys_submit" class="col-md-8 btn btn-primary boton pdf">
+                  </div>
+                {%endif%}
             </form>
 
             <form name="seg_usrform" id="seg_usrform" method="POST" target="_bank" hidden>
                 {% csrf_token %}
                 <div class="col-md-12 form-group">
-                  <label class="col-md-4 control-label" for="seg_usr_codcta">Usuario:</label>
+                  <label class="col-md-4 control-label" for="seg_usr_codcta">
+                    {%if idioma == 0%}
+                      Usuario:
+                    {%endif%}
+                    {%if idioma == 1%}
+                      User:
+                    {%endif%}
+                  </label>
                   <div class="col-md-7">
                     <select id="seg_usr_usuario" name="seg_usr_usuario" class="form-control">
                         <option value="-1">------------</option>
@@ -696,21 +1185,38 @@
                 </div>
 
                 <input name="rep" value="reporteusuarios" hidden>
+                {%if idioma == 0%}
+                  <div class="col-md-6">
+                      <input type="submit" value="Ejecutar Excel" id="seg_usr_submit_ex" class="col-md-8 btn btn-primary boton xls">
+                  </div>
 
-                <div class="col-md-6">
-                    <input type="submit" value="Ejecutar Excel" id="seg_usr_submit_ex" class="col-md-8 btn btn-primary boton xls">
-                </div>
+                  <div class="col-md-6">
+                      <input type="submit" value="Ejecutar" id="seg_usr_submit" class="col-md-8 btn btn-primary boton pdf">
+                  </div>
+                {%endif%}
+                {%if idioma == 1%}
+                  <div class="col-md-6">
+                      <input type="submit" value="Execute Excel" id="seg_usr_submit_ex" class="col-md-8 btn btn-primary boton xls">
+                  </div>
 
-                <div class="col-md-6">
-                    <input type="submit" value="Ejecutar" id="seg_usr_submit" class="col-md-8 btn btn-primary boton pdf">
-                </div>
+                  <div class="col-md-6">
+                      <input type="submit" value="Execute" id="seg_usr_submit" class="col-md-8 btn btn-primary boton pdf">
+                  </div>
+                {%endif%}
             </form>
 
             <form name="seg_perform" id="seg_perform" method="POST" target="_bank" hidden>
                 {% csrf_token %}
 
                 <div class="col-md-12 form-group">
-                  <label class="col-md-4 control-label" for="seg_per_codcta">Perfil:</label>
+                  <label class="col-md-4 control-label" for="seg_per_codcta">
+                    {%if idioma == 0%}
+                      Perfil:
+                    {%endif%}
+                    {%if idioma == 1%}
+                      Profile:
+                    {%endif%}
+                  </label>
                   <div class="col-md-7">
                     <select id="seg_per_perfil" name="seg_per_perfil" class="form-control">
                         <option value="-1">------------</option>
@@ -722,21 +1228,38 @@
                 </div>
 
                 <input name="rep" value="reporteperfiles" hidden>
+                {%if idioma == 0%}
+                  <div class="col-md-6">
+                      <input type="submit" value="Ejecutar Excel" id="seg_per_submit_ex" class="col-md-8 btn btn-primary boton xls">
+                  </div>
 
-                <div class="col-md-6">
-                    <input type="submit" value="Ejecutar Excel" id="seg_per_submit_ex" class="col-md-8 btn btn-primary boton xls">
-                </div>
+                  <div class="col-md-6">
+                      <input type="submit" value="Ejecutar PDF" id="seg_per_submit" class="col-md-8 btn btn-primary boton pdf">
+                  </div>
+                {%endif%}
+                {%if idioma == 1%}
+                  <div class="col-md-6">
+                      <input type="submit" value="Execute Excel" id="seg_per_submit_ex" class="col-md-8 btn btn-primary boton xls">
+                  </div>
 
-                <div class="col-md-6">
-                    <input type="submit" value="Ejecutar PDF" id="seg_per_submit" class="col-md-8 btn btn-primary boton pdf">
-                </div>
+                  <div class="col-md-6">
+                      <input type="submit" value="Execute PDF" id="seg_per_submit" class="col-md-8 btn btn-primary boton pdf">
+                  </div>
+                {%endif%}
             </form>
 
             <form name="seg_logform" id="seg_logform" method="POST" target="_bank" hidden>
               {% csrf_token %}
               <div class="col-md-12">
                   <div class="form-group">
-                    <label class="col-md-2 control-label">Desde:</label>
+                    <label class="col-md-2 control-label">
+                      {%if idioma == 0%}
+                        Desde:
+                      {%endif%}
+                      {%if idioma == 1%}
+                        From:
+                      {%endif%}
+                    </label>
                     <div class="col-md-4"><input id="seg_log_f-desde" name="seg_log_f-desde" class="form-control" data-value="{{fecha_hoy}}"></div>
                     <div class="col-md-1"></div>
                     <div class="bootstrap-timepicker col-md-4">
@@ -745,7 +1268,14 @@
                   </div>
 
                   <div class="form-group" style="padding-top:7%;">
-                    <label class="col-md-2 control-label">Hasta:</label>
+                    <label class="col-md-2 control-label">
+                      {%if idioma == 0%}
+                        Hasta:
+                      {%endif%}
+                      {%if idioma == 1%}
+                        To:
+                      {%endif%}
+                    </label>
                     <div class="col-md-4"><input id="seg_log_f-hasta" name="seg_log_f-hasta" class="form-control" data-value="{{fecha_hoy}}"></div>
                     <div class="col-md-1"></div>
                     <div class="bootstrap-timepicker col-md-4">
@@ -757,7 +1287,12 @@
                     <br/><br/>
                     <label for="bhoras">
                       <input type="checkbox" name="seg_log_bhoras" id="seg_log_bhoras" value="1" checked>
-                      Activar búsqueda por horas
+                        {%if idioma == 0%}
+                          Activar búsqueda por horas
+                        {%endif%}
+                        {%if idioma == 1%}
+                          Activate search for hours
+                        {%endif%}
                     </label>
                   </div>
               </div>
@@ -765,7 +1300,14 @@
               <div class="col-md-12 form-group">
 
                 <div class="form-group">
-                  <label class="col-md-2 control-label" for="seg_log_codcta">Usuario:</label>
+                  <label class="col-md-2 control-label" for="seg_log_codcta">
+                    {%if idioma == 0%}
+                      Usuario:
+                    {%endif%}
+                    {%if idioma == 1%}
+                      User:
+                    {%endif%}
+                  </label>
                   <div class="col-md-10">
                     <select id="seg_log_usuario" name="seg_log_usuario" class="form-control">
                         <option value="-1">------------</option>
@@ -778,7 +1320,12 @@
 
                 <div class="form-group" style="padding-top:7%;">
                   <label class="col-md-2 control-label">
+                    {%if idioma == 0%}
                       Evento:
+                    {%endif%}
+                    {%if idioma == 1%}
+                      Event:
+                    {%endif%}
                   </label>
                   <div class="col-md-10">
                       <select id="seg_log_ev-sel" name="seg_log_ev-sel" class="form-control">
@@ -792,20 +1339,37 @@
               </div>
 
               <input name="rep" value="reportelog" hidden>
+              {%if idioma == 0%}
+                <div class="col-md-6">
+                    <input type="submit" value="Ejecutar Excel" id="seg_log_submit_ex" class="col-md-8 btn btn-primary boton xls">
+                </div>
 
-              <div class="col-md-6">
-                  <input type="submit" value="Ejecutar Excel" id="seg_log_submit_ex" class="col-md-8 btn btn-primary boton xls">
-              </div>
+                <div class="col-md-6">
+                    <input type="submit" value="Ejecutar PDF" id="seg_log_submit" class="col-md-8 btn btn-primary boton pdf">
+                </div>
+              {%endif%}
+              {%if idioma == 1%}
+                <div class="col-md-6">
+                    <input type="submit" value="Execute Excel" id="seg_log_submit_ex" class="col-md-8 btn btn-primary boton xls">
+                </div>
 
-              <div class="col-md-6">
-                  <input type="submit" value="Ejecutar PDF" id="seg_log_submit" class="col-md-8 btn btn-primary boton pdf">
-              </div>
+                <div class="col-md-6">
+                    <input type="submit" value="Execute PDF" id="seg_log_submit" class="col-md-8 btn btn-primary boton pdf">
+                </div>
+              {%endif%}
             </form>
 
             <form name="adm_ctaform" id="adm_ctaform" method="POST" target="_bank" hidden>
                 {% csrf_token %}
                 <div class="col-md-12 form-group">
-                  <label class="col-md-4 control-label" for="adm_cta_codcta">Codigo Cuenta:</label>
+                  <label class="col-md-4 control-label" for="adm_cta_codcta">
+                    {%if idioma == 0%}
+                      Código Cuenta:
+                    {%endif%}
+                    {%if idioma == 1%}
+                      Account Code:
+                    {%endif%}
+                  </label>
                   <div class="col-md-7">
                     <select id="adm_cta_codcta" name="adm_cta_codcta" class="form-control">
                         <option value="-1">------------</option>
@@ -817,20 +1381,37 @@
                 </div>
 
                 <input name="rep" value="reportecuentas" hidden>
+                {%if idioma == 0%}
+                  <div class="col-md-6">
+                      <input type="submit" value="Ejecutar Excel" id="adm_cta_submit_ex" class="col-md-8 btn btn-primary boton xls">
+                  </div>
 
-                <div class="col-md-6">
-                    <input type="submit" value="Ejecutar Excel" id="adm_cta_submit_ex" class="col-md-8 btn btn-primary boton xls">
-                </div>
+                  <div class="col-md-6 pull-right">
+                      <input type="submit" value="Ejecutar PDF" id="adm_cta_submit" class="col-md-8 btn btn-primary boton pdf">
+                  </div>
+                {%endif%}
+                {%if idioma == 1%}
+                  <div class="col-md-6">
+                      <input type="submit" value="Execute Excel" id="adm_cta_submit_ex" class="col-md-8 btn btn-primary boton xls">
+                  </div>
 
-                <div class="col-md-6 pull-right">
-                    <input type="submit" value="Ejecutar PDF" id="adm_cta_submit" class="col-md-8 btn btn-primary boton pdf">
-                </div>
+                  <div class="col-md-6 pull-right">
+                      <input type="submit" value="Execute PDF" id="adm_cta_submit" class="col-md-8 btn btn-primary boton pdf">
+                  </div>
+                {%endif%}
             </form>
 
             <form name="adm_rdtform" id="adm_rdtform" method="POST" target="_bank" hidden>
                 {% csrf_token %}
                 <div class="col-md-12 form-group">
-                  <label class="col-md-4 control-label" for="adm_rdt_codcta">Codigo Cuenta:</label>
+                  <label class="col-md-4 control-label" for="adm_rdt_codcta">
+                    {%if idioma == 0%}
+                      Código Cuenta:
+                    {%endif%}
+                    {%if idioma == 1%}
+                      Account Code:
+                    {%endif%}
+                  </label>
                   <div class="col-md-7">
                     <select id="adm_rdt_codcta" name="adm_rdt_codcta" class="form-control">
                         <option value="-1">------------</option>
@@ -842,115 +1423,214 @@
                 </div>
 
                 <input name="rep" value="reportereglastransf" hidden>
+                {%if idioma == 0%}
+                  <div class="col-md-6">
+                      <input type="submit" value="Ejecutar Excel" id="adm_rdt_submit_ex" class="col-md-8 btn btn-primary boton xls">
+                  </div>
 
-                <div class="col-md-6">
-                    <input type="submit" value="Ejecutar Excel" id="adm_rdt_submit_ex" class="col-md-8 btn btn-primary boton xls">
-                </div>
+                  <div class="col-md-6">
+                      <input type="submit" value="Ejecutar PDF" id="adm_rdt_submit" class="col-md-8 btn btn-primary boton pdf">
+                  </div>
+                {%endif%}
+                {%if idioma == 1%}
+                  <div class="col-md-6">
+                      <input type="submit" value="Execute Excel" id="adm_rdt_submit_ex" class="col-md-8 btn btn-primary boton xls">
+                  </div>
 
-                <div class="col-md-6">
-                    <input type="submit" value="Ejecutar PDF" id="adm_rdt_submit" class="col-md-8 btn btn-primary boton pdf">
-                </div>
+                  <div class="col-md-6">
+                      <input type="submit" value="Execute PDF" id="adm_rdt_submit" class="col-md-8 btn btn-primary boton pdf">
+                  </div>
+                {%endif%}
             </form>
 
             <form name="adm_cdmform" id="adm_cdmform" method="POST" target="_bank" hidden>
                 {% csrf_token %}
 
                 <input name="rep" value="reportecriteriosmatch" hidden>
+                {%if idioma == 0%}
+                  <div class="col-md-6">
+                      <input type="submit" value="Ejecutar Excel" id="adm_cdm_submit_ex" class="col-md-8 btn btn-primary boton xls">
+                  </div>
 
-                <div class="col-md-6">
-                    <input type="submit" value="Ejecutar Excel" id="adm_cdm_submit_ex" class="col-md-8 btn btn-primary boton xls">
-                </div>
+                  <div class="col-md-6">
+                      <input type="submit" value="Ejecutar PDF" id="adm_cdm_submit" class="col-md-8 btn btn-primary boton pdf">
+                  </div>
+                {%endif%}
+                {%if idioma == 1%}
+                  <div class="col-md-6">
+                      <input type="submit" value="Execute Excel" id="adm_cdm_submit_ex" class="col-md-8 btn btn-primary boton xls">
+                  </div>
 
-                <div class="col-md-6">
-                    <input type="submit" value="Ejecutar PDF" id="adm_cdm_submit" class="col-md-8 btn btn-primary boton pdf">
-                </div>
+                  <div class="col-md-6">
+                      <input type="submit" value="Execute PDF" id="adm_cdm_submit" class="col-md-8 btn btn-primary boton pdf">
+                  </div>
+                {%endif%}
             </form>
 
             <form name="adm_banform" id="adm_banform" method="POST" target="_bank" hidden>
                 {% csrf_token %}
 
                 <input name="rep" value="reportebancos" hidden>
+                {%if idioma == 0%}
+                  <div class="col-md-6">
+                      <input type="submit" value="Ejecutar Excel" id="adm_ban_submit_ex" class="col-md-8 btn btn-primary boton xls">
+                  </div>
 
-                <div class="col-md-6">
-                    <input type="submit" value="Ejecutar Excel" id="adm_ban_submit_ex" class="col-md-8 btn btn-primary boton xls">
-                </div>
+                  <div class="col-md-6">
+                      <input type="submit" value="Ejecutar PDF" id="adm_ban_submit" class="col-md-8 btn btn-primary boton pdf">
+                  </div>
+                {%endif%}
+                {%if idioma == 1%}  
+                  <div class="col-md-6">
+                      <input type="submit" value="Execute Excel" id="adm_ban_submit_ex" class="col-md-8 btn btn-primary boton xls">
+                  </div>
 
-                <div class="col-md-6">
-                    <input type="submit" value="Ejecutar PDF" id="adm_ban_submit" class="col-md-8 btn btn-primary boton pdf">
-                </div>
+                  <div class="col-md-6">
+                      <input type="submit" value="Execute PDF" id="adm_ban_submit" class="col-md-8 btn btn-primary boton pdf">
+                  </div>
+                {%endif%}
             </form>
 
             <form name="adm_monform" id="adm_monform" method="POST" target="_bank" hidden>
                 {% csrf_token %}
 
                 <input name="rep" value="reportemonedas" hidden>
-                <div class="col-md-6">
-                    <input type="submit" value="Ejecutar Excel" id="adm_mon_submit_ex" class="col-md-8 btn btn-primary boton xls">
-                </div>
+                {%if idioma == 0%}
+                  <div class="col-md-6">
+                      <input type="submit" value="Ejecutar Excel" id="adm_mon_submit_ex" class="col-md-8 btn btn-primary boton xls">
+                  </div>
 
-                <div class="col-md-6 ">
-                    <input type="submit" value="Ejecutar PDF" id="adm_mon_submit" class="col-md-8 btn btn-primary boton pdf">
-                </div>
+                  <div class="col-md-6 ">
+                      <input type="submit" value="Ejecutar PDF" id="adm_mon_submit" class="col-md-8 btn btn-primary boton pdf">
+                  </div>
+                {%endif%}
+                {%if idioma == 1%}
+                  <div class="col-md-6">
+                      <input type="submit" value="Execute Excel" id="adm_mon_submit_ex" class="col-md-8 btn btn-primary boton xls">
+                  </div>
+
+                  <div class="col-md-6 ">
+                      <input type="submit" value="Execute PDF" id="adm_mon_submit" class="col-md-8 btn btn-primary boton pdf">
+                  </div>
+                {%endif%}
             </form>
 
             <form name="avz_ctasform" id="avz_ctasform" method="POST" target="_bank" hidden>
                 {% csrf_token %}
                 <div class="col-md-12 form-group">
-                    <label class="col-md-4 control-label">Fecha:</label>
+                    <label class="col-md-4 control-label">
+                      {%if idioma == 0%}
+                        Fecha:
+                      {%endif%}
+                      {%if idioma == 1%}
+                        Date:
+                      {%endif%}
+                    </label>
                     <div class="col-md-5">
                       <input id="avz_ctas_fecha" name="avz_ctas_fecha"  data-value="{{fecha_hoy}}" class="form-control">
                     </div>
                 </div>
 
                 <input name="rep" value="reportectassobregiradas" hidden>
+                {%if idioma == 0%}
+                  <div class="col-md-6">
+                      <input type="submit" value="Ejecutar Excel" id="avz_ctas_submit_ex" class="col-md-8 btn btn-primary boton xls">
+                  </div>
 
-                <div class="col-md-6">
-                    <input type="submit" value="Ejecutar Excel" id="avz_ctas_submit_ex" class="col-md-8 btn btn-primary boton xls">
-                </div>
+                  <div class="col-md-6">
+                      <input type="submit" value="Ejecutar PDF" id="avz_ctas_submit" class="col-md-8 btn btn-primary boton pdf">
+                  </div>
+                {%endif%}
+                {%if idioma == 1%}
+                  <div class="col-md-6">
+                      <input type="submit" value="Execute Excel" id="avz_ctas_submit_ex" class="col-md-8 btn btn-primary boton xls">
+                  </div>
 
-                <div class="col-md-6">
-                    <input type="submit" value="Ejecutar PDF" id="avz_ctas_submit" class="col-md-8 btn btn-primary boton pdf">
-                </div>
+                  <div class="col-md-6">
+                      <input type="submit" value="Execute PDF" id="avz_ctas_submit" class="col-md-8 btn btn-primary boton pdf">
+                  </div>
+                {%endif%}
             </form>
 
             <form name="avz_sconcform" id="avz_sconcform" method="POST" target="_bank" hidden>
                 {% csrf_token %}
                 <div class="col-md-12 form-group">
-                  <label class="col-md-4 control-label" for="avz_sconc_tipocta">Tipo Cuenta:</label>
+                  <label class="col-md-4 control-label" for="avz_sconc_tipocta">
+                    {%if idioma == 0%}
+                      Tipo Cuenta:
+                    {%endif%}
+                    {%if idioma == 1%}
+                      Account Type:
+                    {%endif%}
+                  </label>
                   <div class="col-md-7">
                     <select id="avz_sconc_tipocta" name="avz_sconc_tipocta" class="form-control">
+                       {%if idioma == 0%}
                         <option value="-1">------------</option>
                         <option value="0">Nacional</option>
                         <option value="1">Exterior</option>
                         <option value="2">Cuenta Propia</option>
                         <option value="3">Banco Central</option>
                         <option value="4">Auxiliar</option>
+                      {%endif%}
+                      {%if idioma == 1%}
+                        <option value="-1">------------</option>
+                        <option value="0">National</option>
+                        <option value="1">Foreign</option>
+                        <option value="2">Own Account</option>
+                        <option value="3">Central Bank</option>
+                        <option value="4">Assistant</option>
+                      {%endif%}
                     </select>
                   </div>
                 </div>
 
                 <div class="col-md-12 form-group">
-                    <label class="col-md-4 control-label">Fecha:</label>
+                    <label class="col-md-4 control-label">
+                      {%if idioma == 0%}
+                        Fecha:
+                      {%endif%}
+                      {%if idioma == 1%}
+                        Date:
+                      {%endif%}
+                    </label>
                     <div class="col-md-5">
                       <input id="avz_sconc_fecha" name="avz_sconc_fecha" value="" class="form-control" data-value="{{fecha_hoy}}">
                     </div>
                 </div>
 
                 <input name="rep" value="reportesaldos" hidden>
+                {%if idioma == 0%}
+                  <div class="col-md-6">
+                      <input type="submit" value="Ejecutar Excel" id="avz_sconc_submit_ex" class="col-md-8 btn btn-primary boton xls">
+                  </div>
 
-                <div class="col-md-6">
-                    <input type="submit" value="Ejecutar Excel" id="avz_sconc_submit_ex" class="col-md-8 btn btn-primary boton xls">
-                </div>
+                  <div class="col-md-6">
+                      <input type="submit" value="Ejecutar PDF" id="avz_sconc_submit" class="col-md-8 btn btn-primary boton pdf">
+                  </div>
+                {%endif%}
+                {%if idioma == 1%}
+                  <div class="col-md-6">
+                      <input type="submit" value="Execute Excel" id="avz_sconc_submit_ex" class="col-md-8 btn btn-primary boton xls">
+                  </div>
 
-                <div class="col-md-6">
-                    <input type="submit" value="Ejecutar PDF" id="avz_sconc_submit" class="col-md-8 btn btn-primary boton pdf">
-                </div>
+                  <div class="col-md-6">
+                      <input type="submit" value="Execute PDF" id="avz_sconc_submit" class="col-md-8 btn btn-primary boton pdf">
+                  </div>
+                {%endif%}
             </form>
 
             <form name="avz_obsform" id="avz_obsform" method="POST" target="_bank" hidden>
                 {% csrf_token %}
                 <div class="col-md-12 form-group">
-                  <label class="col-md-4 control-label" for="avz_obs_codcta">Codigo Cuenta:</label>
+                  <label class="col-md-4 control-label" for="avz_obs_codcta">
+                    {%if idioma == 0%}
+                      Código Cuenta:
+                    {%endif%}
+                    {%if idioma == 1%}
+                      Account Code:
+                    {%endif%}
+                  </label>
                   <div class="col-md-7">
                     <select id="avz_obs_codcta" name="pd_conc_codcta" class="form-control">
                         <option value="-1">------------</option>
@@ -962,7 +1642,14 @@
                 </div>
 
                 <div class="col-md-12 form-group">
-                    <label class="col-md-4 control-label">Fecha:</label>
+                    <label class="col-md-4 control-label">
+                      {%if idioma == 0%}
+                        Fecha:
+                      {%endif%}
+                      {%if idioma == 1%}
+                        Date:
+                      {%endif%}
+                    </label>
                     <div class="col-md-5">
                       <input id="avz_obs_fecha" name="pd_conc_fecha" data-value="{{fecha_hoy}}" class="form-control">
                     </div>
@@ -970,41 +1657,84 @@
 
                 <input name="tipo" value="3" hidden>
                 <input name="rep" value="reporteconciliacion" hidden>
+                {%if idioma == 0%}
+                  <div class="col-md-6">
+                      <input type="submit" value="Ejecutar Excel" id="avz_obs_submit_ex" class="col-md-8 btn btn-primary boton xls">
+                  </div>
 
-                <div class="col-md-6">
-                    <input type="submit" value="Ejecutar Excel" id="avz_obs_submit_ex" class="col-md-8 btn btn-primary boton xls">
-                </div>
+                  <div class="col-md-6">
+                      <input type="submit" value="Ejecutar PDF" id="avz_obs_submit" class="col-md-8 btn btn-primary boton pdf">
+                  </div>
+                {%endif%}
+                {%if idioma == 1%}
+                  <div class="col-md-6">
+                      <input type="submit" value="Execute Excel" id="avz_obs_submit_ex" class="col-md-8 btn btn-primary boton xls">
+                  </div>
 
-                <div class="col-md-6">
-                    <input type="submit" value="Ejecutar PDF" id="avz_obs_submit" class="col-md-8 btn btn-primary boton pdf">
-                </div>
+                  <div class="col-md-6">
+                      <input type="submit" value="Execute PDF" id="avz_obs_submit" class="col-md-8 btn btn-primary boton pdf">
+                  </div>
+                {%endif%}
             </form>
 
             <form name="avz_paavzform" id="avz_paavzform" method="POST" target="_bank" hidden>
                 {% csrf_token %}
                 <div class="col-md-12 form-group">
-                  <label class="col-md-4 control-label" for="avz_paavz_tipocta">Tipo Cuenta:</label>
+                  <label class="col-md-4 control-label" for="avz_paavz_tipocta">
+                    {%if idioma == 0%}
+                      Tipo Cuenta:
+                    {%endif%}
+                    {%if idioma == 1%}
+                      Account Type:
+                    {%endif%}
+                  </label>
                   <div class="col-md-7">
                     <select id="avz_paavz_tipocta" name="avz_paavz_tipocta" class="form-control">
+                      {%if idioma == 0%}
                         <option value="-1">------------</option>
                         <option value="0">Nacional</option>
                         <option value="1">Exterior</option>
                         <option value="2">Cuenta Propia</option>
                         <option value="3">Banco Central</option>
                         <option value="4">Auxiliar</option>
+                      {%endif%}
+                      {%if idioma == 1%}
+                        <option value="-1">------------</option>
+                        <option value="0">National</option>
+                        <option value="1">Foreign</option>
+                        <option value="2">Own Account</option>
+                        <option value="3">Central Bank</option>
+                        <option value="4">Assistant</option>
+                      {%endif%}
                     </select>
                   </div>
                 </div>
 
                 <div class="col-md-12 form-group">
-                  <label class="col-md-4 control-label" for="avz_paavz_ord">Ordenar Por:</label>
+                  <label class="col-md-4 control-label" for="avz_paavz_ord">
+                    {%if idioma == 0%}
+                      Ordenar Por:
+                    {%endif%}
+                    {%if idioma == 1%}
+                      Order By:
+                    {%endif%}
+                  </label>
                   <div class="col-md-7">
                     <select id="avz_paavz_ord" name="avz_paavz_ord" class="form-control">
+                      {%if idioma == 0%}
                         <option value="0">Monto</option>
                         <option value="1">Cuenta,Fecha</option>
                         <option value="2">Cuenta,Fecha,Débitos</option>
                         <option value="3">Cuenta,Fecha,Créditos</option>
                         <option value="4">Monto,Fecha,Referencias</option>
+                      {%endif%}
+                      {%if idioma == 1%}
+                        <option value="0">Amount</option>
+                        <option value="1">Account,Date</option>
+                        <option value="2">Account,Date,Debits</option>
+                        <option value="3">Account,Date,Credis</option>
+                        <option value="4">Amount,Date,References</option>
+                      {%endif%}
                     </select>
                   </div>
                 </div>
@@ -1025,14 +1755,24 @@
                     <div class="radio col-md-4">
                       <label>
                         <input type="radio" class="avzpafilter" id="avz_paavz-monto" name="radiopaavz" value="monto">
-                        Monto
+                          {%if idioma == 0%}
+                            Monto
+                          {%endif%}
+                          {%if idioma == 1%}
+                            Amount
+                          {%endif%}
                       </label>
                     </div>
 
                     <div class="radio col-md-4" style="margin-top: 10px;">
                       <label>
                         <input type="radio" class="avzpafilter" id="avz_paavz-ref" name="radiopaavz" value="ref">
-                        Referencia
+                          {%if idioma == 0%}
+                            Referencia
+                          {%endif%}
+                          {%if idioma == 1%}
+                            Reference
+                          {%endif%}
                       </label>
                     </div>
                   </div>
@@ -1041,14 +1781,24 @@
                     <div class="radio col-md-4">
                       <label>
                         <input type="radio" class="avzpafilter" id="avz_paavz-fecha" name="radiopaavz" value="fecha">
-                        Fecha
+                          {%if idioma == 0%}
+                            Fecha
+                          {%endif%}
+                          {%if idioma == 1%}
+                            Date
+                          {%endif%}
                       </label>
                     </div>
 
                     <div class="radio col-md-4" style="margin-top: 10px;">
                       <label>
                         <input type="radio" class="avzpafilter" id="avz_paavz-todas" name="radiopaavz" value="todas" checked>
-                        Todas
+                          {%if idioma == 0%}
+                            Todas
+                          {%endif%}
+                          {%if idioma == 1%}
+                            All
+                          {%endif%}
                       </label>
                     </div>
                   </div>
@@ -1060,7 +1810,14 @@
                     <div id="avz_paavz_campos_monto" hidden>
                       <!-- Text input-->
                       <div class="form-group col-md-6">
-                        <label class="control-label">Desde: </label>  
+                        <label class="control-label">
+                          {%if idioma == 0%}
+                            Desde:
+                          {%endif%}
+                          {%if idioma == 1%}
+                            From:
+                          {%endif%}
+                        </label>  
                         <div>
                         <input id="avz_paavz_monto-desde" name="avz_paavz_monto-desde" type="text"class="form-control input-md" value="0">
                         </div>
@@ -1068,7 +1825,14 @@
 
                       <!-- Text input-->
                       <div class="form-group col-md-6">
-                        <label class="control-label">Hasta: </label>  
+                        <label class="control-label">
+                          {%if idioma == 0%}
+                            Hasta:
+                          {%endif%}
+                          {%if idioma == 1%}
+                            Until:
+                          {%endif%}
+                        </label>  
                         <div>
                         <input id="avz_paavz_monto-hasta" name="avz_paavz_monto-hasta" type="text"class="form-control input-md" value="0">
                         </div>
@@ -1093,12 +1857,26 @@
 
                     <div id="avz_paavz_campos_fecha" hidden>
                       <div class="form-group">
-                        <label class="col-md-2 control-label">Desde:</label>
+                        <label class="col-md-2 control-label">
+                          {%if idioma == 0%}
+                            Desde:
+                          {%endif%}
+                          {%if idioma == 1%}
+                            From:
+                          {%endif%}
+                        </label>
                         <div class="col-md-4"><input id="avz_paavz_f-desde" name="avz_paavz_f-desde" class="form-control" data-value="{{fecha_hoy}}"></div>
                       </div>
 
                       <div class="form-group">
-                        <label class="col-md-2 control-label">Hasta:</label>
+                        <label class="col-md-2 control-label">
+                          {%if idioma == 0%}
+                            Hasta:
+                          {%endif%}
+                          {%if idioma == 1%}
+                            To:
+                          {%endif%}
+                        </label>
                         <div class="col-md-4"><input id="avz_paavz_f-hasta" name="avz_paavz_f-hasta" class="form-control" data-value="{{fecha_hoy}}"></div>
                       </div>
                     </div>
@@ -1106,34 +1884,66 @@
 
 
                 <input name="rep" value="reportepartabiertasavz" hidden>
+                {%if idioma == 0%}
+                  <div class="col-md-6">
+                      <input type="submit" value="Ejecutar Excel" id="avz_paavz_submit_ex" class="col-md-8 btn btn-primary boton xls">
+                  </div>
 
-                <div class="col-md-6">
-                    <input type="submit" value="Ejecutar Excel" id="avz_paavz_submit_ex" class="col-md-8 btn btn-primary boton xls">
-                </div>
+                  <div class="col-md-6">
+                      <input type="submit" value="Ejecutar PDF" id="avz_paavz_submit" class="col-md-8 btn btn-primary boton pdf">
+                  </div>
+                {%endif%}
+                {%if idioma == 1%}
+                  <div class="col-md-6">
+                      <input type="submit" value="Execute Excel" id="avz_paavz_submit_ex" class="col-md-8 btn btn-primary boton xls">
+                  </div>
 
-                <div class="col-md-6">
-                    <input type="submit" value="Ejecutar PDF" id="avz_paavz_submit" class="col-md-8 btn btn-primary boton pdf">
-                </div>
+                  <div class="col-md-6">
+                      <input type="submit" value="Execute PDF" id="avz_paavz_submit" class="col-md-8 btn btn-primary boton pdf">
+                  </div>
+                {%endif%}
             </form>
 
             <form name="est_paform" id="est_paform" method="POST" target="_bank" hidden>
                 {% csrf_token %}
                 <div class="col-md-12 form-group">
-                  <label class="col-md-4 control-label" for="est_pa_tipocta">Tipo Cuenta:</label>
+                  <label class="col-md-4 control-label" for="est_pa_tipocta">
+                    {%if idioma == 0%}
+                      Tipo Cuenta:
+                    {%endif%}
+                    {%if idioma == 1%}
+                      Account Type:
+                    {%endif%}
+                  </label>
                   <div class="col-md-7">
                     <select id="est_pa_tipocta" name="est_pa_tipocta" class="form-control">
-                        <option value="-1">------------</option>
-                        <option value="0">Nacional</option>
-                        <option value="1">Exterior</option>
-                        <option value="2">Cuenta Propia</option>
-                        <option value="3">Banco Central</option>
-                        <option value="4">Auxiliar</option>
+                      {%if idioma == 0%}
+                        <option value="0">Monto</option>
+                        <option value="1">Cuenta,Fecha</option>
+                        <option value="2">Cuenta,Fecha,Débitos</option>
+                        <option value="3">Cuenta,Fecha,Créditos</option>
+                        <option value="4">Monto,Fecha,Referencias</option>
+                      {%endif%}
+                      {%if idioma == 1%}
+                        <option value="0">Amount</option>
+                        <option value="1">Account,Date</option>
+                        <option value="2">Account,Date,Debits</option>
+                        <option value="3">Account,Date,Credis</option>
+                        <option value="4">Amount,Date,References</option>
+                      {%endif%}
                     </select>
                   </div>
                 </div>
 
                 <div class="col-md-12 form-group">
-                  <label class="col-md-4 control-label" for="est_pa_codcta">Codigo Cuenta:</label>
+                  <label class="col-md-4 control-label" for="est_pa_codcta">
+                    {%if idioma == 0%}
+                      Código Cuenta:
+                    {%endif%}
+                    {%if idioma == 1%}
+                      Account Code:
+                    {%endif%}
+                  </label>
                   <div class="col-md-7">
                     <select id="est_pa_codcta" name="est_pa_codcta" class="form-control">
                         <option value="-1">------------</option>
@@ -1145,56 +1955,115 @@
                 </div>
 
                 <div class="col-md-12 form-group">
-                  <label class="col-md-4 control-label" for="est_pa_fuente">Tipo Cuenta:</label>
+                  <label class="col-md-4 control-label" for="est_pa_fuente">
+                    {%if idioma == 0%}
+                      Tipo Cuenta:
+                    {%endif%}
+                    {%if idioma == 1%}
+                      Account Type:
+                    {%endif%}
+                  </label>
                   <div class="col-md-7">
                     <select id="est_pa_fuente" name="est_pa_fuente" class="form-control">
+                      {%if idioma == 0%}
                         <option value="0">Última Conciliación</option>
                         <option value="1">Históricos</option>
+                      {%endif%}
+                      {%if idioma == 1%}
+                        <option value="0">Last Reconciliation</option>
+                        <option value="1">Historics</option>
+                      {%endif%}
                     </select>
                   </div>
                 </div>
 
                 <div class="col-md-12 form-group well">
                   <div class="col-md-6 form-group">
-                    <label class="col-md-4 control-label">Desde:</label>
+                    <label class="col-md-4 control-label">
+                      {%if idioma == 0%}
+                        Desde:
+                      {%endif%}
+                      {%if idioma == 1%}
+                        Since:
+                      {%endif%}
+                    </label>
                     <div class="col-md-9"><input id="est_pa_f-desde" name="est_pa_f-desde" class="form-control" data-value="{{fecha_hoy}}" disabled></div>
                   </div>
 
                   <div class="col-md-6 form-group">
-                    <label class="col-md-4 control-label">Hasta:</label>
+                    <label class="col-md-4 control-label">
+                      {%if idioma == 0%}
+                        Hasta:
+                      {%endif%}
+                      {%if idioma == 1%}
+                        To:
+                      {%endif%}
+                    </label>
                     <div class="col-md-9"><input id="est_pa_f-hasta" name="est_pa_f-hasta" class="form-control" data-value="{{fecha_hoy}}" ></div>
                   </div>
                 </div>
 
                 <input name="rep" value="reporteestpartidasabiertas" hidden>
+                {%if idioma == 0%}
+                  <div class="col-md-6">
+                      <input type="submit" value="Ejecutar Excel" id="est_pa_submit_ex" class="col-md-8 btn btn-primary boton xls">
+                  </div>
 
-                <div class="col-md-6">
-                    <input type="submit" value="Ejecutar Excel" id="est_pa_submit_ex" class="col-md-8 btn btn-primary boton xls">
-                </div>
+                  <div class="col-md-6">
+                      <input type="submit" value="Ejecutar PDF" id="est_pa_submit" class="col-md-8 btn btn-primary boton pdf">
+                  </div>
+                {%endif%}
+                {%if idioma == 1%}
+                  <div class="col-md-6">
+                      <input type="submit" value="Execute Excel" id="est_pa_submit_ex" class="col-md-8 btn btn-primary boton xls">
+                  </div>
 
-                <div class="col-md-6">
-                    <input type="submit" value="Ejecutar PDF" id="est_pa_submit" class="col-md-8 btn btn-primary boton pdf">
-                </div>
+                  <div class="col-md-6">
+                      <input type="submit" value="Execute PDF" id="est_pa_submit" class="col-md-8 btn btn-primary boton pdf">
+                  </div>
+                {%endif%}
             </form>
 
             <form name="est_pconform" id="est_pconform" method="POST" target="_bank" hidden>
                 {% csrf_token %}
                 <div class="col-md-12 form-group">
-                  <label class="col-md-4 control-label" for="est_pcon_tipocta">Tipo Cuenta:</label>
+                  <label class="col-md-4 control-label" for="est_pcon_tipocta">
+                    {%if idioma == 0%}
+                        Tipo Cuenta:
+                      {%endif%}
+                      {%if idioma == 1%}
+                        Account Type:
+                      {%endif%}
+                  </label>
                   <div class="col-md-7">
                     <select id="est_pcon_tipocta" name="est_pcon_tipocta" class="form-control">
-                        <option value="-1">------------</option>
-                        <option value="0">Nacional</option>
-                        <option value="1">Exterior</option>
-                        <option value="2">Cuenta Propia</option>
-                        <option value="3">Banco Central</option>
-                        <option value="4">Auxiliar</option>
+                      {%if idioma == 0%}
+                        <option value="0">Monto</option>
+                        <option value="1">Cuenta,Fecha</option>
+                        <option value="2">Cuenta,Fecha,Débitos</option>
+                        <option value="3">Cuenta,Fecha,Créditos</option>
+                        <option value="4">Monto,Fecha,Referencias</option>
+                      {%endif%}
+                      {%if idioma == 1%}
+                        <option value="0">Amount</option>
+                        <option value="1">Account,Date</option>
+                        <option value="2">Account,Date,Debits</option>
+                        <option value="3">Account,Date,Credis</option>
+                        <option value="4">Amount,Date,References</option>
+                      {%endif%}
                     </select>
                   </div>
                 </div>
 
                 <div class="col-md-12 form-group">
-                  <label class="col-md-4 control-label" for="est_pcon_codcta">Codigo Cuenta:</label>
+                  <label class="col-md-4 control-label" for="est_pcon_codcta">
+                    {%if idioma == 0%}
+                        Código Cuenta:
+                      {%endif%}
+                      {%if idioma == 1%}
+                        Account Code:
+                      {%endif%}
+                  </label>
                   <div class="col-md-7">
                     <select id="est_pcon_codcta" name="est_pcon_codcta" class="form-control">
                         <option value="-1">------------</option>
@@ -1207,45 +2076,91 @@
 
                 <div class="col-md-12 form-group well">
                   <div class="col-md-6 form-group">
-                    <label class="col-md-4 control-label">Desde:</label>
+                    <label class="col-md-4 control-label">
+                      {%if idioma == 0%}
+                        Desde:
+                      {%endif%}
+                      {%if idioma == 1%}
+                        From:
+                      {%endif%}
+                    </label>
                     <div class="col-md-9"><input id="est_pcon_f-desde" name="est_pcon_f-desde" class="form-control" data-value="{{fecha_hoy}}"></div>
                   </div>
 
                   <div class="col-md-6 form-group">
-                    <label class="col-md-4 control-label">Hasta:</label>
+                    <label class="col-md-4 control-label">
+                      {%if idioma == 0%}
+                        Hasta:
+                      {%endif%}
+                      {%if idioma == 1%}
+                        To:
+                      {%endif%}
+                    </label>
                     <div class="col-md-9"><input id="est_pcon_f-hasta" name="est_pcon_f-hasta" class="form-control" data-value="{{fecha_hoy}}"></div>
                   </div>
                 </div>
 
                 <input name="rep" value="reporteestmatchconf" hidden>
+                {%if idioma == 0%}
+                  <div class="col-md-6">
+                      <input type="submit" value="Ejecutar Excel" id="est_pcon_submit_ex" class="col-md-8 btn btn-primary boton xls">
+                  </div>
 
-                <div class="col-md-6">
-                    <input type="submit" value="Ejecutar Excel" id="est_pcon_submit_ex" class="col-md-8 btn btn-primary boton xls">
-                </div>
+                  <div class="col-md-6 pull-right">
+                      <input type="submit" value="Ejecutar PDF" id="est_pcon_submit" class="col-md-8 btn btn-primary boton pdf">
+                  </div>
+                {%endif%}
+                {%if idioma == 1%}
+                  <div class="col-md-6">
+                      <input type="submit" value="Execute Excel" id="est_pcon_submit_ex" class="col-md-8 btn btn-primary boton xls">
+                  </div>
 
-                <div class="col-md-6 pull-right">
-                    <input type="submit" value="Ejecutar PDF" id="est_pcon_submit" class="col-md-8 btn btn-primary boton pdf">
-                </div>
+                  <div class="col-md-6 pull-right">
+                      <input type="submit" value="Execute PDF" id="est_pcon_submit" class="col-md-8 btn btn-primary boton pdf">
+                  </div>
+                {%endif%}
             </form>
 
             <form name="est_pcarform" id="est_pcarform" method="POST" target="_bank" hidden>
                 {% csrf_token %}
                 <div class="col-md-12 form-group">
-                  <label class="col-md-4 control-label" for="est_pcar_tipocta">Tipo Cuenta:</label>
+                  <label class="col-md-4 control-label" for="est_pcar_tipocta">
+                    {%if idioma == 0%}
+                      Tipo Cuenta:
+                    {%endif%}
+                    {%if idioma == 1%}
+                      Account Type:
+                    {%endif%}
+                  </label>
                   <div class="col-md-7">
                     <select id="est_pcar_tipocta" name="est_pcar_tipocta" class="form-control">
-                        <option value="-1">------------</option>
-                        <option value="0">Nacional</option>
-                        <option value="1">Exterior</option>
-                        <option value="2">Cuenta Propia</option>
-                        <option value="3">Banco Central</option>
-                        <option value="4">Auxiliar</option>
+                      {%if idioma == 0%}
+                        <option value="0">Monto</option>
+                        <option value="1">Cuenta,Fecha</option>
+                        <option value="2">Cuenta,Fecha,Débitos</option>
+                        <option value="3">Cuenta,Fecha,Créditos</option>
+                        <option value="4">Monto,Fecha,Referencias</option>
+                      {%endif%}
+                      {%if idioma == 1%}
+                        <option value="0">Amount</option>
+                        <option value="1">Account,Date</option>
+                        <option value="2">Account,Date,Debits</option>
+                        <option value="3">Account,Date,Credis</option>
+                        <option value="4">Amount,Date,References</option>
+                      {%endif%}
                     </select>
                   </div>
                 </div>
 
                 <div class="col-md-12 form-group">
-                  <label class="col-md-4 control-label" for="est_pcar_codcta">Codigo Cuenta:</label>
+                  <label class="col-md-4 control-label" for="est_pcar_codcta">
+                    {%if idioma == 0%}
+                      Código Cuenta:
+                    {%endif%}
+                    {%if idioma == 1%}
+                      Account Code:
+                    {%endif%}
+                  </label>
                   <div class="col-md-7">
                     <select id="est_pcar_codcta" name="est_pcar_codcta" class="form-control">
                         <option value="-1">------------</option>
@@ -1258,25 +2173,49 @@
 
                 <div class="col-md-12 form-group well">
                   <div class="col-md-6 form-group">
-                    <label class="col-md-4 control-label">Desde:</label>
+                    <label class="col-md-4 control-label">
+                      {%if idioma == 0%}
+                        Desde:
+                      {%endif%}
+                      {%if idioma == 1%}
+                        From:
+                      {%endif%}
+                    </label>
                     <div class="col-md-9"><input id="est_pcar_f-desde" name="est_pcar_f-desde" class="form-control" data-value="{{fecha_hoy}}"></div>
                   </div>
 
                   <div class="col-md-6 form-group">
-                    <label class="col-md-4 control-label">Hasta:</label>
+                    <label class="col-md-4 control-label">
+                      {%if idioma == 0%}
+                        Hasta:
+                      {%endif%}
+                      {%if idioma == 1%}
+                        To:
+                      {%endif%}
+                    </label>
                     <div class="col-md-9"><input id="est_pcar_f-hasta" name="est_pcar_f-hasta" class="form-control" data-value="{{fecha_hoy}}"></div>
                   </div>
                 </div>
 
                 <input name="rep" value="reporteestpartcarg" hidden>
+                {%if idioma == 0%}
+                  <div class="col-md-6">
+                      <input type="submit" value="Ejecutar Excel" id="est_pcar_submit_ex" class="col-md-8 btn btn-primary boton xls">
+                  </div>
 
-                <div class="col-md-6">
-                    <input type="submit" value="Ejecutar Excel" id="est_pcar_submit_ex" class="col-md-8 btn btn-primary boton xls">
-                </div>
+                  <div class="col-md-6">
+                      <input type="submit" value="Ejecutar PDF" id="est_pcar_submit" class="col-md-8 btn btn-primary boton pdf">
+                  </div>
+                {%endif%}
+                {%if idioma == 1%}
+                  <div class="col-md-6">
+                      <input type="submit" value="Execute Excel" id="est_pcar_submit_ex" class="col-md-8 btn btn-primary boton xls">
+                  </div>
 
-                <div class="col-md-6">
-                    <input type="submit" value="Ejecutar PDF" id="est_pcar_submit" class="col-md-8 btn btn-primary boton pdf">
-                </div>
+                  <div class="col-md-6">
+                      <input type="submit" value="Execute PDF" id="est_pcar_submit" class="col-md-8 btn btn-primary boton pdf">
+                  </div>
+                {%endif%}
             </form>
         </div>
 
@@ -1285,8 +2224,6 @@
 {%endblock%}
 
 {% block script%}
-<script> //define el idioma de la tabla (es/en)
-         idioma_tr = "es"</script>
 <script src="{% static 'js/sweet-alert.min.js' %}"></script>
 <script type="text/javascript" src="{% static 'js/jshashtable.js' %}"></script>
 <script type="text/javascript" src="{% static 'js/numberformatter.js' %}"></script>

@@ -25,7 +25,7 @@ from Matcher_WS.edo_cuenta import edoCta, edc_list, Trans, Bal
 from Matcher_WS.mailConf import enviar_mail
 from Matcher_WS.cargaAutomatica import leer_linea_conta, leer_linea_corr, leer_punto_coma, validar_archivo
 from Matcher_WS.Matcher_call import matcher, dma_millis
-from Matcher_WS.funciones_get import get_ops, get_cuentas, get_ci, get_idioma, get_bancos, get_archivosMT99, get_archivosMT96, get_codigos95,elimina_tildes, get_archivosLicencia,verificarDirectorio, get_ldap
+from Matcher_WS.funciones_get import get_ops, get_cuentas, get_ci, get_idioma, get_bancos, get_archivosMT99, get_archivosMT96,get_codigos95, get_codigos95Ingles,elimina_tildes, get_archivosLicencia,verificarDirectorio, get_ldap
 from Matcher_WS.generar_reporte import generarReporte, pdfView, xlsView
 from Matcher_WS.setConsolidado import setConsolidado
 from Matcher_WS.parsers import parsearTipoMT,parseo103,parseo202,parseo752,parseo754,parseo756,parseo942
@@ -190,7 +190,12 @@ def usr_login(request):
                         [s.delete() for s in Session.objects.all() if s.get_decoded().get('_auth_user_id') == user.id]
                         U_name = user.username
                         U_terminal = request.META.get('COMPUTERNAME')
-                        logAux(U_name,U_terminal,"Logout por sesión expropiativa")
+                        if idioma == 0:
+                            msj_aux = "Logout por sesión expropiativa"
+                        else:
+                            msj_aux = "Preemptive session logout"
+
+                        logAux(U_name,U_terminal,msj_aux)
 
                     #Verificación de usuarios concurrentes
                     sessions = Session.objects.filter(expire_date__gte=timezone.now())
@@ -228,7 +233,12 @@ def usr_login(request):
                         fechaHora = timenow()
                         evento = Evento.objects.get(pk=37)
                         nombre = username
-                        detalles = "Usuario: "+username + ". " + "Login fallido por: Cantidad de usuarios concurrentes a tope."
+                        if idioma == 0:
+                            msj_aux = "Login fallido por: Cantidad de usuarios concurrentes a tope."
+                        else:
+                            msj_aux = "Failed login. Reason: Number of concurrent users butt."
+
+                        detalles = "Usuario: "+username + ". " + msj_aux
                         if username == "SysAdminBCG":
                             print("")
                         else:
@@ -274,7 +284,12 @@ def usr_login(request):
                         fechaHora = timenow()
                         evento = Evento.objects.get(pk=37)
                         nombre = sesion.usuario_idusuario.nombres+" "+sesion.usuario_idusuario.apellidos
-                        detalles = "Usuario: "+username
+                        if idioma == 0:
+                            msj_usr = "Usuario: "
+                        else:
+                            msj_usr = "User: "
+
+                        detalles = msj_usr+username
                         if username == "SysAdminBCG":
                             print("")
                         else:
@@ -1329,17 +1344,23 @@ def pd_detallesMT(request, mensaje,tipo):
         msj = ""
         tranMT = mensaje
         claseMT = tipo
+        idioma = Configuracion.objects.all()[0].idioma 
 
         if claseMT == "conta":
 
             try:
                 # Buscar los mensajes MT95 de contabilidad para la transaccion dada
                 ta = TransabiertaContabilidad.objects.filter(idtransaccion=tranMT)
-                MTs = Mt95.objects.filter(ta_conta=ta)
+                
+                if idioma == 0:
+                    MTs = Mt95.objects.filter(ta_conta=ta)
+                    MT96s = Mt96.objects.filter(mt95_idmt95=MTs)
+                else:
+                    MTs = Mt95Ingles.objects.filter(ta_conta=ta)
+                    MT96s = Mt96Ingles.objects.filter(mt95_idmt95=MTs)
+
                 msj = "MTs listados exitosamente"
-                MT96s = Mt96.objects.filter(mt95_idmt95=MTs)
-                template = "matcher/pd_detallesMT.html"
-                idioma = Configuracion.objects.all()[0].idioma    
+                template = "matcher/pd_detallesMT.html"   
                 context = {'idioma':idioma, 'cuentas':get_cuentas(request), 'msg':msj, 'ops':get_ops(request), 'mensajes95': MTs, 'mensaje':mensaje, 'mensajes96':MT96s,'ldap':get_ldap(request)}
                 return render(request, template, context)
             except:
@@ -1354,9 +1375,15 @@ def pd_detallesMT(request, mensaje,tipo):
         try:
             # Buscar los mensajes MT95 de corresponsal para la transaccion dada
             ta = TransabiertaCorresponsal.objects.filter(idtransaccion=tranMT)
-            MTs = Mt95.objects.filter(ta_corres=ta)
+
+            if idioma == 0:
+                MTs = Mt95.objects.filter(ta_corres=ta)
+                MT96s = Mt96.objects.filter(mt95_idmt95=MTs)
+            else:
+                MTs = Mt95Ingles.objects.filter(ta_corres=ta)
+                MT96s = Mt96Ingles.objects.filter(mt95_idmt95=MTs)
+
             msj = "MTs listados exitosamente"
-            MT96s = Mt96.objects.filter(mt95_idmt95=MTs)
             template = "matcher/pd_detallesMT.html"
             idioma = Configuracion.objects.all()[0].idioma    
             context = {'idioma':idioma, 'cuentas':get_cuentas(request), 'msg':msj, 'ops':get_ops(request), 'mensajes95': MTs, 'mensaje':mensaje, 'mensajes96':MT96s,'ldap':get_ldap(request)}
@@ -1572,9 +1599,23 @@ def pd_partidasAbiertas(request):
             cuenta95 = request.POST.get('cuenta')
             tipoOriginal = request.POST.get('tipoOriginal')
             mensajeMT = ""
-            query = preg95
 
-            codAux = Codigo95.objects.filter(idcodigo95=cod95)[0]
+            #Quitar el + - 9 para implantacion
+            if idioma == 0:
+                cod_aux95 = str(int(cod95)-9)
+                codAux = Codigo95.objects.filter(idcodigo95=cod95)[0]
+                codAuxIn = Codigo95Ingles.objects.filter(idcodigo95=cod_aux95)[0]
+
+            else:
+                cod_aux95 = str(int(cod95)+9)
+                codAux = Codigo95.objects.filter(idcodigo95=cod_aux95)[0]
+                codAuxIn = Codigo95Ingles.objects.filter(idcodigo95=cod95)[0]
+
+            queryletras = codAux.help
+            queryInletras = codAuxIn.help
+
+            query = str(codAux.codigo)
+
             if fecha95 != "":
                 fechad = datetime.strptime(fecha95, '%d/%m/%Y')
             else:
@@ -1593,20 +1634,26 @@ def pd_partidasAbiertas(request):
             if clase95 == "conta":
 
                 tra = TransabiertaContabilidad.objects.filter(idtransaccion=trans95)[0]
-                Mt95.objects.create(ta_conta=tra,codigo=ref95,codigo95_idcodigo95=codAux,ref_relacion=refOrg95,query=query,narrativa=narra95,num_mt=tipo95a,fecha_msg_original=fechad,campo79=original95)
+
+                Mt95.objects.create(ta_conta=tra,codigo=ref95,codigo95_idcodigo95=codAux,ref_relacion=refOrg95,query=query,narrativa=queryletras,num_mt=tipo95a,fecha_msg_original=fechad,campo79=original95) 
+                Mt95Ingles.objects.create(ta_conta=tra,codigo=ref95,codigo95_idcodigo95=codAuxIn,ref_relacion=refOrg95,query=query,narrativa=queryInletras,num_mt=tipo95a,fecha_msg_original=fechad,campo79=original95)
+
                 if idioma == 0:
                     mensajeMT = "exito"
                 else:
-                    mensajeMt = "success"
+                    mensajeMT = "success"
 
-            if clase95 == "corres":
+            if clase95 == "corr":
                 
                 tra = TransabiertaCorresponsal.objects.filter(idtransaccion=trans95)[0]
-                Mt95.objects.create(ta_corres=tra,codigo=ref95,codigo95_idcodigo95=codAux,ref_relacion=refOrg95,query=query,narrativa=narral95,num_mt=tipo95a,fecha_msg_original=fechad,campo79=original95) 
+                
+                Mt95.objects.create(ta_corres=tra,codigo=ref95,codigo95_idcodigo95=codAux,ref_relacion=refOrg95,query=query,narrativa=queryletras,num_mt=tipo95a,fecha_msg_original=fechad,campo79=original95) 
+                Mt95Ingles.objects.create(ta_corres=tra,codigo=ref95,codigo95_idcodigo95=codAuxIn,ref_relacion=refOrg95,query=query,narrativa=queryInletras,num_mt=tipo95a,fecha_msg_original=fechad,campo79=original95)
+                
                 if idioma == 0:
                     mensajeMT = "exito"
                 else:
-                    mensajeMt = "success"
+                    mensajeMT = "success"
 
             tn = str(timenow())
             hora = tn[11:]
@@ -1683,8 +1730,13 @@ def pd_partidasAbiertas(request):
     if request.method == 'GET':
 
         template = "matcher/pd_partidasAbiertas.html"
-        idioma = Configuracion.objects.all()[0].idioma    
-        context = {'idioma':idioma, 'cuentas':get_cuentas(request), 'ops':get_ops(request), 'codigos':get_codigos95(),'ldap':get_ldap(request)}
+        idioma = Configuracion.objects.all()[0].idioma
+        if idioma == 0:
+            cod = get_codigos95()
+        else:
+            cod = get_codigos95Ingles()
+
+        context = {'idioma':idioma, 'cuentas':get_cuentas(request), 'ops':get_ops(request), 'codigos':cod,'ldap':get_ldap(request)}
         return render(request, template, context)
 
 @login_required(login_url='/login')
@@ -1898,10 +1950,11 @@ def reportes(request):
             codCta = request.POST.get('pd_conc_codcta')
             tipoCta = request.POST.get('pd_conc_tipocta')
             fecha = request.POST.get('pd_conc_fecha')
-            print(fecha)
+
             if idioma == 1:
                 fechaAux = '/'.join(list(reversed(fecha.split("/"))))
                 fecha = fechaAux
+
 
             tipo = request.POST.get('tipo')
             usuario = get_ci(request)
@@ -1975,6 +2028,11 @@ def reportes(request):
             if radio=='fecha':
                 fdesde = request.POST.get('pd_partab_f-desde')
                 fhasta = request.POST.get('pd_partab_f-hasta')
+
+                if idioma == 1:
+                    fdesde = '/'.join(list(reversed(fdesde.split("/"))))
+                    fhasta = '/'.join(list(reversed(fhasta.split("/"))))
+
                 tipo = '2'
 
                 respuesta += tipo+','+fdesde+','+fhasta
@@ -2024,6 +2082,10 @@ def reportes(request):
                 fdesde = request.POST.get('pd_mconf_f-desde')
                 fhasta = request.POST.get('pd_mconf_f-hasta')
 
+                if idioma == 1:
+                    fdesde = '/'.join(list(reversed(fdesde.split("/"))))
+                    fhasta = '/'.join(list(reversed(fhasta.split("/"))))
+
                 respuesta += '2,'+fdesde+','+fhasta
 
             if radio=='match':
@@ -2051,6 +2113,9 @@ def reportes(request):
             tipoCta = request.POST.get('pd_hist_tipocta')
             fecha = request.POST.get('pd_hist_fecha')
 
+            if idioma == 1:
+                fecha = '/'.join(list(reversed(fecha.split("/"))))
+
             if tipoCta == '2':
                 zona = Cuenta.objects.get(codigo=codCta)
                 zona = zona.zona
@@ -2068,6 +2133,9 @@ def reportes(request):
             moneda = request.POST.get('pd_posmon_monl')
             fecha = request.POST.get('pd_posmon_fecha')
 
+            if idioma == 1:
+                fecha = '/'.join(list(reversed(fecha.split("/"))))
+
             respuesta += fecha+','+moneda
 
         if reporte=='reportegiros':
@@ -2081,6 +2149,10 @@ def reportes(request):
             fdesde = request.POST.get('pd_edcs_f-desde')
             fhasta = request.POST.get('pd_edcs_f-hasta')
             usuario = get_ci(request)
+
+            if idioma == 1:
+                    fdesde = '/'.join(list(reversed(fdesde.split("/"))))
+                    fhasta = '/'.join(list(reversed(fhasta.split("/"))))
 
             respuesta += tipoCta+','+fdesde+','+fhasta+','+usuario
 
@@ -2142,25 +2214,41 @@ def reportes(request):
 
             bhoras = request.POST.get('seg_log_bhoras')
 
+            if idioma == 1:
+                fdesde = '/'.join(list(reversed(fdesde.split("/"))))
+                fhasta = '/'.join(list(reversed(fhasta.split("/"))))
+
             if bhoras is None:
                 bhoras = '0'
 
-            hdesde = hdesde.split(' ')[0]
-            hhasta = hhasta.split(' ')[0]
+            turnodesde = hdesde.split(' ')[1]
+            turnohasta = hhasta.split(' ')[1]
+
+            if turnodesde == "PM":
+                aux = (hdesde.split(' ')[0]).split(':')
+                hdesde = str(int(aux[0]) + 12) + ':' + aux[1]
+            else:
+                hdesde = hdesde.split(' ')[0]
+
+            if turnohasta == "PM":
+                aux = (hhasta.split(' ')[0]).split(':')
+                hhasta = str(int(aux[0]) + 12) + ':' + aux[1]
+            else:
+                hhasta = hhasta.split(' ')[0]
 
             respuesta = 'reportelogsporfechas'
 
             if usuario == '-1' and evento == '-1':
-                respuesta += '*'+fdesde+','+fhasta+','+hdesde+','+hhasta+','+bhoras
+                respuesta += '*'+tipoarch+'*'+fdesde+','+fhasta+','+hdesde+','+hhasta+','+bhoras
             
             elif usuario == '-1' and evento != '-1':
-                respuesta += 'event*'+fdesde+','+fhasta+','+hdesde+','+hhasta+','+bhoras+','+evento
+                respuesta += 'event*'+tipoarch+'*'+fdesde+','+fhasta+','+hdesde+','+hhasta+','+bhoras+','+evento
 
             elif usuario != '-1' and evento == '-1':
-                respuesta += 'usuarios*'+fdesde+','+fhasta+','+hdesde+','+hhasta+','+bhoras+','+usuario
+                respuesta += 'usuarios*'+tipoarch+'*'+fdesde+','+fhasta+','+hdesde+','+hhasta+','+bhoras+','+usuario
 
             else:
-                respuesta += 'usuariosevent*'+fdesde+','+fhasta+','+hdesde+','+hhasta+','+bhoras+','+usuario+','+evento
+                respuesta += 'usuariosevent*'+tipoarch+'*'+fdesde+','+fhasta+','+hdesde+','+hhasta+','+bhoras+','+usuario+','+evento
 
         #####
         # REPORTES DE ADMINISTRACION
@@ -2198,6 +2286,9 @@ def reportes(request):
         if reporte=='reportectassobregiradas':
             fecha = request.POST.get('avz_ctas_fecha')
             usuario = get_ci(request)
+
+            if idioma == 1:
+                fecha = '/'.join(list(reversed(fecha.split("/"))))
             
             respuesta += fecha+','+usuario
 
@@ -2205,6 +2296,9 @@ def reportes(request):
             tipoCta = request.POST.get('avz_sconc_tipocta')
             fecha = request.POST.get('avz_sconc_fecha')
             usuario = get_ci(request)
+
+            if idioma == 1:
+                fecha = '/'.join(list(reversed(fecha.split("/"))))
             
             respuesta += tipoCta+','+fecha+','+usuario
 
@@ -2231,6 +2325,10 @@ def reportes(request):
                 fdesde = request.POST.get('avz_paavz_f-desde')
                 fhasta = request.POST.get('avz_paavz_f-hasta')
 
+                if idioma == 1:
+                    fdesde = '/'.join(list(reversed(fdesde.split("/"))))
+                    fhasta = '/'.join(list(reversed(fhasta.split("/"))))
+
                 respuesta += '2,'+fdesde+','+fhasta
 
             if tipo=='ref':
@@ -2250,6 +2348,10 @@ def reportes(request):
             fhasta = request.POST.get('est_pa_f-hasta')
             usuario = get_ci(request)
 
+            if idioma == 1:
+                fdesde = '/'.join(list(reversed(fdesde.split("/"))))
+                fhasta = '/'.join(list(reversed(fhasta.split("/"))))
+
             if fuente == '0':
                 fdesde = fhasta
 
@@ -2262,6 +2364,10 @@ def reportes(request):
             fhasta = request.POST.get('est_pcon_f-hasta')
             usuario = get_ci(request)
 
+            if idioma == 1:
+                fdesde = '/'.join(list(reversed(fdesde.split("/"))))
+                fhasta = '/'.join(list(reversed(fhasta.split("/"))))
+
             respuesta += tipoCta+','+codCta+','+fdesde+','+fhasta+','+usuario
 
         if reporte=='reporteestpartcarg':
@@ -2270,6 +2376,10 @@ def reportes(request):
             fdesde = request.POST.get('est_pcar_f-desde')
             fhasta = request.POST.get('est_pcar_f-hasta')
             usuario = get_ci(request)
+
+            if idioma == 1:
+                fdesde = '/'.join(list(reversed(fdesde.split("/"))))
+                fhasta = '/'.join(list(reversed(fhasta.split("/"))))
             
             respuesta += tipoCta+','+codCta+','+fdesde+','+fhasta+','+usuario
 
@@ -2287,8 +2397,8 @@ def reportes(request):
 
     if request.method == 'GET':
         template = "matcher/reportes.html"
-        usuarios = Usuario.objects.all().order_by('apellidos')
-        perfiles = Perfil.objects.all().order_by('nombre')
+        usuarios = Usuario.objects.exclude(nombres='BCG').order_by('apellidos')
+        perfiles = Perfil.objects.exclude(nombre='SysAdmin').order_by('nombre')
         eventos = Evento.objects.all().order_by('accion')
         fecha_hoy = ("/").join(str(timenow().date()).split("-")[::-1])
 
@@ -2341,11 +2451,14 @@ def mtn96(request):
 
             archivoCarga = request.POST.get('archivo96')
             mt95 = []
+            mt95In = []
             codigos=[]
             codigos96=[]
+            codigos96In=[]
             refRelaciones=[]
             respuestas = []
             narrativas = []
+            narrativasIn = []
             numerosMT = []
             fechas = []
             campos79 = []
@@ -2396,7 +2509,6 @@ def mtn96(request):
                             return JsonResponse({'mens':mensaje})
                         tipoCargar = line[3:]
                         tipoCargar = tipoCargar[:3].strip()
-                        print("eeeeees: " + tipoCargar[-2:].strip())
                         if tipoCargar[-2:].strip() != "96":
                             if idioma == 0:
                                 mensaje = "El tipo del mensaje no corresponde a un MTn96,error en la línea número " +str(i+auxCuenta+1)+ " del archivo"
@@ -2463,6 +2575,8 @@ def mtn96(request):
                         refOrgCargar = line[4:].strip()
                         try:
                             consulta = Mt95.objects.filter(ref_relacion=refCargar).filter(codigo=refOrgCargar)[0]
+                            consultaIn = Mt95Ingles.objects.filter(ref_relacion=refCargar).filter(codigo=refOrgCargar)[0]
+                             
                         except:
                             #no hay mensajes mt95 con esas referencias
                             if idioma == 0:
@@ -2495,6 +2609,7 @@ def mtn96(request):
                             return JsonResponse({'mens':mensaje})
                         
                         consultaCodigo96 = Codigo96.objects.filter(codigo=respuestaCargar)[0]
+                        consultaCodigo96In = Codigo96Ingles.objects.filter(codigo=respuestaCargar)[0]
                         #no hay codigos mt96 con esas referencias
                         if consultaCodigo96 is None:
                             if idioma == 0:
@@ -2571,12 +2686,18 @@ def mtn96(request):
         
                 # Se agregan los campos a las estructuras auxiliares para al finalarizar el recorrido del archivo 
                 # y ver que no haya errores, agregar los datos a la base de datos
+                narrativaCargar = Codigo96.objects.get(codigo=respuestaCargar).help
+                narrativaCargarIn = Codigo96Ingles.objects.get(codigo=respuestaCargar).help
+
+                mt95In.append(consultaIn)
                 mt95.append(consulta)
                 codigos.append(refCargar)
                 codigos96.append(consultaCodigo96)
+                codigos96In.append(consultaCodigo96In)
                 refRelaciones.append(refOrgCargar)
                 respuestas.append(respuestaCargar)
                 narrativas.append(narrativaCargar)
+                narrativasIn.append(narrativaCargarIn)
                 
                 if tipoCargar != "":
                     numerosMT.append(tipoCargar)
@@ -2604,6 +2725,7 @@ def mtn96(request):
             k=0
             for mt in mt95:
                 Mt96.objects.create(mt95_idmt95=mt95[k],codigo=codigos[k],codigo96_idcodigo96=codigos96[k], ref_relacion=refRelaciones[k],answer=respuestas[k], narrativa=narrativas[k], num_mt=numerosMT[k], fecha_msg_original=fechas[k],campo79 =campos79[k])
+                Mt96Ingles.objects.create(mt95_idmt95=mt95In[k],codigo=codigos[k],codigo96_idcodigo96=codigos96In[k], ref_relacion=refRelaciones[k],answer=respuestas[k], narrativa=narrativasIn[k], num_mt=numerosMT[k], fecha_msg_original=fechas[k],campo79 =campos79[k])
                 k+=1        
 
             #Se agrega el evento al log
@@ -4139,12 +4261,18 @@ def seg_Logs(request):
         return JsonResponse(res_json, safe=False)
 
     if request.method == "GET":
-        eventos = Evento.objects.all()
+
+        idioma = Configuracion.objects.all()[0].idioma   
+        
+        if idioma == 0:
+            eventos = Evento.objects.all()
+        else:
+            eventos = EventoIngles.objects.all()
+
         exc = Perfil.objects.get(nombre = "SysAdmin")
         usuarios = Usuario.objects.exclude(perfil_idperfil = exc)
         eventos_acc = [evento.accion for evento in eventos]
-        fecha_hoy = ("/").join(str(timenow().date()).split("-")[::-1])
-        idioma = Configuracion.objects.all()[0].idioma    
+        fecha_hoy = ("/").join(str(timenow().date()).split("-")[::-1]) 
         context = {'idioma':idioma, 'eventos':eventos, 'usuarios':usuarios, 'eventos_acc':eventos_acc, 'fecha_hoy':fecha_hoy, 'ops':get_ops(request),'ldap':get_ldap(request)}
         template = "matcher/seg_Logs.html"
 
@@ -5474,7 +5602,12 @@ def admin_archive(request):
                 nuevoArch.write(linea3)
 
             #Para el log
-            detalle = "Cuenta: " + cuenta
+            if idioma == 0:
+                msj_ct = "Cuenta: "
+            else:
+                msj_ct = "Account: "
+
+            detalle = msj_ct + cuenta
             log(request,43,detalle)
             
             exito = True
@@ -5903,6 +6036,9 @@ def seg_licencia(request):
                 else:
                     mensaje = "Successfully modified license"
 
+                #Para el log
+                log(request,44)
+                
                 return JsonResponse({'mens':mensaje})
 
             except:
@@ -5927,6 +6063,9 @@ def seg_licencia(request):
                     mensaje = "Licencia agregada exitosamente"
                 else:
                     mensaje = "Successfully aggregated license"
+
+                #Para el log
+                log(request,44)
 
                 return JsonResponse({'mens':mensaje})
                 
@@ -6233,6 +6372,7 @@ def log(request,eid,detalles=None):
     terminal = request.META.get('COMPUTERNAME')
     fechaHora = timenow()
     evento = Evento.objects.get(pk=eid)
+    eventoIngles = EventoIngles.objects.get(pk=eid)
     sesion = Sesion.objects.get(login=username)
     nombre = sesion.usuario_idusuario.nombres+" "+sesion.usuario_idusuario.apellidos
 
@@ -6246,15 +6386,18 @@ def log(request,eid,detalles=None):
         if m == False: 
 
             Traza.objects.create(evento_idevento=evento,usuario=nombre, fecha_hora=fechaHora, terminal=terminal, detalles=detalles)
-    
+            TrazaIngles.objects.create(eventoingles_idevento=eventoIngles,usuario=nombre, fecha_hora=fechaHora, terminal=terminal, detalles=detalles)
+
     else:
         Traza.objects.create(evento_idevento=evento,usuario=nombre, fecha_hora=fechaHora, terminal=terminal)
+        TrazaIngles.objects.create(eventoingles_idevento=eventoIngles,usuario=nombre, fecha_hora=fechaHora, terminal=terminal)
 
 def logAux(name,terminal,detalles):
     # Funcion que recibe el nombre del usuario y guarda su traza
     username = name
     fechaHora = timenow()
     evento = Evento.objects.get(pk=2)
+    eventoIngles = EventoIngles.objects.get(pk=2)
     sesion = Sesion.objects.get(login=username)
     nombre = sesion.usuario_idusuario.nombres+" "+sesion.usuario_idusuario.apellidos
 
@@ -6262,6 +6405,7 @@ def logAux(name,terminal,detalles):
         print("")
     else:
         Traza.objects.create(evento_idevento=evento,usuario=nombre, fecha_hora=fechaHora, terminal=terminal, detalles=detalles)
+        TrazaIngles.objects.create(eventoingles_idevento=eventoIngles,usuario=nombre, fecha_hora=fechaHora, terminal=terminal, detalles=detalles)
 
 
 def expirarSesion(request):
