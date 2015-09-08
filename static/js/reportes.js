@@ -84,73 +84,185 @@ if (idiomaAux==="es"){
 }
 
 //Inicializar el DatePicker proc diario conciliacion
-$('#pd_conc_fecha').pickadate({
-  format: 'dd/mm/yyyy',
-  selectYears: true,
-  selectMonths: true,
-})
+if (idioma == 0){
+  $('#pd_conc_fecha').pickadate({
+    format: 'dd/mm/yyyy',
+    selectYears: true,
+    selectMonths: true,
+    max: true,
+  });
+} else {
+  $('#pd_conc_fecha').pickadate({
+    format: 'yyyy/mm/dd',
+    selectYears: true,
+    selectMonths: true,
+    max: true,
+  });
+}
 
 //Inicializar el DatePicker partidas abiertas
-$('#pd_partab_f-desde').pickadate({
-  format: 'dd/mm/yyyy',
-  selectYears: true,
-  selectMonths: true,
-})
-$('#pd_partab_f-hasta').pickadate({
-  format: 'dd/mm/yyyy',
-  selectYears: true,
-  selectMonths: true,
-})
+if (idioma == 0){
+  $('#pd_partab_f-desde').pickadate({
+    format: 'dd/mm/yyyy',
+    selectYears: true,
+    selectMonths: true,
+    max: true,
+  });
+} else {
+  $('#pd_partab_f-desde').pickadate({
+    format: 'yyyy/mm/dd',
+    selectYears: true,
+    selectMonths: true,
+    max: true,
+  });
+}
+
+if (idioma == 0){
+  $('#pd_partab_f-hasta').pickadate({
+    format: 'dd/mm/yyyy',
+    selectYears: true,
+    selectMonths: true,
+    max: true,
+  });
+} else {
+  $('#pd_partab_f-hasta').pickadate({
+    format: 'yyyy/mm/dd',
+    selectYears: true,
+    selectMonths: true,
+    max: true,
+  });
+}
 
 //Inicializar el DatePicker matches conf
-$('#pd_mconf_f-desde').pickadate({
-  format: 'dd/mm/yyyy',
-  selectYears: true,
-  selectMonths: true,
-})
-$('#pd_mconf_f-hasta').pickadate({
-  format: 'dd/mm/yyyy',
-  selectYears: true,
-  selectMonths: true,
-})
+if (idioma == 0){
+  $('#pd_mconf_f-desde').pickadate({
+    format: 'dd/mm/yyyy',
+    selectYears: true,
+    selectMonths: true,
+    max: true,
+  });
+} else{
+  $('#pd_mconf_f-desde').pickadate({
+    format: 'yyyy/mm/dd',
+    selectYears: true,
+    selectMonths: true,
+    max: true,
+  });
+}
+if (idioma == 0){
+  $('#pd_mconf_f-hasta').pickadate({
+    format: 'dd/mm/yyyy',
+    selectYears: true,
+    selectMonths: true,
+    max: true,
+  });
+} else{
+  $('#pd_mconf_f-hasta').pickadate({
+    format: 'yyyy/mm/dd',
+    selectYears: true,
+    selectMonths: true,
+    max: true,
+  });
+}
 
 //Inicializar el DatePicker historico
-$('#pd_hist_fecha').pickadate({
-  format: 'dd/mm/yyyy',
-  selectYears: true,
-  selectMonths: true,
-})
+if (idioma == 0){
+  $('#pd_hist_fecha').pickadate({
+    format: 'dd/mm/yyyy',
+    selectYears: true,
+    selectMonths: true,
+    max: true,
+  });
+} else{
+  $('#pd_hist_fecha').pickadate({
+    format: 'yyyy/mm/dd',
+    selectYears: true,
+    selectMonths: true,
+    max: true,
+  });
+}
 
 //Inicializar el DatePicker Posicion Moneda
-$('#pd_posmon_fecha').pickadate({
-  format: 'dd/mm/yyyy',
-  selectYears: true,
-  selectMonths: true,
-})
+if (idioma == 0){
+  $('#pd_posmon_fecha').pickadate({
+    format: 'dd/mm/yyyy',
+    selectYears: true,
+    selectMonths: true,
+    max: true,
+  });
+} else{
+  $('#pd_posmon_fecha').pickadate({
+    format: 'yyyy/mm/dd',
+    selectYears: true,
+    selectMonths: true,
+    max: true,
+  });
+}
 
 //Inicializar el DatePicker edocta
-$('#pd_edcs_f-desde').pickadate({
-  format: 'dd/mm/yyyy',
-  selectYears: true,
-  selectMonths: true,
-})
-$('#pd_edcs_f-hasta').pickadate({
-  format: 'dd/mm/yyyy',
-  selectYears: true,
-  selectMonths: true,
-})
+if (idioma == 0){
+  $('#pd_edcs_f-desde').pickadate({
+    format: 'dd/mm/yyyy',
+    selectYears: true,
+    selectMonths: true,
+    max: true,
+  });
+} else{
+  $('#pd_edcs_f-desde').pickadate({
+    format: 'yyyy/mm/dd',
+    selectYears: true,
+    selectMonths: true,
+    max: true,
+  });
+}
+if (idioma == 0){
+  $('#pd_edcs_f-hasta').pickadate({
+    format: 'dd/mm/yyyy',
+    selectYears: true,
+    selectMonths: true,
+    max: true,
+  });
+} else{
+  $('#pd_edcs_f-hasta').pickadate({
+    format: 'yyyy/mm/dd',
+    selectYears: true,
+    selectMonths: true,
+    max: true,
+  });
+}
 
 //Inicializar el DatePicker logs
-$('#seg_log_f-desde').pickadate({
-  format: 'dd/mm/yyyy',
-  selectYears: true,
-  selectMonths: true,
-})
-$('#seg_log_f-hasta').pickadate({
-  format: 'dd/mm/yyyy',
-  selectYears: true,
-  selectMonths: true,
-})
+if (idioma == 0){
+  $('#seg_log_f-desde').pickadate({
+    format: 'dd/mm/yyyy',
+    selectYears: true,
+    selectMonths: true,
+    max: true,
+  });
+} else{
+  $('#seg_log_f-desde').pickadate({
+    format: 'yyyy/mm/dd',
+    selectYears: true,
+    selectMonths: true,
+    max: true,
+  });
+}
+
+if (idioma == 0){
+  $('#seg_log_f-hasta').pickadate({
+    format: 'dd/mm/yyyy',
+    selectYears: true,
+    selectMonths: true,
+    max: true,
+  });
+} else{
+  $('#seg_log_f-hasta').pickadate({
+    format: 'yyyy/mm/dd',
+    selectYears: true,
+    selectMonths: true,
+    max: true,
+  });
+}
 
 // Spinner de la hora
 $('#seg_log_h-desde').timepicker({
@@ -172,47 +284,182 @@ $('.icon-chevron-down').addClass('fa fa-chevron-down');
 
 
 //Inicializar el DatePicker ctas sobregiradas
-$('#avz_ctas_fecha').pickadate({
-  format: 'dd/mm/yyyy',
-  selectYears: true,
-  selectMonths: true,
-})
+if (idioma == 0){
+  $('#avz_ctas_fecha').pickadate({
+    format: 'dd/mm/yyyy',
+    selectYears: true,
+    selectMonths: true,
+    max: true,
+  });
+} else{
+  $('#avz_ctas_fecha').pickadate({
+    format: 'yyyy/mm/dd',
+    selectYears: true,
+    selectMonths: true,
+    max: true,
+  });
+}
+
 //Inicializar el DatePicker saldos por conciliacion
-$('#avz_sconc_fecha').pickadate({
-  format: 'dd/mm/yyyy',
-  selectYears: true,
-  selectMonths: true,
-})
+if (idioma == 0){
+  $('#avz_sconc_fecha').pickadate({
+    format: 'dd/mm/yyyy',
+    selectYears: true,
+    selectMonths: true,
+    max: true,
+  });
+} else{
+  $('#avz_sconc_fecha').pickadate({
+    format: 'yyyy/mm/dd',
+    selectYears: true,
+    selectMonths: true,
+    max: true,
+  });
+}
+
 //Inicializar el DatePicker observaciones
-$('#avz_obs_fecha').pickadate({
-  format: 'dd/mm/yyyy',
-  selectYears: true,
-  selectMonths: true,
-})
+if (idioma == 0){
+  $('#avz_obs_fecha').pickadate({
+    format: 'dd/mm/yyyy',
+    selectYears: true,
+    selectMonths: true,
+    max: true,
+  });
+} else{
+  $('#avz_obs_fecha').pickadate({
+    format: 'yyyy/mm/dd',
+    selectYears: true,
+    selectMonths: true,
+    max: true,
+  });
+}
 
 //Inicializar el DatePicker estadistica partidas abiertas
-$('#est_pa_f-desde').pickadate({
-  format: 'dd/mm/yyyy',
-  selectYears: true,
-  selectMonths: true,
-})
-$('#est_pa_f-hasta').pickadate({
-  format: 'dd/mm/yyyy',
-  selectYears: true,
-  selectMonths: true,
-})
+if (idioma == 0){
+  $('#est_pa_f-desde').pickadate({
+    format: 'dd/mm/yyyy',
+    selectYears: true,
+    selectMonths: true,
+    max: true,
+  });
+} else{
+  $('#est_pa_f-desde').pickadate({
+    format: 'yyyy/mm/dd',
+    selectYears: true,
+    selectMonths: true,
+    max: true,
+  });
+}
+if (idioma == 0){
+  $('#est_pa_f-hasta').pickadate({
+    format: 'dd/mm/yyyy',
+    selectYears: true,
+    selectMonths: true,
+    max: true,
+  });
+} else{
+  $('#est_pa_f-hasta').pickadate({
+    format: 'yyyy/mm/dd',
+    selectYears: true,
+    selectMonths: true,
+    max: true,
+  });
+}
 
 //Inicializar el DatePicker partidas abiertas avanzadas
-$('#avz_paavz_f-desde').pickadate({
-  format: 'dd/mm/yyyy',
-  selectYears: true,
-  selectMonths: true,
-})
-$('#avz_paavz_f-hasta').pickadate({
-  format: 'dd/mm/yyyy',
-  selectYears: true,
-  selectMonths: true,
-})
+if (idioma == 0){
+  $('#avz_paavz_f-desde').pickadate({
+    format: 'dd/mm/yyyy',
+    selectYears: true,
+    selectMonths: true,
+    max: true,
+  });
+} else{
+  $('#avz_paavz_f-desde').pickadate({
+    format: 'yyyy/mm/dd',
+    selectYears: true,
+    selectMonths: true,
+    max: true,
+  });
+}
+if (idioma == 0){
+  $('#avz_paavz_f-hasta').pickadate({
+    format: 'dd/mm/yyyy',
+    selectYears: true,
+    selectMonths: true,
+    max: true,
+  });
+} else{
+  $('#avz_paavz_f-hasta').pickadate({
+    format: 'yyyy/mm/dd',
+    selectYears: true,
+    selectMonths: true,
+    max: true,
+  });
+}
+
+if (idioma == 0){
+  $('#est_pcon_f-desde').pickadate({
+    format: 'dd/mm/yyyy',
+    selectYears: true,
+    selectMonths: true,
+    max: true,
+  });
+} else{
+  $('#est_pcon_f-desde').pickadate({
+    format: 'yyyy/mm/dd',
+    selectYears: true,
+    selectMonths: true,
+    max: true,
+  });
+}
+if (idioma == 0){
+  $('#est_pcon_f-hasta').pickadate({
+    format: 'dd/mm/yyyy',
+    selectYears: true,
+    selectMonths: true,
+    max: true,
+  });
+} else{
+  $('#est_pcon_f-hasta').pickadate({
+    format: 'yyyy/mm/dd',
+    selectYears: true,
+    selectMonths: true,
+    max: true,
+  });
+}
+
+if (idioma == 0){
+  $('#est_pcar_f-desde').pickadate({
+    format: 'dd/mm/yyyy',
+    selectYears: true,
+    selectMonths: true,
+    max: true,
+  });
+} else{
+  $('#est_pcar_f-desde').pickadate({
+    format: 'yyyy/mm/dd',
+    selectYears: true,
+    selectMonths: true,
+    max: true,
+  });
+}
+if (idioma == 0){
+  $('#est_pcar_f-hasta').pickadate({
+    format: 'dd/mm/yyyy',
+    selectYears: true,
+    selectMonths: true,
+    max: true,
+  });
+} else{
+  $('#est_pcar_f-hasta').pickadate({
+    format: 'yyyy/mm/dd',
+    selectYears: true,
+    selectMonths: true,
+    max: true,
+  });
+}
+
 
 
 
@@ -327,10 +574,19 @@ $('.autcon').on('click', function(e){
   ufh = $('select option:selected').attr('ufh');
 
   if (ufc === ufh){
+    if (idioma == 0){
       swal("Ups!","La fecha del último histórico y de la ultima conciliacion son iguales.","error");
+    } else {
+      swal("Ups!","Last historic date and last reconciliation date are equals.","error");  
+    }
   }else{
+      if (idioma == 0){
+        msj ="Seguro que desea autorizar la conciliacion al "+ ufc +" ?";
+      } else {
+        msj ="Sure you want authorize reconciliation at "+ ufc +" ?";
+      }
       swal({   title: "",
-               text: "Seguro que desea autorizar la conciliacion al "+ ufc +" ?",
+               text: msj,
                type: "warning",
                showCancelButton: true,
                confirmButtonText: "Ok"},

@@ -340,6 +340,13 @@ class Evento(models.Model):
     class Meta:
         db_table = 'Evento'
 
+class EventoIngles(models.Model):
+    idevento = models.IntegerField(db_column='IdEvento', primary_key=True)  
+    accion = models.CharField(db_column='Accion', max_length=45)  
+
+    class Meta:
+        db_table = 'EventoIngles'
+
 
 class Formatoarchivo(models.Model):
     idformato = sqlserver_ado.fields.BigAutoField(db_column='idFormato', primary_key=True)  
@@ -1158,6 +1165,17 @@ class Traza(models.Model):
 
     class Meta:
         db_table = 'Traza'
+
+class TrazaIngles(models.Model):
+    idtraza = sqlserver_ado.fields.BigAutoField(db_column='idTraza', primary_key=True)  
+    eventoingles_idevento = models.ForeignKey(EventoIngles, db_column='EventoIngles_IdEvento')  
+    usuario = models.CharField(db_column='Usuario', max_length=100, blank=True)  
+    fecha_hora = models.DateTimeField(db_column='Fecha_Hora')  
+    terminal = models.CharField(db_column='Terminal', max_length=20)  
+    detalles = models.CharField(db_column='Detalles', max_length=500, blank=True)  
+
+    class Meta:
+        db_table = 'TrazaIngles'
 
 class Empresa(models.Model):
     id_empresa = sqlserver_ado.fields.BigAutoField(db_column='Id_Empresa', primary_key=True)  

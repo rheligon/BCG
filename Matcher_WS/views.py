@@ -190,7 +190,12 @@ def usr_login(request):
                         [s.delete() for s in Session.objects.all() if s.get_decoded().get('_auth_user_id') == user.id]
                         U_name = user.username
                         U_terminal = request.META.get('COMPUTERNAME')
-                        logAux(U_name,U_terminal,"Logout por sesión expropiativa")
+                        if idioma == 0:
+                            msj_aux = "Logout por sesión expropiativa"
+                        else:
+                            msj_aux = "Preemptive session logout"
+
+                        logAux(U_name,U_terminal,msj_aux)
 
                     #Verificación de usuarios concurrentes
                     sessions = Session.objects.filter(expire_date__gte=timezone.now())
@@ -228,7 +233,12 @@ def usr_login(request):
                         fechaHora = timenow()
                         evento = Evento.objects.get(pk=37)
                         nombre = username
-                        detalles = "Usuario: "+username + ". " + "Login fallido por: Cantidad de usuarios concurrentes a tope."
+                        if idioma == 0:
+                            msj_aux = "Login fallido por: Cantidad de usuarios concurrentes a tope."
+                        else:
+                            msj_aux = "Failed login. Reason: Number of concurrent users butt."
+
+                        detalles = "Usuario: "+username + ". " + msj_aux
                         if username == "SysAdminBCG":
                             print("")
                         else:
@@ -274,7 +284,12 @@ def usr_login(request):
                         fechaHora = timenow()
                         evento = Evento.objects.get(pk=37)
                         nombre = sesion.usuario_idusuario.nombres+" "+sesion.usuario_idusuario.apellidos
-                        detalles = "Usuario: "+username
+                        if idioma == 0:
+                            msj_usr = "Usuario: "
+                        else:
+                            msj_usr = "User: "
+
+                        detalles = msj_usr+username
                         if username == "SysAdminBCG":
                             print("")
                         else:
@@ -1898,10 +1913,11 @@ def reportes(request):
             codCta = request.POST.get('pd_conc_codcta')
             tipoCta = request.POST.get('pd_conc_tipocta')
             fecha = request.POST.get('pd_conc_fecha')
-            print(fecha)
+
             if idioma == 1:
                 fechaAux = '/'.join(list(reversed(fecha.split("/"))))
                 fecha = fechaAux
+
 
             tipo = request.POST.get('tipo')
             usuario = get_ci(request)
@@ -1975,6 +1991,11 @@ def reportes(request):
             if radio=='fecha':
                 fdesde = request.POST.get('pd_partab_f-desde')
                 fhasta = request.POST.get('pd_partab_f-hasta')
+
+                if idioma == 1:
+                    fdesde = '/'.join(list(reversed(fdesde.split("/"))))
+                    fhasta = '/'.join(list(reversed(fhasta.split("/"))))
+
                 tipo = '2'
 
                 respuesta += tipo+','+fdesde+','+fhasta
@@ -2024,6 +2045,10 @@ def reportes(request):
                 fdesde = request.POST.get('pd_mconf_f-desde')
                 fhasta = request.POST.get('pd_mconf_f-hasta')
 
+                if idioma == 1:
+                    fdesde = '/'.join(list(reversed(fdesde.split("/"))))
+                    fhasta = '/'.join(list(reversed(fhasta.split("/"))))
+
                 respuesta += '2,'+fdesde+','+fhasta
 
             if radio=='match':
@@ -2051,6 +2076,9 @@ def reportes(request):
             tipoCta = request.POST.get('pd_hist_tipocta')
             fecha = request.POST.get('pd_hist_fecha')
 
+            if idioma == 1:
+                fecha = '/'.join(list(reversed(fecha.split("/"))))
+
             if tipoCta == '2':
                 zona = Cuenta.objects.get(codigo=codCta)
                 zona = zona.zona
@@ -2068,6 +2096,9 @@ def reportes(request):
             moneda = request.POST.get('pd_posmon_monl')
             fecha = request.POST.get('pd_posmon_fecha')
 
+            if idioma == 1:
+                fecha = '/'.join(list(reversed(fecha.split("/"))))
+
             respuesta += fecha+','+moneda
 
         if reporte=='reportegiros':
@@ -2081,6 +2112,10 @@ def reportes(request):
             fdesde = request.POST.get('pd_edcs_f-desde')
             fhasta = request.POST.get('pd_edcs_f-hasta')
             usuario = get_ci(request)
+
+            if idioma == 1:
+                    fdesde = '/'.join(list(reversed(fdesde.split("/"))))
+                    fhasta = '/'.join(list(reversed(fhasta.split("/"))))
 
             respuesta += tipoCta+','+fdesde+','+fhasta+','+usuario
 
@@ -2142,12 +2177,27 @@ def reportes(request):
 
             bhoras = request.POST.get('seg_log_bhoras')
 
+            if idioma == 1:
+                fdesde = '/'.join(list(reversed(fdesde.split("/"))))
+                fhasta = '/'.join(list(reversed(fhasta.split("/"))))
+
             if bhoras is None:
                 bhoras = '0'
 
-            hdesde = hdesde.split(' ')[0]
-            hhasta = hhasta.split(' ')[0]
+            turnodesde = hdesde.split(' ')[1]
+            turnohasta = hhasta.split(' ')[1]
 
+            if turnodesde == "PM":
+                aux = (hdesde.split(' ')[0]).split(':')
+                hdesde = str(int(aux[0]) + 12) + ':' + aux[1]
+            else:
+                hdesde = hdesde.split(' ')[0]
+
+            if turnohasta == "PM":
+                aux = (hhasta.split(' ')[0]).split(':')
+                hhasta = str(int(aux[0]) + 12) + ':' + aux[1]
+            else:
+                hhasta = hhasta.split(' ')[0]
 
             respuesta = 'reportelogsporfechas'
 
@@ -2199,6 +2249,9 @@ def reportes(request):
         if reporte=='reportectassobregiradas':
             fecha = request.POST.get('avz_ctas_fecha')
             usuario = get_ci(request)
+
+            if idioma == 1:
+                fecha = '/'.join(list(reversed(fecha.split("/"))))
             
             respuesta += fecha+','+usuario
 
@@ -2206,6 +2259,9 @@ def reportes(request):
             tipoCta = request.POST.get('avz_sconc_tipocta')
             fecha = request.POST.get('avz_sconc_fecha')
             usuario = get_ci(request)
+
+            if idioma == 1:
+                fecha = '/'.join(list(reversed(fecha.split("/"))))
             
             respuesta += tipoCta+','+fecha+','+usuario
 
@@ -2232,6 +2288,10 @@ def reportes(request):
                 fdesde = request.POST.get('avz_paavz_f-desde')
                 fhasta = request.POST.get('avz_paavz_f-hasta')
 
+                if idioma == 1:
+                    fdesde = '/'.join(list(reversed(fdesde.split("/"))))
+                    fhasta = '/'.join(list(reversed(fhasta.split("/"))))
+
                 respuesta += '2,'+fdesde+','+fhasta
 
             if tipo=='ref':
@@ -2251,6 +2311,10 @@ def reportes(request):
             fhasta = request.POST.get('est_pa_f-hasta')
             usuario = get_ci(request)
 
+            if idioma == 1:
+                fdesde = '/'.join(list(reversed(fdesde.split("/"))))
+                fhasta = '/'.join(list(reversed(fhasta.split("/"))))
+
             if fuente == '0':
                 fdesde = fhasta
 
@@ -2263,6 +2327,10 @@ def reportes(request):
             fhasta = request.POST.get('est_pcon_f-hasta')
             usuario = get_ci(request)
 
+            if idioma == 1:
+                fdesde = '/'.join(list(reversed(fdesde.split("/"))))
+                fhasta = '/'.join(list(reversed(fhasta.split("/"))))
+
             respuesta += tipoCta+','+codCta+','+fdesde+','+fhasta+','+usuario
 
         if reporte=='reporteestpartcarg':
@@ -2271,6 +2339,10 @@ def reportes(request):
             fdesde = request.POST.get('est_pcar_f-desde')
             fhasta = request.POST.get('est_pcar_f-hasta')
             usuario = get_ci(request)
+
+            if idioma == 1:
+                fdesde = '/'.join(list(reversed(fdesde.split("/"))))
+                fhasta = '/'.join(list(reversed(fhasta.split("/"))))
             
             respuesta += tipoCta+','+codCta+','+fdesde+','+fhasta+','+usuario
 
@@ -4060,12 +4132,18 @@ def seg_Logs(request):
         return JsonResponse(res_json, safe=False)
 
     if request.method == "GET":
-        eventos = Evento.objects.all()
+
+        idioma = Configuracion.objects.all()[0].idioma   
+        
+        if idioma == 0:
+            eventos = Evento.objects.all()
+        else:
+            eventos = EventoIngles.objects.all()
+
         exc = Perfil.objects.get(nombre = "SysAdmin")
         usuarios = Usuario.objects.exclude(perfil_idperfil = exc)
         eventos_acc = [evento.accion for evento in eventos]
-        fecha_hoy = ("/").join(str(timenow().date()).split("-")[::-1])
-        idioma = Configuracion.objects.all()[0].idioma    
+        fecha_hoy = ("/").join(str(timenow().date()).split("-")[::-1]) 
         context = {'idioma':idioma, 'eventos':eventos, 'usuarios':usuarios, 'eventos_acc':eventos_acc, 'fecha_hoy':fecha_hoy, 'ops':get_ops(request),'ldap':get_ldap(request)}
         template = "matcher/seg_Logs.html"
 
@@ -5395,7 +5473,12 @@ def admin_archive(request):
                 nuevoArch.write(linea3)
 
             #Para el log
-            detalle = "Cuenta: " + cuenta
+            if idioma == 0:
+                msj_ct = "Cuenta: "
+            else:
+                msj_ct = "Account: "
+
+            detalle = msj_ct + cuenta
             log(request,43,detalle)
             
             exito = True
@@ -6154,6 +6237,7 @@ def log(request,eid,detalles=None):
     terminal = request.META.get('COMPUTERNAME')
     fechaHora = timenow()
     evento = Evento.objects.get(pk=eid)
+    eventoIngles = EventoIngles.objects.get(pk=eid)
     sesion = Sesion.objects.get(login=username)
     nombre = sesion.usuario_idusuario.nombres+" "+sesion.usuario_idusuario.apellidos
 
@@ -6167,15 +6251,18 @@ def log(request,eid,detalles=None):
         if m == False: 
 
             Traza.objects.create(evento_idevento=evento,usuario=nombre, fecha_hora=fechaHora, terminal=terminal, detalles=detalles)
-    
+            TrazaIngles.objects.create(eventoingles_idevento=eventoIngles,usuario=nombre, fecha_hora=fechaHora, terminal=terminal, detalles=detalles)
+
     else:
         Traza.objects.create(evento_idevento=evento,usuario=nombre, fecha_hora=fechaHora, terminal=terminal)
+        TrazaIngles.objects.create(eventoingles_idevento=eventoIngles,usuario=nombre, fecha_hora=fechaHora, terminal=terminal)
 
 def logAux(name,terminal,detalles):
     # Funcion que recibe el nombre del usuario y guarda su traza
     username = name
     fechaHora = timenow()
     evento = Evento.objects.get(pk=2)
+    eventoIngles = EventoIngles.objects.get(pk=2)
     sesion = Sesion.objects.get(login=username)
     nombre = sesion.usuario_idusuario.nombres+" "+sesion.usuario_idusuario.apellidos
 
@@ -6183,6 +6270,7 @@ def logAux(name,terminal,detalles):
         print("")
     else:
         Traza.objects.create(evento_idevento=evento,usuario=nombre, fecha_hora=fechaHora, terminal=terminal, detalles=detalles)
+        TrazaIngles.objects.create(eventoingles_idevento=eventoIngles,usuario=nombre, fecha_hora=fechaHora, terminal=terminal, detalles=detalles)
 
 
 def expirarSesion(request):
