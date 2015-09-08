@@ -1,3 +1,4 @@
+import re
 from Matcher.models import *
 from datetime import datetime, date, time, timedelta
 
@@ -92,6 +93,7 @@ def parseo103(archivo,directorio):
 	cargosReceptor71G = ""
 	reporteReg77B = ""
 	fecha_entrada = ""
+	moneda33 =""
 	io=""
 	vali = ""
 	observacion =""
@@ -225,6 +227,7 @@ def parseo103(archivo,directorio):
 					msg = "Caracter inesperado, en la línea número " +str(contador+1)+ " del archivo " + archivo
 					return ("error", msg)
 				moneda33B = contenidoLinea[5:]
+				moneda33 = moneda33B[:3]
 				print ("[33B]: ",moneda33B)
 				verificarOps1.remove("[33B]")
 				lineaAct += 1
@@ -774,7 +777,15 @@ def parseo103(archivo,directorio):
 				if(monedaCta != moneda32A):
 					observacion = "Moneda Invalida, la moneda proveniente del mensaje es : " + moneda32A + ", deberia ser : " + monedaCta + ", Archivo: " + archivo
 					vali = "vali"
-
+				if(moneda33B != "" and moneda32A != moneda33 and tipoCambio36 == "" ):
+					observacion = "No existe el tipo de Cambio (Campo 36) , Archivo: " + archivo
+					vali = "vali"
+				if(instReemb55a != "" and (emisorCorr53a == "" or receptorCorr54a == "")):
+					observacion = "Si el campo 55a esta presente, tambien deben estar los campos 53a y 54a, Archivo: " + archivo
+					vali = "vali"
+				if(instInter56a != "" and instCuenta57a == "" ):
+					observacion = "Si el campo 56a esta presente, tambien debe estar el campo 57a, Archivo: " + archivo
+					vali = "vali"
 				fecha_entrada = timenow()
 				mensaje_intra = MensajesIntraday.objects.create(tipo = "103",cuenta = cuenta[0],fecha_entrada=fecha_entrada,i_o = io,observacion=observacion) 
 				mensaje = Mt103.objects.create(mensaje_intraday = mensaje_intra,fecha_valor = fechaValor32A, moneda = moneda32A,monto = monto32A, remitente = emisorS,receptor = receptorR, ref_remitente = emisorRef20,ind_hora = timeId13C,tipo_op_banco = codigoBank23B,cod_instruccion = codInst23E,tipo_transaccion = tipoTrans26T, moneda_monto = moneda33B,tipo_cambio = tipoCambio36,cliente_ordenante = clienteOrd50a, institucion_emisor = instEmisor51A,institucion_ordenante = instOrd52a,corresponsal_remitente = emisorCorr53a, corresponsal_receptor = receptorCorr54a, institucion_reembolso = instReemb55a, institucion_intermediaria = instInter56a, cuenta_institucion = instCuenta57a,cliente_beneficiario = clienteBene59a,info_remesa = infoRemesa70,detalle_cargos = detallesCarg71A,info_remitente_a_receptor = infoEmisor72,cargos_remitente = cargosEmisor71F, cargos_receptor = cargosReceptor71G,reporte_regulatorio = reporteReg77B)
@@ -809,6 +820,7 @@ def parseo103(archivo,directorio):
 			cargosEmisor71F = ""
 			cargosReceptor71G = ""
 			reporteReg77B = ""
+			moneda33 =""
 			fecha_entrada = ""
 			observacion =""
 	
@@ -1232,6 +1244,10 @@ def parseo202(archivo,directorio):
 				if(monedaCta != moneda32A):
 					observacion = "Moneda Invalida, la moneda proveniente del mensaje es : " + moneda32A + ", deberia ser : " + monedaCta + ", Archivo: " + archivo
 					vali = "vali"
+				if(instInter56a != "" and instCuenta57a == ""):
+					observacion = "Si el campo 56a esta presente el campo 57a tambien tiene que estarlo, Archivo: " + archivo
+					vali = "vali"
+					
 				fecha_entrada = timenow()
 				mensaje_intra = MensajesIntraday.objects.create(tipo = "202",cuenta = cuenta[0],fecha_entrada=fecha_entrada,i_o=io,observacion=observacion) 
 				mensaje = Mt202.objects.create(mensaje_intraday = mensaje_intra,fecha_valor = fechaValor32A, moneda = moneda32A,monto = monto32A,remitente = emisorS,receptor = receptorR, ref_transaccion = emisorRef20,ref_relacion = refRel21,ind_hora = timeId13C, institucion_ordenante = instOrd52a,corresponsal_remitente = emisorCorr53a, corresponsal_receptor = receptorCorr54a,intermediario = instInter56a, cuenta_institucion = instCuenta57a,institucion_beneficiaria = instBene58a,info_remitente_a_receptor = receptorInfo72)
@@ -1306,6 +1322,8 @@ def parseo752(archivo,directorio):
 	monto33A = ""
 	emisorCorr53a = ""
 	receptorCorr54a = ""
+	moneda32B = ""
+	monto32B =""
 	info72 = ""
 	cuantos = 0
 	msg = ""
@@ -1425,6 +1443,8 @@ def parseo752(archivo,directorio):
 						return ("error", msg)	
 				if (opcion1 == "[32B]"):
 					montoTotal32B = contenidoLinea[5:]
+					moneda32B = montoTotal32B[:3]
+					monto32B = montoTotal32B[3:]
 					print ("[32B]: ",montoTotal32B)
 				if (opcion1 == "[71B]"):
 					cargosDed71B = contenidoLinea[5:]
@@ -1448,12 +1468,18 @@ def parseo752(archivo,directorio):
 					fechaValor33A = fechaValor33A.strftime("%d/%m/%Y")
 					moneda33A = contenidoLinea[11:14]
 					monto33A = contenidoLinea[14:]
+					if(moneda33A != moneda32B):
+						observacion = "Los campos 32B y 33a deben tener el mismo tipo de moneda, Archivo: " + archivo
+						vali = "vali"
 					print ("[33A]: ",fechaValor33A)
 					print ("[33A]: ",moneda33A)
 					print ("[33A]: ",monto33A)
 				if (opcion1 == "[33B]"):
 					moneda33A = contenidoLinea[5:8]
 					monto33A = contenidoLinea[8:]
+					if(moneda33A != moneda32B):
+						observacion = "Los campos 32B y 33a deben tener el mismo tipo de moneda, Archivo: " + archivo
+						vali = "vali"
 					print ("[33B]: ",moneda33A)
 					print ("[33B]: ",monto33A)
 				if (opcion1 == "[53A]"):
@@ -1600,10 +1626,24 @@ def parseo752(archivo,directorio):
 				cuenta = Cuenta.objects.filter(banco_corresponsal_idbanco__codigo = receptorR) 
 			
 			if cuenta:
-				#monedaCta = cuenta[0].moneda_idmoneda.codigo
-				#if(monedaCta != moneda33A):
-					#observacion = "Moneda Invalida, la moneda proveniente del mensaje es : " + moneda33A + ", deberia ser : " + monedaCta + ", Archivo: " + archivo
-					#vali = "vali"
+				monedaCta = cuenta[0].moneda_idmoneda.codigo
+				if(moneda33A != "" and monedaCta != moneda33A):
+					observacion = "Moneda Invalida, la moneda proveniente del mensaje es : " + moneda33A + ", deberia ser : " + monedaCta + ", Archivo: " + archivo
+					vali = "vali"
+				if(montoTotal32B != "" and cargosDed71B != "" and moneda33A == ""):
+					observacion = "Si los campos 32B y 71B existen, el campo 33a Debería estar presente, Archivo: " + archivo
+					vali = "vali"
+				if(fechaValor33A == ""):
+					fechaValor33A = fecha30
+				if(montoTotal32B == "" and monto33A == ""):
+					monto33A = "0,"
+					moneda33A = monedaCta
+				elif(montoTotal32B != "" and monto33A == ""):
+					monto33A = monto32B
+					moneda33A = moneda32B
+				if (id23 != "DEBIT"):
+					monto33A = "0,"
+					moneda33A = monedaCta
 				fecha_entrada = timenow()
 				mensaje_intra = MensajesIntraday.objects.create(tipo = "752",cuenta = cuenta[0],fecha_entrada=fecha_entrada,i_o=io,observacion=observacion) 
 				mensaje = Mt752.objects.create(mensaje_intraday = mensaje_intra,fecha_valor = fechaValor33A, moneda = moneda33A,monto = monto33A,remitente = emisorS,receptor = receptorR, num_credito = emisorRef20,ref_banco_present = refRel21,proposito = id23, fecha_aviso = fecha30, monto_total = montoTotal32B, cargos_deducidos = cargosDed71B,corresponsal_remitente = emisorCorr53a, corresponsal_receptor = receptorCorr54a,info_remitente_a_receptor = info72)
@@ -1624,6 +1664,8 @@ def parseo752(archivo,directorio):
 			fechaValor33A = ""
 			moneda33A = ""
 			monto33A = ""
+			moneda32B = ""
+			monto32B =""
 			msg = ""
 			io=""
 			observacion = ""
@@ -1842,6 +1884,9 @@ def parseo754(archivo,directorio):
 					print ("[34A]: ",moneda32)
 					print ("[34A]: ",monto32)
 				if (opcion1 == "[34B]"):
+					if(contenidoLinea[5:8] != moneda32):
+						observacion = "Los campos 32a y 34a deben tener el mismo tipo de moneda, Archivo: " + archivo
+						vali = "vali"
 					moneda32 = contenidoLinea[5:8]
 					monto32 = contenidoLinea[8:]
 					print ("[34B]: ",moneda32)
@@ -2116,7 +2161,8 @@ def parseo756(archivo,directorio):
 	monto33A = ""			
 	emisorCorr53a = ""
 	receptorCorr54a = ""
-	info72 =""
+	info72 = ""
+	moneda32B = ""
 	cuantos = 0
 	msg = ""
 	io=""
@@ -2199,6 +2245,7 @@ def parseo756(archivo,directorio):
 				return ("error", msg)
 			else: 
 				montoTotal32B = contenidoLinea[5:]
+				moneda32B = montoTotal32B[:3]
 				print ("[32B]: ",montoTotal32B)
 
 		#Caso para Linea campo [33A] 
@@ -2215,6 +2262,9 @@ def parseo756(archivo,directorio):
 				fechaValor33A = fechaValor33A.strftime("%d/%m/%Y")
 				moneda33A = contenidoLinea[11:14]
 				monto33A = contenidoLinea[14:]
+				if(moneda33A != moneda32B):
+					observacion = "Los campos 32B y 33A deben tener el mismo tipo de moneda, Archivo: " + archivo
+					vali = "vali"
 				print ("[33A]: ",fechaValor33A)
 				print ("[33A]: ",moneda33A)
 				print ("[33A]: ",monto33A)
@@ -2396,6 +2446,7 @@ def parseo756(archivo,directorio):
 			emisorCorr53a = ""
 			receptorCorr54a = ""
 			info72 =""
+			moneda32B = ""
 			msg = ""
 			io=""
 			observacion = ""
@@ -2629,9 +2680,15 @@ def parseo942(archivo,directorio):
 					print ("[86]",infoTitularOp86)
 				if(opcion2 == "[90D]"):
 					entradasDeb90D = contenidoLinea[5:]
+					res = re.search('(?P<numero>\d{1,5})(?P<moneda>[a-zA-Z]{3})(?P<monto>.+\,\d{0,2})$', entradasDeb90D)
+					nuevo = res.groupdict()
+					print(nuevo)
 					print ("[90D]",entradasDeb90D)
 				if(opcion2 == "[90C]"):
 					entradasCred90C = contenidoLinea[5:]
+					res = re.search('(?P<numero>\d{1,5})(?P<moneda>[a-zA-Z]{3})(?P<monto>.+\,\d{0,2})$', entradasCred90C)
+					nuevo = res.groupdict()
+					print(nuevo)
 					print ("[90C]",entradasCred90C)
 				if (es86):
 					indice = verificarOps.index(opcion1)

@@ -2,6 +2,7 @@
 {% load humanize %}
 {% load staticfiles %}
 {% load formatofecha %}
+{% load formatonumero %}
 {% block title %}Intraday (Detalle de Transacciones){% endblock %}
 
 {%block head%}
@@ -18,6 +19,9 @@
 <style> form {padding-bottom: 1%;} #table-div-conta, #table-div-corr {padding-top: 1%;}</style>
 
 <legend><h1>Intraday (Detalle de Transacciones)</h1></legend>
+<input type="text" id="idioma" value="{{idioma}}" hidden/>
+<input type="text" id="tiempoAct" value="{{tiempoAct}}" hidden/>
+
 
     <div class="row clearfix" >
       <!-- Select Basic -->
@@ -67,19 +71,29 @@
                 <td ><a id="mostrar_info" value = "{{mensaje.mensaje_intraday.idmensaje}}" name="{{mensaje.mensaje_intraday.idmensaje}}" tipo="{{mensaje.mensaje_intraday.tipo}}" refremitente="{{mensaje.ref_remitente}}" indHora="{{mensaje.ind_hora}}" tipoOpBanco="{{mensaje.tipo_op_banco}}" codInst="{{mensaje.cod_instruccion}}" tipoTrans="{{mensaje.tipo_transaccion}}" monedaMonto="{{mensaje.moneda_monto}}" tipoCambio="{{mensaje.tipo_cambio}}" clienteOrd="{{mensaje.cliente_ordenante}}" instEmi="{{mensaje.institucion_emisor}}" instOrd="{{mensaje.institucion_ordenante}}" corrRemit="{{mensaje.corresponsal_remitente}}" corrRecept="{{mensaje.corresponsal_receptor}}" instReemb="{{mensaje.institucion_reembolso}}" instInter="{{mensaje.institucion_intermediaria}}" ctaInst="{{mensaje.cuenta_institucion}}" clienteBene="{{mensaje.cliente_beneficiario}}" infoRemesa="{{mensaje.info_remesa}}" detCargos="{{mensaje.detalle_cargos}}" cargRemit="{{mensaje.cargos_remitente}}" cargRecept="{{mensaje.cargos_receptor}}" infoRemitARecept="{{mensaje.info_remitente_a_receptor}}" repReg="{{mensaje.reporte_regulatorio}}" remitente="{{mensaje.remitente}}" receptor="{{mensaje.receptor}}" fechaVal="{{mensaje.fecha_valor}}" moneda="{{mensaje.moneda}}" monto="{{mensaje.monto}}" data-toggle="modal" href="#myModal">{{mensaje.mensaje_intraday.tipo}}</a></td>
                 {% if mensaje.mensaje_intraday.i_o == "O" %}
                   {% if mensaje.mensaje_intraday.observacion != "" %}
-                  <td></td>
-                  <td></td>
+                    <td></td>
+                    <td></td>
                   {% else %}
-                  <td>{{mensaje.monto|intcomma|cut:"-"}}</td>
-                  <td></td>
+                    {%if idioma == 1%}
+                      <td>{{mensaje.monto|intcomaI|cut:"-"}}</td>
+                      <td></td>
+                    {% else %}
+                      <td>{{mensaje.monto|intpuntoI|cut:"-"}}</td>
+                      <td></td>
+                    {% endif %}
                   {% endif %}
                 {% elif mensaje.mensaje_intraday.i_o == "I"%}
                   {% if mensaje.mensaje_intraday.observacion != "" %}
                   <td></td>
                   <td></td>
                   {% else %}
-                  <td></td>
-                  <td>{{mensaje.monto|intcomma|cut:"-"}}</td>
+                    {%if idioma == 1%}
+                        <td></td>
+                        <td>{{mensaje.monto|intcomaI|cut:"-"}}</td>
+                      {% else %}
+                        <td></td>
+                        <td>{{mensaje.monto|intpuntoI|cut:"-"}}</td>
+                    {% endif %}
                   {% endif %}
                 {% endif %}
                 <td>{{mensaje.mensaje_intraday.fecha_entrada|formato24hrs}}</td>
@@ -95,16 +109,26 @@
                   <td></td>
                   <td></td>
                   {% else %}
-                  <td>{{mensaje.monto|intcomma|cut:"-"}}</td>
-                  <td></td>
+                    {%if idioma == 1%}
+                      <td>{{mensaje.monto|intcomaI|cut:"-"}}</td>
+                      <td></td>
+                    {% else %}
+                      <td>{{mensaje.monto|intpuntoI|cut:"-"}}</td>
+                      <td></td>
+                    {% endif %}
                   {% endif %}
                 {% elif mensaje.mensaje_intraday.i_o == "I"%}
                   {% if mensaje.mensaje_intraday.observacion != "" %}
                   <td></td>
                   <td></td>
                   {% else %}
-                  <td></td>
-                  <td>{{mensaje.monto|intcomma|cut:"-"}}</td>
+                    {%if idioma == 1%}
+                      <td></td>
+                      <td>{{mensaje.monto|intcomaI|cut:"-"}}</td>
+                    {% else %}
+                      <td></td>
+                      <td>{{mensaje.monto|intpuntoI|cut:"-"}}</td>
+                    {% endif %}
                   {% endif %}
                 {% endif %}
                 <td>{{mensaje.mensaje_intraday.fecha_entrada|formato24hrs}}</td>
@@ -120,16 +144,26 @@
                   <td></td>
                   <td></td>
                   {% else %}
-                  <td>{{mensaje.monto|intcomma|cut:"-"}}</td>
-                  <td></td>
+                    {%if idioma == 1%}
+                      <td>{{mensaje.monto|intcomaI|cut:"-"}}</td>
+                      <td></td>
+                    {% else %}
+                      <td>{{mensaje.monto|intpuntoI|cut:"-"}}</td>
+                      <td></td>
+                    {% endif %}
                   {% endif %}
                 {% elif mensaje.mensaje_intraday.i_o == "I"%}
                   {% if mensaje.mensaje_intraday.observacion != "" %}
                   <td></td>
                   <td></td>
                   {% else %}
-                  <td></td>
-                  <td>{{mensaje.monto|intcomma|cut:"-"}}</td>
+                    {%if idioma == 1%}
+                      <td></td>
+                      <td>{{mensaje.monto|intcomaI|cut:"-"}}</td>
+                    {% else %}
+                      <td></td>
+                      <td>{{mensaje.monto|intpuntoI|cut:"-"}}</td>
+                    {% endif %}
                   {% endif %}
                 {% endif %}
                 <td>{{mensaje.mensaje_intraday.fecha_entrada|formato24hrs}}</td>
@@ -145,16 +179,26 @@
                   <td></td>
                   <td></td>
                   {% else %}
-                  <td>{{mensaje.monto|intcomma|cut:"-"}}</td>
-                  <td></td>
+                    {%if idioma == 1%}
+                      <td>{{mensaje.monto|intcomaI|cut:"-"}}</td>
+                      <td></td>
+                    {% else %}
+                      <td>{{mensaje.monto|intpuntoI|cut:"-"}}</td>
+                      <td></td>
+                    {% endif %}
                   {% endif %}
                 {% elif mensaje.mensaje_intraday.i_o == "I"%}
                   {% if mensaje.mensaje_intraday.observacion != "" %}
                   <td></td>
                   <td></td>
                   {% else %}
-                  <td></td>
-                  <td>{{mensaje.monto|intcomma|cut:"-"}}</td>
+                    {%if idioma == 1%}
+                      <td></td>
+                      <td>{{mensaje.monto|intcomaI|cut:"-"}}</td>
+                    {% else %}
+                      <td></td>
+                      <td>{{mensaje.monto|intpuntoI|cut:"-"}}</td>
+                    {% endif %}
                   {% endif %}
                 {% endif %}
                 <td>{{mensaje.mensaje_intraday.fecha_entrada|formato24hrs}}</td>
@@ -170,16 +214,26 @@
                   <td></td>
                   <td></td>
                   {% else %}
-                  <td>{{mensaje.monto|intcomma|cut:"-"}}</td>
-                  <td></td>
+                    {%if idioma == 1%}
+                      <td>{{mensaje.monto|intcomaI|cut:"-"}}</td>
+                      <td></td>
+                    {% else %}
+                      <td>{{mensaje.monto|intpuntoI|cut:"-"}}</td>
+                      <td></td>
+                    {% endif %}
                   {% endif %}
                 {% elif mensaje.mensaje_intraday.i_o == "I"%}
                   {% if mensaje.mensaje_intraday.observacion != "" %}
                   <td></td>
                   <td></td>
                   {% else %}
-                  <td></td>
-                  <td>{{mensaje.monto|intcomma|cut:"-"}}</td>
+                    {%if idioma == 1%}
+                      <td></td>
+                      <td>{{mensaje.monto|intcomaI|cut:"-"}}</td>
+                    {% else %}
+                      <td></td>
+                      <td>{{mensaje.monto|intpuntoI|cut:"-"}}</td>
+                    {% endif %}
                   {% endif %}
                 {% endif %}
                 <td>{{mensaje.mensaje_intraday.fecha_entrada|formato24hrs}}</td>

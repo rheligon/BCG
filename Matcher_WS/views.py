@@ -2898,8 +2898,6 @@ def intraday(request,cuenta):
         if actn == 'buscarConci':
             msg = ""
             msgParseo = ""
-
-
             res = ""
             
             conciliacion = Conciliacionconsolidado.objects.filter(cuenta_idcuenta = cuenta)
@@ -2938,6 +2936,8 @@ def intraday(request,cuenta):
                 exitoconci = False
 
             json_cuenta = serializers.serialize('json', [cuentaId])
+
+              
 
             archivos942 = ""
             
@@ -3207,8 +3207,86 @@ def intraday(request,cuenta):
                         
                         shutil.move(pathsrc,pathdest)
                         continue
+
+            mensajesCreditos = MensajesIntraday.objects.filter(cuenta=cuenta,observacion="",i_o="I").order_by('fecha_entrada')
+            mensajesDebitos = MensajesIntraday.objects.filter(cuenta=cuenta,observacion="",i_o="O").order_by('fecha_entrada')
+
+            m103 = None
+            m202 = None
+            m942 = None
+            m752 = None
+            m754 = None
+            m756 = None
+            totalDebitos = 0
+            totalCreditos = 0
+
+            if mensajesDebitos:
+                for debito in mensajesDebitos:
+                    if debito.tipo == "103":
+                        try:
+                            m103 = Mt103.objects.get(mensaje_intraday=debito.idmensaje) 
+                            totalDebitos = totalDebitos + float(m103.monto.replace(",","."))
+                        except:
+                            print("no")
+                    if debito.tipo == "202":
+                        try:
+                            m202 = Mt202.objects.get(mensaje_intraday=debito.idmensaje) 
+                            totalDebitos = totalDebitos + float(m202.monto.replace(",","."))
+                        except:
+                            print("no")
+                    if debito.tipo == "752":
+                        try:
+                            m752 = Mt752.objects.get(mensaje_intraday=debito.idmensaje) 
+                            totalDebitos = totalDebitos + float(m752.monto.replace(",","."))
+                        except:
+                            print("no")
+                    if debito.tipo == "754":
+                        try:
+                            m754 = Mt754.objects.get(mensaje_intraday=debito.idmensaje) 
+                            totalDebitos = totalDebitos + float(m754.monto.replace(",","."))
+                        except:
+                            print("no")
+                    if debito.tipo == "756":
+                        try:
+                            m756 = Mt756.objects.get(mensaje_intraday=debito.idmensaje) 
+                            totalDebitos = totalDebitos + float(m756.monto.replace(",","."))
+                        except:
+                            print("no")  
+
+            if mensajesCreditos:
+                for credito in mensajesCreditos:
+                    if credito.tipo == "103":
+                        try:
+                            m103 = Mt103.objects.get(mensaje_intraday=credito.idmensaje) 
+                            totalCreditos = totalCreditos + float(m103.monto.replace(",","."))
+                        except:
+                            print("no")
+                    if credito.tipo == "202":
+                        try:
+                            m202 = Mt202.objects.get(mensaje_intraday=credito.idmensaje) 
+                            totalCreditos = totalCreditos + float(m202.monto.replace(",","."))
+                        except:
+                            print("no")
+                    if credito.tipo == "752":
+                        try:
+                            m752 = Mt752.objects.get(mensaje_intraday=credito.idmensaje) 
+                            totalCreditos = totalCreditos + float(m752.monto.replace(",","."))
+                        except:
+                            print("no")
+                    if credito.tipo == "754":
+                        try:
+                            m754 = Mt754.objects.get(mensaje_intraday=credito.idmensaje) 
+                            totalCreditos = totalCreditos + float(m754.monto.replace(",","."))
+                        except:
+                            print("no")
+                    if credito.tipo == "756":
+                        try:
+                            m756 = Mt756.objects.get(mensaje_intraday=credito.idmensaje) 
+                            totalCreditos = totalCreditos + float(m756.monto.replace(",","."))
+                        except:
+                            print("no")  
               
-            return JsonResponse({'exitoParseo':exitoParseo,'exitoconci':exitoconci,'msg':msg,'msgParseo':msgParseo,'fecha':fecha,'fechaActual':fechaActual, 'exito':exito, 'cuenta': json_cuenta, 'cons':json_cons, 'cod': cod})
+            return JsonResponse({'debitos':totalDebitos,'creditos':totalCreditos,'exitoParseo':exitoParseo,'exitoconci':exitoconci,'msg':msg,'msgParseo':msgParseo,'fecha':fecha,'fechaActual':fechaActual, 'exito':exito, 'cuenta': json_cuenta, 'cons':json_cons, 'cod': cod})
 
 
 @login_required(login_url='/login')
@@ -3224,6 +3302,8 @@ def transIntraday(request,cuenta):
         return HttpResponseForbidden(retour)
 
     expirarSesion(request)
+
+    tiempoAct = Configuracion.objects.all()[0].tiempointraday
 
     m103 = None
     m202 = None
@@ -3303,7 +3383,7 @@ def transIntraday(request,cuenta):
                     arregloMensajes.append(m942)
                 
     
-    context = {'mensajes':arregloMensajes,'errores':errores,'idioma':idioma,'ops':get_ops(request),'cuenta':cuentaId,'fecha':fecha , 'fechaActual':fechaActual}
+    context = {'tiempoAct':tiempoAct,'mensajes':arregloMensajes,'errores':errores,'idioma':idioma,'ops':get_ops(request),'cuenta':cuentaId,'fecha':fecha , 'fechaActual':fechaActual}
     template = "matcher/transIntraday.html"
 
     return render(request, template, context)

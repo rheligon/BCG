@@ -18,6 +18,7 @@
 <style> form {padding-bottom: 1%;} #table-div-conta, #table-div-corr {padding-top: 1%;}</style>
 
 <legend><h1>Intraday</h1></legend>
+<input type="text" id="idioma" value="{{idioma}}" hidden/>
 <input type="text" id="tiempoAct" value="{{tiempoAct}}" hidden/>
 
 <form class="form-inline">
@@ -298,5 +299,8 @@
 <script type="text/javascript" src="{% static 'js/picker.js' %}"></script>
 <script type="text/javascript" src="{% static 'js/picker.date.js' %}"></script>
 <script type="text/javascript" src="{% static 'js/pickerlegacy.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/jshashtable.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/numberformatter.js' %}"></script>
+
 <script src="{% static 'js/intraday.js' %}" type="text/javascript"></script>
 {% endblock %}

@@ -1,5 +1,14 @@
 
 var csrftoken = $.cookie('csrftoken');
+var idioma = $('#idioma').val();
+var idiomaAux = "";
+var msj ="";
+
+if (idioma == 0){
+    idiomaAux = "es"
+} else {
+    idiomaAux = "en"
+}
 
 var tiempo = $('#tiempoAct').val();
 tiempo = parseInt(tiempo)*60000
@@ -164,22 +173,6 @@ $('#Cuenta-sel').change(function() {
     }
 }); 
 
-function addCommas(intNum) {
-  return (intNum + '').replace(/(\d)(?=(\d{3})+$)/g, '$1,');
-};
-
-function intCommas(numero) {
-    balance = Math.abs(numero).toString().split(".");
-    entero = parseInt(balance[0]);
-    conComa = addCommas(entero);
-    if (balance.length > 1){
-        balance = conComa + "." + balance[1]    
-    }else{
-        balance = conComa + ".00";
-    }
-    return balance;
-};
-
 //Dar formato a un Date a string dd/mm/yyyy
 function formatearFecha(fecha){
     dia = fecha.getUTCDate();
@@ -206,39 +199,41 @@ function buscarUltimaConciliacion(cuenta){
             data: {"action": "buscarConci"},
             success: function(data){
                 if (data.exitoconci){
+                    console.log("debitos: "+data.debitos)
+                    console.log("creditos: "+data.creditos)
                     var json_data = jQuery.parseJSON(data.cons);
                     json_data = json_data[0].fields;
                     $('#fecha_conci').html(data.fecha);
-                    
+                    console.log(idiomaAux)
                     balanceFConta = json_data.balancefinalcontabilidad;
-                    balanceFinalConta = intCommas(balanceFConta);
+                    balanceFinalConta = $.formatNumber(Math.abs(balanceFConta),{locale:idiomaAux});
                     $('#sald_fin_conta').val(balanceFinalConta);
                     $('#cdFinConta').html(data.cod[0]);
                     
                     
                     balanceFCorr = json_data.balancefinalcorresponsal;
-                    balanceFinalCorr = intCommas(balanceFCorr);
+                    balanceFinalCorr = $.formatNumber(Math.abs(balanceFCorr),{locale:idiomaAux});
                     $('#sald_fin_corr').val(balanceFinalCorr);
                     $('#cdFinCorr').html(data.cod[1]);
                     
                     credCorrNoDeb = json_data.totalcreditoscorresponsal;
-                    credCorrNoDebF = intCommas(credCorrNoDeb);
+                    credCorrNoDebF = $.formatNumber(Math.abs(credCorrNoDeb),{locale:idiomaAux});
                     $('#ced_corr_nodeb').val(credCorrNoDebF);
 
                     debCorrNoAcr = json_data.totaldebitoscorresponsal;
-                    debCorrNoAcrF = intCommas(debCorrNoAcr);
+                    debCorrNoAcrF = $.formatNumber(Math.abs(debCorrNoAcr),{locale:idiomaAux});
                     $('#deb_corr_noacr').val(debCorrNoAcrF);
 
                     credContaNoDeb = json_data.totalcreditoscontabilidad;
-                    credContaNoDebF = intCommas(credContaNoDeb);
+                    credContaNoDebF = $.formatNumber(Math.abs(credContaNoDeb),{locale:idiomaAux});
                     $('#ced_banco_nodeb').val(credContaNoDebF);
 
                     debContaNoAcr = json_data.totaldebitoscontabilidad;
-                    debContaNoAcrF = intCommas(debContaNoAcr);
+                    debContaNoAcrF = $.formatNumber(Math.abs(debContaNoAcr),{locale:idiomaAux});
                     $('#deb_banco_noacr').val(debContaNoAcrF);
 
                     balanceTConta = json_data.saldocontabilidad;
-                    balanceTotalConta = intCommas(balanceTConta);
+                    balanceTotalConta = $.formatNumber(Math.abs(balanceTConta),{locale:idiomaAux});
                     $('#sald_tot_conta').val(balanceTotalConta);
                     $('#sald_ini_conta').val(balanceTotalConta);
                     $('#cdTotalConta').html(data.cod[2]);
@@ -246,7 +241,7 @@ function buscarUltimaConciliacion(cuenta){
                     
 
                     balanceTCorr = json_data.saldocorresponsal;
-                    balanceTotalCorr = intCommas(balanceTCorr);
+                    balanceTotalCorr = $.formatNumber(Math.abs(balanceTCorr),{locale:idiomaAux});
                     $('#sald_tot_corr').val(balanceTotalCorr);
                     $('#sald_ini_corr').val(balanceTotalCorr); 
                     $('#cdTotalCorr').html(data.cod[3]);
@@ -256,7 +251,13 @@ function buscarUltimaConciliacion(cuenta){
                     $('#fecha_tran').html(data.fecha);
                     $('#fecha_actual').html(data.fechaActual);
                     $('#boton_go').attr("disabled", false);
-       
+
+                    debitos = $.formatNumber((data.debitos),{locale:idiomaAux});
+                    $('#debitos').val(debitos);
+                    
+                    creditos = $.formatNumber((data.creditos),{locale:idiomaAux});
+                    $('#creditos').val(creditos);
+                    
     
                 }else{
                     //borramos los campos
