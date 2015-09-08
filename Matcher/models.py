@@ -87,6 +87,14 @@ class Codigo95(models.Model):
     class Meta:
         db_table = 'Codigo95'
 
+class Codigo95Ingles(models.Model):
+    idcodigo95 = sqlserver_ado.fields.BigAutoField(db_column='idCodigo95', primary_key=True)  
+    codigo = models.BigIntegerField(db_column='Codigo', blank=True, null=True)  
+    help = models.TextField(db_column='Help')  
+
+    class Meta:
+        db_table = 'Codigo95Ingles'
+
 
 class Codigo96(models.Model):
     idcodigo96 = sqlserver_ado.fields.BigAutoField(db_column='idCodigo96', primary_key=True)  
@@ -95,6 +103,14 @@ class Codigo96(models.Model):
 
     class Meta:
         db_table = 'Codigo96'
+
+class Codigo96Ingles(models.Model):
+    idcodigo96 = sqlserver_ado.fields.BigAutoField(db_column='idCodigo96', primary_key=True)  
+    codigo = models.BigIntegerField(db_column='Codigo')  
+    help = models.TextField(db_column='Help')  
+
+    class Meta:
+        db_table = 'Codigo96Ingles'
 
 
 class Conciliacionconsolidado(models.Model):
@@ -544,6 +560,26 @@ class Mt95(models.Model):
         db_table = 'MT95'
 
 
+class Mt95Ingles(models.Model):
+    idmt95 = sqlserver_ado.fields.BigAutoField(db_column='idMT95', primary_key=True)  
+    ta_corres = models.ForeignKey('TransabiertaCorresponsal', db_column='TA_Corres_ID', blank=True, null=True)  
+    ta_conta = models.ForeignKey('TransabiertaContabilidad', db_column='TA_Conta_ID', blank=True, null=True)  
+    codigo = models.CharField(db_column='Codigo', max_length=20)  
+    codigo95_idcodigo95 = models.ForeignKey(Codigo95Ingles, db_column='Codigo95_idCodigo95', blank=True, null=True)  
+    ref_relacion = models.CharField(db_column='Ref_Relacion', max_length=20)  
+    query = models.CharField(db_column='Query', max_length=45)  
+    narrativa = models.CharField(db_column='Narrativa', max_length=100)  
+    num_mt = models.BigIntegerField(db_column='Num_MT', blank=True, null=True)  
+    fecha_msg_original = models.DateTimeField(db_column='Fecha_Msg_Original', blank=True, null=True)  
+    num_sesion = models.BigIntegerField(db_column='Num_Sesion', blank=True, null=True)  
+    isn = models.BigIntegerField(db_column='ISN', blank=True, null=True)  
+    opcion = models.BigIntegerField(db_column='Opcion', blank=True, null=True)  
+    campo79 = models.TextField(db_column='Campo79', blank=True)  
+
+    class Meta:
+        db_table = 'MT95Ingles'
+
+
 class Mt95Bk(models.Model):
     idmt95 = models.BigIntegerField(db_column='idMT95', primary_key=True)  
     ta_corres_bk_id = models.BigIntegerField(db_column='TA_Corres_BK_ID', blank=True, null=True)  
@@ -581,6 +617,24 @@ class Mt96(models.Model):
 
     class Meta:
         db_table = 'MT96'
+
+class Mt96Ingles(models.Model):
+    idmt96 = sqlserver_ado.fields.BigAutoField(db_column='IdMT96', primary_key=True)  
+    mt95_idmt95 = models.ForeignKey(Mt95Ingles, db_column='MT95_idMT95', blank=True, null=True)  
+    codigo = models.CharField(db_column='Codigo', max_length=20)  
+    codigo96_idcodigo96 = models.ForeignKey(Codigo96Ingles, db_column='Codigo96_idCodigo96', blank=True, null=True)  
+    ref_relacion = models.CharField(db_column='Ref_Relacion', max_length=20)  
+    answer = models.CharField(db_column='Answer', max_length=45)  
+    narrativa = models.CharField(db_column='Narrativa', max_length=100)  
+    num_mt = models.BigIntegerField(db_column='Num_MT', blank=True, null=True)  
+    fecha_msg_original = models.DateTimeField(db_column='Fecha_Msg_Original', blank=True, null=True)  
+    num_sesion = models.BigIntegerField(db_column='Num_Sesion', blank=True, null=True)  
+    isn = models.BigIntegerField(db_column='ISN', blank=True, null=True)  
+    opcion = models.BigIntegerField(db_column='Opcion', blank=True, null=True)  
+    campo79 = models.TextField(db_column='Campo79', blank=True)  
+
+    class Meta:
+        db_table = 'MT96Ingles'
 
 
 class Mt99(models.Model):

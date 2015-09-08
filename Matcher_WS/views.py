@@ -25,7 +25,7 @@ from Matcher_WS.edo_cuenta import edoCta, edc_list, Trans, Bal
 from Matcher_WS.mailConf import enviar_mail
 from Matcher_WS.cargaAutomatica import leer_linea_conta, leer_linea_corr, leer_punto_coma, validar_archivo
 from Matcher_WS.Matcher_call import matcher, dma_millis
-from Matcher_WS.funciones_get import get_ops, get_cuentas, get_ci, get_idioma, get_bancos, get_archivosMT99, get_archivosMT96, get_codigos95,elimina_tildes, get_archivosLicencia,verificarDirectorio, get_ldap
+from Matcher_WS.funciones_get import get_ops, get_cuentas, get_ci, get_idioma, get_bancos, get_archivosMT99, get_archivosMT96,get_codigos95, get_codigos95Ingles,elimina_tildes, get_archivosLicencia,verificarDirectorio, get_ldap
 from Matcher_WS.generar_reporte import generarReporte, pdfView, xlsView
 from Matcher_WS.setConsolidado import setConsolidado
 from Matcher_WS.parsers import parsearTipoMT,parseo103,parseo202,parseo752,parseo754,parseo756,parseo942
@@ -1344,17 +1344,23 @@ def pd_detallesMT(request, mensaje,tipo):
         msj = ""
         tranMT = mensaje
         claseMT = tipo
+        idioma = Configuracion.objects.all()[0].idioma 
 
         if claseMT == "conta":
 
             try:
                 # Buscar los mensajes MT95 de contabilidad para la transaccion dada
                 ta = TransabiertaContabilidad.objects.filter(idtransaccion=tranMT)
-                MTs = Mt95.objects.filter(ta_conta=ta)
+                
+                if idioma == 0:
+                    MTs = Mt95.objects.filter(ta_conta=ta)
+                    MT96s = Mt96.objects.filter(mt95_idmt95=MTs)
+                else:
+                    MTs = Mt95Ingles.objects.filter(ta_conta=ta)
+                    MT96s = Mt96Ingles.objects.filter(mt95_idmt95=MTs)
+
                 msj = "MTs listados exitosamente"
-                MT96s = Mt96.objects.filter(mt95_idmt95=MTs)
-                template = "matcher/pd_detallesMT.html"
-                idioma = Configuracion.objects.all()[0].idioma    
+                template = "matcher/pd_detallesMT.html"   
                 context = {'idioma':idioma, 'cuentas':get_cuentas(request), 'msg':msj, 'ops':get_ops(request), 'mensajes95': MTs, 'mensaje':mensaje, 'mensajes96':MT96s,'ldap':get_ldap(request)}
                 return render(request, template, context)
             except:
@@ -1369,9 +1375,15 @@ def pd_detallesMT(request, mensaje,tipo):
         try:
             # Buscar los mensajes MT95 de corresponsal para la transaccion dada
             ta = TransabiertaCorresponsal.objects.filter(idtransaccion=tranMT)
-            MTs = Mt95.objects.filter(ta_corres=ta)
+
+            if idioma == 0:
+                MTs = Mt95.objects.filter(ta_corres=ta)
+                MT96s = Mt96.objects.filter(mt95_idmt95=MTs)
+            else:
+                MTs = Mt95Ingles.objects.filter(ta_corres=ta)
+                MT96s = Mt96Ingles.objects.filter(mt95_idmt95=MTs)
+
             msj = "MTs listados exitosamente"
-            MT96s = Mt96.objects.filter(mt95_idmt95=MTs)
             template = "matcher/pd_detallesMT.html"
             idioma = Configuracion.objects.all()[0].idioma    
             context = {'idioma':idioma, 'cuentas':get_cuentas(request), 'msg':msj, 'ops':get_ops(request), 'mensajes95': MTs, 'mensaje':mensaje, 'mensajes96':MT96s,'ldap':get_ldap(request)}
@@ -1587,9 +1599,23 @@ def pd_partidasAbiertas(request):
             cuenta95 = request.POST.get('cuenta')
             tipoOriginal = request.POST.get('tipoOriginal')
             mensajeMT = ""
-            query = preg95
 
-            codAux = Codigo95.objects.filter(idcodigo95=cod95)[0]
+            #Quitar el + - 9 para implantacion
+            if idioma == 0:
+                cod_aux95 = str(int(cod95)-9)
+                codAux = Codigo95.objects.filter(idcodigo95=cod95)[0]
+                codAuxIn = Codigo95Ingles.objects.filter(idcodigo95=cod_aux95)[0]
+
+            else:
+                cod_aux95 = str(int(cod95)+9)
+                codAux = Codigo95.objects.filter(idcodigo95=cod_aux95)[0]
+                codAuxIn = Codigo95Ingles.objects.filter(idcodigo95=cod95)[0]
+
+            queryletras = codAux.help
+            queryInletras = codAuxIn.help
+
+            query = str(codAux.codigo)
+
             if fecha95 != "":
                 fechad = datetime.strptime(fecha95, '%d/%m/%Y')
             else:
@@ -1608,20 +1634,26 @@ def pd_partidasAbiertas(request):
             if clase95 == "conta":
 
                 tra = TransabiertaContabilidad.objects.filter(idtransaccion=trans95)[0]
-                Mt95.objects.create(ta_conta=tra,codigo=ref95,codigo95_idcodigo95=codAux,ref_relacion=refOrg95,query=query,narrativa=narra95,num_mt=tipo95a,fecha_msg_original=fechad,campo79=original95)
+
+                Mt95.objects.create(ta_conta=tra,codigo=ref95,codigo95_idcodigo95=codAux,ref_relacion=refOrg95,query=query,narrativa=queryletras,num_mt=tipo95a,fecha_msg_original=fechad,campo79=original95) 
+                Mt95Ingles.objects.create(ta_conta=tra,codigo=ref95,codigo95_idcodigo95=codAuxIn,ref_relacion=refOrg95,query=query,narrativa=queryInletras,num_mt=tipo95a,fecha_msg_original=fechad,campo79=original95)
+
                 if idioma == 0:
                     mensajeMT = "exito"
                 else:
-                    mensajeMt = "success"
+                    mensajeMT = "success"
 
-            if clase95 == "corres":
+            if clase95 == "corr":
                 
                 tra = TransabiertaCorresponsal.objects.filter(idtransaccion=trans95)[0]
-                Mt95.objects.create(ta_corres=tra,codigo=ref95,codigo95_idcodigo95=codAux,ref_relacion=refOrg95,query=query,narrativa=narral95,num_mt=tipo95a,fecha_msg_original=fechad,campo79=original95) 
+                
+                Mt95.objects.create(ta_corres=tra,codigo=ref95,codigo95_idcodigo95=codAux,ref_relacion=refOrg95,query=query,narrativa=queryletras,num_mt=tipo95a,fecha_msg_original=fechad,campo79=original95) 
+                Mt95Ingles.objects.create(ta_corres=tra,codigo=ref95,codigo95_idcodigo95=codAuxIn,ref_relacion=refOrg95,query=query,narrativa=queryInletras,num_mt=tipo95a,fecha_msg_original=fechad,campo79=original95)
+                
                 if idioma == 0:
                     mensajeMT = "exito"
                 else:
-                    mensajeMt = "success"
+                    mensajeMT = "success"
 
             tn = str(timenow())
             hora = tn[11:]
@@ -1698,8 +1730,13 @@ def pd_partidasAbiertas(request):
     if request.method == 'GET':
 
         template = "matcher/pd_partidasAbiertas.html"
-        idioma = Configuracion.objects.all()[0].idioma    
-        context = {'idioma':idioma, 'cuentas':get_cuentas(request), 'ops':get_ops(request), 'codigos':get_codigos95(),'ldap':get_ldap(request)}
+        idioma = Configuracion.objects.all()[0].idioma
+        if idioma == 0:
+            cod = get_codigos95()
+        else:
+            cod = get_codigos95Ingles()
+
+        context = {'idioma':idioma, 'cuentas':get_cuentas(request), 'ops':get_ops(request), 'codigos':cod,'ldap':get_ldap(request)}
         return render(request, template, context)
 
 @login_required(login_url='/login')
@@ -2414,11 +2451,14 @@ def mtn96(request):
 
             archivoCarga = request.POST.get('archivo96')
             mt95 = []
+            mt95In = []
             codigos=[]
             codigos96=[]
+            codigos96In=[]
             refRelaciones=[]
             respuestas = []
             narrativas = []
+            narrativasIn = []
             numerosMT = []
             fechas = []
             campos79 = []
@@ -2469,7 +2509,6 @@ def mtn96(request):
                             return JsonResponse({'mens':mensaje})
                         tipoCargar = line[3:]
                         tipoCargar = tipoCargar[:3].strip()
-                        print("eeeeees: " + tipoCargar[-2:].strip())
                         if tipoCargar[-2:].strip() != "96":
                             if idioma == 0:
                                 mensaje = "El tipo del mensaje no corresponde a un MTn96,error en la línea número " +str(i+auxCuenta+1)+ " del archivo"
@@ -2536,6 +2575,8 @@ def mtn96(request):
                         refOrgCargar = line[4:].strip()
                         try:
                             consulta = Mt95.objects.filter(ref_relacion=refCargar).filter(codigo=refOrgCargar)[0]
+                            consultaIn = Mt95Ingles.objects.filter(ref_relacion=refCargar).filter(codigo=refOrgCargar)[0]
+                             
                         except:
                             #no hay mensajes mt95 con esas referencias
                             if idioma == 0:
@@ -2568,6 +2609,7 @@ def mtn96(request):
                             return JsonResponse({'mens':mensaje})
                         
                         consultaCodigo96 = Codigo96.objects.filter(codigo=respuestaCargar)[0]
+                        consultaCodigo96In = Codigo96Ingles.objects.filter(codigo=respuestaCargar)[0]
                         #no hay codigos mt96 con esas referencias
                         if consultaCodigo96 is None:
                             if idioma == 0:
@@ -2644,12 +2686,18 @@ def mtn96(request):
         
                 # Se agregan los campos a las estructuras auxiliares para al finalarizar el recorrido del archivo 
                 # y ver que no haya errores, agregar los datos a la base de datos
+                narrativaCargar = Codigo96.objects.get(codigo=respuestaCargar).help
+                narrativaCargarIn = Codigo96Ingles.objects.get(codigo=respuestaCargar).help
+
+                mt95In.append(consultaIn)
                 mt95.append(consulta)
                 codigos.append(refCargar)
                 codigos96.append(consultaCodigo96)
+                codigos96In.append(consultaCodigo96In)
                 refRelaciones.append(refOrgCargar)
                 respuestas.append(respuestaCargar)
                 narrativas.append(narrativaCargar)
+                narrativasIn.append(narrativaCargarIn)
                 
                 if tipoCargar != "":
                     numerosMT.append(tipoCargar)
@@ -2677,6 +2725,7 @@ def mtn96(request):
             k=0
             for mt in mt95:
                 Mt96.objects.create(mt95_idmt95=mt95[k],codigo=codigos[k],codigo96_idcodigo96=codigos96[k], ref_relacion=refRelaciones[k],answer=respuestas[k], narrativa=narrativas[k], num_mt=numerosMT[k], fecha_msg_original=fechas[k],campo79 =campos79[k])
+                Mt96Ingles.objects.create(mt95_idmt95=mt95In[k],codigo=codigos[k],codigo96_idcodigo96=codigos96In[k], ref_relacion=refRelaciones[k],answer=respuestas[k], narrativa=narrativasIn[k], num_mt=numerosMT[k], fecha_msg_original=fechas[k],campo79 =campos79[k])
                 k+=1        
 
             #Se agrega el evento al log
@@ -5907,6 +5956,9 @@ def seg_licencia(request):
                 else:
                     mensaje = "Successfully modified license"
 
+                #Para el log
+                log(request,44)
+                
                 return JsonResponse({'mens':mensaje})
 
             except:
@@ -5931,6 +5983,9 @@ def seg_licencia(request):
                     mensaje = "Licencia agregada exitosamente"
                 else:
                     mensaje = "Successfully aggregated license"
+
+                #Para el log
+                log(request,44)
 
                 return JsonResponse({'mens':mensaje})
                 

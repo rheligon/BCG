@@ -32,6 +32,11 @@ def get_codigos95():
     codigos = Codigo95.objects.all()
     return codigos
 
+def get_codigos95Ingles():
+    #Buscar todos los codigos de los mensajes mtn95 en ingles
+    codigos = Codigo95Ingles.objects.all()
+    return codigos
+
 def get_archivosMT99():
     #Buscar los archivos de mensajes MT99 dado un directorio
     obj = Configuracion.objects.all()[0]
