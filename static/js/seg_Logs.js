@@ -66,6 +66,7 @@ if (idioma == 0){
       formatSubmit:'dd/mm/yyyy',
       selectYears: true,
       selectMonths: true,
+      max: true,
     });
 } else {
     $('#f-desde').pickadate({
@@ -73,6 +74,7 @@ if (idioma == 0){
       formatSubmit:'dd/mm/yyyy',
       selectYears: true,
       selectMonths: true,
+      max: true,
     });
 }
 
@@ -83,6 +85,7 @@ if (idioma == 0){
       formatSubmit:'dd/mm/yyyy',
       selectYears: true,
       selectMonths: true,
+      max: true,
     });
 } else {
     $('#f-hasta').pickadate({
@@ -90,6 +93,7 @@ if (idioma == 0){
       formatSubmit:'dd/mm/yyyy',
       selectYears: true,
       selectMonths: true,
+      max: true,
     });
 }
 

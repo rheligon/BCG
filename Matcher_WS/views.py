@@ -4630,7 +4630,8 @@ def admin_cuentas(request):
             codigo = request.POST.get('ctacod').upper()
             bancoid = request.POST.get('bancoid')
             monedaid = request.POST.get('monedaid')
-            ref_nostro = request.POST.get('ref_nostro')
+            ref_nostr
+            o = request.POST.get('ref_nostro')
             ref_vostro = request.POST.get('ref_vostro')
             desc = request.POST.get('desc')
             estado = request.POST.get('estado')
@@ -4741,6 +4742,13 @@ def admin_cuentas(request):
             tcargcorr = request.POST.get('tcargcorr')
             tproc = request.POST.get('tproc')
             alertas = request.POST.getlist('alertas[]')
+
+            k = 0
+            for a in alertas:
+                for a1 in a:
+                    print(a1)
+
+
 
             try:
                 cuentaobj = Cuenta.objects.filter(pk=cuentaid)
@@ -6372,7 +6380,6 @@ def log(request,eid,detalles=None):
     terminal = request.META.get('COMPUTERNAME')
     fechaHora = timenow()
     evento = Evento.objects.get(pk=eid)
-    eventoIngles = EventoIngles.objects.get(pk=eid)
     sesion = Sesion.objects.get(login=username)
     nombre = sesion.usuario_idusuario.nombres+" "+sesion.usuario_idusuario.apellidos
 
@@ -6386,18 +6393,15 @@ def log(request,eid,detalles=None):
         if m == False: 
 
             Traza.objects.create(evento_idevento=evento,usuario=nombre, fecha_hora=fechaHora, terminal=terminal, detalles=detalles)
-            TrazaIngles.objects.create(eventoingles_idevento=eventoIngles,usuario=nombre, fecha_hora=fechaHora, terminal=terminal, detalles=detalles)
 
     else:
         Traza.objects.create(evento_idevento=evento,usuario=nombre, fecha_hora=fechaHora, terminal=terminal)
-        TrazaIngles.objects.create(eventoingles_idevento=eventoIngles,usuario=nombre, fecha_hora=fechaHora, terminal=terminal)
 
 def logAux(name,terminal,detalles):
     # Funcion que recibe el nombre del usuario y guarda su traza
     username = name
     fechaHora = timenow()
     evento = Evento.objects.get(pk=2)
-    eventoIngles = EventoIngles.objects.get(pk=2)
     sesion = Sesion.objects.get(login=username)
     nombre = sesion.usuario_idusuario.nombres+" "+sesion.usuario_idusuario.apellidos
 
@@ -6405,8 +6409,6 @@ def logAux(name,terminal,detalles):
         print("")
     else:
         Traza.objects.create(evento_idevento=evento,usuario=nombre, fecha_hora=fechaHora, terminal=terminal, detalles=detalles)
-        TrazaIngles.objects.create(eventoingles_idevento=eventoIngles,usuario=nombre, fecha_hora=fechaHora, terminal=terminal, detalles=detalles)
-
 
 def expirarSesion(request):
     config = Configuracion.objects.all()[0]
