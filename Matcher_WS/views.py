@@ -29,6 +29,7 @@ from Matcher_WS.funciones_get import get_ops, get_cuentas, get_ci, get_idioma, g
 from Matcher_WS.generar_reporte import generarReporte, pdfView, xlsView
 from Matcher_WS.setConsolidado import setConsolidado
 from Matcher_WS.parsers import parsearTipoMT,parseo103,parseo202,parseo752,parseo754,parseo756,parseo942
+from Matcher_WS.alertashilos import daemon
 
 import time
 import os
@@ -37,6 +38,7 @@ import jsonpickle
 import sys
 import traceback
 import shutil
+import threading
 
 
 def test(request):
@@ -100,6 +102,23 @@ def index(request):
             mensaje = "Su licencia vencerá en la fecha (YYYY-MM-DD): " + fecha_expira
         else:
             mensaje = "Your license will expire on (YYYY-MM-DD): " + fecha_expira
+
+    verAler = VerificarAlertas.objects.all()[0]
+    fecha = verAler.fecha
+    hoy = timenow()
+    delta = hoy - fecha
+    diferencia = int(delta.days)
+    flag = verAler.flag
+
+    if diferencia != 0:
+        if flag == 0:
+            aux = VerificarAlertas.objects.get(idVA=1)
+            aux.flag = 1
+            aux.save()
+            d = threading.Thread(target=daemon,args=(request,idioma,))
+            d.setDaemon(True)
+            d.start()
+
 
     username = request.user.username
     sesion = Sesion.objects.get(login=username)
@@ -303,7 +322,7 @@ def usr_login(request):
                     if idioma == 0:   
                         message ='Ese usuario no existe en la base de datos.'
                     else:
-                        message ='User is not registered on date base.'
+                        message ='User is not registered on data base.'
 
                     return JsonResponse({'mens':message}) 
 
@@ -6036,7 +6055,7 @@ def seg_licencia(request):
                     modexcQuery.save()
                 
                 #Enviar mail
-                msg = "Bic: " + bicLicencia + "\nUsuarios: " + usuariosLicencia +"\n Expiración (YY-MM-DD): "+ str(fechaLicencia) +"\n Llave: " + llaveLicencia+ "\nSalt : BCG.bcg+2015" +"\n Modulos: " +str(numeroModulos)+ modulosemail
+                msg = "Bic: " + bicLicencia + "\nUsuarios: " + usuariosLicencia +"\n Expiración (YY-MM-DD): "+ str(fechaLicencia) +"\n Llave: " + llaveLicencia+ "\nSalt : BCG.bcg+2015" +"\n Modulos: " +str(numeroModulos)+ modulosemail + "\n\n\n\n Matcher\n Un producto de BCG." 
                 enviar_mail('Licencia del banco: '+bicLicencia,msg,'jotha41@gmail.com')
 
                 if idioma == 0:
@@ -6064,7 +6083,7 @@ def seg_licencia(request):
                     modulosemail =  modulosemail + "- " + mod + "\n"
 
                 #Enviar mail
-                msg = "Bic: " + bicLicencia + "\nUsuarios: " + usuariosLicencia +"\n Expiración (YY-MM-DD): "+ str(fechaLicencia) +"\n Llave: " + llaveLicencia+ "\nSalt : BCG.bcg+2015" +"\n Modulos: " +str(numeroModulos)+ modulosemail
+                msg = "Bic: " + bicLicencia + "\nUsuarios: " + usuariosLicencia +"\n Expiración (YY-MM-DD): "+ str(fechaLicencia) +"\n Llave: " + llaveLicencia+ "\nSalt : BCG.bcg+2015" +"\n Modulos: " +str(numeroModulos)+ modulosemail + "\n\n\n\n Matcher\n Un producto de BCG." 
                 enviar_mail('Licencia del banco: '+bicLicencia,msg,'jotha41@gmail.com')
                 
                 if idioma == 0:
@@ -6202,7 +6221,7 @@ def SU_licencia(request):
             fo.close()
 
             #Enviar mail
-            msg = "Bic: " +bic + "\nUsuarios: " + numUsers +"\n Expiración (YYYY-MM-DD): "+ str(fecha).split(" ")[0] +"\n Llave: " + hashp+ "\nSalt : " + salt  +"\n Modulos: " + str(cuentamod) + modulosemail
+            msg = "Bic: " +bic + "\nUsuarios: " + numUsers +"\n Expiración (YYYY-MM-DD): "+ str(fecha).split(" ")[0] +"\n Llave: " + hashp+ "\nSalt : " + salt  +"\n Modulos: " + str(cuentamod) + modulosemail + "\n\n\n\n Matcher\n Un producto de BCG." 
             enviar_mail('Licencia del banco: '+bic,msg,'jotha41@gmail.com')
             
             if idioma == 0:
@@ -6259,7 +6278,7 @@ def SU_licencia(request):
             fo.close()
 
             #Enviar mail
-            msg = "Bic: " +bic + "\nUsuarios: " + numUsers +"\n Expiración (YYYY-MM-DD): "+ str(fecha).split(" ")[0] +"\n Llave: " + hashp+ "\nSalt : " + salt +"\n Modulos: " +str(cuentamod)+ modulosemail
+            msg = "Bic: " +bic + "\nUsuarios: " + numUsers +"\n Expiración (YYYY-MM-DD): "+ str(fecha).split(" ")[0] +"\n Llave: " + hashp+ "\nSalt : " + salt +"\n Modulos: " +str(cuentamod)+ modulosemail + "\n\n\n\n Matcher\n Un producto de BCG." 
             enviar_mail('Licencia del banco: '+bic,msg,'jotha41@gmail.com')
             
             if idioma ==0:
