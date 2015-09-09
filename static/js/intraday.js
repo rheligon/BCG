@@ -11,7 +11,7 @@ if (idioma == 0){
 }
 
 var tiempo = $('#tiempoAct').val();
-tiempo = parseInt(tiempo)*60000
+tiempo = parseInt(tiempo)*30000
 
 /*setInterval(function() {
     $('#boton_go').attr("disabled", true);
@@ -58,9 +58,9 @@ tiempo = parseInt(tiempo)*60000
         $('#boton_go').attr("disabled", true);
 
     }  
-}, tiempo);	
+}, tiempo);	*/
     
-*/
+
 $( document ).ready(function() {
     var url = window.location.href;
     var path = window.location.pathname;

@@ -3099,6 +3099,9 @@ def intraday(request,cuenta):
                                     pathdest = nuevo + '\\' + base + "_" + fech +extension
                                     shutil.move(pathsrc,pathdest)
                                 else:
+                                    if (res[1]!="vali"):
+                                        exitoParseo = False
+                                        msgParseo = res[1]
                                     ##Mover archivo a errores
                                     pathsrc = direct 
                                     nuevo = directorioError +"\\VALIDACION"  
@@ -3141,6 +3144,9 @@ def intraday(request,cuenta):
                                     
                                     shutil.move(pathsrc,pathdest)
                                 else:
+                                    if (res[1]!="vali"):
+                                        exitoParseo = False
+                                        msgParseo = res[1]
                                     ##Mover archivo a errores
                                     pathsrc = direct 
                                     nuevo = directorioError +"\\VALIDACION"  
@@ -3183,6 +3189,9 @@ def intraday(request,cuenta):
                                     
                                     shutil.move(pathsrc,pathdest)
                                 else:
+                                    if (res[1]!="vali"):
+                                        exitoParseo = False
+                                        msgParseo = res[1]
                                     ##Mover archivo a errores
                                     pathsrc = direct 
                                     nuevo = directorioError +"\\VALIDACION"  
@@ -3226,6 +3235,9 @@ def intraday(request,cuenta):
                                     
                                     shutil.move(pathsrc,pathdest)
                                 else:
+                                    if (res[1]!="vali"):
+                                        exitoParseo = False
+                                        msgParseo = res[1]
                                     ##Mover archivo a errores
                                     pathsrc = direct 
                                     nuevo = directorioError +"\\VALIDACION"  
@@ -3268,6 +3280,9 @@ def intraday(request,cuenta):
                                     
                                     shutil.move(pathsrc,pathdest)
                                 else:
+                                    if (res[1]!="vali"):
+                                        exitoParseo = False
+                                        msgParseo = res[1]
                                     ##Mover archivo a errores
                                     pathsrc = direct 
                                     nuevo = directorioError +"\\VALIDACION"  
@@ -3298,23 +3313,45 @@ def intraday(request,cuenta):
                             res = parseo942(elem,directorio)
                             
                             if(res[0] == "True"):
-                                print("True")
-                                
-                                #Mover archivo a procesado
-                                #pathsrc = direct 
-                                #nuevo = directorioSalida +"\\MT" + tipo[0]  
-                                
-                                #if not os.path.exists(nuevo):
-                                #    os.makedirs(nuevo)
-                                
-                                #pathdest = nuevo + '\\' + elem
-                                #shutil.move(pathsrc,pathdest)
+                                if (res[1]==""):
+                                    #Mover archivo a procesado
+                                    pathsrc = direct 
+                                    nuevo = directorioSalida +"\\MT" + tipo[0]  
+                                    
+                                    if not os.path.exists(nuevo):
+                                        os.makedirs(nuevo)
+                                    base, extension = os.path.splitext(elem)
+                                    fech = datetime.now().strftime("%d%m%Y_%H%M%S")
+                                    pathdest = nuevo + '\\' + base + "_" + fech +extension
+                                    
+                                    shutil.move(pathsrc,pathdest)
+                                else:
+                                    if (res[1]!="vali"):
+                                        exitoParseo = False
+                                        msgParseo = res[1]
+                                    ##Mover archivo a errores
+                                    pathsrc = direct 
+                                    nuevo = directorioError +"\\VALIDACION"  
+                                    
+                                    if not os.path.exists(nuevo):
+                                        os.makedirs(nuevo)
+                                    pathdest = nuevo + '\\' + elem
+                                    
+                                    shutil.move(pathsrc,pathdest)
+                                    continue
                             else:
                                 exitoParseo = False
+                                #Mover archivo a errores
+                                pathsrc = direct 
+                                nuevo = directorioError +"\\FORMATO"  
+                                
+                                if not os.path.exists(nuevo):
+                                    os.makedirs(nuevo)
+                                pathdest = nuevo + '\\' + elem
+                                
+                                shutil.move(pathsrc,pathdest)
                                 msgParseo = res[1]
                                 continue
-
-
 
                     else:
                         exito = False
@@ -3330,9 +3367,7 @@ def intraday(request,cuenta):
                         shutil.move(pathsrc,pathdest)
                         continue
 
-            mensajesCreditos = MensajesIntraday.objects.filter(cuenta=cuenta,observacion="",i_o="I").order_by('fecha_entrada')
-            mensajesDebitos = MensajesIntraday.objects.filter(cuenta=cuenta,observacion="",i_o="O").order_by('fecha_entrada')
-
+            mensajesDebitosCreditos = MensajesIntraday.objects.filter(cuenta=cuenta,observacion="").order_by('fecha_entrada')
             m103 = None
             m202 = None
             m942 = None
@@ -3341,72 +3376,102 @@ def intraday(request,cuenta):
             m756 = None
             totalDebitos = 0
             totalCreditos = 0
+            debitos = 0
+            creditos = 0 
+            entradas90C = ""
+            entradas90D = ""
+            fecha942 = ""
+            nuevoD=""
+            nuevoC=""
 
-            if mensajesDebitos:
-                for debito in mensajesDebitos:
-                    if debito.tipo == "103":
-                        try:
-                            m103 = Mt103.objects.get(mensaje_intraday=debito.idmensaje) 
-                            totalDebitos = totalDebitos + float(m103.monto.replace(",","."))
-                        except:
-                            print("no")
-                    if debito.tipo == "202":
-                        try:
-                            m202 = Mt202.objects.get(mensaje_intraday=debito.idmensaje) 
-                            totalDebitos = totalDebitos + float(m202.monto.replace(",","."))
-                        except:
-                            print("no")
-                    if debito.tipo == "752":
-                        try:
-                            m752 = Mt752.objects.get(mensaje_intraday=debito.idmensaje) 
-                            totalDebitos = totalDebitos + float(m752.monto.replace(",","."))
-                        except:
-                            print("no")
-                    if debito.tipo == "754":
-                        try:
-                            m754 = Mt754.objects.get(mensaje_intraday=debito.idmensaje) 
-                            totalDebitos = totalDebitos + float(m754.monto.replace(",","."))
-                        except:
-                            print("no")
-                    if debito.tipo == "756":
-                        try:
-                            m756 = Mt756.objects.get(mensaje_intraday=debito.idmensaje) 
-                            totalDebitos = totalDebitos + float(m756.monto.replace(",","."))
-                        except:
-                            print("no")  
+            if mensajesDebitosCreditos:
+                for entrada in mensajesDebitosCreditos:
+                    if(entrada.i_o=="O" or entrada.tipo == "942" ):
+                        if entrada.tipo == "103":
+                            try:
+                                m103 = Mt103.objects.get(mensaje_intraday=entrada.idmensaje) 
+                                totalDebitos = totalDebitos + float(m103.monto.replace(",","."))
+                            except:
+                                print("no")
+                        if entrada.tipo == "202":
+                            try:
+                                m202 = Mt202.objects.get(mensaje_intraday=entrada.idmensaje) 
+                                totalDebitos = totalDebitos + float(m202.monto.replace(",","."))
+                            except:
+                                print("no")
+                        if entrada.tipo == "752":
+                            try:
+                                m752 = Mt752.objects.get(mensaje_intraday=entrada.idmensaje) 
+                                totalDebitos = totalDebitos + float(m752.monto.replace(",","."))
+                            except:
+                                print("no")
+                        if entrada.tipo == "754":
+                            try:
+                                m754 = Mt754.objects.get(mensaje_intraday=entrada.idmensaje) 
+                                totalDebitos = totalDebitos + float(m754.monto.replace(",","."))
+                            except:
+                                print("no")
+                        if entrada.tipo == "756":
+                            try:
+                                m756 = Mt756.objects.get(mensaje_intraday=entrada.idmensaje) 
+                                totalDebitos = totalDebitos + float(m756.monto.replace(",","."))
+                            except:
+                                print("no")  
+                        if entrada.tipo == "942":
+                            try:
+                                m942 = Mt942.objects.get(mensaje_intraday=entrada.idmensaje)
+                                entradas90D = m942.total_debitos
+                                entradas90D = re.search('(?P<numero>\d{1,5})(?P<moneda>[a-zA-Z]{3})(?P<monto>.+\,\d{0,2})$', entradas90D)
+                                nuevoD = entradas90D.groupdict()
+                                debitos = nuevoD['monto']
+                                if(float(debitos.replace(",",".")) != 0.0):
+                                    totalDebitos = float(debitos.replace(",","."))
+                            except:
+                                print("no") 
 
-            if mensajesCreditos:
-                for credito in mensajesCreditos:
-                    if credito.tipo == "103":
-                        try:
-                            m103 = Mt103.objects.get(mensaje_intraday=credito.idmensaje) 
-                            totalCreditos = totalCreditos + float(m103.monto.replace(",","."))
-                        except:
-                            print("no")
-                    if credito.tipo == "202":
-                        try:
-                            m202 = Mt202.objects.get(mensaje_intraday=credito.idmensaje) 
-                            totalCreditos = totalCreditos + float(m202.monto.replace(",","."))
-                        except:
-                            print("no")
-                    if credito.tipo == "752":
-                        try:
-                            m752 = Mt752.objects.get(mensaje_intraday=credito.idmensaje) 
-                            totalCreditos = totalCreditos + float(m752.monto.replace(",","."))
-                        except:
-                            print("no")
-                    if credito.tipo == "754":
-                        try:
-                            m754 = Mt754.objects.get(mensaje_intraday=credito.idmensaje) 
-                            totalCreditos = totalCreditos + float(m754.monto.replace(",","."))
-                        except:
-                            print("no")
-                    if credito.tipo == "756":
-                        try:
-                            m756 = Mt756.objects.get(mensaje_intraday=credito.idmensaje) 
-                            totalCreditos = totalCreditos + float(m756.monto.replace(",","."))
-                        except:
-                            print("no")  
+                    if(entrada.i_o == "I"):
+
+                        if entrada.tipo == "103":
+                            try:
+                                m103 = Mt103.objects.get(mensaje_intraday=entrada.idmensaje) 
+                                totalCreditos = totalCreditos + float(m103.monto.replace(",","."))
+                            except:
+                                print("no")
+                        if entrada.tipo == "202":
+                            try:
+                                m202 = Mt202.objects.get(mensaje_intraday=entrada.idmensaje) 
+                                totalCreditos = totalCreditos + float(m202.monto.replace(",","."))
+                            except:
+                                print("no")
+                        if entrada.tipo == "752":
+                            try:
+                                m752 = Mt752.objects.get(mensaje_intraday=entrada.idmensaje) 
+                                totalCreditos = totalCreditos + float(m752.monto.replace(",","."))
+                            except:
+                                print("no")
+                        if entrada.tipo == "754":
+                            try:
+                                m754 = Mt754.objects.get(mensaje_intraday=entrada.idmensaje) 
+                                totalCreditos = totalCreditos + float(m754.monto.replace(",","."))
+                            except:
+                                print("no")
+                        if entrada.tipo == "756":
+                            try:
+                                m756 = Mt756.objects.get(mensaje_intraday=entrada.idmensaje) 
+                                totalCreditos = totalCreditos + float(m756.monto.replace(",","."))
+                            except:
+                                print("no")  
+                        if entrada.tipo == "942":
+                            try:
+                                m942 = Mt942.objects.get(mensaje_intraday=entrada.idmensaje)
+                                entradas90C = m942.total_creditos
+                                entradas90C = re.search('(?P<numero>\d{1,5})(?P<moneda>[a-zA-Z]{3})(?P<monto>.+\,\d{0,2})$', entradas90C)
+                                nuevoC = entradas90C.groupdict()
+                                creditos = nuevoC['monto'] 
+                                if(float(creditos.replace(",",".")) != 0.0):
+                                    totalCreditos = float(creditos.replace(",","."))
+                            except:
+                                print("no")  
               
             return JsonResponse({'debitos':totalDebitos,'creditos':totalCreditos,'exitoParseo':exitoParseo,'exitoconci':exitoconci,'msg':msg,'msgParseo':msgParseo,'fecha':fecha,'fechaActual':fechaActual, 'exito':exito, 'cuenta': json_cuenta, 'cons':json_cons, 'cod': cod})
 
@@ -3429,11 +3494,18 @@ def transIntraday(request,cuenta):
 
     m103 = None
     m202 = None
-    m942 = None
     m752 = None
     m754 = None
     m756 = None
+    m942 = None
     errores = False
+    debitos = 0
+    creditos = 0 
+    entradas90C = ""
+    entradas90D = ""
+    fecha942 = ""
+    nuevoD=""
+    nuevoC=""
     archivosFormato = []
     archivosValidacion = []
     arregloMensajes = []
@@ -3500,12 +3572,25 @@ def transIntraday(request,cuenta):
                 except:
                     print("no")   
             if mensaje.tipo == "942":
-                m942 = Mt942.objects.get(mensaje_intraday=mensaje.idmensaje) 
-                if m942:
+                try:
+                    m942= Mt942.objects.get(mensaje_intraday=mensaje.idmensaje) 
+                    entradas90D = m942.total_debitos
+                    entradas90C = m942.total_creditos
+                    entradas90D = re.search('(?P<numero>\d{1,5})(?P<moneda>[a-zA-Z]{3})(?P<monto>.+\,\d{0,2})$', entradas90D)
+                    entradas90C = re.search('(?P<numero>\d{1,5})(?P<moneda>[a-zA-Z]{3})(?P<monto>.+\,\d{0,2})$', entradas90C)
+                    nuevoD = entradas90D.groupdict()
+                    nuevoC = entradas90C.groupdict()
+                    debitos = nuevoD['monto']
+                    creditos = nuevoC['monto']
+                    fecha942 = m942.fecha_hora[:6]
+                    fecha942 = datetime.strptime(fecha942, "%y%m%d").date()
+                    fecha942 = fecha942.strftime("%d/%m/%Y")
                     arregloMensajes.append(m942)
+                except:
+                    print("no942") 
                 
     
-    context = {'tiempoAct':tiempoAct,'mensajes':arregloMensajes,'errores':errores,'idioma':idioma,'ops':get_ops(request),'cuenta':cuentaId,'fecha':fecha , 'fechaActual':fechaActual}
+    context = {'fecha942':fecha942,'debitos':debitos,'creditos':creditos,'tiempoAct':tiempoAct,'mensajes':arregloMensajes,'errores':errores,'idioma':idioma,'ops':get_ops(request),'cuenta':cuentaId,'fecha':fecha , 'fechaActual':fechaActual}
     template = "matcher/transIntraday.html"
 
     return render(request, template, context)

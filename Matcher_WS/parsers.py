@@ -97,6 +97,7 @@ def parseo103(archivo,directorio):
 	io=""
 	vali = ""
 	observacion =""
+	cuenta = None
 	#contenido77T = ""
 
 	cuantos = 0
@@ -764,8 +765,7 @@ def parseo103(archivo,directorio):
 			elif (emisorS == bic):
 				io = "O"
 			else:
-				msg = "Este mensaje no nos pertenece"
-				return ("error", msg)
+				vali = "Este mensaje no nos pertenece, Archivo: " + archivo
 
 			if (io =="I"):
 				cuenta = Cuenta.objects.filter(banco_corresponsal_idbanco__codigo = emisorS) 
@@ -790,8 +790,7 @@ def parseo103(archivo,directorio):
 				mensaje_intra = MensajesIntraday.objects.create(tipo = "103",cuenta = cuenta[0],fecha_entrada=fecha_entrada,i_o = io,observacion=observacion) 
 				mensaje = Mt103.objects.create(mensaje_intraday = mensaje_intra,fecha_valor = fechaValor32A, moneda = moneda32A,monto = monto32A, remitente = emisorS,receptor = receptorR, ref_remitente = emisorRef20,ind_hora = timeId13C,tipo_op_banco = codigoBank23B,cod_instruccion = codInst23E,tipo_transaccion = tipoTrans26T, moneda_monto = moneda33B,tipo_cambio = tipoCambio36,cliente_ordenante = clienteOrd50a, institucion_emisor = instEmisor51A,institucion_ordenante = instOrd52a,corresponsal_remitente = emisorCorr53a, corresponsal_receptor = receptorCorr54a, institucion_reembolso = instReemb55a, institucion_intermediaria = instInter56a, cuenta_institucion = instCuenta57a,cliente_beneficiario = clienteBene59a,info_remesa = infoRemesa70,detalle_cargos = detallesCarg71A,info_remitente_a_receptor = infoEmisor72,cargos_remitente = cargosEmisor71F, cargos_receptor = cargosReceptor71G,reporte_regulatorio = reporteReg77B)
 			else:
-				msg = "No se posee cuenta donde procesar este mensaje"
-				return ("error", msg)
+				vali = "No se posee cuenta donde procesar este mensaje, Archivo: " + archivo
 			io=""
 			emisorS = ""
 			receptorR = ""
@@ -823,7 +822,7 @@ def parseo103(archivo,directorio):
 			moneda33 =""
 			fecha_entrada = ""
 			observacion =""
-	
+			cuenta = None
 			finMensaje = False		
 
 		lineaAct += 1
@@ -877,6 +876,7 @@ def parseo202(archivo,directorio):
 	io=""
 	observacion =""
 	vali=""
+	cuenta = None
 	
 	cuantos = 0
 
@@ -1231,8 +1231,7 @@ def parseo202(archivo,directorio):
 			elif (emisorS == bic):
 				io = "O"
 			else:
-				msg = "Este mensaje no nos pertenece"
-				return ("error", msg)
+				vali = "Este mensaje no nos pertenece, Archivo: " + archivo
 
 			if (io =="I"):
 				cuenta = Cuenta.objects.filter(banco_corresponsal_idbanco__codigo = emisorS) 
@@ -1252,8 +1251,7 @@ def parseo202(archivo,directorio):
 				mensaje_intra = MensajesIntraday.objects.create(tipo = "202",cuenta = cuenta[0],fecha_entrada=fecha_entrada,i_o=io,observacion=observacion) 
 				mensaje = Mt202.objects.create(mensaje_intraday = mensaje_intra,fecha_valor = fechaValor32A, moneda = moneda32A,monto = monto32A,remitente = emisorS,receptor = receptorR, ref_transaccion = emisorRef20,ref_relacion = refRel21,ind_hora = timeId13C, institucion_ordenante = instOrd52a,corresponsal_remitente = emisorCorr53a, corresponsal_receptor = receptorCorr54a,intermediario = instInter56a, cuenta_institucion = instCuenta57a,institucion_beneficiaria = instBene58a,info_remitente_a_receptor = receptorInfo72)
 			else:
-				msg = "No se posee cuenta donde procesar este mensaje"
-				return ("error", msg)
+				vali = "No se posee cuenta donde procesar este mensaje, Archivo: " + archivo
 			io=""
 			emisorS = ""
 			receptorR = ""
@@ -1273,7 +1271,8 @@ def parseo202(archivo,directorio):
 			fecha_entrada = ""
 			observacion =""
 			msg=""
-			finMensaje = False				
+			finMensaje = False	
+			cuenta = None			
 
 		lineaAct += 1
 		contador += 1
@@ -1330,6 +1329,7 @@ def parseo752(archivo,directorio):
 	io=""
 	vali=""
 	observacion = ""
+	cuenta = None
 
 	while contador < numLineas:
 
@@ -1617,8 +1617,7 @@ def parseo752(archivo,directorio):
 			elif (emisorS == bic):
 				io = "O"
 			else:
-				msg = "Este mensaje no nos pertenece"
-				return ("error", msg)
+				vali = "Este mensaje no nos pertenece, Archivo: " + archivo
 
 			if (io =="I"):
 				cuenta = Cuenta.objects.filter(banco_corresponsal_idbanco__codigo = emisorS) 
@@ -1648,8 +1647,7 @@ def parseo752(archivo,directorio):
 				mensaje_intra = MensajesIntraday.objects.create(tipo = "752",cuenta = cuenta[0],fecha_entrada=fecha_entrada,i_o=io,observacion=observacion) 
 				mensaje = Mt752.objects.create(mensaje_intraday = mensaje_intra,fecha_valor = fechaValor33A, moneda = moneda33A,monto = monto33A,remitente = emisorS,receptor = receptorR, num_credito = emisorRef20,ref_banco_present = refRel21,proposito = id23, fecha_aviso = fecha30, monto_total = montoTotal32B, cargos_deducidos = cargosDed71B,corresponsal_remitente = emisorCorr53a, corresponsal_receptor = receptorCorr54a,info_remitente_a_receptor = info72)
 			else:
-				msg = "No se posee cuenta donde procesar este mensaje"
-				return ("error", msg)
+				vali = "No se posee cuenta donde procesar este mensaje, Archivo: " + archivo
 			emisorS = ""
 			receptorR = ""
 			emisorRef20 = ""
@@ -1670,6 +1668,7 @@ def parseo752(archivo,directorio):
 			io=""
 			observacion = ""
 			finMensaje = False	
+			cuenta = None
 
 		lineaAct += 1
 		contador += 1
@@ -1723,6 +1722,7 @@ def parseo754(archivo,directorio):
 	beneBank58a = ""
 	info72 =""
 	narrativa77A = ""
+	cuenta = None
 
 	cuantos = 0
 	msg = ""
@@ -2070,8 +2070,7 @@ def parseo754(archivo,directorio):
 			elif (emisorS == bic):
 				io = "O"
 			else:
-				msg = "Este mensaje no nos pertenece"
-				return ("error", msg)
+				vali = "Este mensaje no nos pertenece, Archivo: " + archivo
 
 			if (io =="I"):
 				cuenta = Cuenta.objects.filter(banco_corresponsal_idbanco__codigo = emisorS) 
@@ -2093,8 +2092,7 @@ def parseo754(archivo,directorio):
 				mensaje_intra = MensajesIntraday.objects.create(tipo = "754",cuenta = cuenta[0],fecha_entrada=fecha_entrada,i_o=io,observacion=observacion) 
 				mensaje = Mt754.objects.create(monto_total=montoT,mensaje_intraday = mensaje_intra,fecha_valor = fechaValor32, moneda = moneda32,monto = monto32,remitente = emisorS,receptor = receptorR, ref_remitente = emisorRef20,ref_relacion = refRel21,monto_adicional = montoAdic33B, cargos_deducidos = montoDed71B,cargos_agregados = cargosAdd73, banco_reembolso = reemBank53a, cuenta_institucion = cuentaBank57a,banco_beneficiario = beneBank58a,info_remitente_a_receptor = info72,narrativa = narrativa77A)
 			else:
-				msg = "No se posee cuenta donde procesar este mensaje"
-				return ("error", msg)
+				vali = "No se posee cuenta donde procesar este mensaje, Archivo: " + archivo
 			emisorS = ""
 			receptorR = ""
 			emisorRef20 = ""
@@ -2115,6 +2113,7 @@ def parseo754(archivo,directorio):
 			io=""
 			observacion = ""
 			finMensaje = False	
+			cuenta = None
 
 		lineaAct += 1
 		contador += 1
@@ -2164,6 +2163,7 @@ def parseo756(archivo,directorio):
 	info72 = ""
 	moneda32B = ""
 	cuantos = 0
+	cuenta = None
 	msg = ""
 	io=""
 	vali=""
@@ -2415,8 +2415,7 @@ def parseo756(archivo,directorio):
 			elif (emisorS == bic):
 				io = "O"
 			else:
-				msg = "Este mensaje no nos pertenece"
-				return ("error", msg)
+				vali = "Este mensaje no nos pertenece, Archivo: " + archivo
 
 			if (io =="I"):
 				cuenta = Cuenta.objects.filter(banco_corresponsal_idbanco__codigo = emisorS) 
@@ -2432,8 +2431,7 @@ def parseo756(archivo,directorio):
 				mensaje_intra = MensajesIntraday.objects.create(tipo = "756",cuenta = cuenta[0],fecha_entrada=fecha_entrada,i_o=io,observacion=observacion) 
 				mensaje = Mt756.objects.create(mensaje_intraday = mensaje_intra,fecha_valor = fechaValor33A, moneda = moneda33A,monto = monto33A,remitente = emisorS,receptor = receptorR, ref_remitente = emisorRef20,ref_banco_present = refRel21,moneda_monto = montoTotal32B, corresponsal_remitente = emisorCorr53a, corresponsal_receptor = receptorCorr54a,info_remitente_a_receptor = info72)
 			else:
-				msg = "No se posee cuenta donde procesar este mensaje"
-				return ("error", msg)
+				vali = "No se posee cuenta donde procesar este mensaje, Archivo: " + archivo
 
 			emisorS = ""
 			receptorR = ""
@@ -2447,6 +2445,7 @@ def parseo756(archivo,directorio):
 			receptorCorr54a = ""
 			info72 =""
 			moneda32B = ""
+			cuenta = None
 			msg = ""
 			io=""
 			observacion = ""
@@ -2496,9 +2495,13 @@ def parseo942(archivo,directorio):
 	infoTitularOp86 = ""
 	entradasDeb90D = ""
 	entradasCred90C = ""
+	moneda90D = ""
+	moneda90C = ""
+	cuenta = None
 	msg = ""
 	io=""
 	vali=""
+	observacion=""
 
 	while contador < numLineas:
 
@@ -2636,7 +2639,19 @@ def parseo942(archivo,directorio):
 
 			while(opcion1 == "[61]" or opcion1 == "[86]"):
 				if anterior and opcion1 == "[86]":
-					lineaDec61_86 = lineaDec61_86 + "$" +contenidoLinea[4:] + ";"
+					lineaDec61_86 = lineaDec61_86 + "$" + contenidoLinea[4:]
+					contenidoLinea = lines[contador+1]
+					opcion3 = contenidoLinea[:4]
+					opcion4 = contenidoLinea[:5]
+					while (opcion3 !="[61]" and opcion3 !="[61]" and opcion3 != "@@" and opcion4 !="[90D]" and opcion4 !="[90C]"):
+						lineaDec61_86 = lineaDec61_86+"\n"+contenidoLinea
+						lineaAct += 1
+						contador += 1
+						opcionales +=1
+						contenidoLinea = lines[contador+1]
+						opcion3 = contenidoLinea[:4]
+						opcion4 = contenidoLinea[:5]
+					lineaDec61_86 = lineaDec61_86+ ";"
 					anterior = False 
 				if anterior and opcion1 == "[61]":
 				 	lineaDec61_86 = lineaDec61_86 + ";"
@@ -2682,13 +2697,15 @@ def parseo942(archivo,directorio):
 					entradasDeb90D = contenidoLinea[5:]
 					res = re.search('(?P<numero>\d{1,5})(?P<moneda>[a-zA-Z]{3})(?P<monto>.+\,\d{0,2})$', entradasDeb90D)
 					nuevo = res.groupdict()
-					print(nuevo)
+					print(nuevo['moneda'])
+					moneda90D = nuevo['moneda']
 					print ("[90D]",entradasDeb90D)
 				if(opcion2 == "[90C]"):
 					entradasCred90C = contenidoLinea[5:]
 					res = re.search('(?P<numero>\d{1,5})(?P<moneda>[a-zA-Z]{3})(?P<monto>.+\,\d{0,2})$', entradasCred90C)
 					nuevo = res.groupdict()
-					print(nuevo)
+					print(nuevo['moneda'])
+					moneda90C = nuevo['moneda']
 					print ("[90C]",entradasCred90C)
 				if (es86):
 					indice = verificarOps.index(opcion1)
@@ -2716,6 +2733,33 @@ def parseo942(archivo,directorio):
 				opcionales = 0
 
 		if (finMensaje):
+			bic = Configuracion.objects.all()[0].bic
+			if (receptorR == bic):
+				io = "I"
+			else:
+				vali = "Este mensaje no nos pertenece, Archivo: " + archivo
+
+			if (io =="I"):
+				cuenta = Cuenta.objects.filter(ref_vostro = idCuenta25)
+				
+			if cuenta:
+				monedaCta = cuenta[0].moneda_idmoneda.codigo
+				if(monedaCta != moneda90C):
+					observacion = "Moneda Invalida, la moneda proveniente del mensaje es : " + moneda90C + ", deberia ser : " + monedaCta + ", Archivo: " + archivo
+					vali = "vali"
+				if(monedaCta != moneda90D):
+					observacion = "Moneda Invalida, la moneda proveniente del mensaje es : " + moneda90D + ", deberia ser : " + monedaCta + ", Archivo: " + archivo
+					vali = "vali"
+				if(entradasDeb90D =="" ):
+					entradasDeb90D = "1"+monedaCta+"0,"
+				if(entradasCred90C =="" ):
+					entradasCred90C = "1"+monedaCta+"0,"
+				fecha_entrada = timenow()
+				mensaje_intra = MensajesIntraday.objects.create(tipo = "942",cuenta = cuenta[0],fecha_entrada=fecha_entrada,i_o=io,observacion=observacion) 
+				mensaje = Mt942.objects.create(mensaje_intraday = mensaje_intra,remitente = emisorS,receptor = receptorR, ref_transaccion = numRefTrans20,ref_relacion = refRel21,id_cuenta = idCuenta25, edo_cuenta_secuencia = numEstado28c, limite_cd = limiteIndicador34F,limite_credito = limiteIndicadorOpcional34F,fecha_hora=fechaIndicador13D,info_owner=lineaDec61_86,total_debitos=entradasDeb90D,total_creditos=entradasCred90C,info_owner_final=infoTitularOp86)
+			else:
+				vali = "No se posee cuenta donde procesar este mensaje, Archivo: " + archivo
+				
 			io=""
 			anterior = ""
 			emisorS = ""
@@ -2731,6 +2775,12 @@ def parseo942(archivo,directorio):
 			infoTitularOp86 = ""
 			entradasDeb90D = ""
 			entradasCred90C = ""
+			moneda90D = ""
+			moneda90C = ""
+			cuenta = None
+			msg = ""
+			observacion = ""
+
 			finMensaje = False
 		
 		lineaAct += 1

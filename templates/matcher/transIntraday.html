@@ -240,6 +240,41 @@
                 <td>{{mensaje.fecha_valor}}</td>
                 <td>{{mensaje.mensaje_intraday.observacion}}</td>
               </tr>
+            {% elif mensaje.mensaje_intraday.tipo == "942"%}
+              <tr>
+                <td>{{mensaje.mensaje_intraday.i_o}}</td>
+                <td><a id="mostrar_info" value = "{{mensaje.mensaje_intraday.idmensaje}}" name="{{mensaje.mensaje_intraday.idmensaje}}" tipo="{{mensaje.mensaje_intraday.tipo}}" refTrans="{{mensaje.ref_transaccion}}" refRel="{{mensaje.ref_relacion}}" idCta="{{mensaje.id_cuenta}}" edoCtaSec="{{mensaje.edo_cuenta_secuencia}}" limiteCD="{{mensaje.limite_cd}}" limiteCred="{{mensaje.limite_credito}}" remitente="{{mensaje.remitente}}" receptor="{{mensaje.receptor}}" fechaHora="{{mensaje.fecha_hora}}" infOwn="{{mensaje.info_owner}}" totalDeb="{{mensaje.total_debitos}}" totalCred="{{mensaje.total_creditos}}" infOwnerFin="{{mensaje.info_owner_final}}"data-toggle="modal" href="#myModal">{{mensaje.mensaje_intraday.tipo}}</a></td>
+                {% if mensaje.mensaje_intraday.i_o == "O" %}
+                  {% if mensaje.mensaje_intraday.observacion != "" %}
+                  <td></td>
+                  <td></td>
+                  {% else %}
+                    {%if idioma == 1%}
+                      <td>{{debitos|intcomaI|cut:"-"}}</td>
+                      <td>{{creditos|intcomaI|cut:"-"}}</td>
+                    {% else %}
+                      <td>{{debitos|intpuntoI|cut:"-"}}</td>
+                      <td>{{creditos|intpuntoI|cut:"-"}}</td>
+                    {% endif %}
+                  {% endif %}
+                {% elif mensaje.mensaje_intraday.i_o == "I"%}
+                  {% if mensaje.mensaje_intraday.observacion != "" %}
+                  <td></td>
+                  <td></td>
+                  {% else %}
+                    {%if idioma == 1%}
+                      <td>{{debitos|intcomaI|cut:"-"}}</td>
+                      <td>{{creditos|intcomaI|cut:"-"}}</td>
+                    {% else %}
+                      <td>{{debitos|intpuntoI|cut:"-"}}</td>
+                      <td>{{creditos|intpuntoI|cut:"-"}}</td>
+                    {% endif %}
+                  {% endif %}
+                {% endif %}
+                <td>{{mensaje.mensaje_intraday.fecha_entrada|formato24hrs}}</td>
+                <td>{{fecha942}}</td>
+                <td>{{mensaje.mensaje_intraday.observacion}}</td>
+              </tr>
             {% endif %}
           {% endfor %}    
             

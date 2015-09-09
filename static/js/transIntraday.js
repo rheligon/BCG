@@ -1360,4 +1360,228 @@ $('a').on('click', function () {
 
 	    t_conta.draw();
   	}
+
+  	if(tipo=="942"){
+  		if (idioma == 0){
+    		$('#myModalLabel').append('Detalles MT '+tipo);
+    	}else {
+    		$('#myModalLabel').append('Details MT '+tipo);
+    	}
+  		
+
+  		//Remitente- Receptor
+  		remitente = idMensaje.attr("remitente");     
+	  	receptor = idMensaje.attr("receptor");     
+	  	var td1 = '<td ></td>';
+	  	if (idioma == 0){
+    		var td2 = '<td >Remitente/Receptor</td>';
+    	}else {
+    		var td2 = '<td >Sender/Receiver</td>';
+    	}
+	    var td3 = '<td >'+remitente+' '+receptor+'</td>'; 
+	    //creamos la fila con los elementos y la mostramos
+	    $('#table-info > tbody').append('<tr id= "remit_recept"></tr>');
+	    var jRow = $("#remit_recept").append(td1,td2,td3);
+	    t_conta.row.add(jRow);
+
+  		//Campo 20: Obligatorio
+  		refTrans = idMensaje.attr("refTrans");     
+	  	var td1 = '<td >20</td>';
+	  	if (idioma == 0){
+    		var td2 = '<td >Número de Referencia de la Transacción</td>';
+    	}else {
+    		var td2 = '<td >Transaction Reference Number</td>';
+    	}
+	    var td3 = '<td >'+refTrans+'</td>'; 
+	    //creamos la fila con los elementos y la mostramos
+	    $('#table-info > tbody').append('<tr id= "refTrans"></tr>');
+	    var jRow = $("#refTrans").append(td1,td2,td3);
+	    t_conta.row.add(jRow);
+
+	    //Campo 21: Obligatorio
+  		refRel = idMensaje.attr("refRel");     
+	  	var td1 = '<td >21</td>';
+	  	if (idioma == 0){
+    		var td2 = '<td >Referencia de la Relación</td>';
+    	}else {
+    		var td2 = '<td >Related Reference</td>';
+    	}
+	    var td3 = '<td >'+refRel+'</td>'; 
+	    //creamos la fila con los elementos y la mostramos
+	    $('#table-info > tbody').append('<tr id= "refRel"></tr>');
+	    var jRow = $("#refRel").append(td1,td2,td3);
+	    t_conta.row.add(jRow);
+
+	    //Campo 25: Obligatorio
+  		idCta = idMensaje.attr("idCta");     
+	  	var td1 = '<td >25</td>';
+	  	if (idioma == 0){
+    		var td2 = '<td >Identificación de la Cuenta</td>';
+    	}else {
+    		var td2 = '<td >Account Identification</td>';
+    	}
+	    var td3 = '<td >'+idCta+'</td>'; 
+	    //creamos la fila con los elementos y la mostramos
+	    $('#table-info > tbody').append('<tr id= "idCta"></tr>');
+	    var jRow = $("#idCta").append(td1,td2,td3);
+	    t_conta.row.add(jRow);
+
+	    //Campo 28C: Obligatorio
+  		edoCtaSec = idMensaje.attr("edoCtaSec");     
+	  	var td1 = '<td >28C</td>';
+	  	if (idioma == 0){
+    		var td2 = '<td >Número de Estado de Cuenta/Número de Secuencia</td>';
+    	}else {
+    		var td2 = '<td >Statement Number/Sequence Number</td>';
+    	}
+	    var td3 = '<td >'+edoCtaSec+'</td>'; 
+	    //creamos la fila con los elementos y la mostramos
+	    $('#table-info > tbody').append('<tr id= "edoCtaSec"></tr>');
+	    var jRow = $("#edoCtaSec").append(td1,td2,td3);
+	    t_conta.row.add(jRow);
+	    
+	    //Campo 34F: Obligatorio
+  		limiteCD = idMensaje.attr("limiteCD");     
+	  	var td1 = '<td >34F</td>';
+	  	if (idioma == 0){
+    		var td2 = '<td >Indicador Límite de Débito/(Débito y Crédito)</td>';
+    	}else {
+    		var td2 = '<td >Debit/(Debit and Credit) Floor Limit Indicator</td>';
+    	}
+	    var td3 = '<td >'+limiteCD+'</td>'; 
+	    //creamos la fila con los elementos y la mostramos
+	    $('#table-info > tbody').append('<tr id= "limiteCD"></tr>');
+	    var jRow = $("#limiteCD").append(td1,td2,td3);
+	    t_conta.row.add(jRow);
+
+	    //Campo 34F: Opcional
+	    limiteCred = idMensaje.attr("limiteCred");
+	    if(limiteCred.length > 0){
+    		var td1 = '<td >34F</td>';
+    		if (idioma == 0){
+	    		var td2 = '<td >Indicador Límite de Crédito</td>';
+	    	}else {
+	    		var td2 = '<td >Credit Floor Limit Indicator</td>';
+	    	}
+	    	var td3 = '<td >'+limiteCred+'</td>'; 
+		    //creamos la fila con los elementos y la mostramos
+		    $('#table-info > tbody').append('<tr id= "limiteCred"></tr>');
+		    var jRow = $("#limiteCred").append(td1,td2,td3);
+		    t_conta.row.add(jRow);
+	    } 
+
+	    
+	    //Campo 13D: Obligatorio
+  		fechaHora = idMensaje.attr("fechaHora");     
+	  	var td1 = '<td >13D</td>';
+	  	if (idioma == 0){
+    		var td2 = '<td >Indicador de Fecha/Hora</td>';
+    	}else {
+    		var td2 = '<td >Date/Time Indication</td>';
+    	}
+	    var td3 = '<td >'+fechaHora+'</td>'; 
+	    //creamos la fila con los elementos y la mostramos
+	    $('#table-info > tbody').append('<tr id= "fechaHora"></tr>');
+	    var jRow = $("#fechaHora").append(td1,td2,td3);
+	    t_conta.row.add(jRow);
+
+	    //Campo 61 y 86: Opcionales dobles + Ciclo
+	    infOwn = idMensaje.attr("infOwn");
+	    if(infOwn.length > 0){
+	    	var arreglo = infOwn.split(";");
+	    	for (var i = 0; i < arreglo.length-1; i++) {
+	    		var arreglo2 = arreglo[i].split("$");
+	    		if(arreglo2.length > 1 ){
+	    			infor = arreglo2[1].replace(/\n/g,"<br>");
+	    			var td1 = '<td >61</td>';
+		    		if (idioma == 0){
+			    		var td2 = '<td >Linea de Estado de Cuenta</td>';
+			    	}else {
+			    		var td2 = '<td >Statement Line</td>';
+			    	}
+			    	var td3 = '<td >'+arreglo2[0]+'</td>'; 
+				    //creamos la fila con los elementos y la mostramos
+				    $('#table-info > tbody').append('<tr id= "infOwn'+i+'"></tr>');
+				    var jRow = $("#infOwn"+i).append(td1,td2,td3);
+				    t_conta.row.add(jRow);
+
+				    var td1 = '<td >86</td>';
+		    		if (idioma == 0){
+			    		var td2 = '<td >Información para el dueño de la Cuenta</td>';
+			    	}else {
+			    		var td2 = '<td >Information to Account Owner</td>';
+			    	}
+			    	var td3 = '<td >'+infor+'</td>'; 
+				    //creamos la fila con los elementos y la mostramos
+				    $('#table-info > tbody').append('<tr id= "infor'+i+'"></tr>');
+				    var jRow = $("#infor"+i).append(td1,td2,td3);
+				    t_conta.row.add(jRow);
+	    		}else{
+		    		var td1 = '<td >61</td>';
+		    		if (idioma == 0){
+			    		var td2 = '<td >Linea de Estado de Cuenta</td>';
+			    	}else {
+			    		var td2 = '<td >Statement Line</td>';
+			    	}
+			    	var td3 = '<td >'+arreglo[i]+'</td>'; 
+				    //creamos la fila con los elementos y la mostramos
+				    $('#table-info > tbody').append('<tr id= "infOwn'+i+'"></tr>');
+				    var jRow = $("#infOwn"+i).append(td1,td2,td3);
+				    t_conta.row.add(jRow);
+			    }
+	    	};
+	    } 
+
+	    //Campo 90D: Opcional
+	    totalDeb = idMensaje.attr("totalDeb");
+	    if(totalDeb.length > 0){
+    		var td1 = '<td >90D</td>';
+    		if (idioma == 0){
+	    		var td2 = '<td >Cantidad y Suma de Débitos </td>';
+	    	}else {
+	    		var td2 = '<td >Number and Sum of Debit Entries </td>';
+	    	}
+	    	var td3 = '<td >'+totalDeb+'</td>'; 
+		    //creamos la fila con los elementos y la mostramos
+		    $('#table-info > tbody').append('<tr id= "totalDeb"></tr>');
+		    var jRow = $("#totalDeb").append(td1,td2,td3);
+		    t_conta.row.add(jRow);
+	    } 
+
+	   //Campo 90C: Opcional
+	    totalCred = idMensaje.attr("totalCred");
+	    if(totalCred.length > 0){
+    		var td1 = '<td >90C</td>';
+    		if (idioma == 0){
+	    		var td2 = '<td >Cantidad y Suma de Créditos</td>';
+	    	}else {
+	    		var td2 = '<td >Number and Sum of Credit Entries</td>';
+	    	}
+	    	var td3 = '<td >'+totalCred+'</td>'; 
+		    //creamos la fila con los elementos y la mostramos
+		    $('#table-info > tbody').append('<tr id= "totalCred"></tr>');
+		    var jRow = $("#totalCred").append(td1,td2,td3);
+		    t_conta.row.add(jRow);
+	    } 
+
+	    //Campo 72: Opcional varias lineas
+	    infOwnerFin = idMensaje.attr("infOwnerFin");
+	    if(infOwnerFin.length > 0){
+	    	info = infOwnerFin.replace(/\n/g,"<br>");
+    		var td1 = '<td >72</td>';
+    		if (idioma == 0){
+	    		var td2 = '<td >Información del Remitente al Receptor</td>';
+	    	}else {
+	    		var td2 = '<td >Information to Account Owner</td>';
+	    	}
+	    	var td3 = '<td >'+info+'</td>'; 
+		    //creamos la fila con los elementos y la mostramos
+		    $('#table-info > tbody').append('<tr id= "infOwnerFin"></tr>');
+		    var jRow = $("#infOwnerFin").append(td1,td2,td3);
+		    t_conta.row.add(jRow);
+	    } 
+
+	    t_conta.draw();
+  	}
+
     });
