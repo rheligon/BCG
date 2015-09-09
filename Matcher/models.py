@@ -1405,6 +1405,15 @@ class Version(models.Model):
         db_table = 'Version'
 
 
+class VerificarAlertas(models.Model):
+    idVA = sqlserver_ado.fields.BigAutoField(db_column='idVA', primary_key=True)   
+    flag = models.BigIntegerField(db_column='Flag')
+    fecha = models.DateTimeField(db_column='Fecha')   
+
+    class Meta:
+        db_table = 'VerificarAlertas'
+
+
 class VHistoricos(models.Model):
     idhistoricoconsolidado = models.BigIntegerField(db_column='idHistoricoConsolidado')  
     fechaconciliacion = models.DateTimeField(db_column='FechaConciliacion')  

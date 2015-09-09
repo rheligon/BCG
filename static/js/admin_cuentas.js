@@ -855,6 +855,9 @@ $('#acptButton').on('click', function () {
                 $('#delButton').parent().toggle('hidden');
                 $('#processing-modal').modal('toggle');
                 $btn.button('reset');
+                setTimeout(function(){
+                    window.location.reload();
+                },500);
             },
             error: function(jqXHR, error){
                 alert(jqXHR.responseText) //debug
@@ -911,8 +914,8 @@ $('#acptButton').on('click', function () {
 
         talerta.push([valor,spinval]);
     }
-
-    if (codC.length>0 && codC.length<11 && criterioid>0 && bancoid>0 && monedaid>0 && ref_nostro.length>0 && ref_vostro.length>0 && tipocta>=0 && tcargcont>=0 && tcargcorr>=0 && procs.length>0 && desc.length<=45 && ref_vostro.length<=35 && ref_nostro.length<=35 && tgiro.length<=20 && amail.length<=45 ){
+    var pp = revisaremail(amail)
+    if (codC.length>0 && codC.length<11 && criterioid>0 && bancoid>0 && monedaid>0 && ref_nostro.length>0 && ref_vostro.length>0 && tipocta>=0 && tcargcont>=0 && tcargcorr>=0 && procs.length>0 && desc.length<=45 && ref_vostro.length<=35 && ref_nostro.length<=35 && tgiro.length<=20 && amail.length<=45 && pp){
         if (idioma == 0) {
             msj = "Seguro que desea agregar la cuenta "+ codC +" ?";
         } else {
@@ -1019,6 +1022,12 @@ $('#acptButton').on('click', function () {
             swal("Ups!","El tamaño del correo de alertas para la cuenta no debe tener mas de 45 caracteres.","error");
         } else {
             swal("Ups!","Alerts email has a 45 characters maximum length.","error");    
+        }
+      }else if (!pp){
+        if (idioma == 0) {
+            swal("Ups!","Formato de correo erróneo","error");
+        } else {
+            swal("Ups!","Wrong mail format","error");    
         }
       };
     }
@@ -1135,6 +1144,9 @@ $('#updButton').on('click', function () {
                 }
                 $('#processing-modal').modal('toggle');
                 $btn.button('reset')
+                setTimeout(function(){
+                    window.location.reload();
+                },500);
             },
             error: function(jqXHR, error){
                 alert(jqXHR.responseText) //debug
@@ -1193,7 +1205,8 @@ $('#updButton').on('click', function () {
         talerta.push([valor,spinval]);
     }
 
-    if (cuentaid>0 && codC.length>0 && codC.length<11 && criterioid>0 && bancoid>0 && monedaid>0 && ref_nostro.length>0 && ref_vostro.length>0 && tipocta>=0 && tcargcont>=0 && tcargcorr>=0 && procs.length>0 && desc.length<=45 && ref_vostro.length<=35 && ref_nostro.length<=35 && tgiro.length<=20 && amail.length<=45 ){
+    var pp = revisaremail(amail);
+    if (cuentaid>0 && codC.length>0 && codC.length<11 && criterioid>0 && bancoid>0 && monedaid>0 && ref_nostro.length>0 && ref_vostro.length>0 && tipocta>=0 && tcargcont>=0 && tcargcorr>=0 && procs.length>0 && desc.length<=45 && ref_vostro.length<=35 && ref_nostro.length<=35 && tgiro.length<=20 && amail.length<=45 && pp){
         if (idioma == 0){
             msj = "Seguro que desea modificar la cuenta "+ codC +" ?"
         } else {
@@ -1307,6 +1320,12 @@ $('#updButton').on('click', function () {
         } else {
             swal("Ups!","Alerts email has a 45 characters maximum length.","error");    
         }
+      } else if (!pp){
+        if (idioma == 0) {
+            swal("Ups!","Formato de correo erróneo","error");
+        } else {
+            swal("Ups!","Wrong mail format","error");    
+        }
       };
     }
 })
@@ -1338,4 +1357,15 @@ function chequearFornatoNumero(elem){
     } else {
         return (/^(\d{1})+(\,\d{1,2})?$/.test(elem))
     }
+}
+
+// chequea el formato del email
+function revisaremail(elemento){
+    if (elemento === ""){
+        return true
+    } else {
+        var expresion =  /^[a-zA-Z0-9_.+-]+\@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/;
+        return (expresion.test(elemento))
+    } 
+  
 }
