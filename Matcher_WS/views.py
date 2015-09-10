@@ -3436,7 +3436,7 @@ def intraday(request,cuenta):
 
             if mensajesDebitosCreditos:
                 for entrada in mensajesDebitosCreditos:
-                    if(entrada.i_o=="O" or entrada.tipo == "942" ):
+                    if(entrada.i_o=="O"):
                         if entrada.tipo == "103":
                             try:
                                 m103 = Mt103.objects.get(mensaje_intraday=entrada.idmensaje) 
@@ -3467,7 +3467,7 @@ def intraday(request,cuenta):
                                 totalDebitos = totalDebitos + float(m756.monto.replace(",","."))
                             except:
                                 print("no")  
-                        if entrada.tipo == "942":
+                        '''if entrada.tipo == "942":
                             try:
                                 m942 = Mt942.objects.get(mensaje_intraday=entrada.idmensaje)
                                 entradas90D = m942.total_debitos
@@ -3477,7 +3477,7 @@ def intraday(request,cuenta):
                                 if(float(debitos.replace(",",".")) != 0.0):
                                     totalDebitos = float(debitos.replace(",","."))
                             except:
-                                print("no") 
+                                print("no")''' 
 
                     if(entrada.i_o == "I"):
 
@@ -3511,7 +3511,7 @@ def intraday(request,cuenta):
                                 totalCreditos = totalCreditos + float(m756.monto.replace(",","."))
                             except:
                                 print("no")  
-                        if entrada.tipo == "942":
+                        '''if entrada.tipo == "942":
                             try:
                                 m942 = Mt942.objects.get(mensaje_intraday=entrada.idmensaje)
                                 entradas90C = m942.total_creditos
@@ -3521,7 +3521,7 @@ def intraday(request,cuenta):
                                 if(float(creditos.replace(",",".")) != 0.0):
                                     totalCreditos = float(creditos.replace(",","."))
                             except:
-                                print("no")  
+                                print("no")'''  
               
             return JsonResponse({'debitos':totalDebitos,'creditos':totalCreditos,'exitoParseo':exitoParseo,'exitoconci':exitoconci,'msg':msg,'msgParseo':msgParseo,'fecha':fecha,'fechaActual':fechaActual, 'exito':exito, 'cuenta': json_cuenta, 'cons':json_cons, 'cod': cod})
 
@@ -3638,9 +3638,17 @@ def transIntraday(request,cuenta):
                     arregloMensajes.append(m942)
                 except:
                     print("no942") 
+
+    cons=None
+    bfcon = None
+    conciliacion = Conciliacionconsolidado.objects.filter(cuenta_idcuenta = cuenta)
+
+    if(conciliacion):
+        cons = conciliacion[0]
+        bfcon = cons.balancefinalcontabilidad
                 
     
-    context = {'fecha942':fecha942,'debitos':debitos,'creditos':creditos,'tiempoAct':tiempoAct,'mensajes':arregloMensajes,'errores':errores,'idioma':idioma,'ops':get_ops(request),'cuenta':cuentaId,'fecha':fecha , 'fechaActual':fechaActual}
+    context = {'balance':bfcon,'fecha942':fecha942,'debitos':debitos,'creditos':creditos,'tiempoAct':tiempoAct,'mensajes':arregloMensajes,'errores':errores,'idioma':idioma,'ops':get_ops(request),'cuenta':cuentaId,'fecha':fecha , 'fechaActual':fechaActual}
     template = "matcher/transIntraday.html"
 
     return render(request, template, context)

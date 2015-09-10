@@ -21,6 +21,7 @@
 <legend><h1>Intraday (Detalle de Transacciones)</h1></legend>
 <input type="text" id="idioma" value="{{idioma}}" hidden/>
 <input type="text" id="tiempoAct" value="{{tiempoAct}}" hidden/>
+<input type="text" id="balance" value="{{balance}}" hidden/>
 
 
     <div class="row clearfix" >
@@ -37,14 +38,20 @@
         {% endif %}
       </div> 
     </div>
-  
-
-<form class="form-inline">
-  <fieldset>
-<div ="row" id="tablaArchive">
-  <div style="padding-bottom:1%;" class="col-md-3 pull-right">
+<div class="row">
+  <div class="col-md-7" align="rigth">
+    <button type="button" id="boton-graficar" name="boton-graficar" style="align:right" class="col-md-3 btn btn-primary" data-toggle="modal" href="#exampleModal">
+    {%if idioma == 0%}
+      Ver Histórico
+    {%endif%}
+    {%if idioma == 1%}
+      History Graph
+    {%endif%}
+    </button>
   </div>
 </div>
+<form class="form-inline">
+  <fieldset>
   <div class="tab-pane active" id="conta-tab">
     <div id="table-div-conta" class="table-responsive col-md-12" >
       <table id="table-pa" class="table table-bordered table-striped tabla">
@@ -243,7 +250,7 @@
             {% elif mensaje.mensaje_intraday.tipo == "942"%}
               <tr>
                 <td>{{mensaje.mensaje_intraday.i_o}}</td>
-                <td><a id="mostrar_info" value = "{{mensaje.mensaje_intraday.idmensaje}}" name="{{mensaje.mensaje_intraday.idmensaje}}" tipo="{{mensaje.mensaje_intraday.tipo}}" refTrans="{{mensaje.ref_transaccion}}" refRel="{{mensaje.ref_relacion}}" idCta="{{mensaje.id_cuenta}}" edoCtaSec="{{mensaje.edo_cuenta_secuencia}}" limiteCD="{{mensaje.limite_cd}}" limiteCred="{{mensaje.limite_credito}}" remitente="{{mensaje.remitente}}" receptor="{{mensaje.receptor}}" fechaHora="{{mensaje.fecha_hora}}" infOwn="{{mensaje.info_owner}}" totalDeb="{{mensaje.total_debitos}}" totalCred="{{mensaje.total_creditos}}" infOwnerFin="{{mensaje.info_owner_final}}"data-toggle="modal" href="#myModal">{{mensaje.mensaje_intraday.tipo}}</a></td>
+                <td><a id="mostrar_info" value = "{{mensaje.mensaje_intraday.idmensaje}}" name="{{mensaje.mensaje_intraday.idmensaje}}" tipo="{{mensaje.mensaje_intraday.tipo}}" refTrans="{{mensaje.ref_transaccion}}" refRel="{{mensaje.ref_relacion}}" idCta="{{mensaje.id_cuenta}}" edoCtaSec="{{mensaje.edo_cuenta_secuencia}}" limiteCD="{{mensaje.limite_cd}}" limiteCred="{{mensaje.limite_credito}}" remitente="{{mensaje.remitente}}" receptor="{{mensaje.receptor}}" fechaHora="{{mensaje.fecha_hora}}" infOwn="{{mensaje.info_owner}}" totalDeb="{{mensaje.total_debitos}}" totalCred="{{mensaje.total_creditos}}" infOwnerFin="{{mensaje.info_owner_final}}" data-toggle="modal" href="#myModal">{{mensaje.mensaje_intraday.tipo}}</a></td>
                 {% if mensaje.mensaje_intraday.i_o == "O" %}
                   {% if mensaje.mensaje_intraday.observacion != "" %}
                   <td></td>
@@ -283,15 +290,15 @@
     </div>
   </div>
   <div class="col-md-7" align="rigth">
-            <button type="button" id="boton-regresar" value ="{{cuenta.idcuenta}}" style="align:right" class="col-md-3 btn btn-warning"><a href="/intraday/{{cuenta.idcuenta}}">
-                 {%if idioma == 0%}
-                    Regresar
-                {%endif%}
-                {%if idioma == 1%}
-                    Back
-                {%endif%}
-            </a></button>
-        </div>
+    <button type="button" id="boton-regresar" value ="{{cuenta.idcuenta}}" style="align:right" class="col-md-3 btn btn-warning"><a href="/intraday/{{cuenta.idcuenta}}">
+         {%if idioma == 0%}
+            Regresar
+        {%endif%}
+        {%if idioma == 1%}
+            Back
+        {%endif%}
+    </a></button>
+  </div>
   </fieldset>
 </form>
 
@@ -348,6 +355,25 @@
   </div>
 </div>
 
+<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" style="width:1000px">
+        <div class="modal-content">
+            <div class="modal-header bg-primary">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                <h4 class="modal-title" id="exampleModalLabel">Historico desde : {{fecha}} Hasta: {{fechaActual}}</h4>
+            </div>
+            <div class="modal-body">
+                <p>Monto</p>
+                <canvas id="canvas" width="950px" height="650px"></canvas>
+                
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 {% endblock %}
 
 {% block script%}
@@ -363,60 +389,10 @@
 <script type="text/javascript" src="{% static 'js/picker.js' %}"></script>
 <script type="text/javascript" src="{% static 'js/picker.date.js' %}"></script>
 <script type="text/javascript" src="{% static 'js/pickerlegacy.js' %}"></script>
+<script src="{% static 'js/Chart.min.js' %}" type="text/javascript"></script>
+<script src="{% static 'js/Chart.Scatter.min.js' %}" type="text/javascript"></script>
 <script src="{% static 'js/transIntraday.js' %}" type="text/javascript"></script>
-<script type="text/javascript">
-var idioma = $('#idioma').val();
-var idiomaAux = "";
 
-if (idioma == 0){
-    idiomaAux = "es"
-} else {
-    idiomaAux = "en"
-}
-iniciar_tabla(idiomaAux);
 
-function iniciar_tabla(idioma){
 
-    
-    if (idioma==="es"){
-
-        return $('#table-pa').DataTable({
-            //poner if con idioma, el ingles es predeterminado
-            
-            language: {
-                url: '/static/json/Spanish-tables.json'
-            },
-            "ordering":false,
-             "columns": [
-                { "width": "5%" },//Edo. Cuenta
-                { "width": "5%" },//Num. Trans
-                { "width": "12%" },//Fecha Valor
-                { "width": "12%" },//Edo. Cuenta
-                { "width": "16%" },//Num. Trans
-                { "width": "10%" },//Fecha Valor
-                { "width": "30%" },//Edo. Cuenta
-              ]
-        })
-
-    }else if (idioma==="en"){
-
-        return $('#table-pa').DataTable({
-          
-            language: {
-                url: '/static/json/English-tables.json'
-            },
-             "ordering":false,
-             "columns": [
-                { "width": "5%" },//Edo. Cuenta
-                { "width": "5%" },//Num. Trans
-                { "width": "12%" },//Fecha Valor
-                { "width": "12%" },//Edo. Cuenta
-                { "width": "16%" },//Num. Trans
-                { "width": "10%" },//Fecha Valor
-                { "width": "30%" },//Edo. Cuenta
-              ]
-        })
-    };
-};
-</script>
 {% endblock %}
