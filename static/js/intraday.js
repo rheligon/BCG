@@ -13,7 +13,7 @@ if (idioma == 0){
 var tiempo = $('#tiempoAct').val();
 tiempo = parseInt(tiempo)*30000
 
-/*setInterval(function() {
+setInterval(function() {
     $('#boton_go').attr("disabled", true);
      var cuentaId = $('#Cuenta-sel').val();
     console.log(cuentaId)
@@ -58,7 +58,7 @@ tiempo = parseInt(tiempo)*30000
         $('#boton_go').attr("disabled", true);
 
     }  
-}, tiempo);	*/
+}, tiempo);	
     
 
 $( document ).ready(function() {
