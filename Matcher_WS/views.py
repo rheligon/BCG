@@ -84,6 +84,26 @@ def test(request):
             s.save()
             #ensesion.remove(s.login)"""
 
+    hoy = timenow()
+    dias = 7
+    ultimo_procS = EstadoCuenta.objects.get(idedocuenta=18078)
+    ultimo_procL = EstadoCuenta.objects.get(idedocuenta=18077)
+    fechaS = ultimo_procS.fecha_final
+    fechaL = ultimo_procL.fecha_final
+
+    partidascorresp = TransabiertaCorresponsal.objects.filter(estado_cuenta_idedocuenta=ultimo_procS)
+    partidaslibro = TransabiertaContabilidad.objects.filter(estado_cuenta_idedocuenta=ultimo_procL)
+
+    print(str(hoy + timedelta(dias)))
+    print(str(fechaS))
+    print(str(fechaL))
+
+    if hoy > (fechaS + timedelta(dias)) or hoy > (fechaL + timedelta(dias)):
+        if partidascorresp  or partidaslibro:
+            print("-----si eeeeeeeeeeeeeeeeee")
+        else:
+            print("blaaa")
+
     return JsonResponse(hora, safe=False)
 
 @login_required(login_url='/login')
@@ -94,6 +114,7 @@ def index(request):
     licencia = Licencia.objects.all()[0]
     fecha_expira = str(licencia.fecha_expira)[:10]
     ahora = str(timenow())[:10]
+    hoy = timenow()
     a1, m1, d1 = ahora.split("-")
     a2, m2, d2 = fecha_expira.split("-")
     m1 = int(m1)
@@ -104,10 +125,18 @@ def index(request):
             mensaje = "Su licencia vencerá en la fecha (YYYY-MM-DD): " + fecha_expira
         else:
             mensaje = "Your license will expire on (YYYY-MM-DD): " + fecha_expira
+        alertaCorreo = VerificarAlertas.objects.get(idVA=2)
+        bic = Configuracion.objects.all()[0].bic
+        empresa = Empresa.objects.all()[0].nombre
+        if alertaCorreo.flag == 0:
+            msg = "Esta es una alerta automática, para notificar que la licencia del banco: " + empresa +".\n Con código BIC: " + bic + ".\nVencerá en la fecha (YYYY-MM-DD): " + fecha_expira +"."+ "\n\n\n\n Matcher\n Un producto de BCG." 
+            enviar_mail('Alerta de caducidad de la licencia del banco: '+empresa ,msg,'jotha41@gmail.com')
+            alertaCorreo.flag = 1
+            alertaCorreo.fecha = hoy 
+            alertaCorreo.save()
 
-    verAler = VerificarAlertas.objects.all()[0]
+    verAler = VerificarAlertas.objects.get(idVA=1)
     fecha = verAler.fecha
-    hoy = timenow()
     delta = hoy - fecha
     diferencia = int(delta.days)
     flag = verAler.flag
@@ -1656,7 +1685,7 @@ def pd_partidasAbiertas(request):
 
                 tra = TransabiertaContabilidad.objects.filter(idtransaccion=trans95)[0]
 
-                Mt95.objects.create(ta_conta=tra,codigo=ref95,codigo95_idcodigo95=codAux,ref_relacion=refOrg95,query=query,narrativa=queryletras,num_mt=tipo95a,fecha_msg_original=fechad,campo79=original95) 
+                Mt95.objects.create(ta_conta=tra,codigo=ref95,codigo95_idcodigo95=codAux,ref_relacion=refOrg95,query=query,narrativa=queryletras[:100],num_mt=tipo95a,fecha_msg_original=fechad,campo79=original95) 
                 Mt95Ingles.objects.create(ta_conta=tra,codigo=ref95,codigo95_idcodigo95=codAuxIn,ref_relacion=refOrg95,query=query,narrativa=queryInletras,num_mt=tipo95a,fecha_msg_original=fechad,campo79=original95)
 
                 if idioma == 0:
@@ -1668,7 +1697,7 @@ def pd_partidasAbiertas(request):
                 
                 tra = TransabiertaCorresponsal.objects.filter(idtransaccion=trans95)[0]
                 
-                Mt95.objects.create(ta_corres=tra,codigo=ref95,codigo95_idcodigo95=codAux,ref_relacion=refOrg95,query=query,narrativa=queryletras,num_mt=tipo95a,fecha_msg_original=fechad,campo79=original95) 
+                Mt95.objects.create(ta_corres=tra,codigo=ref95,codigo95_idcodigo95=codAux,ref_relacion=refOrg95,query=query,narrativa=queryletras[:100],num_mt=tipo95a,fecha_msg_original=fechad,campo79=original95) 
                 Mt95Ingles.objects.create(ta_corres=tra,codigo=ref95,codigo95_idcodigo95=codAuxIn,ref_relacion=refOrg95,query=query,narrativa=queryInletras,num_mt=tipo95a,fecha_msg_original=fechad,campo79=original95)
                 
                 if idioma == 0:
@@ -2495,7 +2524,7 @@ def mtn96(request):
 
             #ruta de archivos procesados
             #rutaProcesados = "C:\Matcher\PROCESADO96" 
-            rutaProcesados = obj.dirprocesado96
+            rutaProcesados = obj.dirprocesado96 + archivoCarga
 
             #abrir archivo
             fo = open(ruta, 'r')
@@ -2745,7 +2774,7 @@ def mtn96(request):
             # Se hacen los creates en la base de datos
             k=0
             for mt in mt95:
-                Mt96.objects.create(mt95_idmt95=mt95[k],codigo=codigos[k],codigo96_idcodigo96=codigos96[k], ref_relacion=refRelaciones[k],answer=respuestas[k], narrativa=narrativas[k], num_mt=numerosMT[k], fecha_msg_original=fechas[k],campo79 =campos79[k])
+                Mt96.objects.create(mt95_idmt95=mt95[k],codigo=codigos[k],codigo96_idcodigo96=codigos96[k], ref_relacion=refRelaciones[k],answer=respuestas[k], narrativa=narrativas[k][:100], num_mt=numerosMT[k], fecha_msg_original=fechas[k],campo79 =campos79[k])
                 Mt96Ingles.objects.create(mt95_idmt95=mt95In[k],codigo=codigos[k],codigo96_idcodigo96=codigos96In[k], ref_relacion=refRelaciones[k],answer=respuestas[k], narrativa=narrativasIn[k], num_mt=numerosMT[k], fecha_msg_original=fechas[k],campo79 =campos79[k])
                 k+=1        
 
@@ -2881,7 +2910,7 @@ def mtn99(request):
 
             #ruta de archivos procesados
             #rutaProcesados = "C:\Matcher\PROCESADO99" 
-            rutaProcesados = obj.dirprocesado99
+            rutaProcesados = obj.dirprocesado99 +"\\"+ archivoCarga
 
             #abrir archivo
             fo = open(ruta, 'r')
@@ -2996,7 +3025,7 @@ def mtn99(request):
             # Se hacen los creates en la base de datos
             k=0
             for codigo in codigos:
-                Mt99.objects.create(codigo=codigo, ref_relacion=relaciones[k], narrativa=narrativas[k], bic=bics[k], fecha=timenow(),tipo_mt=tipoCargar,origen=origenCargar)
+                Mt99.objects.create(codigo=codigo, ref_relacion=relaciones[k], narrativa=narrativas[k][:45], bic=bics[k], fecha=timenow(),tipo_mt=tipoCargar,origen=origenCargar)
                 k+=1        
 
             #Se agrega el evento al log
@@ -6174,6 +6203,13 @@ def seg_licencia(request):
 
                 #Para el log
                 log(request,44)
+
+                # Para la verificación del correo a ser enviado cuando la licencia esté próxima a expirar
+                alertaCorreo = VerificarAlertas.objects.get(idVA=2)
+                alertaCorreo.flag = 0
+                hoy_aux = timenow()
+                alertaCorreo.fecha = hoy_aux 
+                alertaCorreo.save()
                 
                 return JsonResponse({'mens':mensaje})
 
@@ -6222,6 +6258,13 @@ def seg_licencia(request):
 
                 #Para el log
                 log(request,44)
+
+                # Para la verificación del correo a ser enviado cuando la licencia esté próxima a expirar
+                alertaCorreo = VerificarAlertas.objects.get(idVA=2)
+                alertaCorreo.flag = 0
+                hoy_aux = timenow()
+                alertaCorreo.fecha = hoy_aux
+                alertaCorreo.save()
 
                 return JsonResponse({'mens':mensaje})
                 
@@ -6376,6 +6419,13 @@ def SU_licencia(request):
             else:
                 mensaje = "Successfully modified license"
 
+            # Para la verificación del correo a ser enviado cuando la licencia esté próxima a expirar
+            alertaCorreo = VerificarAlertas.objects.get(idVA=2)
+            alertaCorreo.flag = 0
+            hoy_aux = timenow()
+            alertaCorreo.fecha = hoy_aux 
+            alertaCorreo.save()
+
             return JsonResponse({'mens':mensaje})
                
         except:
@@ -6451,6 +6501,13 @@ def SU_licencia(request):
                 mensaje = "Licencia agregada exitosamente"
             else:
                 mensaje = "Successfully added license"
+
+            # Para la verificación del correo a ser enviado cuando la licencia esté próxima a expirar
+            alertaCorreo = VerificarAlertas.objects.get(idVA=2)
+            alertaCorreo.flag = 0
+            hoy_aux = timenow()
+            alertaCorreo.fecha = hoy_aux
+            alertaCorreo.save()
 
             return JsonResponse({'mens':mensaje})
 
