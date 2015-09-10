@@ -50,9 +50,11 @@ def test(request):
 
     #setConsolidado('BMARCH',request)
 
+    
     hora = timenow()
     hora = str(hora)
 
+    """
     sessions = Session.objects.filter(expire_date__gte=timezone.now())
     uid_list = []
 
@@ -80,8 +82,8 @@ def test(request):
         if s.login not in ensesion:
             s.conexion = "0"
             s.save()
-            #ensesion.remove(s.login)
-    
+            #ensesion.remove(s.login)"""
+
     return JsonResponse(hora, safe=False)
 
 @login_required(login_url='/login')
@@ -4259,6 +4261,8 @@ def seg_Perfiles(request):
             funcs = request.POST.getlist('perfFuncs[]')
             funcs = list(set(funcs))
             funcs.sort()
+            for i in funcs:
+                print(i)
             
             try:
                 perfil = Perfil.objects.get(idperfil=perfid)
@@ -6138,7 +6142,27 @@ def seg_licencia(request):
                     modexcQuery = Modulos.objects.get(descripcion=el)
                     modexcQuery.activo = 0
                     modexcQuery.save()
-                
+
+                #Cambiar opciones de los perfiles segun los modulos adquiridos
+                modulos = Modulos.objects.exclude(opcion=15).exclude(activo=0).order_by('descripcion')
+                nuevosMod = [mod.opcion for mod in modulos]
+                opciones = Opcion.objects.filter(funprincipal__in=nuevosMod)
+                funciones = [op.idopcion for op in opciones]
+
+                #Borrar opciones anteriores
+                perfiles = Perfil.objects.exclude(nombre='SysAdmin')
+                perf_ids = [p.idperfil for p in perfiles]
+                for k in perf_ids:
+                    PerfilOpcion.objects.filter(perfil_idperfil=k).delete()
+
+                #Crear las nuevas opciones
+                for j in perf_ids:
+                    perfil = Perfil.objects.get(idperfil=j)
+                    for functid in funciones:
+                        opcion = Opcion.objects.get(idopcion=functid)
+                        PerfilOpcion.objects.create(opcion_idopcion=opcion, perfil_idperfil=perfil)
+
+
                 #Enviar mail
                 msg = "Bic: " + bicLicencia + "\nUsuarios: " + usuariosLicencia +"\n Expiración (YY-MM-DD): "+ str(fechaLicencia) +"\n Llave: " + llaveLicencia+ "\nSalt : BCG.bcg+2015" +"\n Modulos: " +str(numeroModulos)+ modulosemail + "\n\n\n\n Matcher\n Un producto de BCG." 
                 enviar_mail('Licencia del banco: '+bicLicencia,msg,'jotha41@gmail.com')
@@ -6166,6 +6190,26 @@ def seg_licencia(request):
                     moduloQuery.activo = 1
                     moduloQuery.save()
                     modulosemail =  modulosemail + "- " + mod + "\n"
+
+                #Cambiar opciones de los perfiles segun los modulos adquiridos
+                modulos = Modulos.objects.exclude(opcion=15).exclude(activo=0).order_by('descripcion')
+                nuevosMod = [mod.opcion for mod in modulos]
+                opciones = Opcion.objects.filter(funprincipal__in=nuevosMod)
+                funciones = [op.idopcion for op in opciones]
+
+                #Borrar opciones anteriores
+                perfiles = Perfil.objects.exclude(nombre='SysAdmin')
+                perf_ids = [p.idperfil for p in perfiles]
+                for k in perf_ids:
+                    PerfilOpcion.objects.filter(perfil_idperfil=k).delete()
+
+                #Crear las nuevas opciones
+                for j in perf_ids:
+                    perfil = Perfil.objects.get(idperfil=j)
+                    for functid in funciones:
+                        opcion = Opcion.objects.get(idopcion=functid)
+                        PerfilOpcion.objects.create(opcion_idopcion=opcion, perfil_idperfil=perfil)
+
 
                 #Enviar mail
                 msg = "Bic: " + bicLicencia + "\nUsuarios: " + usuariosLicencia +"\n Expiración (YY-MM-DD): "+ str(fechaLicencia) +"\n Llave: " + llaveLicencia+ "\nSalt : BCG.bcg+2015" +"\n Modulos: " +str(numeroModulos)+ modulosemail + "\n\n\n\n Matcher\n Un producto de BCG." 
@@ -6275,6 +6319,24 @@ def SU_licencia(request):
                 modulosemail =  modulosemail + "- " + i.descripcion + "\n"
                 cuentamod += 1
 
+            #Cambiar opciones de los perfiles segun los modulos adquiridos
+            nuevosMod = [mod.opcion for mod in modulos]
+            opciones = Opcion.objects.filter(funprincipal__in=nuevosMod)
+            funciones = [op.idopcion for op in opciones]
+
+            #Borrar opciones anteriores
+            perfiles = Perfil.objects.exclude(nombre='SysAdmin')
+            perf_ids = [p.idperfil for p in perfiles]
+            for k in perf_ids:
+                PerfilOpcion.objects.filter(perfil_idperfil=k).delete()
+
+            #Crear las nuevas opciones
+            for j in perf_ids:
+                perfil = Perfil.objects.get(idperfil=j)
+                for functid in funciones:
+                    opcion = Opcion.objects.get(idopcion=functid)
+                    PerfilOpcion.objects.create(opcion_idopcion=opcion, perfil_idperfil=perfil)
+
             #Se crea el archivo de texto con la copia de la licencia
             tn = str(timenow())
             aux = tn[:10]
@@ -6330,6 +6392,25 @@ def SU_licencia(request):
             for i in modulos:
                 modulosemail =  modulosemail + "- " + i.descripcion + "\n"
                 cuentamod += 1
+
+            #Cambiar opciones de los perfiles segun los modulos adquiridos
+            nuevosMod = [mod.opcion for mod in modulos]
+            opciones = Opcion.objects.filter(funprincipal__in=nuevosMod)
+            funciones = [op.idopcion for op in opciones]
+
+            #Borrar opciones anteriores
+            perfiles = Perfil.objects.exclude(nombre='SysAdmin')
+            perf_ids = [p.idperfil for p in perfiles]
+            for k in perf_ids:
+                PerfilOpcion.objects.filter(perfil_idperfil=k).delete()
+
+            #Crear las nuevas opciones
+            for j in perf_ids:
+                perfil = Perfil.objects.get(idperfil=j)
+                for functid in funciones:
+                    opcion = Opcion.objects.get(idopcion=functid)
+                    PerfilOpcion.objects.create(opcion_idopcion=opcion, perfil_idperfil=perfil)
+
 
             #Se crea el archivo de texto con la copia de la licencia
             tn = str(timenow())
