@@ -11,30 +11,50 @@ def daemon(request,language):
 	cuentas = Cuenta.objects.all()
 	for cuenta in cuentas:
 		if cuenta.correo_alertas !="":
+			print("cuenta: " + cuenta.codigo +"\n")
 			correo = cuenta.correo_alertas
 			alertas = AlertasCuenta.objects.filter(cuenta_idcuenta=cuenta)
 			for alerta in alertas:
 
-				if alerta.alertas_idalertas.idalertas == 11:
-					dias = alerta.valor
-					ultimaConciliacion = cuenta.ultimafechaconciliacion
-					hoy = timenow()
-					delta = hoy - ultimaConciliacion
-					diferencia = int(delta.days)
-					if diferencia >= dias:
-						if idioma == 0:
-							msg = "Le informamos que la cuenta: " + cuenta.codigo + ".\n Tiene mas de " + str(dias) + " días sin ser conciliada.\n Última fecha de conciliacón: " + str(("-").join(list(reversed((str(ultimaConciliacion).split(" ")[0]).split("-"))))) + "\n\n\n\n Matcher\n Un producto de BCG." 
-							enviar_mail('Alerta "Días Sin Conciliar"',msg,correo)
-						else:
-							msg = "We notify you that account: " + cuenta.codigo + ".\n Has more than " + str(dias) + " days without reconciliation.\n Last Reconciliation date: " + str(ultimaConciliacion).split(" ")[0] + "\n\n\n\n Matcher\n A BCG's software." 
-							enviar_mail('"Exceded Reconciliation Days" Alert ',msg,correo)
-					
+				"""if alerta.alertas_idalertas.idalertas == 11:
+					try:
+						dias = alerta.valor
+						ultimaConciliacion = cuenta.ultimafechaconciliacion
+						hoy = timenow()
+						delta = hoy - ultimaConciliacion
+						diferencia = int(delta.days)
+						if diferencia >= dias:
+							if idioma == 0:
+								msg = "Le informamos que la cuenta: " + cuenta.codigo + ".\n Tiene mas de " + str(dias) + " días sin ser conciliada.\n Última fecha de conciliacón: " + str(("-").join(list(reversed((str(ultimaConciliacion).split(" ")[0]).split("-"))))) + "\n\n\n\n Matcher\n Un producto de BCG." 
+								enviar_mail('Alerta "Días Sin Conciliar"',msg,correo)
+							else:
+								msg = "We notify you that account: " + cuenta.codigo + ".\n Has more than " + str(dias) + " days without reconciliation.\n Last Reconciliation date: " + str(ultimaConciliacion).split(" ")[0] + "\n\n\n\n Matcher\n A BCG's software." 
+								enviar_mail('"Exceded Reconciliation Days" Alert ',msg,correo)
+					except:
+						print("No existe fecha de ultima conciliacion para la cuenta: " +cuenta.codigo +"\n")
 
-				if alerta.alertas_idalertas.idalertas == 4:
+				"""
+
+				"""if alerta.alertas_idalertas.idalertas == 4:
 					print("Partidas pendientes por mas de ")
+				"""
 
 				if alerta.alertas_idalertas.idalertas == 6:
 					print("No cargado edo cuenta en tantos días")
+					dias = alerta.valor
+					try:
+						ultimo_cargadoS = EstadoCuenta.objects.get(idedocuenta=cuenta.ultimoedocuentacargs)
+						ultimo_cargadoL = EstadoCuenta.objects.get(idedocuenta=cuenta.ultimoedocuentacargc)
+						fechaS = ultimo_cargadoS.fecha_final
+						fechaL = ultimo_cargadoL.fecha_final
+						if fechaS < fechaL:
+							print("mayor Fecha L")
+						elif fechaL < fechaS:
+							print("mayor Fecha S")
+						else:
+							print("Son iguales")
+					except:
+						print("No existen Estados de Cuentas cargados para la cuenta: " +cuenta.codigo +"\n")
 
 				#if alerta.alertas_idalertas.idalertas == (13):
 				#	print("partidas pendientes sin observación")
