@@ -11,6 +11,51 @@ if (idioma == 0){
 }
 
 var t_conta = iniciar_tabla(idiomaAux);
+var t_info = iniciar_tabla2(idiomaAux);
+
+function iniciar_tabla2(idioma){
+
+    
+    if (idioma==="es"){
+
+        return $('#table-pa').DataTable({
+            //poner if con idioma, el ingles es predeterminado
+            
+            language: {
+                url: '/static/json/Spanish-tables.json'
+            },
+            "ordering":false,
+             "columns": [
+                { "width": "5%" },//Edo. Cuenta
+                { "width": "5%" },//Num. Trans
+                { "width": "12%" },//Fecha Valor
+                { "width": "12%" },//Edo. Cuenta
+                { "width": "16%" },//Num. Trans
+                { "width": "10%" },//Fecha Valor
+                { "width": "30%" },//Edo. Cuenta
+              ]
+        })
+
+    }else if (idioma==="en"){
+
+        return $('#table-pa').DataTable({
+          
+            language: {
+                url: '/static/json/English-tables.json'
+            },
+             "ordering":false,
+             "columns": [
+                { "width": "5%" },//Edo. Cuenta
+                { "width": "5%" },//Num. Trans
+                { "width": "12%" },//Fecha Valor
+                { "width": "12%" },//Edo. Cuenta
+                { "width": "16%" },//Num. Trans
+                { "width": "10%" },//Fecha Valor
+                { "width": "30%" },//Edo. Cuenta
+              ]
+        })
+    };
+};
 
 function iniciar_tabla(idioma){
 
@@ -62,6 +107,11 @@ $("#myModal").on("hidden.bs.modal", function(){
    	$("#myModalLabel").html("");
      
 });  
+
+$("#exampleModal").on("hidden.bs.modal", function(){
+   	$(this).removeData('bs.modal');
+     
+});
 
 $('a').on('click', function () {
 
@@ -1587,21 +1637,77 @@ $('a').on('click', function () {
     });
 
 $('#exampleModal').on('shown.bs.modal', function (event) {
+	var datos = []
+    var etiquetas = []
+    var balance = $('#balance').val();
+    var balancedos = parseFloat(balance)
+    balance = parseFloat(Math.abs(balance))
+    var data2 = t_info.rows().data();
+    if(data2.length > 0){
+    	primera = data2[0][4].substr(0,10);
+    	etiquetas.push(primera);
+    	
+    	datos.push(balance);
+
+    	for(var i = 0,balanceOri = balancedos; i< data2.length ; i++){ 
+    		console.log(balanceOri + "dfsdsfadsfdsafsd")
+    		if(data2[i][6] == ""){
+    			etiquetas.push(data2[i][4].substr(11));
+    			if(data2[i][0] == "I" ){
+    				if(idiomaAux == "es"){
+                        saldo = data2[i][3].replace(/\./g,"");
+                        saldo = saldo.replace(",",".");
+                    }else{
+                        saldo = data2[i][3].replace(/,/g,"");
+                    }
+                    saldoFloatPuro = parseFloat(saldo);
+                    console.log(balanceOri + "fffff")
+    				balanceOri = balanceOri + saldoFloatPuro 
+    				console.log(balanceOri + "sadfds")
+                    
+    				balance = Math.abs(balanceOri)
+    				console.log(balance)
+    	
+    				datos.push(balance);
+    			}
+    			if(data2[i][0] == "O" ){
+    				if(idiomaAux == "es"){
+                        saldo = data2[i][3].replace(/\./g,"");
+                        saldo = saldo.replace(",",".");
+                    }else{
+                        saldo = data2[i][3].replace(/,/g,"");
+                    }
+                    saldoFloatPuro = parseFloat(saldo);
+    				balanceOri = balanceOri - saldoFloatPuro 
+    				balance = Math.abs(balanceOri)
+    				datos.push(balance);
+    			}
+    			nuevaFecha = data2[i][4].substr(0,10);
+    			if(nuevaFecha != primera){
+    				etiquetas.push(nuevaFecha);
+    				datos.push(balance);
+    			}
+    				
+    		}
+    	}
+    	
+    }
+
 
  var randomScalingFactor = function(){ return Math.round(Math.random()*100)};
 		var lineChartData = {
-			labels : ["January","February","March","April","May","June","July"],
+			labels : etiquetas,
 			datasets : [
 				{
-					label: "My Second dataset",
-					fillColor : "rgba(151,187,205,0.2)",
-					strokeColor : "rgba(151,187,205,1)",
-					pointColor : "rgba(151,187,205,1)",
-					pointStrokeColor : "#fff",
-					pointHighlightFill : "#fff",
-					pointHighlightStroke : "rgba(151,187,205,1)",
-					data : [randomScalingFactor(),randomScalingFactor(),randomScalingFactor(),randomScalingFactor(),randomScalingFactor(),randomScalingFactor(),randomScalingFactor()]
-				}
+            label: "My Second dataset",
+            fillColor: "rgba(151,187,205,0.2)",
+            strokeColor: "rgba(151,187,205,1)",
+            pointColor: "rgba(151,187,205,1)",
+            pointStrokeColor: "#fff",
+            pointHighlightFill: "#fff",
+            pointHighlightStroke: "rgba(151,187,205,1)",
+            data: datos,
+        }
 			]
 
 		}

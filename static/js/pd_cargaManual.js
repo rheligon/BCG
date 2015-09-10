@@ -616,10 +616,10 @@ $('#boton-agregar').on('click', function () {
                             }
                         }else{
                             if(idiomaAux == "es"){
-                                saldo = saldo.replace(".","");
+                                saldo = saldo.replace(/\./g,"");
                                 saldo = saldo.replace(",",".");
                             }else{
-                                saldo = saldo.replace(",","");
+                                saldo = saldo.replace(/,/g,"");
                             }
                             saldoFloatPuro = parseFloat(saldo);
                         }
@@ -640,10 +640,10 @@ $('#boton-agregar').on('click', function () {
                     }else{
                         var saldo = $('#saldo-manual-nuevo2').val();
                         if(idiomaAux == "es"){
-                            saldo = saldo.replace(".","");
+                            saldo = saldo.replace(/\./g,"");
                             saldo = saldo.replace(",",".");
                         }else{
-                            saldo = saldo.replace(",","");
+                            saldo = saldo.replace(/,/g,"");
                         }
                         saldo = parseFloat(saldo);
                         total = saldo + montoFloatPuro;
@@ -663,10 +663,10 @@ $('#boton-agregar').on('click', function () {
                             }
                         }else{
                             if(idiomaAux == "es"){
-                                saldo = saldo.replace(".","");
+                                saldo = saldo.replace(/\./g,"");
                                 saldo = saldo.replace(",",".");
                             }else{
-                                saldo = saldo.replace(",","");
+                                saldo = saldo.replace(/,/g,"");
                             }
                             saldoFloatPuro = parseFloat(saldo);
                         }
@@ -692,10 +692,10 @@ $('#boton-agregar').on('click', function () {
                     }else{
                         var saldo = $('#saldo-manual-nuevo2').val();
                         if(idiomaAux == "es"){
-                            saldo = saldo.replace(".","");
+                            saldo = saldo.replace(/\./g,"");
                             saldo = saldo.replace(",",".");
                         }else{
-                            saldo = saldo.replace(",","");
+                            saldo = saldo.replace(/,/,"");
                         }
                         saldo = parseFloat(monto_Float(saldo));
                         total = saldo - montoFloatPuro;

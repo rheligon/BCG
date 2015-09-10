@@ -704,7 +704,7 @@ function buscarEnArchivo(archivo,cuenta,fechaIni,fechaFin){
                             var rVostro = manuales[i][1][j][5];
                             var detalles = manuales[i][1][j][6];
                             var credDeb = manuales[i][1][j][7];
-                            var monto = $.formatNumber(automaticas[i][1][j][8],{locale:idiomaAux});
+                            var monto = $.formatNumber(manuales[i][1][j][8],{locale:idiomaAux});
                             var contaCorr = manuales[i][1][j][9];
 
                             if (detalles == "null"){
@@ -799,7 +799,7 @@ function buscarEnArchivo(archivo,cuenta,fechaIni,fechaFin){
                             var rVostro = contabilidades[i][1][j][5];
                             var detalles = contabilidades[i][1][j][6];
                             var credDeb = contabilidades[i][1][j][7];
-                            var monto = $.formatNumber(automaticas[i][1][j][8],{locale:idiomaAux});
+                            var monto = $.formatNumber(contabilidades[i][1][j][8],{locale:idiomaAux});
                             var contaCorr = contabilidades[i][1][j][9];
 
                             if (detalles == "null"){
@@ -895,7 +895,7 @@ function buscarEnArchivo(archivo,cuenta,fechaIni,fechaFin){
                             var rVostro = corresponsales[i][1][j][5];
                             var detalles = corresponsales[i][1][j][6];
                             var credDeb = corresponsales[i][1][j][7];
-                            var monto = $.formatNumber(automaticas[i][1][j][8],{locale:idiomaAux});
+                            var monto = $.formatNumber(corresponsales[i][1][j][8],{locale:idiomaAux});
                             var contaCorr = corresponsales[i][1][j][9];
 
                             if (detalles == "null"){
@@ -934,7 +934,6 @@ function buscarEnArchivo(archivo,cuenta,fechaIni,fechaFin){
                             contador++;
                         }
                     }
-                    $('#processing-modal').modal('toggle')
                     t_conta.draw()
 
                     if(automaticas.length < 1 && manuales.length < 1 && contabilidades.length < 1 && corresponsales.length < 1){
@@ -950,7 +949,7 @@ function buscarEnArchivo(archivo,cuenta,fechaIni,fechaFin){
                              type: "error"
                          });
                     }
-                    
+                    $('#processing-modal').modal('toggle')
                 }else{
                     $('#processing-modal').modal('toggle')
                     swal({   title: "",

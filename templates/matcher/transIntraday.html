@@ -21,6 +21,7 @@
 <legend><h1>Intraday (Detalle de Transacciones)</h1></legend>
 <input type="text" id="idioma" value="{{idioma}}" hidden/>
 <input type="text" id="tiempoAct" value="{{tiempoAct}}" hidden/>
+<input type="text" id="balance" value="{{balance}}" hidden/>
 
 
     <div class="row clearfix" >
@@ -355,7 +356,7 @@
 </div>
 
 <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog" style="width:800px">
+    <div class="modal-dialog" style="width:1000px">
         <div class="modal-content">
             <div class="modal-header bg-primary">
                 <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
@@ -363,7 +364,7 @@
             </div>
             <div class="modal-body">
                 <p>Monto</p>
-                <canvas id="canvas" width="750px" height="600px"></canvas>
+                <canvas id="canvas" width="950px" height="650px"></canvas>
                 
             </div>
             <div class="modal-footer">
@@ -389,60 +390,9 @@
 <script type="text/javascript" src="{% static 'js/picker.date.js' %}"></script>
 <script type="text/javascript" src="{% static 'js/pickerlegacy.js' %}"></script>
 <script src="{% static 'js/Chart.min.js' %}" type="text/javascript"></script>
+<script src="{% static 'js/Chart.Scatter.min.js' %}" type="text/javascript"></script>
 <script src="{% static 'js/transIntraday.js' %}" type="text/javascript"></script>
-<script type="text/javascript">
-var idioma = $('#idioma').val();
-var idiomaAux = "";
 
-if (idioma == 0){
-    idiomaAux = "es"
-} else {
-    idiomaAux = "en"
-}
-iniciar_tabla(idiomaAux);
 
-function iniciar_tabla(idioma){
 
-    
-    if (idioma==="es"){
-
-        return $('#table-pa').DataTable({
-            //poner if con idioma, el ingles es predeterminado
-            
-            language: {
-                url: '/static/json/Spanish-tables.json'
-            },
-            "ordering":false,
-             "columns": [
-                { "width": "5%" },//Edo. Cuenta
-                { "width": "5%" },//Num. Trans
-                { "width": "12%" },//Fecha Valor
-                { "width": "12%" },//Edo. Cuenta
-                { "width": "16%" },//Num. Trans
-                { "width": "10%" },//Fecha Valor
-                { "width": "30%" },//Edo. Cuenta
-              ]
-        })
-
-    }else if (idioma==="en"){
-
-        return $('#table-pa').DataTable({
-          
-            language: {
-                url: '/static/json/English-tables.json'
-            },
-             "ordering":false,
-             "columns": [
-                { "width": "5%" },//Edo. Cuenta
-                { "width": "5%" },//Num. Trans
-                { "width": "12%" },//Fecha Valor
-                { "width": "12%" },//Edo. Cuenta
-                { "width": "16%" },//Num. Trans
-                { "width": "10%" },//Fecha Valor
-                { "width": "30%" },//Edo. Cuenta
-              ]
-        })
-    };
-};
-</script>
 {% endblock %}
