@@ -1,5 +1,7 @@
 from Matcher.models import *
+from Matcher_WS.mailConf import enviar_mail
 from django.db.models import Sum, Q
+from datetime import datetime, timedelta
 
 
 def setConsolidado(codCta,request):
@@ -31,6 +33,8 @@ def setConsolidado(codCta,request):
             
             if totalCredCont is None:
                 totalCredCont = 0
+            else:
+                totalCredCont = round(totalCredCont,2)
             
             print('credcont ' + str(totalCredCont))
 
@@ -40,6 +44,8 @@ def setConsolidado(codCta,request):
             
             if totalDebCont is None:
                 totalDebCont = 0
+            else:
+                totalDebCont = round(totalDebCont,2)
 
             print('debcont ' + str(totalDebCont))
 
@@ -49,6 +55,8 @@ def setConsolidado(codCta,request):
             
             if totalCredCorr is None:
                 totalCredCorr = 0
+            else:
+                totalCredCorr = round(totalCredCorr,2)
             
             print('credcorr ' + str(totalCredCorr))
 
@@ -58,6 +66,8 @@ def setConsolidado(codCta,request):
 
             if totalDebCorr is None:
                 totalDebCorr = 0
+            else:
+                totalDebCorr = round(totalDebCorr,2)
 
             print('debcorr ' + str(totalDebCorr))
 
@@ -69,9 +79,9 @@ def setConsolidado(codCta,request):
 
             if EdcCont is not None:
                 if EdcCont.c_dfinal == 'D':
-                    balanceCont = -1 * EdcCont.balance_final
+                    balanceCont = round(-1 * EdcCont.balance_final,2)
                 else:
-                    balanceCont = EdcCont.balance_final
+                    balanceCont = round(EdcCont.balance_final,2)
             else: 
                 balanceCont = 0
 
@@ -85,9 +95,9 @@ def setConsolidado(codCta,request):
 
             if EdcCorr is not None:
                 if EdcCorr.c_dfinal == 'D':
-                    balanceCorr = -1 * EdcCorr.balance_final
+                    balanceCorr = round(-1 * EdcCorr.balance_final,2)
                 else:
-                    balanceCorr = EdcCorr.balance_final
+                    balanceCorr = round(EdcCorr.balance_final,2)
             else: 
                 balanceCorr = 0
 
@@ -98,6 +108,8 @@ def setConsolidado(codCta,request):
 
             if encaje is None:
                 encaje = 0
+            else:
+                encaje = round(cuenta.montoencajeactual,2)
 
             print('encaje ' + str(encaje))
 
@@ -106,18 +118,18 @@ def setConsolidado(codCta,request):
             if cuenta.tipo_cta == 2:
                 # Saldo real para cuentas propias
                 totalCont = balanceCont
-                totalCorr = totalCredCorr - totalDebCorr
+                totalCorr = round(totalCredCorr - totalDebCorr,2)
 
-                total = totalCont - totalCorr
-                diferencia = round(total)
+                total = round(totalCont - totalCorr,2)
+                diferencia = total
             else:
                 # Se sacan los saldos reales de contabilidad y corresponsal
-                totalCont = -(totalCredCorr - totalDebCorr + encaje) + balanceCont
-                totalCorr = -(totalCredCont - totalDebCont) + balanceCorr
+                totalCont = round(round(-(round(totalCredCorr - totalDebCorr,2) + encaje),2) + balanceCont,2)
+                totalCorr = round(-round(totalCredCont - totalDebCont,2) + balanceCorr,2)
 
-                total = totalCont + totalCorr
+                total = round(totalCont + totalCorr,2)
 
-                diferencia = round(total,2) #Deberia ser siempre 0
+                diferencia = total #Deberia ser siempre 0
 
             print('totcont ' + str(totalCont))
             print('totcorr ' + str(totalCorr))
@@ -143,7 +155,44 @@ def setConsolidado(codCta,request):
 
                 consolidado.save()
 
-            # Falta enviar correo si la diferencia != 0 
+            # Falta enviar correo si la diferencia != 0
+            cuenta = Cuenta.objects.get(codigo=codCta)
+
+            if cuenta.correo_alertas !="":
+
+                correo = cuenta.correo_alertas
+                alertas = AlertasCuenta.objects.filter(cuenta_idcuenta=cuenta)
+
+                for alerta in alertas: 
+
+                    if alerta.alertas_idalertas.idalertas == 8:
+                        try:
+                            if abs(diferencia) > 0.01:
+                                if idioma == 0:
+                                    msg = "Le informamos que la cuenta: " + cuenta.codigo + ". Tiene una diferencia de saldos de: " + str(diferencia) + " " +cuenta.moneda_idmoneda.codigo +". Luego de haber sido conciliada."+ "\n\n\n\n Matcher\n Un producto de BCG." 
+                                    enviar_mail('Alerta "Diferencia de saldos al conciliar"',msg,correo)
+                                else:
+                                    msg = "We notify you that account: " + cuenta.codigo + ". Has a balance difference of: " + str(diferencia) + " " +cuenta.moneda_idmoneda.codigo + ". after reconciliation." + "\n\n\n\n Matcher\n A BCG's software." 
+                                    enviar_mail('"After Reconciliation Balance Difference" Alert ',msg,correo)
+                        
+                        except Exception as e:
+                            #Hubo algun error y no envio el correo
+                            print (e)
+
+                    if alerta.alertas_idalertas.idalertas ==15:
+                        try:
+                            if totalCont < 0 or totalCorr < 0:
+                                if idioma == 0:
+                                    msg = "Le informamos que la cuenta: " + cuenta.codigo + ". está sobregirada por un monto de: " + str(totalCont) + " " +cuenta.moneda_idmoneda.codigo +". Luego de haber sido conciliada."+ "\n\n\n\n Matcher\n Un producto de BCG." 
+                                    enviar_mail('Alerta "Cuenta Sobregirada"',msg,correo)
+                                else:
+                                    msg = "We notify you that account: " + cuenta.codigo + ". is overdrawn by an amount of: " + str(totalCont) + " " +cuenta.moneda_idmoneda.codigo + ". after reconciliation." + "\n\n\n\n Matcher\n A BCG's software." 
+                                    enviar_mail('"Overdrawn Account" Alert ',msg,correo)
+                        
+                        except Exception as e:
+                            #Hubo algun error y no envio el correo
+                            print (e)
+
         
     except Exception as e:
         #Hubo algun error
