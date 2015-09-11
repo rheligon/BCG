@@ -22,6 +22,7 @@
 <input type="text" id="idioma" value="{{idioma}}" hidden/>
 <input type="text" id="tiempoAct" value="{{tiempoAct}}" hidden/>
 <input type="text" id="balance" value="{{balance}}" hidden/>
+<input type="text" id="fechaConciliacion" value="{{fecha}}" hidden/>
 
 
     <div class="row clearfix" >
@@ -39,6 +40,19 @@
       </div> 
     </div>
 <div class="row">
+  <div class="form-group col-md-2">
+      <label class="control-label">
+        {%if idioma == 0%}
+          Fecha:
+        {%endif%}
+        {%if idioma == 1%}
+          Date:
+        {%endif%}
+      </label>
+      <div>
+        <input id="fecha-valor" class="form-control" style="width:80%;background-color:white">
+      </div>
+    </div>
   <div class="col-md-7" align="rigth">
     <button type="button" id="boton-graficar" name="boton-graficar" style="align:right" class="col-md-3 btn btn-primary" data-toggle="modal" href="#exampleModal">
     {%if idioma == 0%}
@@ -359,13 +373,13 @@
     <div class="modal-dialog" style="width:1000px">
         <div class="modal-content">
             <div class="modal-header bg-primary">
-                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-                <h4 class="modal-title" id="exampleModalLabel">Historico desde : {{fecha}} Hasta: {{fechaActual}}</h4>
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Cerrar</span></button>
+                <h4 class="modal-title" id="exampleModalLabel"></h4>
             </div>
-            <div class="modal-body">
+            <div class="modal-body1" id="modalCuerpo">
                 <p>Monto</p>
                 <canvas id="canvas" width="950px" height="650px"></canvas>
-                
+                <p>Hora</p>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>

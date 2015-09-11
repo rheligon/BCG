@@ -1,6 +1,11 @@
-var csrftoken = $.cookie('csrftoken');
 
+var csrftoken = $.cookie('csrftoken');
+$('#boton-graficar').attr("disabled", true);
 var idioma = $('#idioma').val();
+var fechaC = $('#fechaConciliacion').val();
+var diaC = fechaC.substr(0,2)
+var mesC = fechaC.substr(3,2)
+var anioC = fechaC.substr(6,4)
 var idiomaAux = "";
 var msj ="";
 
@@ -102,6 +107,17 @@ function iniciar_tabla(idioma){
     };
 };
 
+
+//Inicializar el DatePicker
+$('#fecha-valor').pickadate({
+    format: 'dd/mm/yyyy',
+    formatSubmit:'dd/mm/yyyy',
+    selectYears: true,
+    selectMonths: true,
+    max: true,
+    min: [anioC,mesC,diaC],
+});
+
 $("#myModal").on("hidden.bs.modal", function(){
     t_conta.clear().draw();
    	$("#myModalLabel").html("");
@@ -109,8 +125,15 @@ $("#myModal").on("hidden.bs.modal", function(){
 });  
 
 $("#exampleModal").on("hidden.bs.modal", function(){
-   	$(this).removeData('bs.modal');
-     
+   
+    $("#exampleModalLabel").html("");
+    $(".modal-body1").html("");
+    $(".modal-body1").append('<p>Monto</p><canvas id="canvas" width="950px" height="650px"></canvas><p>Hora</p>');
+    
+});
+
+$('#fecha-valor').change(function() { 
+    $('#boton-graficar').attr("disabled", false);
 });
 
 $('a').on('click', function () {
@@ -1636,23 +1659,27 @@ $('a').on('click', function () {
 
     });
 
+
+
 $('#exampleModal').on('shown.bs.modal', function (event) {
+	var fechaGrafica = $('#fecha-valor').val();
+    $('#exampleModalLabel').append('Histórico del día : ' + fechaGrafica);
+	var debito = false
+	var bandera = false
 	var datos = []
     var etiquetas = []
     var balance = $('#balance').val();
     var balancedos = parseFloat(balance)
-    balance = parseFloat(Math.abs(balance))
+    console.log(debito)
+    balance = parseFloat(balance)
     var data2 = t_info.rows().data();
-    if(data2.length > 0){
-    	primera = data2[0][4].substr(0,10);
-    	etiquetas.push(primera);
-    	
-    	datos.push(balance);
-
-    	for(var i = 0,balanceOri = balancedos; i< data2.length ; i++){ 
-    		console.log(balanceOri + "dfsdsfadsfdsafsd")
-    		if(data2[i][6] == ""){
-    			etiquetas.push(data2[i][4].substr(11));
+    
+	if(data2.length > 0){
+    	for(var i = 0; i < data2.length ; i++){ 
+    		var myRe = /\d{3}/g;
+			var myArray = myRe.exec(data2[i][1]);
+    		if(data2[i][6] == "" && myArray[0] != "942"){
+    			
     			if(data2[i][0] == "I" ){
     				if(idiomaAux == "es"){
                         saldo = data2[i][3].replace(/\./g,"");
@@ -1660,59 +1687,64 @@ $('#exampleModal').on('shown.bs.modal', function (event) {
                     }else{
                         saldo = data2[i][3].replace(/,/g,"");
                     }
+
                     saldoFloatPuro = parseFloat(saldo);
-                    console.log(balanceOri + "fffff")
-    				balanceOri = balanceOri + saldoFloatPuro 
-    				console.log(balanceOri + "sadfds")
-                    
-    				balance = Math.abs(balanceOri)
-    				console.log(balance)
-    	
-    				datos.push(balance);
+                    balancedos += saldoFloatPuro	
+                   	balanceOri = balancedos.toFixed(2)
+    				
     			}
     			if(data2[i][0] == "O" ){
     				if(idiomaAux == "es"){
-                        saldo = data2[i][3].replace(/\./g,"");
+                        saldo = data2[i][2].replace(/\./g,"");
                         saldo = saldo.replace(",",".");
                     }else{
-                        saldo = data2[i][3].replace(/,/g,"");
+                        saldo = data2[i][2].replace(/,/g,"");
                     }
                     saldoFloatPuro = parseFloat(saldo);
-    				balanceOri = balanceOri - saldoFloatPuro 
-    				balance = Math.abs(balanceOri)
-    				datos.push(balance);
+                    balancedos -= saldoFloatPuro
+                    
+                    balanceOri = balancedos.toFixed(2)
+    				
     			}
-    			nuevaFecha = data2[i][4].substr(0,10);
-    			if(nuevaFecha != primera){
-    				etiquetas.push(nuevaFecha);
-    				datos.push(balance);
-    			}
+    			if(data2[i][4].substr(0,10) == fechaGrafica){
+    					etiquetas.push(data2[i][4].substr(11));
+    					datos.push(balanceOri);	
+    					bandera = true
+    				}
     				
     		}
     	}
     	
     }
+    	if(bandera){
+    		
+    		var lineChartData = {
+				labels : etiquetas,
+				datasets : [
+					{
+	            label: "My Second dataset",
+	            fillColor: "rgba(151,187,205,0.2)",
+	            strokeColor: "rgba(151,187,205,1)",
+	            pointColor: "rgba(151,187,205,1)",
+	            pointStrokeColor: "#fff",
+	            pointHighlightFill: "#fff",
+	            pointHighlightStroke: "rgba(151,187,205,1)",
+	            data: datos,
+	        		}
+				]
+
+			}
+			var ctx = document.getElementById("canvas").getContext("2d");
+			window.myLine = new Chart(ctx).Line(lineChartData, {
+				responsive: false
+			});
+    	}else{
+    		$(".modal-body1").html("");
+    $(".modal-body1").append('<div ><h2 class="alert"align="center">No existen Transacciones para el día seleccionado.</h2></div>')
+    	}
+		
 
 
- var randomScalingFactor = function(){ return Math.round(Math.random()*100)};
-		var lineChartData = {
-			labels : etiquetas,
-			datasets : [
-				{
-            label: "My Second dataset",
-            fillColor: "rgba(151,187,205,0.2)",
-            strokeColor: "rgba(151,187,205,1)",
-            pointColor: "rgba(151,187,205,1)",
-            pointStrokeColor: "#fff",
-            pointHighlightFill: "#fff",
-            pointHighlightStroke: "rgba(151,187,205,1)",
-            data: datos,
-        }
-			]
 
-		}
-		var ctx = document.getElementById("canvas").getContext("2d");
-		window.myLine = new Chart(ctx).Line(lineChartData, {
-			responsive: false
-		});
+	
 });
