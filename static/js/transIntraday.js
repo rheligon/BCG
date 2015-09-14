@@ -18,6 +18,14 @@ if (idioma == 0){
 var t_conta = iniciar_tabla(idiomaAux);
 var t_info = iniciar_tabla2(idiomaAux);
 
+var tiempo = $('#tiempoAct').val();
+tiempo = parseInt(tiempo)*30000
+
+/*setInterval(function() {
+	$('#processing-modal').modal('toggle');
+	window.location.reload()
+}, tiempo);*/	
+
 function iniciar_tabla2(idioma){
 
     
@@ -30,7 +38,7 @@ function iniciar_tabla2(idioma){
                 url: '/static/json/Spanish-tables.json'
             },
             "ordering":false,
-             "columns": [
+            "columns": [
                 { "width": "5%" },//Edo. Cuenta
                 { "width": "5%" },//Num. Trans
                 { "width": "12%" },//Fecha Valor
@@ -106,6 +114,76 @@ function iniciar_tabla(idioma){
         })
     };
 };
+
+
+//Dar formato a un Date a string dd/mm/yyyy
+function formatearFecha(fecha){
+    dia = fecha.getUTCDate();
+    
+    if (dia < 10){
+        dia = "0"+ dia;
+    }
+
+    mes = fecha.getUTCMonth()+1;
+    
+    if (mes < 10){
+        mes = "0"+ mes;
+    }
+
+    anio = fecha.getUTCFullYear();
+    if (idioma == 0){
+        nueva = dia +"/" + mes + "/" +anio;
+    } else {
+        nueva = anio +"/" + mes + "/" +dia;
+    }
+    return nueva;
+}
+
+//dado un fecha en string la convierte en un objeto Date +1 y luego a string
+function nuevaFecha(fecha){
+    var arreglo= fecha.split("/");
+    if (idioma == 0){
+        dia = parseInt(arreglo[0]);
+        mes = parseInt(arreglo[1])-1;
+        anio = parseInt(arreglo[2]);
+    } else {
+        dia = parseInt(arreglo[2]);
+        mes = parseInt(arreglo[1])-1;
+        anio = parseInt(arreglo[0]);
+    }
+    var nueva = new Date(anio,mes,dia)
+    nueva.setDate(nueva.getDate()-1);
+    nueva = formatearFecha(nueva); 
+    return nueva;
+}
+
+document.getElementById("btnPrint").onclick = function () {
+    printElement(document.getElementById("printThis"));
+    
+    window.print();
+}
+
+var button = document.getElementById('btnDescarga');
+button.addEventListener('click', function (e) {
+    var dataURL = canvas.toDataURL('image/png');
+    button.href = dataURL;
+});
+
+function printElement(elem) {
+    var domClone = elem.cloneNode(true);
+    
+    var $printSection = document.getElementById("printSection");
+    
+    if (!$printSection) {
+        var $printSection = document.createElement("div");
+        $printSection.id = "printSection";
+        document.body.appendChild($printSection);
+    }
+    
+    $printSection.innerHTML = "";
+    
+    $printSection.appendChild(domClone);
+}
 
 
 //Inicializar el DatePicker
@@ -1666,6 +1744,7 @@ $('#exampleModal').on('shown.bs.modal', function (event) {
     $('#exampleModalLabel').append('Histórico del día : ' + fechaGrafica);
 	var debito = false
 	var bandera = false
+	var primera = false
 	var datos = []
     var etiquetas = []
     var balance = $('#balance').val();
@@ -1689,6 +1768,7 @@ $('#exampleModal').on('shown.bs.modal', function (event) {
                     }
 
                     saldoFloatPuro = parseFloat(saldo);
+                    balanceAntes = balancedos.toFixed(2)
                     balancedos += saldoFloatPuro	
                    	balanceOri = balancedos.toFixed(2)
     				
@@ -1701,12 +1781,18 @@ $('#exampleModal').on('shown.bs.modal', function (event) {
                         saldo = data2[i][2].replace(/,/g,"");
                     }
                     saldoFloatPuro = parseFloat(saldo);
+                    balanceAntes = balancedos.toFixed(2)
                     balancedos -= saldoFloatPuro
-                    
                     balanceOri = balancedos.toFixed(2)
     				
     			}
     			if(data2[i][4].substr(0,10) == fechaGrafica){
+    				if(!primera){
+    					fechaAnterior = nuevaFecha(fechaGrafica);
+    					etiquetas.push(fechaAnterior);
+    					datos.push(balanceAntes);	
+    					primera = true
+    				}
     					etiquetas.push(data2[i][4].substr(11));
     					datos.push(balanceOri);	
     					bandera = true
@@ -1717,7 +1803,9 @@ $('#exampleModal').on('shown.bs.modal', function (event) {
     	
     }
     	if(bandera){
-    		
+    		var cuenta = $('#cuenta').val();
+
+    		$( "#btnDescarga" ).attr( "download", "Historico_"+cuenta+"_" + fechaGrafica);
     		var lineChartData = {
 				labels : etiquetas,
 				datasets : [
@@ -1740,7 +1828,7 @@ $('#exampleModal').on('shown.bs.modal', function (event) {
 			});
     	}else{
     		$(".modal-body1").html("");
-    $(".modal-body1").append('<div ><h2 class="alert"align="center">No existen Transacciones para el día seleccionado.</h2></div>')
+    		$(".modal-body1").append('<div ><h2 class="alert"align="center">No existen Transacciones para el día seleccionado.</h2></div>')
     	}
 		
 

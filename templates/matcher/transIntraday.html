@@ -8,6 +8,7 @@
 {%block head%}
 <!-- No hace falta cargar dataTables.css original si se incluye el de bootstrap -->
 <link rel="stylesheet" href="{% static 'css/dataTables/dataTables.bootstrap.css' %}">
+ 
 <link rel="stylesheet" href="{% static 'css/jquery-form-validation/jquery.validation.css' %}">
 <link rel="stylesheet" href="{% static 'css/sweet-alert.css' %}">
 <link rel="stylesheet" href="{% static 'css/procesando.css' %}">
@@ -16,11 +17,58 @@
 {%endblock%}
 
 {% block content %}
-<style> form {padding-bottom: 1%;} #table-div-conta, #table-div-corr {padding-top: 1%;}</style>
+<style> form {padding-bottom: 1%;} #table-div-conta, #table-div-corr {padding-top: 1%;}
+@media screen {
+  #printSection {
+      display: none;
+  }
+}
+
+@media screen {
+  #printSection {
+      display: none;
+  }
+}
+
+@media print {
+  body * {
+    visibility:hidden;
+  }
+  #printSection, #printSection * {
+    visibility:visible;
+  }
+  #printSection {
+    position:absolute;
+    left:0;
+    top:0;
+  }
+}
+
+.canvas__container {
+  height: 100%;
+  position: relative;
+  width: 100%;
+}
+.canvas__canvas {
+  height: 100%;
+  position: relative;
+  width: 100%;
+  z-index: 1;
+}
+.canvas__mirror {
+  height: 100%;
+  left: 0;
+  position: absolute;
+  top: 0;
+  width: 100%; 
+}
+
+</style>
 
 <legend><h1>Intraday (Detalle de Transacciones)</h1></legend>
 <input type="text" id="idioma" value="{{idioma}}" hidden/>
 <input type="text" id="tiempoAct" value="{{tiempoAct}}" hidden/>
+<input type="text" id="cuenta" value="{{cuenta.codigo}}" hidden/>
 <input type="text" id="balance" value="{{balance}}" hidden/>
 <input type="text" id="fechaConciliacion" value="{{fecha}}" hidden/>
 
@@ -54,6 +102,7 @@
       </div>
     </div>
   <div class="col-md-7" align="rigth">
+    <br>
     <button type="button" id="boton-graficar" name="boton-graficar" style="align:right" class="col-md-3 btn btn-primary" data-toggle="modal" href="#exampleModal">
     {%if idioma == 0%}
       Ver Histórico
@@ -304,7 +353,7 @@
     </div>
   </div>
   <div class="col-md-7" align="rigth">
-    <button type="button" id="boton-regresar" value ="{{cuenta.idcuenta}}" style="align:right" class="col-md-3 btn btn-warning"><a href="/intraday/{{cuenta.idcuenta}}">
+    <button type="button" id="boton-regresar" value ="{{cuenta.idcuenta}}" style="align:right" class="col-md-3 btn btn-warning"><a style="text-decoration:none;color: white;" href="/intraday/{{cuenta.idcuenta}}">
          {%if idioma == 0%}
             Regresar
         {%endif%}
@@ -334,58 +383,65 @@
 <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
   <div class="modal-dialog" role="document" style="width:700px">
     <div class="modal-content">
-      <div class="modal-header bg-primary">
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-        <h4 class="modal-title" id="myModalLabel"></h4>
-      </div>
-      <div id="cuerpo" class="modal-body">
-        <div class="tab-pane active">
-          <div id="table-div-conta" class="table-responsive">
-            <table id="table-info" class="table table-bordered table-striped tabla">
-              <thead>
-                <tr>
-                  {%if idioma == 0%}
-                    <th>Etiqueta</th>
-                    <th>Nombre del Campo</th>
-                    <th>Contenido</th>
-                  {%endif%}
-                  {%if idioma == 1%}
-                    <th>Tag</th>
-                    <th>Field Name</th>
-                    <th>Content</th>
-                  {%endif%}
-                </tr>
-              </thead>
-              <tbody id="info-mensaje">
-              </tbody>
-            </table>
+      <div id="printThis">
+        <div class="modal-header bg-primary">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          <h4 class="modal-title" id="myModalLabel"></h4>
+        </div>
+        <div id="cuerpo" class="modal-body">
+          <div class="tab-pane active">
+            <div id="table-div-conta" class="table-responsive">
+              <table id="table-info" class="table table-bordered table-striped tabla">
+                <thead>
+                  <tr>
+                    {%if idioma == 0%}
+                      <th>Etiqueta</th>
+                      <th>Nombre del Campo</th>
+                      <th>Contenido</th>
+                    {%endif%}
+                    {%if idioma == 1%}
+                      <th>Tag</th>
+                      <th>Field Name</th>
+                      <th>Content</th>
+                    {%endif%}
+                  </tr>
+                </thead>
+                <tbody id="info-mensaje">
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+        <button class="btn btn-primary" id="btnPrint"><span class="glyphicon glyphicon-print"></span></button>
       </div>
     </div>
   </div>
 </div>
 
 <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog" style="width:1000px">
-        <div class="modal-content">
-            <div class="modal-header bg-primary">
-                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Cerrar</span></button>
-                <h4 class="modal-title" id="exampleModalLabel"></h4>
-            </div>
-            <div class="modal-body1" id="modalCuerpo">
-                <p>Monto</p>
-                <canvas id="canvas" width="950px" height="650px"></canvas>
-                <p>Hora</p>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-            </div>
-        </div>
+  <div class="modal-dialog" style="width:1000px">
+    <div class="modal-content">
+      <div class="modal-header bg-primary">
+        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Cerrar</span></button>
+        <h4 class="modal-title" id="exampleModalLabel"></h4>
+      </div>
+      <div class="modal-body1" id="modalCuerpo">
+        <div class="canvas__container">
+          <p>Monto</p>
+          <canvas id="canvas" width="950px" height="650px"></canvas>
+          <p>Hora</p>
+          <img src="" id="mirror" class="canvas__mirror" />
+        </div>    
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+        <a href="#" class="button btn btn-primary" id="btnDescarga" download=""><span class="glyphicon glyphicon-download-alt"></span></a>
+      </div>
     </div>
+  </div>
 </div>
 
 {% endblock %}

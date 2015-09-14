@@ -3687,6 +3687,312 @@ def transIntraday(request,cuenta):
 
     expirarSesion(request)
 
+    archivos942 = ""
+            
+    obj = Configuracion.objects.all()[0]
+    directorio = obj.dirintraday
+    directorioSalida = obj.dirintradaysalida
+    directorioError = obj.dirintradayerror
+
+    try:
+        archivos = os.listdir(directorio)
+    except OSError:
+        os.makedirs(directorio)
+        archivos = os.listdir(directorio)
+    
+    for elem in archivos:
+        direct = directorio + "\\" + elem
+        if (not os.path.isdir(direct)):
+            tipo = parsearTipoMT(elem,directorio)
+            if (tipo[0] != "error"):
+                print(tipo[0])
+                exito = True
+                if (tipo[0] == "103"):
+                    
+                    res = parseo103(elem,directorio)
+
+                    if(res[0] == "True"):
+                        if (res[1]==""):
+                            #Mover archivo a procesado
+                            pathsrc = direct 
+                            nuevo = directorioSalida +"\\MT" + tipo[0]  
+                            
+                            if not os.path.exists(nuevo):
+                                os.makedirs(nuevo)
+
+                            base, extension = os.path.splitext(elem)
+                            fech = datetime.now().strftime("%d%m%Y_%H%M%S")
+                            pathdest = nuevo + '\\' + base + "_" + fech +extension
+                            shutil.move(pathsrc,pathdest)
+                        else:
+                            if (res[1]!="vali"):
+                                exitoParseo = False
+                                msgParseo = res[1]
+                            ##Mover archivo a errores
+                            pathsrc = direct 
+                            nuevo = directorioError +"\\VALIDACION"  
+                            
+                            if not os.path.exists(nuevo):
+                                os.makedirs(nuevo)
+                            pathdest = nuevo + '\\' + elem
+                            
+                            shutil.move(pathsrc,pathdest)
+                            continue
+                    else:
+                        exitoParseo = False
+                        msgParseo = res[1]
+                        #Mover archivo a errores
+                        pathsrc = direct 
+                        nuevo = directorioError +"\\FORMATO"  
+                        
+                        if not os.path.exists(nuevo):
+                            os.makedirs(nuevo)
+                        pathdest = nuevo + '\\' + elem
+                        
+                        shutil.move(pathsrc,pathdest)
+                        continue
+
+                elif (tipo[0] == "202"):
+                    
+                    res = parseo202(elem,directorio)
+                    
+                    if(res[0] == "True"):
+                        if (res[1]==""):
+                            #Mover archivo a procesado
+                            pathsrc = direct 
+                            nuevo = directorioSalida +"\\MT" + tipo[0]  
+                            
+                            if not os.path.exists(nuevo):
+                                os.makedirs(nuevo)
+                            base, extension = os.path.splitext(elem)
+                            fech = datetime.now().strftime("%d%m%Y_%H%M%S")
+                            pathdest = nuevo + '\\' + base + "_" + fech +extension
+                            
+                            shutil.move(pathsrc,pathdest)
+                        else:
+                            if (res[1]!="vali"):
+                                exitoParseo = False
+                                msgParseo = res[1]
+                            ##Mover archivo a errores
+                            pathsrc = direct 
+                            nuevo = directorioError +"\\VALIDACION"  
+                            
+                            if not os.path.exists(nuevo):
+                                os.makedirs(nuevo)
+                            pathdest = nuevo + '\\' + elem
+                            
+                            shutil.move(pathsrc,pathdest)
+                            continue
+                    else:
+                        exitoParseo = False
+                        #Mover archivo a errores
+                        pathsrc = direct 
+                        nuevo = directorioError +"\\FORMATO"  
+                        
+                        if not os.path.exists(nuevo):
+                            os.makedirs(nuevo)
+                        pathdest = nuevo + '\\' + elem
+                        
+                        shutil.move(pathsrc,pathdest)
+                        msgParseo = res[1]
+                        continue
+
+                elif (tipo[0] == "752"):
+                    
+                    res = parseo752(elem,directorio)
+                    
+                    if(res[0] == "True"):
+                        if (res[1]==""):
+                            #Mover archivo a procesado
+                            pathsrc = direct 
+                            nuevo = directorioSalida +"\\MT" + tipo[0]  
+                            
+                            if not os.path.exists(nuevo):
+                                os.makedirs(nuevo)
+                            base, extension = os.path.splitext(elem)
+                            fech = datetime.now().strftime("%d%m%Y_%H%M%S")
+                            pathdest = nuevo + '\\' + base + "_" + fech +extension
+                            
+                            shutil.move(pathsrc,pathdest)
+                        else:
+                            if (res[1]!="vali"):
+                                exitoParseo = False
+                                msgParseo = res[1]
+                            ##Mover archivo a errores
+                            pathsrc = direct 
+                            nuevo = directorioError +"\\VALIDACION"  
+                            
+                            if not os.path.exists(nuevo):
+                                os.makedirs(nuevo)
+                            pathdest = nuevo + '\\' + elem
+                            
+                            shutil.move(pathsrc,pathdest)
+                            continue
+                    else:
+                        exitoParseo = False
+                        #Mover archivo a errores
+                        pathsrc = direct 
+                        nuevo = directorioError +"\\FORMATO"  
+                        
+                        if not os.path.exists(nuevo):
+                            os.makedirs(nuevo)
+                        pathdest = nuevo + '\\' + elem
+                        
+                        shutil.move(pathsrc,pathdest)
+                        msgParseo = res[1]
+                        continue
+
+
+                elif (tipo[0] == "754"):
+                    
+                    res = parseo754(elem,directorio)
+                    
+                    if(res[0] == "True"):
+                        if (res[1]==""):
+                            #Mover archivo a procesado
+                            pathsrc = direct 
+                            nuevo = directorioSalida +"\\MT" + tipo[0]  
+                            
+                            if not os.path.exists(nuevo):
+                                os.makedirs(nuevo)
+                            base, extension = os.path.splitext(elem)
+                            fech = datetime.now().strftime("%d%m%Y_%H%M%S")
+                            pathdest = nuevo + '\\' + base + "_" + fech +extension
+                            
+                            shutil.move(pathsrc,pathdest)
+                        else:
+                            if (res[1]!="vali"):
+                                exitoParseo = False
+                                msgParseo = res[1]
+                            ##Mover archivo a errores
+                            pathsrc = direct 
+                            nuevo = directorioError +"\\VALIDACION"  
+                            
+                            if not os.path.exists(nuevo):
+                                os.makedirs(nuevo)
+                            pathdest = nuevo + '\\' + elem
+                            
+                            shutil.move(pathsrc,pathdest)
+                            continue
+                    else:
+                        exitoParseo = False
+                        #Mover archivo a errores
+                        pathsrc = direct 
+                        nuevo = directorioError +"\\FORMATO"  
+                        
+                        if not os.path.exists(nuevo):
+                            os.makedirs(nuevo)
+                        pathdest = nuevo + '\\' + elem
+                        
+                        shutil.move(pathsrc,pathdest)
+                        msgParseo = res[1]
+                        continue
+
+                elif (tipo[0] == "756"):
+                    
+                    res = parseo756(elem,directorio)
+                    
+                    if(res[0] == "True"):
+                        if (res[1]==""):
+                            #Mover archivo a procesado
+                            pathsrc = direct 
+                            nuevo = directorioSalida +"\\MT" + tipo[0]  
+                            
+                            if not os.path.exists(nuevo):
+                                os.makedirs(nuevo)
+                            base, extension = os.path.splitext(elem)
+                            fech = datetime.now().strftime("%d%m%Y_%H%M%S")
+                            pathdest = nuevo + '\\' + base + "_" + fech +extension
+                            
+                            shutil.move(pathsrc,pathdest)
+                        else:
+                            if (res[1]!="vali"):
+                                exitoParseo = False
+                                msgParseo = res[1]
+                            ##Mover archivo a errores
+                            pathsrc = direct 
+                            nuevo = directorioError +"\\VALIDACION"  
+                            
+                            if not os.path.exists(nuevo):
+                                os.makedirs(nuevo)
+                            pathdest = nuevo + '\\' + elem
+                            
+                            shutil.move(pathsrc,pathdest)
+                            continue
+                    else:
+                        exitoParseo = False
+                        #Mover archivo a errores
+                        pathsrc = direct 
+                        nuevo = directorioError +"\\FORMATO"  
+                        
+                        if not os.path.exists(nuevo):
+                            os.makedirs(nuevo)
+                        pathdest = nuevo + '\\' + elem
+                        
+                        shutil.move(pathsrc,pathdest)
+                        msgParseo = res[1]
+                        continue
+
+
+                elif (tipo[0] == "942"):
+                    
+                    res = parseo942(elem,directorio)
+                    
+                    if(res[0] == "True"):
+                        if (res[1]==""):
+                            #Mover archivo a procesado
+                            pathsrc = direct 
+                            nuevo = directorioSalida +"\\MT" + tipo[0]  
+                            
+                            if not os.path.exists(nuevo):
+                                os.makedirs(nuevo)
+                            base, extension = os.path.splitext(elem)
+                            fech = datetime.now().strftime("%d%m%Y_%H%M%S")
+                            pathdest = nuevo + '\\' + base + "_" + fech +extension
+                            
+                            shutil.move(pathsrc,pathdest)
+                        else:
+                            if (res[1]!="vali"):
+                                exitoParseo = False
+                                msgParseo = res[1]
+                            ##Mover archivo a errores
+                            pathsrc = direct 
+                            nuevo = directorioError +"\\VALIDACION"  
+                            
+                            if not os.path.exists(nuevo):
+                                os.makedirs(nuevo)
+                            pathdest = nuevo + '\\' + elem
+                            
+                            shutil.move(pathsrc,pathdest)
+                            continue
+                    else:
+                        exitoParseo = False
+                        #Mover archivo a errores
+                        pathsrc = direct 
+                        nuevo = directorioError +"\\FORMATO"  
+                        
+                        if not os.path.exists(nuevo):
+                            os.makedirs(nuevo)
+                        pathdest = nuevo + '\\' + elem
+                        
+                        shutil.move(pathsrc,pathdest)
+                        msgParseo = res[1]
+                        continue
+
+            else:
+                exito = False
+                msg = tipo[1]
+                #Mover archivo a errores
+                pathsrc = direct 
+                nuevo = directorioError +"\\FORMATO"  
+                
+                if not os.path.exists(nuevo):
+                    os.makedirs(nuevo)
+                pathdest = nuevo + '\\' + elem
+                
+                shutil.move(pathsrc,pathdest)
+                continue
+
     tiempoAct = Configuracion.objects.all()[0].tiempointraday
 
     m103 = None
@@ -3793,7 +4099,6 @@ def transIntraday(request,cuenta):
     if(conciliacion):
         cons = conciliacion[0]
         bfcon = cons.balancefinalcontabilidad
-                
     
     context = {'balance':bfcon,'fecha942':fecha942,'debitos':debitos,'creditos':creditos,'tiempoAct':tiempoAct,'mensajes':arregloMensajes,'errores':errores,'idioma':idioma,'ops':get_ops(request),'cuenta':cuentaId,'fecha':fecha , 'fechaActual':fechaActual}
     template = "matcher/transIntraday.html"
@@ -6422,7 +6727,27 @@ def seg_licencia(request):
                 alertaCorreo.save()
 
                 return JsonResponse({'mens':mensaje})
-                
+ 
+@login_required(login_url='/login')
+def modulo_valores(request):
+    
+    permisos = get_ops(request)
+    lista = [Opcion.objects.get(idopcion=p).funprincipal for p in permisos]
+    lista.sort()
+    lista = set(lista)
+    if not 6 or not 5 in lista:
+        retour = custom_403(request)
+        return HttpResponseForbidden(retour)
+
+    expirarSesion(request)
+
+    if request.method == 'GET':
+        
+        template = "matcher/modulo_valores.html"
+        idioma = Configuracion.objects.all()[0].idioma    
+        context = {'idioma':idioma, 'cuentas':get_cuentas(request), 'ops':get_ops(request),'ldap':get_ldap(request)}
+        
+        return render(request, template, context)              
 
 @login_required(login_url='/login')
 def manual_usuario(request):

@@ -70,6 +70,9 @@ urlpatterns = patterns('',
     url(r'^admin/criterios_reglas/$', 'Matcher_WS.views.admin_crit_reglas', name='admin_crit_reglas'),
     url(r'^admin/reglas_transf/$', 'Matcher_WS.views.admin_reglas_transf', name='admin_reglas_transf'),
 
+    #Módulo de Valores
+    url(r'^valores/$', 'Matcher_WS.views.modulo_valores', name='modulo_valores'),
+
     #Ayudas
     url(r'^ayuda/usuario/$', 'Matcher_WS.views.manual_usuario', name='manual_usuario'),
     url(r'^ayuda/sistema/$', 'Matcher_WS.views.manual_sistema', name='manual_sistema'),

@@ -1,0 +1,68 @@
+{% extends "matcher/base.html" %}
+{% load staticfiles %}
+
+{% block head %}
+    <link rel="stylesheet" href="{% static 'css/jquery.bootstrap-touchspin.min.css' %}">
+{%endblock%}
+
+{% block content %}
+
+<style type="text/css">
+#ConfSegForm, #ConfEmpForm {
+    margin-top: 15px;
+}
+</style>
+<input type="text" id="idioma" value="{{idioma}}" hidden/>
+<legend><h1>
+    {%if idioma == 0%}
+        Módulo de Valores:
+    {%endif%}
+    {%if idioma == 1%}
+        Módulo de Valores:
+    {%endif%}
+    </h1> 
+</legend>
+<ul class="nav nav-tabs" id="emp-tab">
+    <li class="active"><a href="#datos-tab" data-toggle="tab">
+        {%if idioma == 0%}
+            Crear
+        {%endif%}
+        {%if idioma == 1%}
+            Create
+        {%endif%}
+    <i class="fa"></i></a></li>
+    <li><a href="#nomen-tab" data-toggle="tab">
+        {%if idioma == 0%}
+            Cargar
+        {%endif%}
+        {%if idioma == 1%}
+            Load
+        {%endif%}
+    <i class="fa"></i></a></li>
+    <li><a href="#conc-tab" data-toggle="tab">
+        {%if idioma == 0%}
+            Conciliación
+        {%endif%}
+        {%if idioma == 1%}
+            Reconciliation
+        {%endif%}
+    <i class="fa"></i></a></li>
+    <li><a href="#rep-tab" data-toggle="tab">
+        {%if idioma == 0%}
+            Consultas/Reportes
+        {%endif%}
+        {%if idioma == 1%}
+            Consoults/Reports
+        {%endif%}
+    <i class="fa"></i></a></li>
+</ul>
+{% endblock %}
+
+{% block script %}
+
+<script src="{% static 'js/validator.js' %}" type="text/javascript"></script>
+<script type="text/javascript" src="{% static 'js/jquery.bootstrap-touchspin.min.js' %}"></script>
+
+<script>
+</script>
+{% endblock %}
