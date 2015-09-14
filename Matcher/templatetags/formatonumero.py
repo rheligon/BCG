@@ -2,7 +2,9 @@ from django import template
 
 def intpunto(value):
     if value is None:
-        return None
+        return "0,0"
+    if value == "":
+        return "0,0"
 
     aux = str(value).split(".")
     elemento = intPuntos(int(aux[0]))

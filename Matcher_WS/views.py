@@ -84,173 +84,6 @@ def test(request):
             s.save()
             #ensesion.remove(s.login)"""
 
-    #Obtengo el nombre del usuario
-    username = request.user.username
-    sesion = Sesion.objects.get(login=username)
-    nombre = sesion.usuario_idusuario.nombres+" "+sesion.usuario_idusuario.apellidos
-
-    codCta = "TORONTOCAD"
-    # Obtengo cuenta a consolidar
-    cuenta = Cuenta.objects.get(codigo=codCta)
-
-    # Busco ultima fecha de conciliacion
-    ultFC = cuenta.ultimafechaconciliacion
-
-    # Busco ultimo edc procesado de contabilidad
-    idEcCont = cuenta.ultimoedocuentaprocc
-
-    # Busco ultimo edc procesado de corresponsal
-    idEcCorr = cuenta.ultimoedocuentaprocs
-
-    if (ultFC != None and idEcCont != None and idEcCorr != None):
-        # Obtengo creditos Trans_Abiertas Contabilidad hasta la fecha indicada
-        totalCredCont = TransabiertaContabilidad.objects.filter(codigocuenta=codCta, fecha_valor__lte=ultFC,credito_debito__in=['C','RD']).aggregate(Sum('monto'))
-        
-        #Se devuelve un diccionario por lo que accedo al valor del primer (unico) elemento
-        totalCredCont = next(iter(totalCredCont.values()))
-        
-        if totalCredCont is None:
-            totalCredCont = 0
-        else:
-            totalCredCont = round(totalCredCont,2)
-        
-        print('credcont ' + str(totalCredCont))
-
-        # Obtengo debitos Trans_Abiertas Contabilidad hasta la fecha indicada
-        totalDebCont = TransabiertaContabilidad.objects.filter(codigocuenta=codCta, fecha_valor__lte=ultFC,credito_debito__in=['D','RC']).aggregate(Sum('monto'))
-        totalDebCont = next(iter(totalDebCont.values()))
-        
-        if totalDebCont is None:
-            totalDebCont = 0
-        else:
-            totalDebCont = round(totalDebCont,2)
-
-        print('debcont ' + str(totalDebCont))
-
-        # Obtengo creditos Trans_Abiertas Corresponsal hasta la fecha indicada
-        totalCredCorr = TransabiertaCorresponsal.objects.filter(codigocuenta=codCta, fecha_valor__lte=ultFC,credito_debito__in=['C','RD']).aggregate(Sum('monto'))
-        totalCredCorr = next(iter(totalCredCorr.values()))
-        
-        if totalCredCorr is None:
-            totalCredCorr = 0
-        else:
-            totalCredCorr = round(totalCredCorr,2)
-        
-        print('credcorr ' + str(totalCredCorr))
-
-        # Obtengo debitos Trans_Abiertas Corresponsal hasta la fecha indicada
-        totalDebCorr = TransabiertaCorresponsal.objects.filter(codigocuenta=codCta, fecha_valor__lte=ultFC,credito_debito__in=['D','RC']).aggregate(Sum('monto'))
-        totalDebCorr = next(iter(totalDebCorr.values()))
-
-        if totalDebCorr is None:
-            totalDebCorr = 0
-        else:
-            totalDebCorr = round(totalDebCorr,2)
-
-        print('debcorr ' + str(totalDebCorr))
-
-        # Busco el balance final del ultimo edc procesado de Contabilidad
-        try:
-            EdcCont = EstadoCuenta.objects.get(idedocuenta=idEcCont)
-        except:
-            EdcCont = None
-
-        if EdcCont is not None:
-            if EdcCont.c_dfinal == 'D':
-                balanceCont = round(-1 * EdcCont.balance_final,2)
-            else:
-                balanceCont = round(EdcCont.balance_final,2)
-        else: 
-            balanceCont = 0
-
-        print('balcont ' + str(balanceCont))
-
-        # Busco el balance final del ultimo edc procesado de SWIFT
-        try:
-            EdcCorr = EstadoCuenta.objects.get(idedocuenta=idEcCorr)
-        except:
-            EdcCorr = None
-
-        if EdcCorr is not None:
-            if EdcCorr.c_dfinal == 'D':
-                balanceCorr = round(-1 * EdcCorr.balance_final,2)
-            else:
-                balanceCorr = round(EdcCorr.balance_final,2)
-        else: 
-            balanceCorr = 0
-
-        print('balcorr ' + str(balanceCorr))
-
-        # Busco encajes asociados a la cuenta
-        encaje = cuenta.montoencajeactual
-
-        if encaje is None:
-            encaje = 0
-        else:
-            encaje = round(cuenta.montoencajeactual,2)
-
-        print('encaje ' + str(encaje))
-
-        # Saco los totales de los saldos
-
-        if cuenta.tipo_cta == 2:
-            # Saldo real para cuentas propias
-            totalCont = balanceCont
-            totalCorr = round(totalCredCorr - totalDebCorr,2)
-
-            total = round(totalCont - totalCorr,2)
-            diferencia = total
-        else:
-            # Se sacan los saldos reales de contabilidad y corresponsal
-            totalCont = round(round(-(round(totalCredCorr - totalDebCorr,2) + encaje),2) + balanceCont,2)
-            totalCorr = round(-round(totalCredCont - totalDebCont,2) + balanceCorr,2)
-
-            total = round(totalCont + totalCorr,2)
-
-            diferencia = total #Deberia ser siempre 0
-
-        print('totcont ' + str(totalCont))
-        print('totcorr ' + str(totalCorr))
-        print('diferencia ' + str(diferencia))
-
-        # Falta enviar correo si la diferencia != 0
-        cuenta = Cuenta.objects.get(codigo=codCta)
-
-        if cuenta.correo_alertas !="":
-
-            correo = cuenta.correo_alertas
-            alertas = AlertasCuenta.objects.filter(cuenta_idcuenta=cuenta)
-
-            for alerta in alertas: 
-
-                if alerta.alertas_idalertas.idalertas == 8:
-                    try:
-                        if diferencia > 0.01:
-                            if idioma == 0:
-                                msg = "Le informamos que la cuenta: " + cuenta.codigo + ". Tiene una diferencia de saldo de: " + str(diferencia) + " " +cuenta.moneda_idmoneda.codigo +". Luego de haber sido conciliada."+ "\n\n\n\n Matcher\n Un producto de BCG." 
-                                enviar_mail('Alerta "Diferencia de saldos al conciliar"',msg,correo)
-                            else:
-                                msg = "We notify you that account: " + cuenta.codigo + ". Has a blance difference of: " + str(diferencia) + " " +cuenta.moneda_idmoneda.codigo + ". after reconciliation." + "\n\n\n\n Matcher\n A BCG's software." 
-                                enviar_mail('"After Reconciliation Balance Difference" Alert ',msg,correo)
-                   
-                    except Exception as e:
-                        #Hubo algun error y no envio el correo
-                        print (e)
-
-                if alerta.alertas_idalertas.idalertas ==15:
-                    try:
-                        if totalCont < 0 or totalCorr < 0:
-                            if idioma == 0:
-                                msg = "Le informamos que la cuenta: " + cuenta.codigo + ". está sobregirada por un monto de: " + str(totalCont) + " " +cuenta.moneda_idmoneda.codigo +". Luego de haber sido conciliada."+ "\n\n\n\n Matcher\n Un producto de BCG." 
-                                enviar_mail('Alerta "Cuenta Sobregirada"',msg,correo)
-                            else:
-                                msg = "We notify you that account: " + cuenta.codigo + ". is overdrawn by an amount of: " + str(totalCont) + " " +cuenta.moneda_idmoneda.codigo + ". after reconciliation." + "\n\n\n\n Matcher\n A BCG's software." 
-                                enviar_mail('"Overdrawn Account" Alert ',msg,correo)
-                    
-                    except Exception as e:
-                        #Hubo algun error y no envio el correo
-                        print (e)
-
     return JsonResponse(hora, safe=False)
 
 @login_required(login_url='/login')
@@ -1525,6 +1358,96 @@ def pd_matchesPropuestos(request, cuenta):
         return render(request, template, context)
 
 @login_required(login_url='/login')
+def pd_observaciones(request, mensaje,tipo):
+    
+    idioma = Configuracion.objects.all()[0].idioma 
+    permisos = get_ops(request)
+    lista = [Opcion.objects.get(idopcion=p).funprincipal for p in permisos]
+    lista.sort()
+    lista = set(lista)
+    if not 1 in lista:
+        retour = custom_403(request)
+        return HttpResponseForbidden(retour)
+
+    expirarSesion(request)
+    if request.method == 'GET':
+        
+        msj = ""
+        id_partida = mensaje
+        clase = tipo
+
+        if clase == "conta":
+
+            try:
+                #Buscar todas las observaciones para la transacción dada
+                partida = TransabiertaContabilidad.objects.get(idtransaccion=id_partida) 
+                obs_conta = Observacioncontabilidad.objects.filter(ta_conta=partida)
+                msj = "Obervaciones listadas con exito"
+                template = "matcher/pd_observaciones.html"
+                context = {'clase':clase,'partida': partida,'mensaje':id_partida, 'idioma':idioma, 'msg':msj, 'ops':get_ops(request), 'observaciones':obs_conta,'ldap':get_ldap(request)}
+                return render(request, template, context) 
+
+            except:
+                msj = "No hay obervaciones relacionados a la transacción"
+                obs_conta = None
+                template = "matcher/pd_observaciones.html"   
+                context = {'clase':clase,'partida': partida,'mensaje':id_partida,'idioma':idioma, 'msg':msj, 'ops':get_ops(request), 'observaciones':obs_conta,'ldap':get_ldap(request)}
+                return render(request, template, context)
+
+        if clase == "corr":
+            try:
+                #Buscar todas las observaciones para la transacción dada
+                partida = TransabiertaCorresponsal.objects.get(idtransaccion=id_partida) 
+                obs_corr = Observacioncorresponsal.objects.filter(ta_conta=partida)
+                msj = "Obervaciones listadas con exito"
+                template = "matcher/pd_observaciones.html"
+                context = {'clase':clase,'partida': partida,'mensaje':id_partida,'idioma':idioma, 'msg':msj, 'ops':get_ops(request), 'observaciones':obs_corr,'ldap':get_ldap(request)}
+                return render(request, template, context) 
+            except:
+                msj = "No hay obervaciones relacionados a la transacción"
+                obs_corr = None
+                template = "matcher/pd_observaciones.html"   
+                context = {'clase':clase,'partida': partida,'mensaje':id_partida,'idioma':idioma, 'msg':msj, 'ops':get_ops(request), 'observaciones':obs_corr,'ldap':get_ldap(request)}
+                return render(request, template, context) 
+
+    if request.method == 'POST':
+
+        actn = request.POST.get('action')
+
+        if actn == "crear_ob": 
+            desc = request.POST.get('descripcion')
+            clase = request.POST.get('clase')
+            id_t = request.POST.get('id_transaccion')
+
+            if clase == "conta":
+                partida = TransabiertaContabilidad.objects.get(idtransaccion=id_t)
+                ob = Observacioncontabilidad.objects.create(ta_conta = partida, observacion=desc, fecha=timenow())
+
+
+            if clase == "corr":
+                partida = TransabiertaCorresponsal.objects.get(idtransaccion=id_t)
+                ob = Observacioncorresponsal.objects.create(ta_corres = partida, observacion=desc, fecha=timenow())
+
+            return JsonResponse({'msg':"ok"})
+
+        if actn == "crear_Seg" or actn =="modificar_Seg": 
+            desc = request.POST.get('descripcion')
+            clase = request.POST.get('clase')
+            id_t = request.POST.get('id_transaccion')
+
+            if clase == "conta":
+                partida = TransabiertaContabilidad.objects.get(idtransaccion=id_t)
+                partida.seguimiento = desc
+                partida.save()
+
+            if clase == "corr":
+                partida = TransabiertaCorresponsal.objects.get(idtransaccion=id_t)
+                partida.seguimiento = desc
+                partida.save()
+
+            return JsonResponse({'msg':"ok"})
+
+@login_required(login_url='/login')
 def pd_detallesMT(request, mensaje,tipo):
 
     permisos = get_ops(request)
@@ -1775,9 +1698,19 @@ def pd_partidasAbiertas(request):
 
             # Buscar los mensajes MT95
             mt95 = Mt95.objects.all()
-            res_json_mt95 = serializers.serialize('json',mt95) 
+            res_json_mt95 = serializers.serialize('json',mt95)
 
-            return JsonResponse({'r_conta':res_json_conta, 'r_corr':res_json_corr, 'r_edcn':edcN, 'r_95':res_json_mt95}, safe=False)
+            #Buscar las observaciones
+            obs_conta = [elem.idtransaccion for elem in ta_conta if Observacioncontabilidad.objects.filter(ta_conta=elem.idtransaccion)]
+            obs_corr = [elem.idtransaccion for elem in ta_corr if Observacioncorresponsal.objects.filter(ta_corres=elem.idtransaccion)] 
+            
+            obs_conta.sort()
+            obs_conta = list(set(obs_conta))
+
+            obs_corr.sort()
+            obs_corr = list(set(obs_corr))
+
+            return JsonResponse({'r_conta':res_json_conta, 'r_corr':res_json_corr, 'r_edcn':edcN, 'r_95':res_json_mt95, 'obs_conta':obs_conta, 'obs_corr':obs_corr}, safe=False)
         
         if actn =="crearMT95":
             ref95 = request.POST.get('ref95')
