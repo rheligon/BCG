@@ -40,6 +40,7 @@ urlpatterns = patterns('',
     url(r'^procd/mConfirmados/((?P<cuenta>\w+)/)?$', 'Matcher_WS.views.pd_matchesConfirmados', name='matchesConfirmados'),
     url(r'^procd/rep_conc/$', 'Matcher_WS.views.pd_conciliacion', name='pd_conciliacion'),
     url(r'^procd/detallesMT/((?P<mensaje>\w+)/)((?P<tipo>\w+)/)?$', 'Matcher_WS.views.pd_detallesMT', name='detallesMT'),
+    url(r'^observaciones/((?P<mensaje>\w+)/)((?P<tipo>\w+)/)?$', 'Matcher_WS.views.pd_observaciones', name='observaciones'),
     
     # Reportes
     url(r'^reportes/$', 'Matcher_WS.views.reportes', name='reportes'),

@@ -15,6 +15,7 @@ def daemon(request,language):
 			alertas = AlertasCuenta.objects.filter(cuenta_idcuenta=cuenta)
 			for alerta in alertas:
 
+				#Alerta para días sin conciliar
 				if alerta.alertas_idalertas.idalertas == 11:
 					try:
 						dias = alerta.valor
@@ -38,7 +39,7 @@ def daemon(request,language):
 							enviar_mail('"Exceded Reconciliation Days" Alert ',msg,correo)
 				
 
-				
+				#Alerta para partidas pendientes luego de conciliar
 				if alerta.alertas_idalertas.idalertas == 4:
 					try:
 						dias = alerta.valor
@@ -98,7 +99,7 @@ def daemon(request,language):
 
 				
 				
-				
+				#Alerta para estado de cuenta no cargado
 				if alerta.alertas_idalertas.idalertas == 6:
 					dias = alerta.valor
 					try:

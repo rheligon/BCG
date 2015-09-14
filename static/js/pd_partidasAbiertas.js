@@ -7,6 +7,8 @@ var mt95Array=[];
 var mt95Aux=[];
 var copiaAux = [];
 var copia = [];
+var obs_conta = [];
+var obs_corr = [];
 var opcionChequeada = "";
 var idioma = $('#idioma').val();
 var idiomaAux = "";
@@ -123,7 +125,7 @@ function iniciar_tabla(idioma){
             "autoWidth": false,
             "columns": [
                 { "width": "5%" },
-                { "width": "5%" },
+                { "width": "3%" },
                 { "width": "8%" },
                 { "width": "8%" },
                 { "width": "8%" },
@@ -131,7 +133,8 @@ function iniciar_tabla(idioma){
                 { "width": "30%" },
                 { "width": "5%" },
                 { "width": "11%" },
-                { "width": "5%" },
+                { "width": "4%" },
+                { "width": "3%" },
                 { "width": "5%" },
                 { "width": "5%" },
                 { "width": "5%" },
@@ -153,7 +156,7 @@ function iniciar_tabla(idioma){
             "autoWidth": false,
             "columns": [
                 { "width": "5%" },
-                { "width": "5%" },
+                { "width": "3%" },
                 { "width": "8%" },
                 { "width": "8%" },
                 { "width": "8%" },
@@ -161,7 +164,7 @@ function iniciar_tabla(idioma){
                 { "width": "30%" },
                 { "width": "5%" },
                 { "width": "11%" },
-                { "width": "5%" },
+                { "width": "4%" }, { "width": "3%" },
                 { "width": "5%" },
                 { "width": "5%" },
                 { "width": "5%" },
@@ -596,6 +599,10 @@ function busqueda(ctaid,filterArray){
             var json_mt95 = jQuery.parseJSON(data.r_95);
             mt95Array = json_mt95;
             copiaAux = mt95Array;
+            var obs_conta_aux = data.obs_conta;
+            var obs_corr_aux = data.obs_corr;
+            obs_conta = obs_conta_aux;
+            obs_corr = obs_corr_aux;
 
             $('#pbardiv').prop('hidden', false);
             $('#pbar').attr('max', json_corr.length+json_conta.length);
@@ -762,8 +769,13 @@ function calcularfila(elem,tipo,edc){
     var td11 = '<td style="text-align:center; width: 24px;"><input class="chkSelection" type="checkbox" id="cb-'+tipo+'-'+a_id+'"></td>';
     var td12 = '<td style="text-align:center; width: 24px;"></td>';
     var td13 = '<td style="text-align:center; width: 24px;"><input class="chkSelection3" name="mtopc" type="radio" id="cb-'+elem.pk+"-"+tipo+'" onclick="habilitar(this)"></td>';
-
     
+    if (elem.fields.seguimiento || chequearObs(elem.pk,tipo)){
+        var td14 = '<td style="text-align:center; width: 24px;"><a href="/observaciones/'+elem.pk+"/"+tipo+'" id="cb-'+elem.pk+"-"+tipo+'"><span class="fa fa-check-square-o"></span></a></td>';
+    } else {
+        var td14 = '<td style="text-align:center; width: 24px;"><a href="/observaciones/'+elem.pk+"/"+tipo+'" id="cb-'+elem.pk+"-"+tipo+'"><span class="fa fa-plus-square-o"></span></a></td>'
+    }
+
     var cuentaVeces = 0;
     var key = 0;
     for (var i = 0 ; i < copia.length; i++) {
@@ -773,7 +785,7 @@ function calcularfila(elem,tipo,edc){
 
             cuentaVeces = cuentaVeces + 1;
             key = copia[i].pk;
-            td12 = '<td style="text-align:center; width: 24px;"><span class="fa fa-envelope" id="cb-'+elem.pk+'"></span></td>';
+            td12 = '<td style="text-align:center; width: 24px;"><span class="fa fa-envelope-o" id="cb-'+elem.pk+'"></span></td>';
     
         }
 
@@ -786,7 +798,7 @@ function calcularfila(elem,tipo,edc){
     
     $('#table-pa > tbody').append('<tr id ="tr-'+tipo+'-'+a_id+'"></tr>');
 
-    var jRow = $("#tr-"+tipo+"-"+a_id).append(td1,td2,td3,td4,td5,td6,td7,td8,td9,td10,td11,td12,td13);
+    var jRow = $("#tr-"+tipo+"-"+a_id).append(td1,td2,td3,td4,td5,td6,td7,td8,td9,td10,td11,td12,td13,td14);
     //tabla.row.add(jRow);
     tabla.fnAddData(jRow,false);
 }
@@ -973,3 +985,21 @@ $('#verMTButton').on('click', function () {
     
 });
 
+// chequear si hay observaciones
+function chequearObs(elem,tipo){
+
+    if (tipo === "conta"){
+        if (obs_conta.length != 0){
+            return (obs_conta.indexOf(elem) != -1);
+        } else {
+            return false;
+        }
+    } else{
+        if (obs_corr.length != 0){
+            return (obs_corr.indexOf(elem) != -1);
+        } else {
+            return false;
+        }
+    }
+
+}

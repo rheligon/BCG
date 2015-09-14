@@ -165,6 +165,7 @@ def setConsolidado(codCta,request):
 
                 for alerta in alertas: 
 
+                    # Alerta para diferencias de saldo
                     if alerta.alertas_idalertas.idalertas == 8:
                         try:
                             if abs(diferencia) > 0.01:
@@ -179,6 +180,7 @@ def setConsolidado(codCta,request):
                             #Hubo algun error y no envio el correo
                             print (e)
 
+                    # Alerta para cuenta sobregirada
                     if alerta.alertas_idalertas.idalertas ==15:
                         try:
                             if totalCont < 0 or totalCorr < 0:
@@ -192,6 +194,28 @@ def setConsolidado(codCta,request):
                         except Exception as e:
                             #Hubo algun error y no envio el correo
                             print (e)
+
+                    #Alertas para diferencia de saldos
+                    if alerta.alertas_idalertas.idalertas == 7:
+                        porcentaje = alerta.valor
+                        porCorreo = str(porcentaje)
+                        porcentaje = float("1."+str(porcentaje))
+                        balance_ini = EstadoCuenta.objects.get(idedocuenta=idEcCont).balance_inicial
+                        try:
+                            if abs(diferencia) < 0.01 and (totalCont > (balance_ini)*porcentaje):
+
+                                if idioma == 0:
+                                    msg = "Le informamos que la cuenta: " + cuenta.codigo + ". luego de ser conciliada presenta cambios en su balance mayores al: " + porCorreo + " %" +"\n\n Saldo Anterior: "+ str(balance_ini) +".\n Saldo Actual: " +str(totalCont) + "\n\n\n\n Matcher\n Un producto de BCG." 
+                                    enviar_mail('Alerta "Cambios en saldo mayores al"',msg,correo)
+                                else:
+                                    msg = "We notify you that account: " + cuenta.codigo + ". afetr reconciliation has changes on balance greater than: " + porCorreo + " %" +"\n\n Previous Balance: "+ str(balance_ini) +".\n Actual Balance: " +str(totalCont) + "\n\n\n\n Matcher\n A BCG's software." 
+                                    enviar_mail('"Changes in balance greater than" Alert ',msg,correo)
+                        
+
+                        except Exception as e:
+                            #Hubo algun error y no envio el correo
+                            print (e)
+
 
         
     except Exception as e:
