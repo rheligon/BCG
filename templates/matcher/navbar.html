@@ -268,6 +268,16 @@
                                 {%endif%}
                             </td>
                         </tr>
+                        <tr>
+                            <td>
+                                {%if idioma == 0%}
+                                    <span class="fa fa-legal fa-lg text-warning"></span><a style="color:gray" href="{% url 'Matcher_WS.views.Matcher_version'%}">Versión</a>
+                                {%endif%}
+                                {%if idioma == 1%}
+                                    <span class="fa fa-legal fa-lg text-warning"></span><a style="color:gray" href="{% url 'Matcher_WS.views.Matcher_version'%}">Version</a>
+                                {%endif%}
+                            </td>
+                        </tr>
                         {%endif%}
                     </table>
                 </div>
@@ -488,18 +498,6 @@
                                 {%endif%}
                             </td>
                         </tr>
-
-                        <tr>
-                            <td>
-                                {%if idioma == 0%}
-                                    <span class="fa fa-legal fa-lg text-warning"></span><a style="color:gray" href="{% url 'Matcher_WS.views.SU_version'%}">Versión</a>
-                                {%endif%}
-                                {%if idioma == 1%}
-                                    <span class="fa fa-legal fa-lg text-warning"></span><a style="color:gray" href="{% url 'Matcher_WS.views.SU_version'%}">Version</a>
-                                {%endif%}
-                            </td>
-                        </tr>
-
                     </table>
                 </div>
             </div>

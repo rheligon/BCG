@@ -39,7 +39,7 @@ urlpatterns = patterns('',
     url(r'^procd/pAbiertas/$', 'Matcher_WS.views.pd_partidasAbiertas', name='partidasAbiertas'),
     url(r'^procd/mConfirmados/((?P<cuenta>\w+)/)?$', 'Matcher_WS.views.pd_matchesConfirmados', name='matchesConfirmados'),
     url(r'^procd/rep_conc/$', 'Matcher_WS.views.pd_conciliacion', name='pd_conciliacion'),
-    url(r'^procd/detallesMT/((?P<mensaje>\w+)/)((?P<tipo>\w+)/)?$', 'Matcher_WS.views.pd_detallesMT', name='detallesMT'),
+    url(r'^procd/detallesMT/((?P<mensaje>\w+)/)((?P<tipo>\w+)/)((?P<cuenta>\w+)/)?$', 'Matcher_WS.views.pd_detallesMT', name='detallesMT'),
     url(r'^observaciones/((?P<mensaje>\w+)/)((?P<tipo>\w+)/)?$', 'Matcher_WS.views.pd_observaciones', name='observaciones'),
     
     # Reportes
@@ -82,6 +82,8 @@ urlpatterns = patterns('',
     #SU
     url(r'^SU/licencia/$', 'Matcher_WS.views.SU_licencia', name='SU_licencia'),
     url(r'^SU/modulos/$', 'Matcher_WS.views.SU_modulos', name='SU_modulos'),
-    url(r'^SU/version/$', 'Matcher_WS.views.SU_version', name='SU_version'),
+
+    #Macther Version
+    url(r'^Matcher/version/$', 'Matcher_WS.views.Matcher_version', name='Matcher_version'),
     
 )

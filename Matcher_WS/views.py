@@ -1448,7 +1448,7 @@ def pd_observaciones(request, mensaje,tipo):
             return JsonResponse({'msg':"ok"})
 
 @login_required(login_url='/login')
-def pd_detallesMT(request, mensaje,tipo):
+def pd_detallesMT(request, mensaje,tipo,cuenta):
 
     permisos = get_ops(request)
     lista = [Opcion.objects.get(idopcion=p).funprincipal for p in permisos]
@@ -1459,7 +1459,14 @@ def pd_detallesMT(request, mensaje,tipo):
         return HttpResponseForbidden(retour)
 
     expirarSesion(request)
+    idioma = Configuracion.objects.all()[0].idioma 
     if request.method == 'GET':
+
+        idioma = Configuracion.objects.all()[0].idioma
+        if idioma == 0:
+            cod = get_codigos95()
+        else:
+            cod = get_codigos95Ingles()
 
         msj = ""
         tranMT = mensaje
@@ -1481,7 +1488,7 @@ def pd_detallesMT(request, mensaje,tipo):
 
                 msj = "MTs listados exitosamente"
                 template = "matcher/pd_detallesMT.html"   
-                context = {'idioma':idioma, 'cuentas':get_cuentas(request), 'msg':msj, 'ops':get_ops(request), 'mensajes95': MTs, 'mensaje':mensaje, 'mensajes96':MT96s,'ldap':get_ldap(request)}
+                context = {'tipo':tipo,'cuenta':cuenta,'codigos':cod,'idioma':idioma, 'cuentas':get_cuentas(request), 'msg':msj, 'ops':get_ops(request), 'mensajes95': MTs, 'mensaje':mensaje, 'mensajes96':MT96s,'ldap':get_ldap(request)}
                 return render(request, template, context)
             except:
                 msj = "No hay mensajes relacionados a la transacción"
@@ -1489,7 +1496,7 @@ def pd_detallesMT(request, mensaje,tipo):
                 MT96s = None
                 template = "matcher/pd_detallesMT.html"
                 idioma = Configuracion.objects.all()[0].idioma    
-                context = {'idioma':idioma, 'cuentas':get_cuentas(request), 'msg':msj, 'ops':get_ops(request), 'mensajes95': MTs, 'mensaje':mensaje, 'mensajes96':MT96s,'ldap':get_ldap(request)}
+                context = {'tipo':tipo,'cuenta':cuenta,'codigos':cod,'idioma':idioma, 'cuentas':get_cuentas(request), 'msg':msj, 'ops':get_ops(request), 'mensajes95': MTs, 'mensaje':mensaje, 'mensajes96':MT96s,'ldap':get_ldap(request)}
                 return render(request, template, context) 
 
         try:
@@ -1506,16 +1513,167 @@ def pd_detallesMT(request, mensaje,tipo):
             msj = "MTs listados exitosamente"
             template = "matcher/pd_detallesMT.html"
             idioma = Configuracion.objects.all()[0].idioma    
-            context = {'idioma':idioma, 'cuentas':get_cuentas(request), 'msg':msj, 'ops':get_ops(request), 'mensajes95': MTs, 'mensaje':mensaje, 'mensajes96':MT96s,'ldap':get_ldap(request)}
+            context = {'tipo':tipo,'cuenta':cuenta,'codigos':cod,'idioma':idioma, 'cuentas':get_cuentas(request), 'msg':msj, 'ops':get_ops(request), 'mensajes95': MTs, 'mensaje':mensaje, 'mensajes96':MT96s,'ldap':get_ldap(request)}
             return render(request, template, context)
         except:
             msj = "No hay mensajes relacionados a la transacción"
             MTs = None
             MT96s = None
-            template = "matcher/pd_detallesMT.html"
-            idioma = Configuracion.objects.all()[0].idioma    
-            context = {'idioma':idioma, 'cuentas':get_cuentas(request), 'msg':msj, 'ops':get_ops(request), 'mensajes95': MTs, 'mensaje':mensaje, 'mensajes96':MT96s,'ldap':get_ldap(request)}
+            template = "matcher/pd_detallesMT.html"   
+            context = {'tipo':tipo,'cuenta':cuenta,'codigos':cod,'idioma':idioma, 'cuentas':get_cuentas(request), 'msg':msj, 'ops':get_ops(request), 'mensajes95': MTs, 'mensaje':mensaje, 'mensajes96':MT96s,'ldap':get_ldap(request)}
             return render(request, template, context)
+
+    if request.method == 'POST':
+
+        actn = request.POST.get('action')
+
+        if actn =="crearMT95":
+            ref95 = request.POST.get('ref95')
+            refOrg95 = request.POST.get('refOrg95')
+            tipo95 = request.POST.get('tipo95')
+            fecha95 = request.POST.get('fecha95')
+            fecha952 = request.POST.get('fecha95')
+            fecha953 = request.POST.get('fecha95')
+            cod95 = request.POST.get('cod95')
+            cod2 = request.POST.get('codigo2')
+            preg95 = request.POST.get('preg95')
+            narra95 = request.POST.get('narrativa95')
+            original95 = request.POST.get('original95')
+            trans95 = request.POST.get('transaccion')
+            clase95 = request.POST.get('clase')
+            cuenta95 = request.POST.get('cuenta')
+            tipoOriginal = request.POST.get('tipoOriginal')
+            mensajeMT = ""
+
+            #Quitar el + - 9 para implantacion
+            if idioma == 0:
+                cod_aux95 = str(int(cod95)-9)
+                codAux = Codigo95.objects.filter(idcodigo95=cod95)[0]
+                codAuxIn = Codigo95Ingles.objects.filter(idcodigo95=cod_aux95)[0]
+
+            else:
+                cod_aux95 = str(int(cod95)+9)
+                codAux = Codigo95.objects.filter(idcodigo95=cod_aux95)[0]
+                codAuxIn = Codigo95Ingles.objects.filter(idcodigo95=cod95)[0]
+
+            queryletras = codAux.help
+            queryInletras = codAuxIn.help
+
+            query = str(codAux.codigo)
+
+            if fecha95 != "":
+                fechad = datetime.strptime(fecha95, '%d/%m/%Y')
+            else:
+                fechad = None
+
+            if tipo95 == "" or tipo95 =="-1":
+                tipo95a = None
+            else:
+                if tipo95 == "103":
+                    tipo95a = "195"
+                if tipo95 == "202":
+                    tipo95a = "295"
+                if tipo95 == "950":
+                    tipo95a = "995"
+
+            if clase95 == "conta":
+
+                tra = TransabiertaContabilidad.objects.filter(idtransaccion=trans95)[0]
+
+                Mt95.objects.create(ta_conta=tra,codigo=ref95,codigo95_idcodigo95=codAux,ref_relacion=refOrg95,query=query,narrativa=queryletras[:100],num_mt=tipo95a,fecha_msg_original=fechad,campo79=original95) 
+                Mt95Ingles.objects.create(ta_conta=tra,codigo=ref95,codigo95_idcodigo95=codAuxIn,ref_relacion=refOrg95,query=query,narrativa=queryInletras,num_mt=tipo95a,fecha_msg_original=fechad,campo79=original95)
+
+                if idioma == 0:
+                    mensajeMT = "exito"
+                else:
+                    mensajeMT = "success"
+
+            if clase95 == "corr":
+                
+                tra = TransabiertaCorresponsal.objects.filter(idtransaccion=trans95)[0]
+                
+                Mt95.objects.create(ta_corres=tra,codigo=ref95,codigo95_idcodigo95=codAux,ref_relacion=refOrg95,query=query,narrativa=queryletras[:100],num_mt=tipo95a,fecha_msg_original=fechad,campo79=original95) 
+                Mt95Ingles.objects.create(ta_corres=tra,codigo=ref95,codigo95_idcodigo95=codAuxIn,ref_relacion=refOrg95,query=query,narrativa=queryInletras,num_mt=tipo95a,fecha_msg_original=fechad,campo79=original95)
+                
+                if idioma == 0:
+                    mensajeMT = "exito"
+                else:
+                    mensajeMT = "success"
+
+            tn = str(timenow())
+            hora = tn[11:]
+            auxhora = hora.split(':')
+            hora = auxhora[0]+auxhora[1]+auxhora[2]
+            aux = tn[:10]
+            aux2 = aux.split('-')
+            aux = aux2[2]+aux2[1]+aux2[0]
+            fechaNombre = aux + "_" + hora
+
+            #Buscar directorio de salida de los mensajes MT95
+            obj = Configuracion.objects.all()[0]
+            sender = obj.bic
+            directorio = obj.dirsalida95
+            directorio = directorio + "\\"
+
+            #Nombre del archivo a crear
+            archivo = directorio + sender + "_" + fechaNombre + ".txt"
+
+            fechaArchivo = ""
+            #Formato de fecha YYMMDD
+            if fecha95 != "":
+                auxd = fecha95[:2]
+                auxm = (fecha952[3:])[:2]
+                auxy = (fecha953)[6:]
+                auxy = auxy[2:]
+                fechaArchivo = auxy + auxm + auxd
+
+
+            cod2 = int(preg95)
+            #abrir archivo
+            fo = open(archivo, 'w')
+            fo.write( "$\n")
+            if tipo95!="-1":
+                if tipo95 == "103":
+                    fo.write( "[M]"+"195"+"\n")
+                if tipo95 == "202":
+                    fo.write( "[M]"+"295"+"\n")
+                if tipo95 == "950":
+                    fo.write( "[M]"+"995"+"\n")
+            else:
+                fo.write( "[M]\n")
+            fo.write( "[S]"+sender+"\n")
+            fo.write( "[R]"+cuenta95+"\n")
+            fo.write( "[20]"+ref95+"\n")
+            fo.write( "[21]"+refOrg95+"\n")
+            if cod2 == 7 or cod2 == 11 or cod2 == 12 or cod2 == 13 or cod2 == 17 or cod2 == 19 or cod2 == 20 or cod2 == 22 or (23<=cod2<=29) or (30<=cod2<=35) or cod2 == 38 or (40 <= cod2 <=45) or (48 <= cod2 <= 52): 
+                cod2 = str(cod2)
+                fo.write( "[75]"+cod2+"/"+original95+"\n")
+            else:
+                cod2 = str(cod2)
+                fo.write("[75]"+cod2+"\n")
+            if narra95 != "":
+                fo.write( "[77A]"+narra95+"\n")
+            if tipo95!="-1":
+                if tipoOriginal == "R":
+                    fo.write( "[11R]"+tipo95+fechaArchivo+"\n")    
+                elif tipoOriginal == "S":
+                    fo.write( "[11S]"+tipo95+fechaArchivo+"\n")
+                else:
+                    fo.write( "[11a]"+tipo95+fechaArchivo+"\n")
+            if original95!="":
+                fo.write( "[79]"+original95+"\n");
+            fo.write( "@@")
+
+            #cerrar archivo
+            fo.close()
+
+            #Se agrega el evento al log
+            log(request,8)
+
+            return JsonResponse({'mens':mensajeMT})
+
+
+
 
 @login_required(login_url='/login')
 def pd_partidasAbiertas(request):
@@ -6485,6 +6643,7 @@ def seg_licencia(request):
             numeroModulos = 0
             modulosLicencia = []
             llaveLicencia = ""
+            version_lic = ""
 
             #abrir archivo
             fo = open(ruta, 'r')
@@ -6498,6 +6657,9 @@ def seg_licencia(request):
                 if line[:13] == "<NumUsuarios>":
                     usuariosLicencia = line.strip()
                     usuariosLicencia = usuariosLicencia[13:][:-14]
+                if line[:9] == "<Version>":
+                    version_lic = line.strip()
+                    version_lic = version_lic[9:][:-10]
                 if line[:12] == "<NumModulos>":
                     aux = line.strip()
                     numeroModulos = int(aux[12:][:-13])
@@ -6603,6 +6765,17 @@ def seg_licencia(request):
                 hoy_aux = timenow()
                 alertaCorreo.fecha = hoy_aux 
                 alertaCorreo.save()
+
+                #Actualización de versión de licencia
+                try:
+                    version_previa = Version.objects.all()[0]
+                    version_previa.descripcion = version_lic
+                    version_previa.save()
+
+                except:
+                    nuevaVersion = Version.objects.create(descripcion=version_lic)                
+                    
+                    return JsonResponse({'mens':mensaje})
                 
                 return JsonResponse({'mens':mensaje})
 
@@ -6658,6 +6831,17 @@ def seg_licencia(request):
                 hoy_aux = timenow()
                 alertaCorreo.fecha = hoy_aux
                 alertaCorreo.save()
+
+                #Actualización de versión de licencia
+                try:
+                    version_previa = Version.objects.all()[0]
+                    version_previa.descripcion = version_lic
+                    version_previa.save()
+
+                except:
+                    nuevaVersion = Version.objects.create(descripcion=version_lic)                
+                    
+                    return JsonResponse({'mens':mensaje})
 
                 return JsonResponse({'mens':mensaje})
  
@@ -6734,16 +6918,18 @@ def SU_licencia(request):
             numU = prev.num_usuarios
             Exp = prev.fecha_expira
             bicB = Configuracion.objects.all()[0].bic
+            version = Version.objects.all()[0].descripcion
             template = "matcher/SU_licencia.html"
             idioma = Configuracion.objects.all()[0].idioma    
-            context = {'idioma':idioma, 'ops':get_ops(request),'bic':bicB,'numU':numU,'Exp':Exp,'ldap':get_ldap(request)}
+            context = {'version':version,'idioma':idioma, 'ops':get_ops(request),'bic':bicB,'numU':numU,'Exp':Exp,'ldap':get_ldap(request)}
             return render(request, template, context)
 
         except:
             template = "matcher/SU_licencia.html"
             bicB = Configuracion.objects.all()[0].bic
+            version = Version.objects.all()[0].descripcion
             idioma = Configuracion.objects.all()[0].idioma    
-            context = {'idioma':idioma, 'ops':get_ops(request),'bic':bicB,'numU':0,'Exp':None,'ldap':get_ldap(request)}
+            context = {'version':version,'idioma':idioma, 'ops':get_ops(request),'bic':bicB,'numU':0,'Exp':None,'ldap':get_ldap(request)}
             return render(request, template, context)
 
     if request.method == "POST":
@@ -6753,6 +6939,7 @@ def SU_licencia(request):
        if action == "guardarCambios":
         numUsers = request.POST.get('numUsers') 
         fecha = request.POST.get('fecha')
+        version = request.POST.get('version')
         bic = Configuracion.objects.all()[0].bic
            
         try:
@@ -6815,6 +7002,7 @@ def SU_licencia(request):
             fo.write( "<BIC>"+bic+"</BIC>"+"\n")
             fo.write( "<FechaExpiracion>"+str(fecha).split(" ")[0]+"</FechaExpiracion>"+"\n")
             fo.write( "<NumUsuarios>"+numUsers+"</NumUsuarios>"+"\n")
+            fo.write( "<Version>"+version+"</Version>"+"\n")
             fo.write( "<NumModulos>"+str(cuentamod)+"</NumModulos>"+"\n")
             fo.write( "<Modulos>"+modulosemail+"</Modulos>"+"\n")
             fo.write( "<Llave>"+hashp+"</Llave>\n")
@@ -6824,7 +7012,7 @@ def SU_licencia(request):
             fo.close()
 
             #Enviar mail
-            msg = "Bic: " +bic + "\nUsuarios: " + numUsers +"\n Expiración (YYYY-MM-DD): "+ str(fecha).split(" ")[0] +"\n Llave: " + hashp+ "\nSalt : " + salt  +"\n Modulos: " + str(cuentamod) + modulosemail + "\n\n\n\n Matcher\n Un producto de BCG." 
+            msg = "Bic: " +bic + "\nUsuarios: " + numUsers +"\n Expiración (YYYY-MM-DD): "+ str(fecha).split(" ")[0] +"\n Llave: " + hashp+ "\nSalt : " + salt  +"\n Version: "+ version +"\n Modulos: " + str(cuentamod) + modulosemail + "\n\n\n\n Matcher\n Un producto de BCG." 
             enviar_mail('Licencia del banco: '+bic,msg,'jotha41@gmail.com')
             
             if idioma == 0:
@@ -6838,6 +7026,16 @@ def SU_licencia(request):
             hoy_aux = timenow()
             alertaCorreo.fecha = hoy_aux 
             alertaCorreo.save()
+
+            #Actualización de versión de licencia
+            try:
+                version_previa = Version.objects.all()[0]
+                version_previa.descripcion = version
+                version_previa.save()
+
+            except:
+                nuevaVersion = Version.objects.create(descripcion=version)
+            
 
             return JsonResponse({'mens':mensaje})
                
@@ -6896,6 +7094,7 @@ def SU_licencia(request):
             fo.write( "Licencia Matcher\n")
             fo.write( "<BIC>"+bic+"</BIC>"+"\n")
             fo.write( "<FechaExpiracion>"+str(fecha).split(" ")[0]+"</FechaExpiracion>"+"\n")
+            fo.write( "<Version>"+version+"</Version>"+"\n")
             fo.write( "<NumUsuarios>"+numUsers+"</NumUsuarios>"+"\n")
             fo.write( "<NumModulos>"+str(cuentamod)+"</NumModulos>"+"\n")
             fo.write( "<Modulos>"+modulosemail+"</Modulos>"+"\n")
@@ -6907,7 +7106,7 @@ def SU_licencia(request):
             fo.close()
 
             #Enviar mail
-            msg = "Bic: " +bic + "\nUsuarios: " + numUsers +"\n Expiración (YYYY-MM-DD): "+ str(fecha).split(" ")[0] +"\n Llave: " + hashp+ "\nSalt : " + salt +"\n Modulos: " +str(cuentamod)+ modulosemail + "\n\n\n\n Matcher\n Un producto de BCG." 
+            msg = "Bic: " +bic + "\nUsuarios: " + numUsers +"\n Expiración (YYYY-MM-DD): "+ str(fecha).split(" ")[0] +"\n Llave: " + hashp+ "\nSalt : " + salt +"\n Version: "+ version +"\n Modulos: " +str(cuentamod)+ modulosemail + "\n\n\n\n Matcher\n Un producto de BCG." 
             enviar_mail('Licencia del banco: '+bic,msg,'jotha41@gmail.com')
             
             if idioma ==0:
@@ -6921,6 +7120,15 @@ def SU_licencia(request):
             hoy_aux = timenow()
             alertaCorreo.fecha = hoy_aux
             alertaCorreo.save()
+
+            #Actualización de versión de licencia
+            try:
+                version_previa = Version.objects.all()[0]
+                version_previa.descripcion = version
+                version_previa.save()
+
+            except:
+                nuevaVersion = Version.objects.create(descripcion=version)
 
             return JsonResponse({'mens':mensaje})
 
@@ -6965,7 +7173,7 @@ def SU_modulos(request):
             return JsonResponse({'mensa':"mensaje"})   
 
 @login_required(login_url='/login')
-def SU_version(request):
+def Matcher_version(request):
 
     permisos = get_ops(request)
     lista = [Opcion.objects.get(idopcion=p).funprincipal for p in permisos]
@@ -6977,7 +7185,7 @@ def SU_version(request):
 
     expirarSesion(request)
     if request.method == 'GET':
-        template = "matcher/SU_version.html"
+        template = "matcher/Matcher_version.html"
         version = Version.objects.all()[0]
         idioma = Configuracion.objects.all()[0].idioma    
         context = {'idioma':idioma, 'ops':get_ops(request), 'version':version,'ldap':get_ldap(request)}
