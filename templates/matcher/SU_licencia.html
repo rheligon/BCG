@@ -65,6 +65,22 @@
             <div class="col-md-4" hidden><input name="expiracionLicenciaNAux" id="expiracionLicenciaAux" class="form-control" value="{{Exp | date:"Y/m/d"}}"></div>
         {%endif%}
     </td>
+    <td class="col-md-6 ">
+        <div class="col-md-7 form-group">
+            <label class="col-md-4 control-label" >
+                {%if idioma == 0%}
+                    Versión de Matcher:
+                {%endif%}
+                {%if idioma == 1%}
+                    Matcher Version:
+                {%endif%}
+            </label>
+                <div class="col-md-4">
+                    <input class="form-control" name="versioN" id="versionID" type="text" placeholder="{{version}}" required>
+                    <div class="col-md-4" hidden><input name="versionNAux" id="versionAuxID" class="form-control" value="{{version}}"></div>
+                </div>
+        </div>
+    </td>
     <td class "col-md-6">
         <div class="col-md-7 form-group">
             <button type="button" id="guardarCambiosButton" style="align:right" class="col-md-2 btn btn-primary">

@@ -17,6 +17,10 @@
 
 {% block content %}
 <input type="text" id="idioma" value="{{idioma}}" hidden/>
+<input type="text" id="partida" value="{{mensaje}}" hidden/>
+<input type="text" id="cta" value="{{cuenta}}" hidden/>
+<input type="text" id="tipo_trans" value="{{tipo}}" hidden/>
+
 <legend>
     {%if idioma == 0%}
         Mensajes MTn95/MTn96 de la transacción {{mensaje}}
@@ -25,140 +29,337 @@
         Transaction {{mensaje}} MTn95/MTn96 Messages 
     {%endif%}
 </legend>
-<div id="MT95-verMT" style="display: block;">
-  <div class="well table-responsive col-md-12">
-<legend>MTn95</legend>
-    <table id="table-mtn95" class="table table-bordered table-striped tabla">
-        <thead>
-            <tr>
+<ul class="nav nav-tabs" id="detallesycrearMT-tab">
+    <li class="active"><a href="#detallesMT-tab" data-toggle="tab">
+        {%if idioma == 0%}
+            Detalles
+        {%endif%}
+        {%if idioma == 1%}
+            Details
+        {%endif%}
+    <i class="fa"></i></a></li>
+    <li><a href="#crearMT-tab" data-toggle="tab">
+        {%if idioma == 0%}
+            Crear MTn95
+        {%endif%}
+        {%if idioma == 1%}
+            Create MTn95
+        {%endif%}
+    <i class="fa"></i></a></li>
+</ul>
+<br>
+<div class="tab-content">
+    <div class="tab-pane active" id="detallesMT-tab">
+        <div class="well table-responsive col-md-12">
+        <legend>MTn95</legend>
+            <table id="table-mtn95" class="table table-bordered table-striped tabla">
+                <thead>
+                    <tr>
+                        {%if idioma == 0%}
+                            <th>MT</th>
+                            <th>Fecha Msj. Original</th>
+                            <th>Ref. Mensaje</th>
+                            <th>Ref. Msj Original</th>
+                            <th>Pregunta SWIFT</th>
+                            <th>Narrativa</th>
+                            <th>Desc. Msj. Original</th>
+                        {%endif%}
+                        {%if idioma == 1%}
+                            <th>MT</th>
+                            <th>Original Mes. Date</th>
+                            <th>Message Ref.</th>
+                            <th>Original Mes. Ref.</th>
+                            <th>SWIFT Query</th>
+                            <th>Narrative</th>
+                            <th>Original Mes. Description</th>
+                        {%endif%}
+                </thead>
+                <tbody id="tb-mtn95">
+                    {% for men in mensajes95 %}
+                        <tr>
+                            <td>
+                                {% if men.num_mt == None %}
+                                {%endif%}
+                                {% if men.num_mt != None %}
+                                    {{men.num_mt}}
+                                {%endif%}
+                            </td>
+                            <td>
+                                {% if men.fecha_msg_original == None %}
+                                {%endif%}
+                                {% if men.fecha_msg_original != None %}
+                                    {%if idioma == 1%}
+                                        {{men.fecha_msg_original|date:"Y/m/d"}}
+                                    {%endif%}
+                                    {%if idioma == 0%}
+                                        {{men.fecha_msg_original|date:"d/m/Y"}}
+                                    {%endif%}
+                                {%endif%}
+                            </td>
+                            <td>{{men.codigo}}</td>
+                            <td>{{men.ref_relacion}}</td>
+                            <td>{{men.query}}</td>
+                            <td>{{men.narrativa}}</td>
+                            <td>
+                                {% if men.campo79 == None %}
+                                {%endif%}
+                                {% if men.campo79 != None %}
+                                    {{men.campo79}}
+                                {%endif%}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <div class="well table-responsive col-md-12">
+          <legend>MTn96</legend>
+            <table id="table-mtn96" class="table table-bordered table-striped tabla">
+                <thead>
+                    <tr>
+                        {%if idioma == 0%}
+                            <th>MT</th>
+                            <th>Fecha Msj. Original</th>
+                            <th>Ref. Mensaje</th>
+                            <th>Ref. Msj Original</th>
+                            <th>Respuesta SWIFT</th>
+                            <th>Narrativa</th>
+                            <th>Desc. Msj. Original</th>
+                        {%endif%}
+                        {%if idioma == 1%}
+                            <th>MT</th>
+                            <th>Original Mes. Date</th>
+                            <th>Message Ref.</th>
+                            <th>Original Mes. Ref.</th>
+                            <th>SWIFT Response</th>
+                            <th>Narrative</th>
+                            <th>Original Mes. Description</th>
+                        {%endif%}
+                </thead>
+                <tbody id="tb-mtn96">
+                    {% for men in mensajes96 %}
+                        <tr>
+                            <td>
+                                {% if men.num_mt == None %}
+                                {%endif%}
+                                {% if men.num_mt != None %}
+                                    {{men.num_mt}}
+                                {%endif%}
+                            </td>
+                            <td>
+                                {% if men.fecha_msg_original == None %}
+                                {%endif%}
+                                {% if men.fecha_msg_original != None %}
+                                    {%if idioma == 1%}
+                                        {{men.fecha_msg_original|date:"Y/m/d"}}
+                                    {%endif%}
+                                    {%if idioma == 0%}
+                                        {{men.fecha_msg_original|date:"d/m/Y"}}
+                                    {%endif%}
+                                {%endif%}
+                            </td>
+                            <td>{{men.codigo}}</td>
+                            <td>{{men.ref_relacion}}</td>
+                            <td>{{men.answer}}</td>
+                            <td>{{men.narrativa}}</td>
+                            <td>
+                                {% if men.campo79 == None %}
+                                {%endif%}
+                                {% if men.campo79 != None %}
+                                    {{men.campo79}}
+                                {%endif%}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="tab-pane" id="crearMT-tab">
+        <div id="MT95-crear">
+            <td class="col-md-6 ">
+              <div class="col-md-7 form-group">
+                <label class="col-md-4 control-label" >
+                  {%if idioma == 0%}
+                    Referencia del Mensaje:
+                  {%endif%}
+                  {%if idioma == 1%}
+                    Message Reference:
+                  {%endif%}
+                </label>
+                <div class="col-md-8">
+                  <input class="form-control input-sm" name="refmensajeMT" id="refmensaje" type="text" maxlength="16" placeholder="" required>
+                </div>
+              </div>
+            </td>
+            <td class="col-md-6 ">
+              <div class="col-md-7 form-group">
+                <label class="col-md-4 control-label" >
+                  {%if idioma == 0%}
+                    Referencia del Mensaje Original:
+                  {%endif%}
+                  {%if idioma == 1%}
+                    Original Message Reference:
+                  {%endif%}
+                </label>
+                <div class="col-md-8">
+                  <input class="form-control input-sm" name="refmensajeoriginalMT" id="refmensajeoriginal" type="text" maxlength="16" placeholder="" required>
+                </div>
+              </div>
+            </td>
+            <td class="col-md-5 ">
+              <div class="col-md-7 form-group">
+                <label class="col-md-4 control-label" >
+                  {%if idioma == 0%}
+                    Tipo del Mensaje Original:
+                  {%endif%}
+                  {%if idioma == 1%}
+                    Original Message Type:
+                  {%endif%}
+                </label>
+                <div class="col-md-4">
+                  <select id="tipo" name="tipoN" class="form-control">
+                    <option value="-1">---</option>
+                    <option value="103">103</option>
+                    <option value="202">202</option>
+                    <option value="950">950</option>
+                  </select>
+                  <p class="help-block">
+                    {%if idioma == 0%}
+                      Este campo no es indispensable.
+                    {%endif%}
+                    {%if idioma == 1%}
+                      No mandatory field.
+                    {%endif%}
+                  </p> 
+                </div>
+              </div>
+            <td class="col-md-5">
+              <div class="col-md-7 form-group">
+                <label class="col-md-4 control-label">
+                  {%if idioma == 0%}
+                    Fecha del Mensaje Original:
+                  {%endif%}
+                  {%if idioma == 1%}
+                    Original Message Date: 
+                  {%endif%}
+                <span class="glyphicon glyphicon-calendar" aria-hidden="true"></span>
+                </label>
+                  <div class="col-md-4">
+              <input id="f-desdeMT" class="form-control"></div>
+                  <p class="help-block">
+                    {%if idioma == 0%}
+                      Este campo no es indispensable.
+                    {%endif%}
+                    {%if idioma == 1%}
+                      No mandatory field.
+                    {%endif%}
+                  </p> 
+              </div>
+            </td>
+            <td class="col-md-6 ">
+              <div class="col-md-7 form-group">
+                  <label class="col-md-4 control-label" >
+                    {%if idioma == 0%}
+                      Pregunta:
+                    {%endif%}
+                    {%if idioma == 1%}
+                      Query:
+                    {%endif%}
+                  </label>
+                  <div class="col-md-8">
+                    <select id="mt95cod" name="mtx95codN" class="form-control">
+                      <option value="-1">--------------</option>
+                      {% for cod in codigos %}
+                      <option value="{{cod.idcodigo95}}-{{cod.help}}-{{cod.codigo}}">{{cod.codigo}}- {{cod.help}}</option>
+                      {% endfor %}
+                    </select>
+                  </div>
+              </div>
+            </td>
+            </td>
+            <td class="col-md-6 ">
+              <div class="col-md-7 form-group">
+                <label class="col-md-4 control-label" >
+                  {%if idioma == 0%}
+                    Narrativa:
+                  {%endif%}
+                  {%if idioma == 1%}
+                    Narrative:
+                  {%endif%}
+                </label>
+                <div class="col-md-8">
+                  <textarea class="form-control input-sm" name="narrativaMT" id="narrativa" type="text"  required autofocus/></textarea>
+                  <p class="help-block">
+                    {%if idioma == 0%}
+                      Este campo no es indispensable.
+                    {%endif%}
+                    {%if idioma == 1%}
+                      No mandatory field.
+                    {%endif%}
+                  </p> 
+                </div>
+              </div>
+            </td>
+            <div class="col-md-7 form-group">
+              <label class="col-md-4 control-label" >
                 {%if idioma == 0%}
-                    <th>MT</th>
-                    <th>Fecha Msj. Original</th>
-                    <th>Ref. Mensaje</th>
-                    <th>Ref. Msj Original</th>
-                    <th>Pregunta SWIFT</th>
-                    <th>Narrativa</th>
-                    <th>Desc. Msj. Original</th>
+                  MT Original Enviado/Recibido:
                 {%endif%}
                 {%if idioma == 1%}
-                    <th>MT</th>
-                    <th>Original Mes. Date</th>
-                    <th>Message Ref.</th>
-                    <th>Original Mes. Ref.</th>
-                    <th>SWIFT Query</th>
-                    <th>Narrative</th>
-                    <th>Original Mes. Description</th>
+                  Sent/Received Original MT:
                 {%endif%}
-        </thead>
-        <tbody id="tb-mtn95">
-            {% for men in mensajes95 %}
+              </label>
+              <div class="col-md-4">
+                <select id="claseOriginal" name="claseOriginalN" class="form-control">
+                  <option value="-1">---</option>
+                  <option value="S">
+                    {%if idioma == 0%}
+                      Enviado
+                    {%endif%}
+                    {%if idioma == 1%}
+                      Sent
+                    {%endif%}
+                  </option>
+                  <option value="R">
+                    {%if idioma == 0%}
+                      Recibido
+                    {%endif%}
+                    {%if idioma == 1%}
+                      Received
+                    {%endif%}
+                  </option>
+                </select>
+                <p class="help-block">
+                  {%if idioma == 0%}
+                    Este campo no es indispensable.
+                  {%endif%}
+                  {%if idioma == 1%}
+                    No mandatory field.
+                  {%endif%}
+                </p> 
+              </div>
+            </div>
+            <td class="col-md-10">
+              <div class="col-md-8 form-group">
                 <tr>
-                    <td>
-                        {% if men.num_mt == None %}
-                        {%endif%}
-                        {% if men.num_mt != None %}
-                            {{men.num_mt}}
-                        {%endif%}
-                    </td>
-                    <td>
-                        {% if men.fecha_msg_original == None %}
-                        {%endif%}
-                        {% if men.fecha_msg_original != None %}
-                            {%if idioma == 1%}
-                                {{men.fecha_msg_original|date:"Y/m/d"}}
-                            {%endif%}
-                            {%if idioma == 0%}
-                                {{men.fecha_msg_original|date:"d/m/Y"}}
-                            {%endif%}
-                        {%endif%}
-                    </td>
-                    <td>{{men.codigo}}</td>
-                    <td>{{men.ref_relacion}}</td>
-                    <td>{{men.query}}</td>
-                    <td>{{men.narrativa}}</td>
-                    <td>
-                        {% if men.campo79 == None %}
-                        {%endif%}
-                        {% if men.campo79 != None %}
-                            {{men.campo79}}
-                        {%endif%}
-                    </td>
+                  <div class="col-md-4" align="rigth">
+                    <button type="button" id="crearMT95Button" style="align:right" class="col-md-6 btn btn-primary">
+                      {%if idioma == 0%}
+                        Aceptar
+                      {%endif%}
+                      {%if idioma == 1%}
+                        Accept
+                      {%endif%}
+                    </button>
+                  </div>
                 </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+              </div>   
+            </td>  
+        </div>
+    </div>
 </div>
-
-<div class="well table-responsive col-md-12">
-  <legend>MTn96</legend>
-    <table id="table-mtn96" class="table table-bordered table-striped tabla">
-        <thead>
-            <tr>
-                {%if idioma == 0%}
-                    <th>MT</th>
-                    <th>Fecha Msj. Original</th>
-                    <th>Ref. Mensaje</th>
-                    <th>Ref. Msj Original</th>
-                    <th>Respuesta SWIFT</th>
-                    <th>Narrativa</th>
-                    <th>Desc. Msj. Original</th>
-                {%endif%}
-                {%if idioma == 1%}
-                    <th>MT</th>
-                    <th>Original Mes. Date</th>
-                    <th>Message Ref.</th>
-                    <th>Original Mes. Ref.</th>
-                    <th>SWIFT Response</th>
-                    <th>Narrative</th>
-                    <th>Original Mes. Description</th>
-                {%endif%}
-        </thead>
-        <tbody id="tb-mtn96">
-            {% for men in mensajes96 %}
-                <tr>
-                    <td>
-                        {% if men.num_mt == None %}
-                        {%endif%}
-                        {% if men.num_mt != None %}
-                            {{men.num_mt}}
-                        {%endif%}
-                    </td>
-                    <td>
-                        {% if men.fecha_msg_original == None %}
-                        {%endif%}
-                        {% if men.fecha_msg_original != None %}
-                            {%if idioma == 1%}
-                                {{men.fecha_msg_original|date:"Y/m/d"}}
-                            {%endif%}
-                            {%if idioma == 0%}
-                                {{men.fecha_msg_original|date:"d/m/Y"}}
-                            {%endif%}
-                        {%endif%}
-                    </td>
-                    <td>{{men.codigo}}</td>
-                    <td>{{men.ref_relacion}}</td>
-                    <td>{{men.answer}}</td>
-                    <td>{{men.narrativa}}</td>
-                    <td>
-                        {% if men.campo79 == None %}
-                        {%endif%}
-                        {% if men.campo79 != None %}
-                            {{men.campo79}}
-                        {%endif%}
-                    </td>
-                </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-</div>
-<div id="regresarMT" style="display: none;">
-<div class="col-md-7" align="rigth">
-    <button type="button" id="regresarVerMT" style="align:right" class="col-md-3 btn btn-warning">
-      <-- Regresar
-    </button>
-  </div>
-</div>
-
 <!-- Static Modal para procesando -->
 <div class="modal modal-static fade" id="processing-modal" role="dialog" aria-hidden="true">
     <div class="modal-dialog">

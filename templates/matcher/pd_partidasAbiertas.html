@@ -375,7 +375,6 @@ table {
                   <th>S/L</th>
                   <th>Sel</th>
                   <th>MT</th>
-                  <th>MT Acción</th>
                   <th>Obs./Seg.</th>
                 {%endif%}
                 {%if idioma == 1%}
@@ -391,7 +390,6 @@ table {
                   <th>S/L</th>
                   <th>Sel</th>
                   <th>MT</th>
-                  <th>MT Action</th>
                   <th>Obs./Tra.</th>
                 {%endif%}
               </tr>
@@ -407,30 +405,7 @@ table {
   {% if 26 in ops %}
   <div class="row">
   <br>
-    {% if 25 in ops %}
-    <div class="col-md-3 col-md-push-1">
-      <button type="button" id="crearMTButton" class="col-md-6 btn btn-primary" disabled>
-        {%if idioma == 0%}
-          Crear MT
-        {%endif%}
-        {%if idioma == 1%}
-          Create MT
-        {%endif%}
-      </button>
-    </div>
-    <div class="col-md-3 col-md-push-1">
-      <button type="button" id="verMTButton" class="col-md-6 btn btn-primary" disabled>
-        {%if idioma == 0%}
-          Ver MT
-        {%endif%}
-        {%if idioma == 1%}
-          See MT
-        {%endif%}
-      </button>
-    </div>
-    {%endif%}
-
-    <div class="col-md-3 col-md-push-1">
+    <div class="col-md-3 col-md-push-3">
       <button type="button" id="checkAllButton" data-loading-text="Cargando..." class="col-md-6 btn btn-primary" selec="0">
         {%if idioma == 0%}
           Selecc. Todas
@@ -441,215 +416,13 @@ table {
       </button>
     </div>
 
-    <div class="col-md-3 col-md-push-1">
-
+    <div class="col-md-3 col-md-push-3">
       <button type="button" id="matchButton" data-loading-text="Cargando..." class="col-md-6 btn btn-success" autocomplete="off">
           Match
       </button>
     </div>
   </div>
   {%endif%}
-</div>
-
-<div id="MT95-crear" style="display: none;">
-  <legend>
-    {%if idioma == 0%}
-      Crear MTn95
-    {%endif%}
-    {%if idioma == 1%}
-      Crate MTn95
-    {%endif%}
-  </legend>
-    <td class="col-md-6 ">
-      <div class="col-md-7 form-group">
-        <label class="col-md-4 control-label" >
-          {%if idioma == 0%}
-            Referencia del Mensaje:
-          {%endif%}
-          {%if idioma == 1%}
-            Message Reference:
-          {%endif%}
-        </label>
-        <div class="col-md-8">
-          <input class="form-control input-sm" name="refmensajeMT" id="refmensaje" type="text" maxlength="16" placeholder="" required>
-        </div>
-      </div>
-    </td>
-    <td class="col-md-6 ">
-      <div class="col-md-7 form-group">
-        <label class="col-md-4 control-label" >
-          {%if idioma == 0%}
-            Referencia del Mensaje Original:
-          {%endif%}
-          {%if idioma == 1%}
-            Original Message Reference:
-          {%endif%}
-        </label>
-        <div class="col-md-8">
-          <input class="form-control input-sm" name="refmensajeoriginalMT" id="refmensajeoriginal" type="text" maxlength="16" placeholder="" required>
-        </div>
-      </div>
-    </td>
-    <td class="col-md-5 ">
-      <div class="col-md-7 form-group">
-        <label class="col-md-4 control-label" >
-          {%if idioma == 0%}
-            Tipo del Mensaje Original:
-          {%endif%}
-          {%if idioma == 1%}
-            Original Message Type:
-          {%endif%}
-        </label>
-        <div class="col-md-4">
-          <select id="tipo" name="tipoN" class="form-control">
-            <option value="-1">---</option>
-            <option value="103">103</option>
-            <option value="202">202</option>
-            <option value="950">950</option>
-          </select>
-          <p class="help-block">
-            {%if idioma == 0%}
-              Este campo no es indispensable.
-            {%endif%}
-            {%if idioma == 1%}
-              No mandatory field.
-            {%endif%}
-          </p> 
-        </div>
-      </div>
-    <td class="col-md-5">
-      <div class="col-md-7 form-group">
-        <label class="col-md-4 control-label">
-          {%if idioma == 0%}
-            Fecha del Mensaje Original:
-          {%endif%}
-          {%if idioma == 1%}
-            Original Message Date: 
-          {%endif%}
-        <span class="glyphicon glyphicon-calendar" aria-hidden="true"></span>
-        </label>
-          <div class="col-md-4">
-      <input id="f-desdeMT" class="form-control"></div>
-          <p class="help-block">
-            {%if idioma == 0%}
-              Este campo no es indispensable.
-            {%endif%}
-            {%if idioma == 1%}
-              No mandatory field.
-            {%endif%}
-          </p> 
-      </div>
-    </td>
-    <td class="col-md-6 ">
-      <div class="col-md-7 form-group">
-          <label class="col-md-4 control-label" >
-            {%if idioma == 0%}
-              Pregunta:
-            {%endif%}
-            {%if idioma == 1%}
-              Query:
-            {%endif%}
-          </label>
-          <div class="col-md-8">
-            <select id="mt95cod" name="mtx95codN" class="form-control">
-              <option value="-1">--------------</option>
-              {% for cod in codigos %}
-              <option value="{{cod.idcodigo95}}-{{cod.help}}-{{cod.codigo}}">{{cod.codigo}}- {{cod.help}}</option>
-              {% endfor %}
-            </select>
-          </div>
-      </div>
-    </td>
-    </td>
-    <td class="col-md-6 ">
-      <div class="col-md-7 form-group">
-        <label class="col-md-4 control-label" >
-          {%if idioma == 0%}
-            Narrativa:
-          {%endif%}
-          {%if idioma == 1%}
-            Narrative:
-          {%endif%}
-        </label>
-        <div class="col-md-8">
-          <textarea class="form-control input-sm" name="narrativaMT" id="narrativa" type="text"  required autofocus/></textarea>
-          <p class="help-block">
-            {%if idioma == 0%}
-              Este campo no es indispensable.
-            {%endif%}
-            {%if idioma == 1%}
-              No mandatory field.
-            {%endif%}
-          </p> 
-        </div>
-      </div>
-    </td>
-    <div class="col-md-7 form-group">
-      <label class="col-md-4 control-label" >
-        {%if idioma == 0%}
-          MT Original Enviado/Recibido:
-        {%endif%}
-        {%if idioma == 1%}
-          Sent/Received Original MT:
-        {%endif%}
-      </label>
-      <div class="col-md-4">
-        <select id="claseOriginal" name="claseOriginalN" class="form-control">
-          <option value="-1">---</option>
-          <option value="S">
-            {%if idioma == 0%}
-              Enviado
-            {%endif%}
-            {%if idioma == 1%}
-              Sent
-            {%endif%}
-          </option>
-          <option value="R">
-            {%if idioma == 0%}
-              Recibido
-            {%endif%}
-            {%if idioma == 1%}
-              Received
-            {%endif%}
-          </option>
-        </select>
-        <p class="help-block">
-          {%if idioma == 0%}
-            Este campo no es indispensable.
-          {%endif%}
-          {%if idioma == 1%}
-            No mandatory field.
-          {%endif%}
-        </p> 
-      </div>
-    </div>
-    <td class="col-md-10">
-      <div class="col-md-8 form-group">
-        <tr>
-          <div class="col-md-4" align="rigth">
-            <button type="button" id="crearMT95Button" style="align:right" class="col-md-6 btn btn-primary">
-              {%if idioma == 0%}
-                Aceptar
-              {%endif%}
-              {%if idioma == 1%}
-                Accept
-              {%endif%}
-            </button>
-          </div>
-        
-          <div class="col-md-4" align="rigth">
-            <button type="button" id="regresarCMT95Button" style="align:right" class="col-md-6 btn btn-warning">
-              {%if idioma == 0%}
-                Regresar
-              {%endif%}
-              {%if idioma == 1%}
-                Back
-              {%endif%}
-            </button>
-          </div>
-        </tr>
-      </div>   
-    </td>  
 </div>
 
 <div class="modal fade" id="justificacion-modal" role="dialog">
