@@ -132,9 +132,8 @@ function iniciar_tabla(idioma){
                 { "width": "8%" },
                 { "width": "30%" },
                 { "width": "5%" },
-                { "width": "11%" },
-                { "width": "4%" },
-                { "width": "3%" },
+                { "width": "13%" },
+                { "width": "5%" },
                 { "width": "5%" },
                 { "width": "5%" },
                 { "width": "5%" },
@@ -163,8 +162,8 @@ function iniciar_tabla(idioma){
                 { "width": "8%" },
                 { "width": "30%" },
                 { "width": "5%" },
-                { "width": "11%" },
-                { "width": "4%" }, { "width": "3%" },
+                { "width": "13%" },
+                { "width": "5%" }, 
                 { "width": "5%" },
                 { "width": "5%" },
                 { "width": "5%" },
@@ -751,6 +750,7 @@ function heavyLifter(jsonArr,tipo) {
 function calcularfila(elem,tipo,edc){
     var a_id = elem.pk;
     var a_cod = elem.fields.codigo;
+    var cta_aux = $('#Cuenta-sel').val().split("-")[1];
 
     var td1 = '<td>' + edc + '</td>';
     var td2 = '<td>' + elem.fields.pagina + '</td>';
@@ -767,13 +767,13 @@ function calcularfila(elem,tipo,edc){
         var td10 = '<td>S</td>';
     }
     var td11 = '<td style="text-align:center; width: 24px;"><input class="chkSelection" type="checkbox" id="cb-'+tipo+'-'+a_id+'"></td>';
-    var td12 = '<td style="text-align:center; width: 24px;"></td>';
-    var td13 = '<td style="text-align:center; width: 24px;"><input class="chkSelection3" name="mtopc" type="radio" id="cb-'+elem.pk+"-"+tipo+'" onclick="habilitar(this)"></td>';
-    
+    //var td12 = '<td style="text-align:center; width: 24px;"></td>';
+    var td12 = '<td style="text-align:center; width: 24px;"><a href="/procd/detallesMT/'+elem.pk+"/"+tipo+"/"+cta_aux+'" id="cb-'+elem.pk+'"><span class="fa fa-plus"></span></a></td>';
+
     if (elem.fields.seguimiento || chequearObs(elem.pk,tipo)){
-        var td14 = '<td style="text-align:center; width: 24px;"><a href="/observaciones/'+elem.pk+"/"+tipo+'" id="cb-'+elem.pk+"-"+tipo+'"><span class="fa fa-check-square-o"></span></a></td>';
+        var td14 = '<td style="text-align:center; width: 24px;"><a href="/observaciones/'+elem.pk+"/"+tipo+'" id="cb-'+elem.pk+"-"+tipo+'"><span class="fa fa-comment-o"></span></a></td>';
     } else {
-        var td14 = '<td style="text-align:center; width: 24px;"><a href="/observaciones/'+elem.pk+"/"+tipo+'" id="cb-'+elem.pk+"-"+tipo+'"><span class="fa fa-plus-square-o"></span></a></td>'
+        var td14 = '<td style="text-align:center; width: 24px;"><a href="/observaciones/'+elem.pk+"/"+tipo+'" id="cb-'+elem.pk+"-"+tipo+'"><span class="fa fa-plus"></span></a></td>'
     }
 
     var cuentaVeces = 0;
@@ -785,8 +785,8 @@ function calcularfila(elem,tipo,edc){
 
             cuentaVeces = cuentaVeces + 1;
             key = copia[i].pk;
-            td12 = '<td style="text-align:center; width: 24px;"><span class="fa fa-envelope-o" id="cb-'+elem.pk+'"></span></td>';
-    
+            td12 = '<td style="text-align:center; width: 24px;"><a href="/procd/detallesMT/'+elem.pk+"/"+tipo+"/"+cta_aux+'" id="cb-'+elem.pk+'"><span class="fa fa-envelope-o"></span></a></td>'
+        
         }
 
     }
@@ -798,7 +798,7 @@ function calcularfila(elem,tipo,edc){
     
     $('#table-pa > tbody').append('<tr id ="tr-'+tipo+'-'+a_id+'"></tr>');
 
-    var jRow = $("#tr-"+tipo+"-"+a_id).append(td1,td2,td3,td4,td5,td6,td7,td8,td9,td10,td11,td12,td13,td14);
+    var jRow = $("#tr-"+tipo+"-"+a_id).append(td1,td2,td3,td4,td5,td6,td7,td8,td9,td10,td11,td12,td14);
     //tabla.row.add(jRow);
     tabla.fnAddData(jRow,false);
 }
@@ -815,175 +815,6 @@ function findAndRemove(array, property, value) {
    });
 }
 
-//Habilitar los botones de crear y ver MT
-function habilitar(element){
-    $('#verMTButton').removeAttr('disabled');
-    $('#crearMTButton').removeAttr('disabled');
-    este = $(element).attr('id');
-}
-
-//para cambiar div
-$('#regresarCMT95Button').on('click', function () {
-    
-
-    document.getElementById("MT95-crear").style.display = "none";
-    document.getElementById("MT95-verTabla").style.display = "block";
-
-});
-
-//Crear un mensaje MTn95
-$('#crearMTButton').on('click', function () {
-    
-    document.getElementById("MT95-verTabla").style.display = "none";
-    document.getElementById("MT95-crear").style.display = "block";
-
-});
-
-//Inicializar el DatePicker
-if (idioma == 0){
-    $('#f-desdeMT').pickadate({
-      format: 'dd/mm/yyyy',
-      formatSubmit:'d/m/yyyy',
-      selectYears: true,
-      selectMonths: true,
-      max: true,
-    });
-} else {
-    $('#f-desdeMT').pickadate({
-      format: 'yyyy/mm/dd',
-      formatSubmit:'dd/mm/yyyy',
-      selectYears: true,
-      selectMonths: true,
-      max: true,
-    });
-}
-
-//Boton para crear MTn95
-$('#crearMT95Button').on('click', function () {
-    var ref_mensaje = $('#refmensaje').val();
-    var ref_mensaje_original = $('#refmensajeoriginal').val();
-    var tipo = $('#tipo').val();
-    var fecha = $('#f-desdeMT').val();
-    var codigo = $('#mt95cod').val().split("-")[0];
-    var codigo2 = $('#mt95cod').val().split("-")[2];
-    var narrativa = $('#mt95cod').val().split("-")[1];
-    var original = $('#narrativa').val();
-    var tipoOriginal = $('#claseOriginal').val();
-    var pregunta = codigo2;
-    var transaccion = este.split('-')[1];
-    var cuenta = $('#Cuenta-sel').val().split("-")[1];
-    var clase = este.split('-')[2];
-    if (fecha !=""){
-        var arregloFecha = fecha.split("/")
-        if (arregloFecha[0].length == 1){
-            arregloFecha[0] = "0" + arregloFecha[0];
-        }
-        if (arregloFecha[1].length == 1){
-
-            arregloFecha[1] = "0" + arregloFecha[1];
-        }
-
-        if (idioma == 0){
-            fecha = arregloFecha[0]+"/"+arregloFecha[1]+"/"+arregloFecha[2];
-        } else {
-            fecha = arregloFecha[2]+"/"+arregloFecha[1]+"/"+arregloFecha[0];
-        }
-    }
-    if (ref_mensaje.length===0){
-        if (idioma == 0 ){
-            swal("Ups!","Debe colocar la referencia del mensaje.","error");    
-        } else {
-             swal("Ups!","Message reference can not be empty.","error");
-        }
-    }else if(ref_mensaje_original.length===0){
-        if (idioma == 0 ){
-            swal("Ups!","Debe colocar la referencia del mensaje original","error");
-        } else {
-             swal("Ups!","Original message reference can not be empty.","error");
-        }       
-    }else if (codigo ===("-1")){
-        if (idioma == 0 ){
-            swal("Ups!","Debe seleccionar un codigo de Mensaje MT.","error");  
-         } else {
-             swal("Ups!","You must select a MT message code.","error");
-        }        
-    }else{
-
-        if (idioma == 0){
-            msj ="¿Seguro que desea crear el mensaje MT?";
-        } else{
-            msj ="Sure you want to create MT message?";
-        }
-        swal({
-            title: "",
-            text: msj,
-            type: "warning",
-            showCancelButton: true,
-            confirmButtonText: "Ok"},
-            function(){
-                $('#processing-modal').modal('toggle');
-                //Llamar funcion de creación del mensaje
-                crearmt95(ref_mensaje,ref_mensaje_original,tipo,fecha,codigo,pregunta,narrativa,original,transaccion,clase,cuenta,codigo2,tipoOriginal);
-    
-            }
-        );
-    };
-});
-
-//Crear mensajes MT95
-function crearmt95(ref_mensaje,ref_mensaje_original,tipo,fecha,codigo,pregunta,narrativa,original,transaccion,clase,cuenta,codigo2,tipoOriginal){
-    $.ajax({
-        type:"POST",
-        url: "/procd/pAbiertas/",
-        data: {"ref95":ref_mensaje, "refOrg95":ref_mensaje_original, "tipo95":tipo, "fecha95":fecha, "cod95":codigo, "preg95":pregunta, "narrativa95":narrativa, "original95":original, "transaccion":transaccion, "action":"crearMT95", "clase":clase, "cuenta":cuenta, "codigo2":codigo2, "tipoOriginal":tipoOriginal},
-        success: function(data){
-            $('#processing-modal').modal('toggle');
-            if (idioma == 0){
-                swal("OK", "Mensaje creado exitosamente", "success");
-            } else {
-                swal("OK", "Successful created message", "success");
-            }
-            window.location.reload();
-            
-
-        },
-        error: function(jqXHR, error){ 
-            alert(jqXHR.responseText) //debug
-            $('#processing-modal').modal('toggle');
-            if (idioma == 0){
-                swal("Ups!", "Hubo un error al intertar crear el mensaje", "error");
-            } else {
-                swal("OK", "Error occurred trying to create the message", "success");
-            }
-        },
-        dataType:'json',
-        headers:{
-            'X-CSRFToken':csrftoken
-        }
-    });
-    return false;
-}
-
-//Boton para ver los MTn95/96 asociados a una transaccion
-$('#verMTButton').on('click', function () {
-
-    var transaccion = este.split('-')[1];
-    var clase = este.split('-')[2];
-    var currenturl = $(location).attr("href");
-    var aux = currenturl.split('/');
-    aux.pop();
-    aux.pop();
-    aux.push("detallesMT");
-    aux.push(transaccion);
-    aux.push(clase);
-    var url = aux.join('/');
-    //Redireccionar
-    console.log(url);
-    $(location).attr("href", url);
-    
-    //$('#processing-modal').modal('toggle');
-    
-});
 
 // chequear si hay observaciones
 function chequearObs(elem,tipo){

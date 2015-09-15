@@ -67,6 +67,8 @@ $('#guardarCambiosButton').on('click', function () {
     var fecha = $('#expiracionLicencia').val();
     var fechaAux = $('#expiracionLicenciaAux').val();
     var usersAux = $('#numUserLicenciaAux').val();
+    var version_lic = $('#versionID').val();
+    var versionAux = $('#versionAuxID').val();
 
     if (numUsers === ""){
         numUsers = usersAux;
@@ -86,6 +88,17 @@ $('#guardarCambiosButton').on('click', function () {
                 swal("Ups!","Debe seleccionar una fecha de expiración para la licencia.","error");        
             } else {
                 swal("Ups!","You must select a license expiration date.","error");        
+            }
+        }
+    }
+
+    if (version_lic===""){
+        version_lic = versionAux
+        if (versionAux ===""){
+            if (idioma == 0){
+                swal("Ups!","Debe introducir la versión de matcher.","error");        
+            } else {
+                swal("Ups!","You must introduce matcher version.","error");        
             }
         }
     }
@@ -168,9 +181,9 @@ $('#guardarCambiosButton').on('click', function () {
                 $('#processing-modal').modal('toggle');
                 //Llamar funcion de guardar cambios
                 if (idioma == 0){
-                    guardarCambios(numUsers,fecha0);
+                    guardarCambios(numUsers,fecha0,version_lic);
                 } else {
-                    guardarCambios(numUsers,auxff);
+                    guardarCambios(numUsers,auxff,version_lic);
                 }
             }
         ); 
@@ -179,11 +192,11 @@ $('#guardarCambiosButton').on('click', function () {
 });
 
 //Guardar Cambios en la base de datos 
-function guardarCambios(numUsers,fecha){
+function guardarCambios(numUsers,fecha,version){
     $.ajax({
         type:"POST",
         url: "/SU/licencia/",
-        data: {"numUsers":numUsers, "action":"guardarCambios", "fecha":fecha},
+        data: {"numUsers":numUsers, "action":"guardarCambios", "fecha":fecha, "version":version},
         success: function(data){
             var mensaje = data.mens;
             $('#processing-modal').modal('toggle');
