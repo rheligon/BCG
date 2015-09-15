@@ -54,35 +54,74 @@ def test(request):
     hora = timenow()
     hora = str(hora)
 
-    """
-    sessions = Session.objects.filter(expire_date__gte=timezone.now())
-    uid_list = []
-
-    # Build a list of user ids from that query
-    for session in sessions:
-        data = session.get_decoded()
-        uid_list.append(data.get('_auth_user_id', None))
-
-    uid_list = set(uid_list)
-    uid_list.remove(None)
-    uid_list = sorted(uid_list)
-
-    #todos = User.objects.all()
-    ensesion = [u.username for u in User.objects.all() if u.id in uid_list] 
-
-    for i in uid_list:
-        print("usuario: " + str(i))
-
-    for j in ensesion:
-        print("name: " + j)
-
-    en1 = Sesion.objects.filter(conexion="1")
+    cuenta = Cuenta.objects.get(codigo="WACHOVIA")
     
-    for s in en1:
-        if s.login not in ensesion:
-            s.conexion = "0"
-            s.save()
-            #ensesion.remove(s.login)"""
+    print(cuenta.descripcion+"\n")
+
+    correo = "jotha41@gmail.com"
+    alertas = AlertasCuenta.objects.filter(cuenta_idcuenta=cuenta.idcuenta)
+
+    for alerta in alertas:
+        #Alertas para partidas pendientes sin observación
+        if alerta.alertas_idalertas.idalertas == 13:
+            try:
+
+                ultimo_procS = EstadoCuenta.objects.get(idedocuenta=cuenta.ultimoedocuentaprocs)
+                ultimo_procL = EstadoCuenta.objects.get(idedocuenta=cuenta.ultimoedocuentaprocc)
+                
+                last_procS = str(ultimo_procS.idedocuenta)
+                last_procL = str(ultimo_procL.idedocuenta)
+
+                hoy = timenow()
+                fecha_atras = cuenta.ultimafechaconciliacion + timedelta(3)
+
+                partidascorresp = TransabiertaCorresponsal.objects.filter(estado_cuenta_idedocuenta=ultimo_procS)
+                partidaslibro = TransabiertaContabilidad.objects.filter(estado_cuenta_idedocuenta=ultimo_procL)
+                
+                listaconta = [p for p in partidaslibro]
+                listacorres = [q for q in partidascorresp]
+
+                centinela = True
+                centinela1 = True
+
+                for i in listaconta:
+                    print(str(i.idtransaccion))
+
+                for j in listacorres:
+                    print(str(j.idtransaccion))
+
+                for i in listaconta:
+                    try:
+                        aux = Observacioncontabilidad.objects.get(ta_conta = i)
+                    except:
+                        centinela = False
+                        
+
+                for j in listacorres:
+                    try:
+                        aux2 = Observacioncontabilidad.objects.get(ta_corres = i)
+
+                    except:
+                        centinela1 = False
+
+                if hoy > fecha_atras and (centinela or centinela1):
+                
+                    if idioma == 0:
+                        msg = "Le informamos que la cuenta: " + cuenta.codigo + ". Tiene partidas pendientes sin obervaciones por más de 60 días luego de haber sido procesado el último estado de cuenta.\n\n" + "Último estado de cuenta procesado contabilidad: " + last_procL + "Último estado de cuenta procesado corresponsal: " +last_procS+ "\n\n\n\n Matcher\n Un producto de BCG." 
+                        enviar_mail('Partidas pendientes sin observaciones',msg,correo)
+                    else:
+                        msg = "We notify you that account: " + cuenta.codigo + ". Has open entries without obervations for more than 60 days after last reconciliation.\n\n" + "Last accounting processed account statement: " + last_procL + "Last correspondet processed account statement: " +last_procS + "\n\n\n\n Matcher\n A BCG's software." 
+                        enviar_mail('"Open Entries without observations" Alert ',msg,correo)
+            except:
+
+                if idioma == 0:
+                    msg = "Le informamos que, a pesar de que la cuenta: " + cuenta.codigo + " está configurada para notificar de manera automática cuando se tengan partidas abiertas sin observaciones por más de 60 días desde que su último estado de cuenta fue procesado, la misma no posee estados de cuenta registrados." + "\n\n\n\n Matcher\n Un producto de BCG." 
+                    enviar_mail('Alerta de partidas pendientes sin obervaciones',msg,correo)
+                else:
+                    msg = "We notify you that account: " + cuenta.codigo + " is configured to send automatic alerts mails after 60 days with existent open entries without observations since last account statement was processing. Nevertheless the account has not account statement at all." + "\n\n\n\n Matcher\n A BCG's software." 
+                    enviar_mail('"Open entries without observations" Alert ',msg,correo)
+
+
 
     return JsonResponse(hora, safe=False)
 
@@ -6748,7 +6787,7 @@ def seg_licencia(request):
 
 
                 #Enviar mail
-                msg = "Bic: " + bicLicencia + "\nUsuarios: " + usuariosLicencia +"\n Expiración (YY-MM-DD): "+ str(fechaLicencia) +"\n Llave: " + llaveLicencia+ "\nSalt : BCG.bcg+2015" +"\n Modulos: " +str(numeroModulos)+ modulosemail + "\n\n\n\n Matcher\n Un producto de BCG." 
+                msg = "Bic: " + bicLicencia + "\nUsuarios: " + usuariosLicencia +"\n Expiración (YY-MM-DD): "+ str(fechaLicencia) +"\n Llave: " + llaveLicencia+ "\nSalt : BCG.bcg+2015"+"\n Versión: "+version_lic +"\n Modulos: " +str(numeroModulos)+ modulosemail + "\n\n\n\n Matcher\n Un producto de BCG." 
                 enviar_mail('Licencia del banco: '+bicLicencia,msg,'jotha41@gmail.com')
 
                 if idioma == 0:
@@ -6814,7 +6853,7 @@ def seg_licencia(request):
 
 
                 #Enviar mail
-                msg = "Bic: " + bicLicencia + "\nUsuarios: " + usuariosLicencia +"\n Expiración (YY-MM-DD): "+ str(fechaLicencia) +"\n Llave: " + llaveLicencia+ "\nSalt : BCG.bcg+2015" +"\n Modulos: " +str(numeroModulos)+ modulosemail + "\n\n\n\n Matcher\n Un producto de BCG." 
+                msg = "Bic: " + bicLicencia + "\nUsuarios: " + usuariosLicencia +"\n Expiración (YY-MM-DD): "+ str(fechaLicencia) +"\n Llave: " + llaveLicencia+ "\nSalt : BCG.bcg+2015" +"\n Versión: "+version_lic +"\n Modulos: " +str(numeroModulos)+ modulosemail + "\n\n\n\n Matcher\n Un producto de BCG." 
                 enviar_mail('Licencia del banco: '+bicLicencia,msg,'jotha41@gmail.com')
                 
                 if idioma == 0:
