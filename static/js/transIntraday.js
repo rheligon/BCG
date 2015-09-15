@@ -207,7 +207,7 @@ $("#exampleModal").on("hidden.bs.modal", function(){
     $("#exampleModalLabel").html("");
     $(".modal-body1").html("");
     $(".modal-body1").append('<p>Monto</p><canvas id="canvas" width="950px" height="650px"></canvas><p>Hora</p>');
-    
+    $('#btnDescarga').attr("disabled", false);
 });
 
 $('#fecha-valor').change(function() { 
@@ -1829,6 +1829,7 @@ $('#exampleModal').on('shown.bs.modal', function (event) {
     	}else{
     		$(".modal-body1").html("");
     		$(".modal-body1").append('<div ><h2 class="alert"align="center">No existen Transacciones para el día seleccionado.</h2></div>')
+    		$('#btnDescarga').attr("disabled", true);
     	}
 		
 

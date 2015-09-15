@@ -55,6 +55,14 @@ tiempo = parseInt(tiempo)*30000
         $('#sald_tot_corr').val("");  
         $('#cdTotalCorr').html("");
 
+        $('#saldo_fin_conta').val("");
+        $('#cdSaldoFinalConta').html("");
+        $('#saldo_fin_corr').val("");
+        $('#cdSaldoFinalCorr').html("");
+
+        $('#debitos').val("");
+        $('#creditos').val("");
+
         $('#boton_go').attr("disabled", true);
 
     }  
@@ -121,6 +129,14 @@ $( document ).ready(function() {
         $('#sald_tot_corr').val("");  
         $('#cdTotalCorr').html("");
 
+        $('#saldo_fin_conta').val("");
+        $('#cdSaldoFinalConta').html("");
+        $('#saldo_fin_corr').val("");
+        $('#cdSaldoFinalCorr').html("");
+
+        $('#debitos').val("");
+        $('#creditos').val("");
+
         $('#boton_go').attr("disabled", true);
 
     }  
@@ -167,6 +183,14 @@ $('#Cuenta-sel').change(function() {
 
         $('#sald_tot_corr').val("");  
         $('#cdTotalCorr').html("");
+
+        $('#saldo_fin_conta').val("");
+        $('#cdSaldoFinalConta').html("");
+        $('#saldo_fin_corr').val("");
+        $('#cdSaldoFinalCorr').html("");
+
+        $('#debitos').val("");
+        $('#creditos').val("");
 
         $('#boton_go').attr("disabled", true);
 
@@ -250,13 +274,30 @@ function buscarUltimaConciliacion(cuenta){
 
                     $('#fecha_tran').html(data.fecha);
                     $('#fecha_actual').html(data.fechaActual);
-                    $('#boton_go').attr("disabled", false);
 
                     debitos = $.formatNumber((data.debitos),{locale:idiomaAux});
                     $('#debitos').val(debitos);
                     
                     creditos = $.formatNumber((data.creditos),{locale:idiomaAux});
                     $('#creditos').val(creditos);
+
+                    totalConta = balanceTConta - data.debitos + data.creditos
+                    if(totalConta < 0){
+                        cd_conta = "D"
+                        cd_corres = "C"
+                    }else{
+                        cd_conta = "C"
+                        cd_corres = "D"
+                    }
+                    totalContaF = $.formatNumber(Math.abs(totalConta),{locale:idiomaAux});
+                    $('#saldo_fin_conta').val(totalContaF);
+                    $('#cdSaldoFinalConta').html(cd_conta);
+                    $('#saldo_fin_corr').val(totalContaF);
+                    $('#cdSaldoFinalCorr').html(cd_corres);
+                    
+                    if($('#sald_ini_conta').val() != $('#saldo_fin_conta').val()){
+                        $('#boton_go').attr("disabled", false);
+                    }
                     
     
                 }else{
@@ -288,6 +329,15 @@ function buscarUltimaConciliacion(cuenta){
 
                     $('#sald_tot_corr').val("");  
                     $('#cdTotalCorr').html("");
+                    
+                    $('#saldo_fin_conta').val("");
+                    $('#cdSaldoFinalConta').html("");
+                    $('#saldo_fin_corr').val("");
+                    $('#cdSaldoFinalCorr').html("");
+
+                    $('#debitos').val("");
+                    $('#creditos').val("");
+
                     $('#boton_go').attr("disabled", true);
                 
                 }

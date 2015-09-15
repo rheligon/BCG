@@ -1,3 +1,4 @@
+from django.db import transaction
 from django.core import serializers
 from django.core.mail import send_mail
 from django.shortcuts import render, get_object_or_404
@@ -20,6 +21,7 @@ from itertools import chain
 from Matcher.models import *
 
 from Matcher_WS.settings import ARCHIVOS_FOLDER
+from Matcher_WS.intraday import eliminarIntraday
 from Matcher_WS.backend import MyAuthBackend
 from Matcher_WS.edo_cuenta import edoCta, edc_list, Trans, Bal
 from Matcher_WS.mailConf import enviar_mail
@@ -54,6 +56,8 @@ def test(request):
     hora = timenow()
     hora = str(hora)
 
+    
+    
     """
     sessions = Session.objects.filter(expire_date__gte=timezone.now())
     uid_list = []
@@ -87,6 +91,7 @@ def test(request):
     return JsonResponse(hora, safe=False)
 
 @login_required(login_url='/login')
+@transaction.atomic
 def index(request):
 
     idioma = Configuracion.objects.all()[0].idioma  
@@ -139,6 +144,7 @@ def index(request):
     template = "matcher/index.html"
     return render(request, template, context)
 
+@transaction.atomic
 def usr_login(request):
     
     message = None
@@ -344,6 +350,7 @@ def usr_login(request):
         template = "matcher/login.html"
         return render(request, template, context)
 
+@transaction.atomic
 def usr_logout(request):
 
     if request.method == 'POST':
@@ -373,6 +380,7 @@ def usr_logout(request):
         auth.logout(request)
         return HttpResponseRedirect('/')
 
+@transaction.atomic
 def cambioClave(request):
 
     expirarSesion(request)
@@ -428,6 +436,7 @@ def cambioClave(request):
 
 
 @login_required(login_url='/login')
+@transaction.atomic
 def listar_cuentas(request):
 
     permisos = get_ops(request)
@@ -447,6 +456,7 @@ def listar_cuentas(request):
 
 
 @login_required(login_url='/login')
+@transaction.atomic
 def resumen_cuenta(request, cuenta_id):
 
     permisos = get_ops(request)
@@ -494,6 +504,7 @@ def resumen_cuenta(request, cuenta_id):
     return render(request, template, context)
 
 @login_required(login_url='/login')
+@transaction.atomic
 def pd_estadoCuentas(request):
 
     permisos = get_ops(request)
@@ -580,6 +591,7 @@ def pd_estadoCuentas(request):
         return render(request, template, context)
 
 @login_required(login_url='/login')
+@transaction.atomic
 def pd_cargaAutomatica(request):
 
     permisos = get_ops(request)
@@ -997,6 +1009,7 @@ def pd_cargaAutomatica(request):
         return render(request, template, context)
 
 @login_required(login_url='/login')
+@transaction.atomic
 def pd_cargaManual(request):
 
     permisos = get_ops(request)
@@ -1185,6 +1198,7 @@ def pd_cargaManual(request):
 
 
 @login_required(login_url='/login')
+@transaction.atomic
 def pd_match(request):
     
     permisos = get_ops(request)
@@ -1295,6 +1309,7 @@ def pd_match(request):
 
 
 @login_required(login_url='/login')
+@transaction.atomic
 def pd_matchesPropuestos(request, cuenta):
     
     permisos = get_ops(request)
@@ -1358,6 +1373,7 @@ def pd_matchesPropuestos(request, cuenta):
         return render(request, template, context)
 
 @login_required(login_url='/login')
+@transaction.atomic
 def pd_observaciones(request, mensaje,tipo):
     
     idioma = Configuracion.objects.all()[0].idioma 
@@ -1448,6 +1464,7 @@ def pd_observaciones(request, mensaje,tipo):
             return JsonResponse({'msg':"ok"})
 
 @login_required(login_url='/login')
+@transaction.atomic
 def pd_detallesMT(request, mensaje,tipo):
 
     permisos = get_ops(request)
@@ -1518,6 +1535,7 @@ def pd_detallesMT(request, mensaje,tipo):
             return render(request, template, context)
 
 @login_required(login_url='/login')
+@transaction.atomic
 def pd_partidasAbiertas(request):
     
     permisos = get_ops(request)
@@ -1870,6 +1888,7 @@ def pd_partidasAbiertas(request):
         return render(request, template, context)
 
 @login_required(login_url='/login')
+@transaction.atomic
 def pd_matchesConfirmados(request,cuenta):
 
     permisos = get_ops(request)
@@ -2034,6 +2053,7 @@ def pd_matchesConfirmados(request,cuenta):
         return render(request, template, context)
 
 @login_required(login_url='/login')
+@transaction.atomic
 def pd_conciliacion(request):
     
     permisos = get_ops(request)
@@ -2056,6 +2076,7 @@ def pd_conciliacion(request):
     return render(request, template, context)
 
 @login_required(login_url='/login')
+@transaction.atomic
 def reportes(request):
 
     permisos = get_ops(request)
@@ -2537,6 +2558,7 @@ def reportes(request):
         return render(request, template, context)
 
 @login_required(login_url='/login')
+@transaction.atomic
 def mensajesSWIFT(request):
 
     permisos = get_ops(request)
@@ -2554,6 +2576,7 @@ def mensajesSWIFT(request):
     return render(request, template, context)
 
 @login_required(login_url='/login')
+@transaction.atomic
 def mtn96(request):
 
     permisos = get_ops(request)
@@ -2867,6 +2890,7 @@ def mtn96(request):
             return JsonResponse({'mens':mensaje})
 
 @login_required(login_url='/login')
+@transaction.atomic
 def mtn99(request):
 
     permisos = get_ops(request)
@@ -3122,6 +3146,7 @@ def mtn99(request):
 
 
 @login_required(login_url='/login')
+@transaction.atomic
 def intraday(request,cuenta):
     
     permisos = get_ops(request)
@@ -3607,6 +3632,7 @@ def intraday(request,cuenta):
 
 
 @login_required(login_url='/login')
+@transaction.atomic
 def transIntraday(request,cuenta):       
     
     permisos = get_ops(request)
@@ -4031,7 +4057,7 @@ def transIntraday(request,cuenta):
 
     if(conciliacion):
         cons = conciliacion[0]
-        bfcon = cons.balancefinalcontabilidad
+        bfcon = cons.saldocontabilidad
     
     context = {'balance':bfcon,'fecha942':fecha942,'debitos':debitos,'creditos':creditos,'tiempoAct':tiempoAct,'mensajes':arregloMensajes,'errores':errores,'idioma':idioma,'ops':get_ops(request),'cuenta':cuentaId,'fecha':fecha , 'fechaActual':fechaActual}
     template = "matcher/transIntraday.html"
@@ -4039,6 +4065,7 @@ def transIntraday(request,cuenta):
     return render(request, template, context)
 
 @login_required(login_url='/login')
+@transaction.atomic
 def configuracion(request, tipo):
     
     permisos = get_ops(request)
@@ -4324,6 +4351,7 @@ def configuracion(request, tipo):
 
 
 @login_required(login_url='/login')
+@transaction.atomic
 def seg_Usuarios(request):
     
     permisos = get_ops(request)
@@ -4597,6 +4625,7 @@ def seg_Usuarios(request):
         return render(request, template, context)
 
 @login_required(login_url='/login')
+@transaction.atomic
 def seg_Perfiles(request):
     
     permisos = get_ops(request)
@@ -4742,6 +4771,7 @@ def seg_Perfiles(request):
         return render(request, template, context)
 
 @login_required(login_url='/login')
+@transaction.atomic
 def seg_Logs(request):
     
     permisos = get_ops(request)
@@ -4810,6 +4840,7 @@ def seg_Logs(request):
 
 
 @login_required(login_url='/login')
+@transaction.atomic
 def seg_backupRestore(request):
     
     permisos = get_ops(request)
@@ -4888,6 +4919,7 @@ def seg_backupRestore(request):
         return render(request, template, context)
 
 @login_required(login_url='/login')
+@transaction.atomic
 def admin_bancos(request):
 
     permisos = get_ops(request)
@@ -4995,6 +5027,7 @@ def admin_bancos(request):
         return render(request, template, context)
 
 @login_required(login_url='/login')
+@transaction.atomic
 def admin_monedas(request):
 
     permisos = get_ops(request)
@@ -5104,6 +5137,7 @@ def admin_monedas(request):
         return render(request, template, context)
 
 @login_required(login_url='/login')
+@transaction.atomic
 def admin_cuentas(request):
     
     permisos = get_ops(request)
@@ -5409,6 +5443,7 @@ def admin_cuentas(request):
         return render(request, template, context)
 
 @login_required(login_url='/login')
+@transaction.atomic
 def admin_archive(request):
     
     permisos = get_ops(request)
@@ -6174,6 +6209,7 @@ def admin_archive(request):
 
 
 @login_required(login_url='/login')
+@transaction.atomic
 def admin_reglas_transf(request):
     
     permisos = get_ops(request)
@@ -6308,6 +6344,7 @@ def admin_reglas_transf(request):
         return render(request, template, context)
 
 @login_required(login_url='/login')
+@transaction.atomic
 def admin_crit_reglas(request):
 
     permisos = get_ops(request)
@@ -6444,6 +6481,7 @@ def admin_crit_reglas(request):
         return render(request, template, context)
 
 @login_required(login_url='/login')
+@transaction.atomic
 def seg_licencia(request):
     
     permisos = get_ops(request)
@@ -6662,6 +6700,7 @@ def seg_licencia(request):
                 return JsonResponse({'mens':mensaje})
  
 @login_required(login_url='/login')
+@transaction.atomic
 def modulo_valores(request):
     
     permisos = get_ops(request)
@@ -6683,6 +6722,7 @@ def modulo_valores(request):
         return render(request, template, context)              
 
 @login_required(login_url='/login')
+@transaction.atomic
 def manual_usuario(request):
     expirarSesion(request)
     try:
@@ -6694,6 +6734,7 @@ def manual_usuario(request):
         return HttpResponseNotFound('<h1>Report Not Found</h1>')
 
 @login_required(login_url='/login')
+@transaction.atomic
 def manual_sistema(request):
     expirarSesion(request)
     try:
@@ -6705,6 +6746,7 @@ def manual_sistema(request):
         return HttpResponseNotFound('<h1>Report Not Found</h1>')
 
 @login_required(login_url='/login')
+@transaction.atomic
 def sobre_matcher(request):
     expirarSesion(request)
     try:
@@ -6716,6 +6758,7 @@ def sobre_matcher(request):
         return HttpResponseNotFound('<h1>Report Not Found</h1>')
 
 @login_required(login_url='/login')
+@transaction.atomic
 def SU_licencia(request):
 
     permisos = get_ops(request)
@@ -6927,6 +6970,7 @@ def SU_licencia(request):
 
 
 @login_required(login_url='/login')
+@transaction.atomic
 def SU_modulos(request):
 
     permisos = get_ops(request)
@@ -6965,6 +7009,7 @@ def SU_modulos(request):
             return JsonResponse({'mensa':"mensaje"})   
 
 @login_required(login_url='/login')
+@transaction.atomic
 def SU_version(request):
 
     permisos = get_ops(request)
@@ -6983,6 +7028,7 @@ def SU_version(request):
         context = {'idioma':idioma, 'ops':get_ops(request), 'version':version,'ldap':get_ldap(request)}
         return render(request, template, context)
 
+@transaction.atomic
 def custom_404(request):
     expirarSesion(request)
     template = "matcher/404.html"
@@ -6990,6 +7036,7 @@ def custom_404(request):
     context = {'idioma':idioma, 'ops':get_ops(request),'ldap':get_ldap(request)}
     return render(request,template, context)
 
+@transaction.atomic
 def custom_500(request):
     expirarSesion(request)
     template = "matcher/500.html"
@@ -6997,6 +7044,7 @@ def custom_500(request):
     context = {'idioma':idioma, 'ops':get_ops(request),'ldap':get_ldap(request)}
     return render(request,template, context)
 
+@transaction.atomic
 def custom_403(request):
     expirarSesion(request)
     template = "matcher/403.html"
@@ -7004,6 +7052,7 @@ def custom_403(request):
     context = {'idioma':idioma, 'ops':get_ops(request),'ldap':get_ldap(request)}
     return render(request,template, context)
 
+@transaction.atomic
 def custom_400(request):
     expirarSesion(request)
     template = "matcher/400.html"
@@ -7029,6 +7078,7 @@ def notnone(string):
 def timenow():
     return datetime.now().replace(microsecond=0)
 
+@transaction.atomic
 def log(request,eid,detalles=None):
     # Funcion que recibe el request, ve cual es el usr loggeado y realiza el log
     username = request.user.username
@@ -7052,6 +7102,7 @@ def log(request,eid,detalles=None):
     else:
         Traza.objects.create(evento_idevento=evento,usuario=nombre, fecha_hora=fechaHora, terminal=terminal)
 
+@transaction.atomic
 def logAux(name,terminal,detalles):
     # Funcion que recibe el nombre del usuario y guarda su traza
     username = name
@@ -7065,6 +7116,7 @@ def logAux(name,terminal,detalles):
     else:
         Traza.objects.create(evento_idevento=evento,usuario=nombre, fecha_hora=fechaHora, terminal=terminal, detalles=detalles)
 
+@transaction.atomic
 def expirarSesion(request):
     config = Configuracion.objects.all()[0]
     tiempo = config.expiracion_sesion * 60 

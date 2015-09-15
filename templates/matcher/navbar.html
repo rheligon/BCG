@@ -450,7 +450,10 @@
             <div class="panel-heading">
                 <h4 class="panel-title">
                     <a data-parent="#accordion" href="{% url 'Matcher_WS.views.modulo_valores'%}"><span class="fa fa-folder">
-                    </span>Módulo de Valores</a>
+                    {%if idioma == 0%}
+                        </span>Módulo Valores</a>
+                    {%endif%}
+
                 </h4>
             </div>
         </div>

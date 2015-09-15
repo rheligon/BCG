@@ -1,4 +1,5 @@
 from Matcher.models import Configuracion
+from Matcher_WS.intraday import eliminarIntraday
 from socket import socket, AF_INET, SOCK_STREAM, error
 from select import select
 from datetime import datetime, date, time, timedelta
@@ -48,4 +49,5 @@ def matcher(idioma,cuenta,millis,funciones='1'):
             break
         # Codigo mientras se espera
     sock.close()
+    eliminarIntraday()
     return data.decode()
