@@ -1,4 +1,4 @@
-  {% load staticfiles %}
+{% load staticfiles %}
   
 <style>
     @import url({% static 'css/font-awesome.min.css' %});
@@ -190,7 +190,12 @@
             <div class="panel-heading">
                 <h4 class="panel-title">
                     <a data-toggle="collapse" data-parent="#accordion" href="#collapseFour"><span class="fa fa-envelope">
-                    </span>MT SWIFT</a>
+                    {%if idioma == 0%}
+                        </span>MT SWIFT</a>
+                    {%endif%}
+                    {%if idioma == 1%}
+                        </span>Exception Reporting</a>
+                    {%endif%}
                 </h4>
             </div>
             <div id="collapseFour" class="panel-collapse collapse">
@@ -268,6 +273,8 @@
                                 {%endif%}
                             </td>
                         </tr>
+                        {%endif%}
+                        {% if 4 in ops %}
                         <tr>
                             <td>
                                 {%if idioma == 0%}
@@ -462,8 +469,24 @@
                     <a data-parent="#accordion" href="{% url 'Matcher_WS.views.modulo_valores'%}"><span class="fa fa-folder">
                     {%if idioma == 0%}
                         </span>Módulo Valores</a>
+                    {%else%}
+                        </span>Values Module</a>
                     {%endif%}
+                </h4>
+            </div>
+        </div>
+        {%endif%}
 
+        {% if 82 in ops%}
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h4 class="panel-title">
+                    <a data-parent="#accordion" href="{% url 'Matcher_WS.views.conectividadSWIFT'%}"><span class="fa fa-plug">
+                    {%if idioma == 0%}
+                        </span>Conect. SWIFT</a>
+                    {%else%}
+                        </span>Direct Connect.</a>
+                    {%endif%}
                 </h4>
             </div>
         </div>
