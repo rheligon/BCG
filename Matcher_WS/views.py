@@ -6856,7 +6856,7 @@ def modulo_valores(request):
     lista = [Opcion.objects.get(idopcion=p).funprincipal for p in permisos]
     lista.sort()
     lista = set(lista)
-    if not 6 or not 5 in lista:
+    if not 18 in lista:
         retour = custom_403(request)
         return HttpResponseForbidden(retour)
 
@@ -6867,6 +6867,28 @@ def modulo_valores(request):
         template = "matcher/modulo_valores.html"
         idioma = Configuracion.objects.all()[0].idioma    
         context = {'idioma':idioma, 'cuentas':get_cuentas(request), 'ops':get_ops(request),'ldap':get_ldap(request)}
+        
+        return render(request, template, context)
+
+@login_required(login_url='/login')
+@transaction.atomic
+def conectividadSWIFT(request):
+    
+    permisos = get_ops(request)
+    lista = [Opcion.objects.get(idopcion=p).funprincipal for p in permisos]
+    lista.sort()
+    lista = set(lista)
+    if not 19 in lista:
+        retour = custom_403(request)
+        return HttpResponseForbidden(retour)
+
+    expirarSesion(request)
+
+    if request.method == 'GET':
+        
+        template = "matcher/conectividadSWIFT.html"
+        idioma = Configuracion.objects.all()[0].idioma    
+        context = {'idioma':idioma, 'ops':get_ops(request),'ldap':get_ldap(request)}
         
         return render(request, template, context)              
 

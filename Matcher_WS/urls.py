@@ -74,6 +74,9 @@ urlpatterns = patterns('',
     #Módulo de Valores
     url(r'^valores/$', 'Matcher_WS.views.modulo_valores', name='modulo_valores'),
 
+    #Conectividad SWIFT
+    url(r'^conectividad/$', 'Matcher_WS.views.conectividadSWIFT', name='conectividadSWIFT'),
+
     #Ayudas
     url(r'^ayuda/usuario/$', 'Matcher_WS.views.manual_usuario', name='manual_usuario'),
     url(r'^ayuda/sistema/$', 'Matcher_WS.views.manual_sistema', name='manual_sistema'),
