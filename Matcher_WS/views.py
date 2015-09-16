@@ -342,7 +342,6 @@ def usr_logout(request):
         auth.logout(request)
         return HttpResponseRedirect('/')
 
-@transaction.atomic
 def cambioClave(request):
 
     expirarSesion(request)
@@ -6893,7 +6892,6 @@ def conectividadSWIFT(request):
         return render(request, template, context)              
 
 @login_required(login_url='/login')
-@transaction.atomic
 def manual_usuario(request):
     expirarSesion(request)
     try:
@@ -6905,7 +6903,6 @@ def manual_usuario(request):
         return HttpResponseNotFound('<h1>Report Not Found</h1>')
 
 @login_required(login_url='/login')
-@transaction.atomic
 def manual_sistema(request):
     expirarSesion(request)
     try:
@@ -6917,7 +6914,6 @@ def manual_sistema(request):
         return HttpResponseNotFound('<h1>Report Not Found</h1>')
 
 @login_required(login_url='/login')
-@transaction.atomic
 def sobre_matcher(request):
     expirarSesion(request)
     try:
