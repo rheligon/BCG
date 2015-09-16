@@ -1425,13 +1425,11 @@ def pd_observaciones(request, mensaje,tipo):
 
             return JsonResponse({'msg':"ok"})
 
+
 @login_required(login_url='/login')
-<<<<<<< HEAD
 @transaction.atomic
 def pd_detallesMT(request, mensaje,tipo):
-=======
-def pd_detallesMT(request, mensaje,tipo,cuenta):
->>>>>>> c85a57af503543adda421c6e32dafd64c7d0d9d2
+
 
     permisos = get_ops(request)
     lista = [Opcion.objects.get(idopcion=p).funprincipal for p in permisos]
@@ -7183,12 +7181,8 @@ def SU_modulos(request):
             return JsonResponse({'mensa':"mensaje"})   
 
 @login_required(login_url='/login')
-<<<<<<< HEAD
 @transaction.atomic
-def SU_version(request):
-=======
 def Matcher_version(request):
->>>>>>> c85a57af503543adda421c6e32dafd64c7d0d9d2
 
     permisos = get_ops(request)
     lista = [Opcion.objects.get(idopcion=p).funprincipal for p in permisos]
