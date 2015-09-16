@@ -49,5 +49,4 @@ def matcher(idioma,cuenta,millis,funciones='1'):
             break
         # Codigo mientras se espera
     sock.close()
-    eliminarIntraday()
     return data.decode()

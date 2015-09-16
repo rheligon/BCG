@@ -17,6 +17,8 @@ if (idioma == 0){
 
 var t_conta = iniciar_tabla(idiomaAux);
 var t_info = iniciar_tabla2(idiomaAux);
+var t_impri = iniciar_tabla3(idiomaAux);
+
 
 var tiempo = $('#tiempoAct').val();
 tiempo = parseInt(tiempo)*30000
@@ -57,6 +59,54 @@ function iniciar_tabla2(idioma){
                 url: '/static/json/English-tables.json'
             },
              "ordering":false,
+             "columns": [
+                { "width": "5%" },//Edo. Cuenta
+                { "width": "5%" },//Num. Trans
+                { "width": "12%" },//Fecha Valor
+                { "width": "12%" },//Edo. Cuenta
+                { "width": "16%" },//Num. Trans
+                { "width": "10%" },//Fecha Valor
+                { "width": "30%" },//Edo. Cuenta
+              ]
+        })
+    };
+};
+
+function iniciar_tabla3(idioma){
+
+    
+    if (idioma==="es"){
+
+        return $('#table-impri').DataTable({
+            //poner if con idioma, el ingles es predeterminado
+            
+            language: {
+                url: '/static/json/Spanish-tables.json'
+            },
+            "ordering":false,
+            "dom": 'Bfrtip',
+            "buttons": ['excel','pdf'],
+            "columns": [
+                { "width": "5%" },//Edo. Cuenta
+                { "width": "5%" },//Num. Trans
+                { "width": "12%" },//Fecha Valor
+                { "width": "12%" },//Edo. Cuenta
+                { "width": "16%" },//Num. Trans
+                { "width": "10%" },//Fecha Valor
+                { "width": "30%" },//Edo. Cuenta
+              ]
+        })
+
+    }else if (idioma==="en"){
+
+        return $('#table-impri').DataTable({
+          
+            language: {
+                url: '/static/json/English-tables.json'
+            },
+             "ordering":false,
+             "dom": 'Bfrtip',
+             "buttons": ['csv','excel','pdf'],
              "columns": [
                 { "width": "5%" },//Edo. Cuenta
                 { "width": "5%" },//Num. Trans

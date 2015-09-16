@@ -23,15 +23,15 @@
     </h1> 
 </legend>
 <ul class="nav nav-tabs" id="emp-tab">
-    <li class="active"><a href="#datos-tab" data-toggle="tab">
+    <li class="active"><a href="#edocta-tab" data-toggle="tab">
         {%if idioma == 0%}
-            Crear
+            Edo.Cuenta
         {%endif%}
         {%if idioma == 1%}
-            Create
+            Statement Account
         {%endif%}
     <i class="fa"></i></a></li>
-    <li><a href="#nomen-tab" data-toggle="tab">
+    <li><a href="#carga-tab" data-toggle="tab">
         {%if idioma == 0%}
             Cargar
         {%endif%}
@@ -39,23 +39,1456 @@
             Load
         {%endif%}
     <i class="fa"></i></a></li>
-    <li><a href="#conc-tab" data-toggle="tab">
+    <li><a href="#match-tab" data-toggle="tab">
+            Match
+    <i class="fa"></i></a></li>
+    <li><a href="#matchp-tab" data-toggle="tab">
         {%if idioma == 0%}
-            Conciliación
+            Matches Propuestos
         {%endif%}
         {%if idioma == 1%}
-            Reconciliation
+            Proposed Matches
+        {%endif%}
+    <i class="fa"></i></a></li>
+    <li><a href="#partidas-tab" data-toggle="tab">
+        {%if idioma == 0%}
+            Partidas Abiertas
+        {%endif%}
+        {%if idioma == 1%}
+            Open Entries
+        {%endif%}
+    <i class="fa"></i></a></li>
+    <li><a href="#matchc-tab" data-toggle="tab">
+        {%if idioma == 0%}
+            Matches Confirmados
+        {%endif%}
+        {%if idioma == 1%}
+            Confirm Matches
         {%endif%}
     <i class="fa"></i></a></li>
     <li><a href="#rep-tab" data-toggle="tab">
         {%if idioma == 0%}
-            Consultas/Reportes
+            Reportes
         {%endif%}
         {%if idioma == 1%}
-            Consoults/Reports
+            Reports
         {%endif%}
     <i class="fa"></i></a></li>
 </ul>
+
+ <div class="tab-content">
+    <div class="tab-pane active" id="edocta-tab">
+        <form class="form-inline">
+            <fieldset>
+                <br>
+
+                <div class="row clearfix">
+                    <!-- Select Basic -->
+                    <div class="form-group col-md-3 ">
+                      <label class="control-label" for="Cuenta-sel">
+                        {%if idioma == 0%}
+                          Código Cuenta:
+                        {%endif%}
+                        {%if idioma == 1%}
+                          Account Code:
+                        {%endif%}
+                      </label>
+                      <div>
+                        <select id="Cuenta-sel" name="Cuenta-sel" class="form-control">
+                          <option value="-1">----------</option>
+                        </select>
+                      </div>
+                    </div>
+                    <!-- Text input-->
+                    <div class="form-group col-md-4">
+                      <label class="control-label" for="cta_nostro">
+                        {%if idioma == 0%}
+                          Ref. Nostro:
+                        {%endif%}
+                        {%if idioma == 1%}
+                          Nostro Ref.:
+                        {%endif%}
+                      </label>  
+                      <div>
+                      <input id="cta_nostro" name="cta_nostro" type="text" placeholder="" class="form-control input-md" style="width:80%" readonly>
+                      </div>
+                    </div>
+
+                    <!-- Text input-->
+                    <div class="form-group col-md-4">
+                      <label class="control-label" for="cta_vostro">
+                        {%if idioma == 0%}
+                          Ref. Vostro:
+                        {%endif%}
+                        {%if idioma == 1%}
+                          Vostro Ref.:
+                        {%endif%}
+                      </label>  
+                      <div>
+                      <input id="cta_vostro" name="cta_vostro" type="text" placeholder="" class="form-control input-md" style="width:80%" readonly>
+                      </div>
+                    </div>
+                </div>
+            </fieldset>
+        </form>
+        <!-- Tabla -->
+        <br>
+        <legend>
+          {%if idioma == 0%}
+            Estados de Cuentas
+          {%endif%}
+          {%if idioma == 1%}
+            Account Statements
+          {%endif%}
+        </legend>
+
+        <div ="row">
+          <div style="padding-bottom:1%;" class="col-md-3 pull-right">
+              <button type="button" id="delButton" data-loading-text="Cargando..." class="btn btn-danger" autocomplete="off">
+                {%if idioma == 0%}
+                  Eliminar
+                {%endif%}
+                {%if idioma == 1%}
+                  Delete
+                {%endif%}
+              </button>
+          </div>
+        <ul class="nav nav-tabs" id="edo-cuenta-tab">
+            <li class="active"><a href="#conta-tab" data-toggle="tab">
+            {%if idioma == 0%}
+              Contabilidad
+            {%endif%}
+            {%if idioma == 1%}
+              Accounting
+            {%endif%}
+            <i class="fa"></i></a></li>
+            <li><a href="#corr-tab" data-toggle="tab">
+              {%if idioma == 0%}
+                Corresponsal
+              {%endif%}
+              {%if idioma == 1%}
+                Correspondent
+              {%endif%}
+            <i class="fa"></i></a></li>
+        </ul>
+        </div>
+        <div class="tab-content">
+            <div class="tab-pane active" id="conta-tab">
+                <div id="table-div-conta" class="table-responsive col-md-12">
+                  <div class="well table-responsive col-md-12">
+                      <table id="table-conta" class="table table-bordered table-striped tabla">
+                          <thead>
+                              <tr>
+                                {%if idioma == 0%}
+                                  <th>Código Cuenta</th>
+                                  <th>Estado</th>
+                                  <th>Edo. Cuenta</th>
+                                  <th>Páginas</th>
+                                  <th>Saldo Inicial</th>
+                                  <th>Saldo Final</th>
+                                {%endif%}
+                                {%if idioma == 1%}
+                                  <th>Account Code</th>
+                                  <th>Status</th>
+                                  <th>Acc. Statement</th>
+                                  <th>Pages</th>
+                                  <th>Initial Balance</th>
+                                  <th>Final Balance</th>
+                                {%endif%}
+                              </tr>
+                          </thead>
+                          <tbody id="tb-conta">
+                             <tr>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                          </tr>
+                          </tbody>
+                      </table>
+                  </div>
+                </div>
+            </div>
+
+            <div class="tab-pane" id="corr-tab">
+                <div id="table-div-corr" class="table-responsive col-md-12">
+                  <div class="well table-responsive col-md-12">
+                    <table id="table-corr" class="table table-bordered table-striped tabla">
+                        <thead>
+                            <tr>
+                              {%if idioma == 0%}
+                                <th>Código Cuenta</th>
+                                <th>Estado</th>
+                                <th>Edo. Cuenta</th>
+                                <th>Páginas</th>
+                                <th>Saldo Inicial</th>
+                                <th>Saldo Final</th>
+                              {%endif%}
+                              {%if idioma == 1%}
+                                <th>Account Code</th>
+                                <th>Status</th>
+                                <th>Acc. Statement</th>
+                                <th>Pages</th>
+                                <th>Initial Balance</th>
+                                <th>Final Balance</th>
+                              {%endif%}
+                            </tr>
+                        </thead>
+                        <tbody id="tb-corr">
+                             <tr>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                          </tr>
+                        </tbody>
+                    </table>
+                  </div>
+                </div>
+            </div>
+        </div>    
+    </div>
+    <div class="tab-pane" id="carga-tab">
+        <br>
+        <div class="well col-md-5">
+          <legend>
+            {%if idioma == 0%}
+              Contabilidad
+            {%endif%}
+            {%if idioma == 1%}
+              Accounting
+            {%endif%}
+          </legend>
+
+          <div class="col-md-5">
+            <ul class="archivos">
+             
+            </ul>
+          </div>
+
+          <div class="col-md-7 col-md-push-3">
+            <div>
+                <button type="button" id="prevContaButton" data-loading-text="Cargando..." class="col-md-7 btn btn-primary" autocomplete="off">
+                    {%if idioma == 0%}
+                      Previsualizar
+                    {%endif%}
+                    {%if idioma == 1%}
+                      Preview
+                    {%endif%}
+                </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-1"></div>
+
+        <div class="well col-md-5">
+          <legend>
+            {%if idioma == 0%}
+              Corresponsal
+            {%endif%}
+            {%if idioma == 1%}
+              Correspondent
+            {%endif%}
+          </legend>
+
+          <div class="col-md-5">
+            <ul class="archivos">
+              
+            </ul>
+          </div>
+
+          <div class="col-md-7 col-md-push-3">
+            <div>
+                <button type="button" id="prevCorrButton" data-loading-text="Cargando..." class="col-md-7 btn btn-primary" autocomplete="off">
+                    {%if idioma == 0%}
+                      Previsualizar
+                    {%endif%}
+                    {%if idioma == 1%}
+                      Preview
+                    {%endif%}
+                </button>
+            </div>
+          </div>
+        </div>
+
+        </br>
+
+
+        <div class="well table-responsive col-md-12">
+        <legend>
+          {%if idioma == 0%}
+            Detalles:
+          {%endif%}
+          {%if idioma == 1%}
+            Details:
+          {%endif%}
+        </legend>
+            <table id="table-edc" class="table table-bordered table-striped tabla">
+                <thead>
+                    <tr>
+                      {%if idioma == 0%}
+                        <th>Código Cuenta</th>
+                        <th>Origen</th>
+                        <th>Edo. Cuenta</th>
+                        <th>Página</th>
+                        <th>Saldo Inicial</th>
+                        <th>Saldo Final</th>
+                      {%endif%}
+                      {%if idioma == 1%}
+                        <th>Account Code</th>
+                        <th>Source</th>
+                        <th>Acc. Statemet</th>
+                        <th>Page</th>
+                        <th>Initial Balance</th>
+                        <th>Final Balance</th>
+                      {%endif%}
+                    </tr>
+                </thead>
+                <tbody>
+                     <tr>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    
+                  </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="well table-responsive col-md-12">
+          <legend>
+            {%if idioma == 0%}
+             Detalles Transacciones:
+            {%endif%}
+            {%if idioma == 1%}
+              Transactions Details:
+            {%endif%}
+          </legend>
+            <table id="table-detalle" class="table table-bordered table-striped tabla">
+                <thead>
+                    <tr>
+                      {%if idioma == 0%}
+                        <th>Edo. Cuenta</th>
+                        <th>Num. Trans</th>
+                        <th>Fecha Valor</th>
+                        <th>C/D</th>
+                        <th>Monto</th>
+                        <th>Tipo</th>
+                        <th>Ref Nostro</th>
+                        <th>Ref Vostro</th>
+                        <th>Descripcion</th>
+                      {%endif%}
+                      {%if idioma == 1%}
+                        <th>Acc. Statement</th>
+                        <th>Trans. No.</th>
+                        <th>Value Date</th>
+                        <th>C/D</th>
+                        <th>Amount</th>
+                        <th>Type</th>
+                        <th>Nostro Ref.</th>
+                        <th>Vostro Ref.</th>
+                        <th>Description</th>
+                      {%endif%}
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                  </tr>
+                </tbody>
+            </table>
+          <div class="col-md-3 pull-right">
+            <div>
+                <button type="button" id="confButton" data-loading-text="Cargando..." class="col-md-7 btn btn-primary" autocomplete="off">
+                    {%if idioma == 0%}
+                     Confirmar
+                    {%endif%}
+                    {%if idioma == 1%}
+                      Confirm
+                    {%endif%}
+                </button>
+            </div>
+          </div>
+        </div>      
+    </div>
+    <div class="tab-pane" id="match-tab">
+        <br>
+        <div class="col-md-9 col-md-push-1">
+    <div class="well">
+      <form id="form-match" class="form-horizontal">
+        <fieldset>
+          <!-- Form Name -->
+          
+          <!-- Select Basic -->
+          <div class="form-group">
+            <label class="col-md-4 control-label" for="Cuenta-sel">
+              {%if idioma == 0%}
+                Seleccione una Cuenta: 
+              {%endif%}
+              {%if idioma == 1%}
+                Account Selection: 
+              {%endif%}
+            </label>
+            <div class="col-md-4">
+            <select id="Cuenta-sel" name="Cuenta-sel" class="form-control">
+              <option value="-1">----------</option>
+            </select>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="col-md-4 control-label">
+              {%if idioma == 0%}
+                Fecha: 
+              {%endif%}
+              {%if idioma == 1%}
+                Date: 
+              {%endif%}
+            </label>
+            <div class="col-md-4">
+              <input id="f-match" class="form-control" data-value="{{fecha_hoy}}">
+            </div>
+          </div>
+          <br/>
+          <div class="col-md-3">
+            <div>
+                <button type="button" id="liberarButton" data-loading-text="Cargando..." class="col-md-7 btn btn-warning" autocomplete="off">
+                    {%if idioma == 0%}
+                      Liberar 
+                    {%endif%}
+                    {%if idioma == 1%}
+                      Set Free 
+                    {%endif%}
+                </button>
+            </div>
+          </div>
+
+          <div class="col-md-3">
+            {% if 77 in ops %}
+            <div>
+                <button type="button" id="cpButton" data-loading-text="Cargando..." class="col-md-7 btn btn-warning" autocomplete="off">
+                    {%if idioma == 0%}
+                      Match CP 
+                    {%endif%}
+                    {%if idioma == 1%}
+                      Match OA 
+                    {%endif%}
+                </button>
+            </div>
+            {% endif %}
+          </div>
+
+          <div class="col-md-3">
+            <div>
+                <button type="button" id="matchButton" data-loading-text="Cargando..." class="col-md-7 btn btn-warning" autocomplete="off">
+                    Match
+                </button>
+            </div>
+          </div>
+
+          <div class="col-md-3">
+            <div>
+                <button type="button" id="cancelButton" class="col-md-7 btn btn-default">
+                    {%if idioma == 0%}
+                      Cancelar 
+                    {%endif%}
+                    {%if idioma == 1%}
+                      Cancel 
+                    {%endif%}
+                </button>
+            </div>
+          </div>
+
+        </fieldset>
+      </form>
+    </div>
+  </div>           
+    </div>
+    <div class="tab-pane" id="matchp-tab">
+        <br>
+        <div class="form-group col-md-6 well">
+  <label class="col-md-5" for="Cuenta-sel">
+    {%if idioma == 0%}
+      Seleccione una cuenta:
+    {%endif%}
+    {%if idioma == 1%}
+      Select account:
+    {%endif%}
+  </label>
+  <div class="col-md-7">
+    <select id="Cuenta-sel" name="Cuenta-sel" class="form-control">
+      <option value="">----------</option>
+    </select>
+  </div>
+</div>
+
+
+<div class="table-responsive col-md-12 dataTables_wrapper">
+    <table id="table-pa" style="width:100%;" class="table table-bordered table-striped table-condensed">
+        <thead>
+            <tr>
+              {%if idioma == 0%}
+                <th>E/C</th>
+                <th>Pág</th>
+                <th>Fecha</th>
+                <th>Tipo</th>
+                <th>Ref Nostro</th>
+                <th>Ref Vostro</th>
+                <th>Detalles</th>
+                <th>C/D</th>
+                <th>Monto</th>
+                <th>S/L</th>
+                <th>Sel</th>
+              {%endif%}
+              {%if idioma == 1%}
+                <th>A/S</th>
+                <th>Page</th>
+                <th>Date</th>
+                <th>Type</th>
+                <th>Nostro Ref.</th>
+                <th>Vostro Ref.</th>
+                <th>Details</th>
+                <th>C/D</th>
+                <th>Amount</th>
+                <th>S/L</th>
+                <th>Sel</th>
+              {%endif%}
+            </tr>
+        </thead>
+        <tbody id="tb-pa">
+                
+                  <tr>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                  </tr>
+        </tbody>
+    </table>
+</div>
+
+<div class="col-md-3 pull-right" style="margin-top:2%;">
+
+
+  <button id="acptButton" data-loading-text="Cargando..." class="col-md-6 btn btn-primary" autocomplete="off">
+    {%if idioma == 0%}
+      Aceptar
+    {%endif%}
+    {%if idioma == 1%}
+      Accept
+    {%endif%}
+  </button>
+
+</div>
+
+           
+    </div>
+    <div class="tab-pane" id="partidas-tab">
+        <br>
+          <div class="form-group col-md-12">
+    <label class="col-md-3" for="Cuenta-sel">
+      {%if idioma == 0%}
+        Seleccione una cuenta:
+      {%endif%}
+      {%if idioma == 1%}
+        Select account:
+      {%endif%}
+    </label>
+    <div class="col-md-3">
+      <select id="Cuenta-sel" name="Cuenta-sel" class="form-control">
+        <option value="-1">----------</option>
+       
+      </select>
+    </div>
+
+    <div class="col-md-3 col-md-push-1">
+      <button type="button" id="srchButton" data-loading-text="Cargando..." class="col-md-6 btn btn-primary" autocomplete="off">
+          {%if idioma == 0%}
+            Buscar
+          {%endif%}
+          {%if idioma == 1%}
+            Search
+          {%endif%}
+      </button>
+    </div>
+
+    <div class="col-md-3">
+      <button type="button" id="cancelButton" data-loading-text="Cargando..." class="col-md-6 btn btn-default" autocomplete="off">
+          {%if idioma == 0%}
+            Cancelar
+          {%endif%}
+          {%if idioma == 1%}
+            Cancel
+          {%endif%}
+      </button>
+    </div>
+
+    <br><br><br>
+    <div class="col-md-12 checkboxes">
+      <div class="col-md-6 well" id="wcb">
+
+        <div class="row">
+          <div class="checkbox col-md-4">
+            <label>
+              <input type="checkbox" class="cbfilter" id="monto-cb" value="0">
+                {%if idioma == 0%}
+                  Monto
+                {%endif%}
+                {%if idioma == 1%}
+                  Amount
+                {%endif%}
+            </label>
+          </div>
+
+          <div class="checkbox col-md-4" style="margin-top: 10px;">
+            <label>
+              <input type="checkbox" class="cbfilter" id="ref-cb" value="1">
+                {%if idioma == 0%}
+                  Referencias
+                {%endif%}
+                {%if idioma == 1%}
+                  References
+                {%endif%}
+            </label>
+          </div>
+
+          <div class="checkbox col-md-4" style="margin-top: 10px;">
+            <label>
+              <input type="checkbox" class="cbfilter" id="cod-cb" value="2">
+                {%if idioma == 0%}
+                  Crédito/Débito
+                {%endif%}
+                {%if idioma == 1%}
+                  Credit/Debit
+                {%endif%}
+            </label>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="checkbox col-md-4">
+            <label>
+              <input type="checkbox" class="cbfilter" id="fecha-cb" value="3">
+                {%if idioma == 0%}
+                  Fecha
+                {%endif%}
+                {%if idioma == 1%}
+                  Date
+                {%endif%}
+            </label>
+          </div>
+
+          <div class="checkbox col-md-4" style="margin-top: 10px;">
+            <label>
+              <input type="checkbox" class="cbfilter" id="tipo-cb" value="4">
+                {%if idioma == 0%}
+                  Tipo Trans.
+                {%endif%}
+                {%if idioma == 1%}
+                  Trans. Type
+                {%endif%}
+            </label>
+          </div>
+
+          <div class="checkbox col-md-4" style="margin-top: 10px;">
+            <label>
+              <input type="checkbox" class="cbfilter" id="origen-cb" value="5">
+                {%if idioma == 0%}
+                  Origen
+                {%endif%}
+                {%if idioma == 1%}
+                  Source
+                {%endif%}
+            </label>
+          </div>
+        </div>
+
+      </div>
+
+
+      <div id="filter-div" class="col-md-6 well" hidden>
+        
+          <div id="filter-monto" hidden>
+            <!-- Text input-->
+            <div class="form-group col-md-6">
+              <label class="control-label">
+                {%if idioma == 0%}
+                  Desde:
+                {%endif%}
+                {%if idioma == 1%}
+                  From:
+                {%endif%}
+              </label>  
+              <div>
+              {%if idioma == 0%}
+                <input id="monto-desde" type="text" placeholder="" class="form-control input-md" onkeypress='return solonumeroycoma(event)' onkeyup='return solonumeroycoma(event)'>
+              {%endif%}
+              {%if idioma == 1%}
+                <input id="monto-desde" type="text" placeholder="" class="form-control input-md" onkeypress='return solonumeroypunto(event)' onkeyup='return solonumeroypunto(event)'>
+              {%endif%}
+              </div>
+            </div>
+
+            <!-- Text input-->
+            <div class="form-group col-md-6">
+              <label class="control-label">
+                {%if idioma == 0%}
+                  Hasta:
+                {%endif%}
+                {%if idioma == 1%}
+                  Until:
+                {%endif%}
+              </label>  
+              <div>
+              {%if idioma == 0%}
+                <input id="monto-hasta" type="text" placeholder="" class="form-control input-md" onkeypress='return solonumeroycoma(event)' onkeyup='return solonumeroycoma(event)'>
+              {%endif%}
+              {%if idioma == 1%}
+                <input id="monto-hasta" type="text" placeholder="" class="form-control input-md" onkeypress='return solonumeroypunto(event)' onkeyup='return solonumeroypunto(event)'>
+              {%endif%}
+              </div>
+            </div>
+            <p class="help-block">
+              {%if idioma == 0%}
+                Los montos deben ser sólo números. Puede usar la coma "," y dos (2) decimales.  
+              {%endif%}
+              {%if idioma == 1%}
+                Amounts must be number characters only. You can use dot "." and two (2) decimal for decimal numbers.  
+              {%endif%}
+            </p>
+          </div>
+
+          <div id="filter-ref" hidden>
+            <div class="col-md-4"> 
+              <label class="radio-inline">
+                <input type="radio" name="radioref" id="nostro-radio" value="N">
+                Nostro
+              </label> 
+            </div>
+
+            <div class="col-md-4"> 
+              <label class="radio-inline">
+                <input type="radio" name="radioref" id="vostro-radio" value="V">
+                Vostro
+              </label>
+            </div>
+
+            <div class="col-md-4"> 
+              <label class="radio-inline">
+                <input type="radio" name="radioref" id="det-radio" value="D">
+                  {%if idioma == 0%}
+                    Detalles
+                  {%endif%}
+                  {%if idioma == 1%}
+                    Details
+                  {%endif%}
+              </label>
+            </div>
+
+            <!-- Text input-->
+            <div class="form-group col-md-10"> 
+              <div>
+              <input id="ref-txt" type="text" placeholder="" class="form-control input-md">
+              </div>
+            </div>
+          </div>
+
+          <div id="filter-cod" hidden>
+            <div class="col-md-6"> 
+              <label class="radio-inline">
+                <input type="radio" name="radiocod" id="cred-radio" value="C">
+                {%if idioma == 0%}
+                  Crédito
+                {%endif%}
+                {%if idioma == 1%}
+                  Credit
+                {%endif%}
+              </label> 
+            </div>
+            <div class="col-md-6"> 
+              <label class="radio-inline">
+                <input type="radio" name="radiocod" id="deb-radio" value="D">
+                {%if idioma == 0%}
+                  Débito
+                {%endif%}
+                {%if idioma == 1%}
+                  Debit
+                {%endif%}
+              </label>
+            </div>
+          </div>
+
+          <div id="filter-fecha" hidden>
+            <div class="form-group">
+              <label class="col-md-2 control-label">
+                {%if idioma == 0%}
+                  Desde:
+                {%endif%}
+                {%if idioma == 1%}
+                  From:
+                {%endif%}
+              </label>
+              <div class="col-md-4"><input id="f-desde" class="form-control"></div>
+            </div>
+
+            <div class="form-group">
+              <label class="col-md-2 control-label">
+                {%if idioma == 0%}
+                  Hasta:
+                {%endif%}
+                {%if idioma == 1%}
+                  To:
+                {%endif%}
+              </label>
+              <div class="col-md-4"><input id="f-hasta" class="form-control"></div>
+            </div>
+          </div>
+
+          <div id="filter-tipo" hidden>
+            <!-- Text input-->
+            <div class="form-group col-md-10">
+              <label class="control-label">
+                {%if idioma == 0%}
+                  Tipo Trans.
+                {%endif%}
+                {%if idioma == 1%}
+                  Trans. Type
+                {%endif%}
+              </label>  
+              <div>
+              <input id="tipo-trans" type="text" placeholder="" class="form-control input-md">
+              </div>
+            </div>
+          </div>
+
+          <div id="filter-origen" hidden>
+            <div class="col-md-6"> 
+              <label class="radio-inline">
+                <input type="radio" name="radioorig" id="conta-radio" value="L">
+                  {%if idioma == 0%}
+                    Libro (L)
+                  {%endif%}
+                  {%if idioma == 1%}
+                    Accounting (L)
+                  {%endif%}
+              </label> 
+            </div>
+            <div class="col-md-6"> 
+              <label class="radio-inline">
+                <input type="radio" name="radioorig" id="corr-radio" value="S">
+                  {%if idioma == 0%}
+                    Corresponsal (S)
+                  {%endif%}
+                  {%if idioma == 1%}
+                    Correspondent (S)
+                  {%endif%}
+              </label>
+            </div>
+          </div>
+
+      </div>
+
+    </div>
+
+
+  </div>
+
+  <div id="pbardiv" class="col-md-8 col-md-push-2" hidden>
+    <div class="progress" >
+      <div id="pbar" class="progress-bar" role="progressbar" max="0" current="0" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="min-width: 2em;">
+        <p id="pbartxt">0%</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="table-responsive col-md-12 dataTables_wrapper">
+      <table id="table-pa" style="width:100%;" class="table table-bordered table-striped tabla">
+          <thead>
+              <tr>
+                {%if idioma == 0%}
+                  <th>E/C</th>
+                  <th>Pág</th>
+                  <th>Fecha</th>
+                  <th>Tipo</th>
+                  <th>Ref Nostro</th>
+                  <th>Ref Vostro</th>
+                  <th>Detalles</th>
+                  <th>C/D</th>
+                  <th>Monto</th>
+                  <th>S/L</th>
+                  <th>Sel</th>
+                  <th>MT</th>
+                  <th>Obs./Seg.</th>
+                {%endif%}
+                {%if idioma == 1%}
+                  <th>A/S</th>
+                  <th>Page</th>
+                  <th>Date</th>
+                  <th>Type</th>
+                  <th>Nostro Ref.</th>
+                  <th>Vostro Ref.</th>
+                  <th>Details</th>
+                  <th>C/D</th>
+                  <th>Amount</th>
+                  <th>S/L</th>
+                  <th>Sel</th>
+                  <th>MT</th>
+                  <th>Obs./Tra.</th>
+                {%endif%}
+              </tr>
+          </thead>
+          <tbody id="tb-pa">
+            <tr>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                  </tr>
+          </tbody>
+      </table>
+  </div>
+
+  <div class="row">
+  </div>
+
+  {% if 26 in ops %}
+  <div class="row">
+  <br>
+    <div class="col-md-3 col-md-push-3">
+      <button type="button" id="checkAllButton" data-loading-text="Cargando..." class="col-md-6 btn btn-primary" selec="0">
+        {%if idioma == 0%}
+          Selecc. Todas
+        {%endif%}
+        {%if idioma == 1%}
+          Select All
+        {%endif%}
+      </button>
+    </div>
+
+    <div class="col-md-3 col-md-push-3">
+      <button type="button" id="matchButton" data-loading-text="Cargando..." class="col-md-6 btn btn-success" autocomplete="off">
+          Match
+      </button>
+    </div>
+  </div>
+  {%endif%}               
+    </div>
+    <div class="tab-pane" id="matchc-tab">
+         <br>
+        <div class="form-group col-md-12">
+  <label class="col-md-3" for="Cuenta-sel">
+    {%if idioma == 0%}
+      Seleccione una cuenta:
+    {%endif%}
+    {%if idioma == 1%}
+      Account Selection:
+    {%endif%}
+  </label>
+  <div class="col-md-3">
+    <select id="Cuenta-sel" name="Cuenta-sel" class="form-control">
+      <option value="-1">----------</option>
+    </select>
+  </div>
+
+  <div class="col-md-3 col-md-push-1">
+    <button type="button" id="srchButton" data-loading-text="Cargando..." class="col-md-6 btn btn-primary" autocomplete="off">
+        {%if idioma == 0%}
+          Buscar
+        {%endif%}
+        {%if idioma == 1%}
+          Search
+        {%endif%}
+    </button>
+  </div>
+
+  <div class="col-md-3">
+    <button type="button" id="cancelButton" data-loading-text="Cargando..." class="col-md-6 btn btn-default" autocomplete="off">
+        {%if idioma == 0%}
+          Cancelar
+        {%endif%}
+        {%if idioma == 1%}
+          Cancel
+        {%endif%}
+    </button>
+  </div>
+   <br> <br> <br>
+
+  <div class="col-md-12 checkboxes">
+    <div class="col-md-6 well" id="wcb">
+
+      <div class="row">
+        <div class="checkbox col-md-4">
+          <label>
+            
+              <input type="checkbox" class="cbfilter" id="monto-cb" value="0">
+           
+            {%if idioma == 0%}
+              Monto
+            {%endif%}
+            {%if idioma == 1%}
+              Amount
+            {%endif%}
+          </label>
+        </div>
+
+        <div class="checkbox col-md-4" style="margin-top: 10px;">
+          <label>
+            
+            <input type="checkbox" class="cbfilter" id="match-cb" value="1">
+            Match
+          </label>
+        </div>
+
+        <div class="checkbox col-md-4" style="margin-top: 10px;">
+          <label>
+            
+            <input type="checkbox" class="cbfilter" id="ref-cb" value="2">
+            {%if idioma == 0%}
+              Referencias
+            {%endif%}
+            {%if idioma == 1%}
+              References
+            {%endif%}
+          </label>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="checkbox col-md-4">
+          <label>
+           
+            <input type="checkbox" class="cbfilter" id="fecham-cb" value="3">
+            {%if idioma == 0%}
+              Fecha Match
+            {%endif%}
+            {%if idioma == 1%}
+              Match Date
+            {%endif%}
+          </label>
+        </div>
+
+        <div class="checkbox col-md-4" style="margin-top: 10px;">
+          <label>
+            <input type="checkbox" class="cbfilter" id="fecha-cb" value="4">
+             {%if idioma == 0%}
+              Fecha
+            {%endif%}
+            {%if idioma == 1%}
+              Date
+            {%endif%}
+          </label>
+        </div>
+      </div>
+    </div>
+
+
+    <div id="filter-div" class="col-md-6 well" hidden>
+      
+        <div id="filter-monto" hidden>
+          <!-- Text input-->
+          <div class="form-group col-md-6">
+            <label class="control-label">
+              {%if idioma == 0%}
+                Desde:
+              {%endif%}
+              {%if idioma == 1%}
+                From:
+              {%endif%}
+            </label>  
+            <div>
+            {%if idioma == 0%}
+              
+                <input id="monto-desde" type="text" class="form-control input-md" onkeypress='return solonumeroycoma(event)' onkeyup='return solonumeroycoma(event)'>
+              
+            {%endif%}
+            {%if idioma == 1%}
+              
+                <input id="monto-desde" type="text" class="form-control input-md" onkeypress='return solonumeroypunto(event)' onkeyup='return solonumeroypunto(event)'>
+             {%endif%}
+            </div>
+          </div>
+
+          <!-- Text input-->
+          <div class="form-group col-md-6">
+            <label class="control-label">
+              {%if idioma == 0%}
+                Hasta:
+              {%endif%}
+              {%if idioma == 1%}
+                Until:
+              {%endif%}
+            </label>  
+            <div>
+              {%if idioma == 0%}
+                
+                  <input id="monto-hasta" type="text" placeholder="" class="form-control input-md" onkeypress='return solonumeroycoma(event)' onkeyup='return solonumeroycoma(event)'>
+               
+              {% endif %}
+              {%if idioma == 1%}
+                
+                  <input id="monto-hasta" type="text" placeholder="" class="form-control input-md" onkeypress='return solonumeroypunto(event)' onkeyup='return solonumeroypunto(event)'>
+               
+              {% endif %}
+            </div>
+          </div>
+          <p class="help-block">
+            {%if idioma == 0%}
+              Los montos deben ser sólo números. Puede usar la coma "," y dos (2) decimales.  
+            {%endif%}
+            {%if idioma == 1%}
+              Amounts must be number characters only. You can use dot "." and two (2) decimal for decimal numbers.  
+            {%endif%}
+          </p>
+        </div>
+
+        <div id="filter-match" hidden>
+          <!-- Text input-->
+          <div class="form-group col-md-10">
+            <label class="control-label">Match ID: </label>  
+            <div>
+             
+                <input id="match-id" type="text" placeholder="" class="form-control input-md">
+              
+            </div>
+          </div>
+        </div>
+
+        <div id="filter-ref" hidden>
+          <div class="col-md-4"> 
+            <label class="radio-inline">
+           
+              <input type="radio" name="radioref" id="nostro-radio" value="N">
+           
+              Nostro
+            </label> 
+          </div>
+
+          <div class="col-md-4"> 
+            <label class="radio-inline">
+           
+              <input type="radio" name="radioref" id="vostro-radio" value="V">
+           
+              Vostro
+            </label>
+          </div>
+
+          <div class="col-md-4"> 
+            <label class="radio-inline">
+           
+              <input type="radio" name="radioref" id="det-radio" value="D">
+           
+              {%if idioma == 0%}
+                Detalles
+              {%endif%}
+              {%if idioma == 1%}
+                Details
+              {%endif%}
+            </label>
+          </div>
+
+          <!-- Text input-->
+          <div class="form-group col-md-10"> 
+            <div>
+              
+                <input id="ref-txt" type="text" placeholder="" class="form-control input-md">
+              
+            </div>
+          </div>
+        </div>
+
+        <div id="filter-fecham" hidden>
+          <div class="form-group">
+            <label class="col-md-2 control-label">
+              {%if idioma == 0%}
+                Desde:
+              {%endif%}
+              {%if idioma == 1%}
+                From:
+              {%endif%}
+            </label>
+            <div class="col-md-4">
+             
+              <input id="fm-desde" class="form-control">
+              
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="col-md-2 control-label">
+              {%if idioma == 0%}
+                Hasta:
+              {%endif%}
+              {%if idioma == 1%}
+                To:
+              {%endif%}
+            </label>
+            <div class="col-md-4">
+              
+              <input id="fm-hasta" class="form-control">
+              
+            </div>
+          </div>
+        </div>
+
+        <div id="filter-fecha" hidden>
+          <div class="form-group">
+            <label class="col-md-2 control-label">
+              {%if idioma == 0%}
+                Desde:
+              {%endif%}
+              {%if idioma == 1%}
+                From:
+              {%endif%}
+            </label>
+            <div class="col-md-4">
+            
+              <input id="f-desde" class="form-control">
+           
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="col-md-2 control-label">
+              {%if idioma == 0%}
+                Hasta:
+              {%endif%}
+              {%if idioma == 1%}
+                To:
+              {%endif%}
+            </label>
+            <div class="col-md-4">
+            
+              <input id="f-hasta" class="form-control">
+            
+            </div>
+          </div>
+        </div>
+
+    </div>
+
+  </div>
+
+
+</div>
+<div class="table-responsive col-md-12 dataTables_wrapper">
+    <table id="table-pa" style="width:100%;" class="table table-bordered table-striped tabla">
+        <thead>
+            <tr>
+              {%if idioma == 0%}
+                <th>E/C</th>
+                <th>Pág</th>
+                <th>Fecha</th>
+                <th>Tipo</th>
+                <th>Ref Nostro</th>
+                <th>Ref Vostro</th>
+                <th>Detalles</th>
+                <th>C/D</th>
+                <th>Monto</th>
+                <th>S/L</th>
+                <th>Sel</th>
+              {%endif%}
+              {%if idioma == 1%}
+                <th>A/S</th>
+                <th>Page</th>
+                <th>Date</th>
+                <th>Type</th>
+                <th>Nostro Ref.</th>
+                <th>Vostro Ref.</th>
+                <th>Details</th>
+                <th>C/D</th>
+                <th>Amount</th>
+                <th>S/L</th>
+                <th>Sel</th>
+              {%endif%}
+            </tr>
+        </thead>
+        <tbody id="tb-pa">
+         
+            <tr >
+              <td></td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td></td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+
+<div class="row">
+  <div class="col-md-3 col-md-push-7">
+    <button type="button" id="checkAllButton" data-loading-text="Cargando..." class="col-md-6 btn btn-primary" selec="1">
+        {%if idioma == 0%}
+          Selecc. Todas
+        {%endif%}
+        {%if idioma == 1%}
+          Select All
+        {%endif%}
+    </button>
+  </div>
+  <div class="col-md-3 col-md-push-6">
+    <button type="button" id="romperButton" data-loading-text="Cargando..." class="col-md-6 btn btn-warning" autocomplete="off">
+        {%if idioma == 0%}
+          Romper
+        {%endif%}
+        {%if idioma == 1%}
+          Break
+        {%endif%}
+    </button>
+  </div>
+</div>
+           
+    </div>
+
+    <div class="tab-pane" id="rep-tab">
+        <div class="container" style="margin-top:30px;">
+    <div class="row">
+        <div id="formswell" class="well col-md-5 col-md-push-1">
+            <legend id="legend">
+                {%if idioma == 0%}
+                    Reporte Conciliación
+                {%endif%}
+                {%if idioma == 1%}
+                    Reconciliation Report
+                {%endif%}
+            </legend>
+
+            <input value="-1" id="tipoArch" hidden>
+
+                {% csrf_token %}
+                <div class="col-md-12 form-group">
+                  <label class="col-md-4 control-label" for="pd_conc_codcta">
+                    {%if idioma == 0%}
+                        Código Cuenta:
+                    {%endif%}
+                    {%if idioma == 1%}
+                        Account Code:
+                    {%endif%}
+                  </label>
+                  <div class="col-md-7">
+                    <select id="pd_conc_codcta" name="pd_conc_codcta" class="form-control">
+                        <option value="-1" ufc="" ufh="">------------</option>
+                     
+                    </select>
+                  </div>
+                </div>
+
+                <div class="col-md-12 form-group" hidden>
+                    <select id="pd_conc_tipocta" name="pd_conc_tipocta" class="form-control">
+                        <option value="-1">------------</option>
+                    </select>
+                </div>
+
+                <div class="col-md-12 form-group">
+                    <label class="col-md-4 control-label">
+                        {%if idioma == 0%}
+                            Fecha:
+                        {%endif%}
+                        {%if idioma == 1%}
+                            Date:
+                        {%endif%}
+                    </label>
+                    <div class="col-md-5">
+                      <input id="pd_conc_fecha" name="pd_conc_fecha"   class="form-control">
+                    </div>
+                </div>
+
+                <input name="tipo" value="0" hidden>
+                <input name="pagina" value="pd_conc" hidden>
+                <input name="rep" value="reporteconciliacion" hidden>
+                
+                {% if 20 in ops %}
+                <div class="col-md-6">
+                    {%if idioma == 0%}
+                        <input type="submit" value="Autorizar conciliación" id="pd_conc_submit_aut" class="col-md-10 btn btn-success boton autcon">
+                    {%endif%}
+                    {%if idioma == 1%}
+                        <input type="submit" value="Authorize Reconciliation" id="pd_conc_submit_aut" class="col-md-12 btn btn-success boton autcon">
+                    {%endif%}
+                </div>
+
+                <div class="col-md-6">
+                    {%if idioma == 0%}
+                        <input type="submit" value="Ejecutar PDF" id="pd_conc_submit" class="col-md-8 btn btn-primary boton pdf">
+                    {%endif%}
+                    {%if idioma == 1%}
+                        <input type="submit" value="Execute PDF" id="pd_conc_submit" class="col-md-8 btn btn-primary boton pdf">
+                    {%endif%}
+                </div>
+
+                <div class="col-md-6 pull-right" style="margin-top:2%;">
+                    {%if idioma == 0%}
+                        <input type="submit" value="Ejecutar Excel" id="pd_conc_submit_ex" class="col-md-8 btn btn-primary boton xls">
+                    {%endif%}
+                    {%if idioma == 1%}
+                        <input type="submit" value="Execute Excel" id="pd_conc_submit_ex" class="col-md-8 btn btn-primary boton xls">
+                    {%endif%}
+                </div>
+                {% else %}
+                
+                <div class="col-md-6">
+                    {%if idioma == 0%}
+                        <input type="submit" value="Ejecutar Excel" id="pd_conc_submit_ex" class="col-md-8 btn btn-primary boton xls">
+                    {%endif%}
+                    {%if idioma == 1%}
+                        <input type="submit" value="Execute Excel" id="pd_conc_submit_ex" class="col-md-8 btn btn-primary boton xls">
+                    {%endif%}
+                </div>
+
+                <div class="col-md-6">
+                    {%if idioma == 0%}
+                        <input type="submit" value="Ejecutar PDF" id="pd_conc_submit" class="col-md-8 btn btn-primary boton pdf">
+                    {%endif%}
+                    {%if idioma == 1%}
+                        <input type="submit" value="Execute PDF" id="pd_conc_submit" class="col-md-8 btn btn-primary boton pdf">
+                    {%endif%}
+                </div>
+                {% endif %}
+          
+        </div>
+    </div>
+</div>           
+    </div>
+</div>    
 {% endblock %}
 
 {% block script %}

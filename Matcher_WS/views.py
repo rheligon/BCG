@@ -1428,7 +1428,7 @@ def pd_observaciones(request, mensaje,tipo):
 
 @login_required(login_url='/login')
 @transaction.atomic
-def pd_detallesMT(request, mensaje,tipo):
+def pd_detallesMT(request, mensaje,tipo,cuenta):
 
 
     permisos = get_ops(request)
@@ -2246,6 +2246,7 @@ def reportes(request):
                 cursor = connection.cursor()
                 #try:
                     #cursor.execute('EXEC [dbo].[autorizarConciliacion] %s, %s', (codCta,fecha))
+                    #eliminarIntraday()
                 #finally:
                     #cursor.close()
 
@@ -7188,7 +7189,7 @@ def Matcher_version(request):
     lista = [Opcion.objects.get(idopcion=p).funprincipal for p in permisos]
     lista.sort()
     lista = set(lista)
-    if not 15 in lista:
+    if not 4 in lista:
         retour = custom_403(request)
         return HttpResponseForbidden(retour)
 
