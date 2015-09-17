@@ -16,11 +16,9 @@ tiempo = parseInt(tiempo)*30000
 /*setInterval(function() {
     $('#boton_go').attr("disabled", true);
      var cuentaId = $('#Cuenta-sel').val();
-    console.log(cuentaId)
     //si se selecciona una cuenta mostramos su info
     if (cuentaId>=0){
         var codigoCuenta = $('#opt-'+cuentaId).attr("codigo");
-        console.log(codigoCuenta)
         $('a[name="boton_trans"]').attr('href','/transIntraday/'+cuentaId);
         $('#processing-modal').modal('toggle');
         buscarUltimaConciliacion(cuentaId)
@@ -76,25 +74,21 @@ $( document ).ready(function() {
     var arreglo = path.split("/");
     largo = arreglo.length;
     var cuentaIds = arreglo[largo-2];
-    console.log(cuentaIds);
     
     if(cuentaIds == "intraday"){
         console.log("no hago nada");
 
     }else{
         ceuntaIds=parseInt(cuentaIds);
-        console.log("tengo la cuenta " + cuentaIds)
         $("div.intra select").val(cuentaIds);
     }
 
            
      $('#boton_go').attr("disabled", true);
      var cuentaId = $('#Cuenta-sel').val();
-    console.log(cuentaId)
     //si se selecciona una cuenta mostramos su info
     if (cuentaId>=0){
         var codigoCuenta = $('#opt-'+cuentaId).attr("codigo");
-        console.log(codigoCuenta)
         $('a[name="boton_trans"]').attr('href','/transIntraday/'+cuentaId);
         $('#processing-modal').modal('toggle');
         buscarUltimaConciliacion(cuentaId)
@@ -145,11 +139,9 @@ $( document ).ready(function() {
 $('#Cuenta-sel').change(function() {
     
     var cuentaId = $('#Cuenta-sel').val();
-    console.log(cuentaId)
     //si se selecciona una cuenta mostramos su info
     if (cuentaId>=0){
         var codigoCuenta = $('#opt-'+cuentaId).attr("codigo");
-        console.log(codigoCuenta)
         $('a[name="boton_trans"]').attr('href','/transIntraday/'+cuentaId);
         $('#processing-modal').modal('toggle');
         buscarUltimaConciliacion(cuentaId)
@@ -199,21 +191,13 @@ $('#Cuenta-sel').change(function() {
 
 //Dar formato a un Date a string dd/mm/yyyy
 function formatearFecha(fecha){
-    dia = fecha.getUTCDate();
-    
-    if (dia < 10){
-        dia = "0"+ dia;
+    if (idioma != 0){
+        aux = fecha.split("/")
+        nueva = aux[2].substr(0,4) +"/" + aux[1] + "/" +aux[0] + " " + aux[2].substr(4);
+        return nueva;
+    } else{
+        return fecha;
     }
-
-    mes = fecha.getUTCMonth()+1;
-    
-    if (mes < 10){
-        mes = "0"+ mes;
-    }
-
-    anio = fecha.getUTCFullYear();
-    nueva = dia +"/" + mes + "/" +anio;
-    return nueva;
 }
 
 function buscarUltimaConciliacion(cuenta){
@@ -223,12 +207,9 @@ function buscarUltimaConciliacion(cuenta){
             data: {"action": "buscarConci"},
             success: function(data){
                 if (data.exitoconci){
-                    console.log("debitos: "+data.debitos)
-                    console.log("creditos: "+data.creditos)
                     var json_data = jQuery.parseJSON(data.cons);
                     json_data = json_data[0].fields;
-                    $('#fecha_conci').html(data.fecha);
-                    console.log(idiomaAux)
+                    $('#fecha_conci').html(formatearFecha(data.fecha));
                     balanceFConta = json_data.balancefinalcontabilidad;
                     balanceFinalConta = $.formatNumber(Math.abs(balanceFConta),{locale:idiomaAux});
                     $('#sald_fin_conta').val(balanceFinalConta);
@@ -272,8 +253,8 @@ function buscarUltimaConciliacion(cuenta){
                     $('#cdIniCorr').html(data.cod[3]);
                     
 
-                    $('#fecha_tran').html(data.fecha);
-                    $('#fecha_actual').html(data.fechaActual);
+                    $('#fecha_tran').html(formatearFecha(data.fecha));
+                    $('#fecha_actual').html(formatearFecha(data.fechaActual));
 
                     debitos = $.formatNumber((data.debitos),{locale:idiomaAux});
                     $('#debitos').val(debitos);
@@ -345,13 +326,11 @@ function buscarUltimaConciliacion(cuenta){
 
                 }else{
                     swal("Ups!", data.msg, "error");
-                    console.log("primnero");
                 }
                 if(data.exitoParseo){
 
                 }else{
                     swal("Ups!", data.msgParseo, "error");
-                    console.log("segundo");
                 }
 
 
@@ -359,7 +338,11 @@ function buscarUltimaConciliacion(cuenta){
             },
             error: function(q,error){
                 alert(q.responseText) //debug
-                swal("Ups!", "Hubo un error consultando la Última Conciliación, intente de Nuevo.", "error");
+                if (idioma == 0){
+                    swal("Ups!", "Hubo un error consultando la Última Conciliación, intente de Nuevo.", "error");
+                } else {
+                    swal("Ups!", "Error occurred consulting last reconciliation, try agains please.", "error");    
+                }
                 $('#processing-modal').modal('toggle');
             },
             dataType:'json',

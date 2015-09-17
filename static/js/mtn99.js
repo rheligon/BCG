@@ -463,7 +463,7 @@ $('#crearMTButton').on('click', function () {
         if (idioma == 0){
             msj ="¿Seguro que desea crear el mensaje MT?";
         } else {
-            msj= "Sure you want create the MTn99 message";
+            msj= "Sure you want create the MTn99 message?";
         }
         swal({
             title: "",

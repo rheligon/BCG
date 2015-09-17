@@ -65,24 +65,57 @@
 
 </style>
 
-<legend><h1>Intraday (Detalle de Transacciones)</h1></legend>
 <input type="text" id="idioma" value="{{idioma}}" hidden/>
 <input type="text" id="tiempoAct" value="{{tiempoAct}}" hidden/>
 <input type="text" id="cuenta" value="{{cuenta.codigo}}" hidden/>
 <input type="text" id="balance" value="{{balance}}" hidden/>
 <input type="text" id="fechaConciliacion" value="{{fecha}}" hidden/>
 
+<legend><h1>
+  {%if idioma == 0%}
+    Intraday (Detalle de Transacciones)
+  {%else%}
+    Intraday (Transactions Details)
+  {%endif%}
+</h1></legend>
+
 
     <div class="row clearfix" >
       <!-- Select Basic -->
       <div class="form-group col-md-6 ">
-        <h4>Cuenta: <strong>{{cuenta.codigo}}</strong></h4><h4> Transacciones Desde: <strong>{{fecha}}</strong> Hasta: <strong>{{fechaActual}}</strong></h4>
+        <h4>
+          {%if idioma == 0%}
+            Cuenta: 
+          {%else%}
+            Account:
+          {%endif%}
+        <strong>{{cuenta.codigo}}</strong></h4><h4> 
+          {%if idioma == 0%}
+            Transacciones Desde: 
+          {%else%}
+            Transactions From:
+          {%endif%}
+        <strong>
+          {{fecha}}
+        </strong> 
+          {%if idioma == 0%}
+            Hasta: 
+          {%else%}
+            To:
+          {%endif%}
+        <strong>{{fechaActual}}</strong></h4>
       </div> 
       <div class="form-group col-md-6 ">
         {% if errores%}
         <div class="alert alert-danger alert-dismissible" role="alert">
           <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-          <strong>Existen Archivos con errores en su Directorio de Mensajes Erróneos, <br>Por Favor verifique.</strong>
+          <strong>
+            {%if idioma == 0%}
+              Existen Archivos con errores en su Directorio de Mensajes Erróneos, <br>Por Favor verifique.
+            {%else%}
+              There are files with errors in your Wrong Messages Directory, <br> Verify them please.
+            {%endif%}
+          </strong>
         </div>
         {% endif %}
       </div> 
@@ -135,15 +168,23 @@
       <table id="table-pa" class="table table-bordered table-striped tabla">
         <thead>
           <tr>
-            <th>I/O</th>
-            <th>MT</th>
-            <th>Débitos</th>
-            <th>Créditos</th>
-            <th>Fecha Entrada / Hora</th>
-            <th>Fecha Valor</th>
-            <th>Observaciones</th>
-            
-            
+            {%if idioma == 0%}
+              <th>I/O</th>
+              <th>MT</th>
+              <th>Débitos</th>
+              <th>Créditos</th>
+              <th>Fecha Entrada / Hora</th>
+              <th>Fecha Valor</th>
+              <th>Observaciones</th>
+            {%else%}
+              <th>I/O</th>
+              <th>MT</th>
+              <th>Debits</th>
+              <th>Credits</th>
+              <th>In Date / Hour</th>
+              <th>Value Date</th>
+              <th>Observations</th>
+            {%endif%}
           </tr>
         </thead>
         <tbody id="tb-conta" style="height:400px;overflow-y: auto;overflow-x: hidden;">
@@ -181,8 +222,13 @@
                     {% endif %}
                   {% endif %}
                 {% endif %}
-                <td>{{mensaje.mensaje_intraday.fecha_entrada|formato24hrs}}</td>
-                <td>{{mensaje.fecha_valor}}</td>
+                {%if idioma == 0%}
+                  <td>{{mensaje.mensaje_intraday.fecha_entrada|formato24hrs}}</td>
+                  <td>{{mensaje.fecha_valor}}</td>
+                {%else%}
+                  <td>{{mensaje.mensaje_intraday.fecha_entrada|formato24hrsEn}}</td>
+                  <td>{{mensaje.fecha_valor|fechaEn}}</td>
+                {%endif%}
                 <td>{{mensaje.mensaje_intraday.observacion}}</td>
               </tr>
             {% elif mensaje.mensaje_intraday.tipo == "202"%}
@@ -216,8 +262,13 @@
                     {% endif %}
                   {% endif %}
                 {% endif %}
-                <td>{{mensaje.mensaje_intraday.fecha_entrada|formato24hrs}}</td>
-                <td>{{mensaje.fecha_valor}}</td>
+                {%if idioma == 0%}
+                  <td>{{mensaje.mensaje_intraday.fecha_entrada|formato24hrs}}</td>
+                  <td>{{mensaje.fecha_valor}}</td>
+                {%else%}
+                  <td>{{mensaje.mensaje_intraday.fecha_entrada|formato24hrsEn}}</td>
+                  <td>{{mensaje.fecha_valor|fechaEn}}</td>
+                {%endif%}
                 <td>{{mensaje.mensaje_intraday.observacion}}</td>
               </tr>
             {% elif mensaje.mensaje_intraday.tipo == "752"%}
@@ -251,8 +302,13 @@
                     {% endif %}
                   {% endif %}
                 {% endif %}
-                <td>{{mensaje.mensaje_intraday.fecha_entrada|formato24hrs}}</td>
-                <td>{{mensaje.fecha_valor}}</td>
+                {%if idioma == 0%}
+                  <td>{{mensaje.mensaje_intraday.fecha_entrada|formato24hrs}}</td>
+                  <td>{{mensaje.fecha_valor}}</td>
+                {%else%}
+                  <td>{{mensaje.mensaje_intraday.fecha_entrada|formato24hrsEn}}</td>
+                  <td>{{mensaje.fecha_valor|fechaEn}}</td>
+                {%endif%}
                 <td>{{mensaje.mensaje_intraday.observacion}}</td>
               </tr>
             {% elif mensaje.mensaje_intraday.tipo == "754"%}
@@ -286,8 +342,13 @@
                     {% endif %}
                   {% endif %}
                 {% endif %}
-                <td>{{mensaje.mensaje_intraday.fecha_entrada|formato24hrs}}</td>
-                <td>{{mensaje.fecha_valor}}</td>
+                {%if idioma == 0%}
+                  <td>{{mensaje.mensaje_intraday.fecha_entrada|formato24hrs}}</td>
+                  <td>{{mensaje.fecha_valor}}</td>
+                {%else%}
+                  <td>{{mensaje.mensaje_intraday.fecha_entrada|formato24hrsEn}}</td>
+                  <td>{{mensaje.fecha_valor|fechaEn}}</td>
+                {%endif%}
                 <td>{{mensaje.mensaje_intraday.observacion}}</td>
               </tr>
             {% elif mensaje.mensaje_intraday.tipo == "756"%}
@@ -321,8 +382,13 @@
                     {% endif %}
                   {% endif %}
                 {% endif %}
-                <td>{{mensaje.mensaje_intraday.fecha_entrada|formato24hrs}}</td>
-                <td>{{mensaje.fecha_valor}}</td>
+                {%if idioma == 0%}
+                  <td>{{mensaje.mensaje_intraday.fecha_entrada|formato24hrs}}</td>
+                  <td>{{mensaje.fecha_valor}}</td>
+                {%else%}
+                  <td>{{mensaje.mensaje_intraday.fecha_entrada|formato24hrsEn}}</td>
+                  <td>{{mensaje.fecha_valor|fechaEn}}</td>
+                {%endif%}
                 <td>{{mensaje.mensaje_intraday.observacion}}</td>
               </tr>
             {% elif mensaje.mensaje_intraday.tipo == "942"%}
@@ -356,7 +422,11 @@
                     {% endif %}
                   {% endif %}
                 {% endif %}
-                <td>{{mensaje.mensaje_intraday.fecha_entrada|formato24hrs}}</td>
+                {%if idioma == 0%}
+                  <td>{{mensaje.mensaje_intraday.fecha_entrada|formato24hrs}}</td>
+                {%else%}
+                  <td>{{mensaje.mensaje_intraday.fecha_entrada|formato24hrsEn}}</td>
+                {%endif%}
                 <td>{{fecha942}}</td>
                 <td>{{mensaje.mensaje_intraday.observacion}}</td>
               </tr>
@@ -419,8 +489,13 @@
                     {% endif %}
                   {% endif %}
                 {% endif %}
-                <td>{{mensaje.mensaje_intraday.fecha_entrada|formato24hrs}}</td>
-                <td>{{mensaje.fecha_valor}}</td>
+                {%if idioma == 0%}
+                  <td>{{mensaje.mensaje_intraday.fecha_entrada|formato24hrs}}</td>
+                  <td>{{mensaje.fecha_valor}}</td>
+                {%else%}
+                  <td>{{mensaje.mensaje_intraday.fecha_entrada|formato24hrsEn}}</td>
+                  <td>{{mensaje.fecha_valor|fechaEn}}</td>
+                {%endif%}
                 <td>{{mensaje.mensaje_intraday.observacion}}</td>
               </tr>
             {% elif mensaje.mensaje_intraday.tipo == "202"%}
@@ -454,8 +529,13 @@
                     {% endif %}
                   {% endif %}
                 {% endif %}
-                <td>{{mensaje.mensaje_intraday.fecha_entrada|formato24hrs}}</td>
-                <td>{{mensaje.fecha_valor}}</td>
+                {%if idioma == 0%}
+                  <td>{{mensaje.mensaje_intraday.fecha_entrada|formato24hrs}}</td>
+                  <td>{{mensaje.fecha_valor}}</td>
+                {%else%}
+                  <td>{{mensaje.mensaje_intraday.fecha_entrada|formato24hrsEn}}</td>
+                  <td>{{mensaje.fecha_valor|fechaEn}}</td>
+                {%endif%}
                 <td>{{mensaje.mensaje_intraday.observacion}}</td>
               </tr>
             {% elif mensaje.mensaje_intraday.tipo == "752"%}
@@ -489,8 +569,13 @@
                     {% endif %}
                   {% endif %}
                 {% endif %}
-                <td>{{mensaje.mensaje_intraday.fecha_entrada|formato24hrs}}</td>
-                <td>{{mensaje.fecha_valor}}</td>
+                {%if idioma == 0%}
+                  <td>{{mensaje.mensaje_intraday.fecha_entrada|formato24hrs}}</td>
+                  <td>{{mensaje.fecha_valor}}</td>
+                {%else%}
+                  <td>{{mensaje.mensaje_intraday.fecha_entrada|formato24hrsEn}}</td>
+                  <td>{{mensaje.fecha_valor|fechaEn}}</td>
+                {%endif%}
                 <td>{{mensaje.mensaje_intraday.observacion}}</td>
               </tr>
             {% elif mensaje.mensaje_intraday.tipo == "754"%}
@@ -524,8 +609,13 @@
                     {% endif %}
                   {% endif %}
                 {% endif %}
-                <td>{{mensaje.mensaje_intraday.fecha_entrada|formato24hrs}}</td>
-                <td>{{mensaje.fecha_valor}}</td>
+                {%if idioma == 0%}
+                  <td>{{mensaje.mensaje_intraday.fecha_entrada|formato24hrs}}</td>
+                  <td>{{mensaje.fecha_valor}}</td>
+                {%else%}
+                  <td>{{mensaje.mensaje_intraday.fecha_entrada|formato24hrsEn}}</td>
+                  <td>{{mensaje.fecha_valor|fechaEn}}</td>
+                {%endif%}
                 <td>{{mensaje.mensaje_intraday.observacion}}</td>
               </tr>
             {% elif mensaje.mensaje_intraday.tipo == "756"%}
@@ -559,8 +649,13 @@
                     {% endif %}
                   {% endif %}
                 {% endif %}
-                <td>{{mensaje.mensaje_intraday.fecha_entrada|formato24hrs}}</td>
-                <td>{{mensaje.fecha_valor}}</td>
+               {%if idioma == 0%}
+                  <td>{{mensaje.mensaje_intraday.fecha_entrada|formato24hrs}}</td>
+                  <td>{{mensaje.fecha_valor}}</td>
+                {%else%}
+                  <td>{{mensaje.mensaje_intraday.fecha_entrada|formato24hrsEn}}</td>
+                  <td>{{mensaje.fecha_valor|fechaEn}}</td>
+                {%endif%}
                 <td>{{mensaje.mensaje_intraday.observacion}}</td>
               </tr>
             {% elif mensaje.mensaje_intraday.tipo == "942"%}
@@ -594,7 +689,11 @@
                     {% endif %}
                   {% endif %}
                 {% endif %}
-                <td>{{mensaje.mensaje_intraday.fecha_entrada|formato24hrs}}</td>
+                {%if idioma == 0%}
+                  <td>{{mensaje.mensaje_intraday.fecha_entrada|formato24hrs}}</td>
+                {%else%}
+                  <td>{{mensaje.mensaje_intraday.fecha_entrada|formato24hrsEn}}</td>
+                {%endif%}
                 <td>{{fecha942}}</td>
                 <td>{{mensaje.mensaje_intraday.observacion}}</td>
               </tr>
@@ -627,7 +726,12 @@
             <div class="modal-body">
                 <div class="text-center">
                     <img src="{% static 'images/procesando.gif' %}" class="icon" />
-                    <h4>Procesando, por favor espere.</h4>
+                    {%if idioma == 0%}
+                      <h4>Procesando, por favor espere.</h4>
+                    {%endif%}
+                    {%if idioma == 1%}
+                      <h4>Processing, wait please.</h4>
+                    {%endif%}
                 </div>
             </div>
         </div>
@@ -669,7 +773,13 @@
         </div>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+        <button type="button" class="btn btn-default" data-dismiss="modal">
+          {%if idioma == 0%}
+            Cerrar
+          {%else%}
+            Close
+          {%endif%}
+        </button>
         <button class="btn btn-primary" id="btnPrint"><span class="glyphicon glyphicon-print"></span></button>
       </div>
     </div>
@@ -680,19 +790,43 @@
   <div class="modal-dialog" style="width:1000px">
     <div class="modal-content">
       <div class="modal-header bg-primary">
-        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Cerrar</span></button>
+        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">
+          {%if idioma == 0%}
+            Cerrar
+          {%else%}
+            Close
+          {%endif%}
+        </span></button>
         <h4 class="modal-title" id="exampleModalLabel"></h4>
       </div>
       <div class="modal-body1" id="modalCuerpo">
         <div class="canvas__container">
-          <p>Monto</p>
+          <p>
+            {%if idioma == 0%}
+              Monto
+            {%else%}
+              Amount
+            {%endif%}
+          </p>
           <canvas id="canvas" width="950px" height="650px"></canvas>
-          <p>Hora</p>
+          <p>
+            {%if idioma == 0%}
+              Hora
+            {%else%}
+              Hour
+            {%endif%}
+          </p>
           <img src="" id="mirror" class="canvas__mirror" />
         </div>    
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+        <button type="button" class="btn btn-default" data-dismiss="modal">
+          {%if idioma == 0%}
+            Cerrar
+          {%else%}
+            Close
+          {%endif%}
+        </button>
         <a href="#" class="button btn btn-primary" id="btnDescarga" download=""><span class="glyphicon glyphicon-download-alt"></span></a>
       </div>
     </div>
@@ -702,12 +836,7 @@
 {% endblock %}
 
 {% block script%}
-<script> 
-    //define el idioma de la tabla (es/en)
-    idioma_tr = "es"
-</script>
 <script type="text/javascript" src="{% static 'js/dataTablesButtons.js' %}"></script>
-
 <script src="{% static 'js/jquery.dataTables.min.js' %}" type="text/javascript"></script>
 <script src="{% static 'js/dataTables.bootstrap.js' %}" type="text/javascript"></script>
 <script src="{% static 'js/jquery-form-validation/jquery.validation.min.js' %}"></script>
