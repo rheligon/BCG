@@ -12,25 +12,33 @@ def sumaLineas(arreglo):
 def timenow():
     return datetime.now().replace(microsecond=0)
 
-def parsearTipoMT(archivo,directorio):
+def parsearTipoMT(archivo,directorio,idioma):
 	tipo = ""
 	msg = ""
 	contador = 0
-	dirArch = directorio + "\\" + archivo
+	dirArch = directorio + "\\" + archivo 
 
 	#abrir archivo
 	info = open(dirArch, 'r')
 
 	line1 = info.readline().strip()
 	if (line1 != "$"):
-		msg = "Caracter inesperado, en la línea número " +str(contador+1)+ " del archivo " + archivo
+		if idioma == 0:
+			msg = "Caracter inesperado, en la línea número " +str(contador+1)+ " del archivo " + archivo
+		else:
+			msg = "Unexpected character, at line number " +str(contador+1)+ " of file " + archivo
+			
 		return ("error", msg)
 	contador += 1
 	
 	line2 = info.readline().strip()
 	cabecera2 = line2[:3]
 	if (cabecera2 != "[M]"):
-		msg = "Caracter inesperado, en la línea número " +str(contador+1)+ " del archivo " + archivo
+		if idioma == 0:
+			msg = "Caracter inesperado, en la línea número " +str(contador+1)+ " del archivo " + archivo
+		else:
+			msg = "Unexpected character, at line number " +str(contador+1)+ " of file " + archivo
+
 		return ("error",msg)
 	else:
 		tipo = line2[3:]
@@ -39,7 +47,7 @@ def parsearTipoMT(archivo,directorio):
 	info.close()
 	return (tipo,"")
 
-def parseo103(archivo,directorio):
+def parseo103(archivo,directorio,idioma):
 	dirArch = directorio + "\\" + archivo
 
 	#abrir archivo
@@ -111,7 +119,11 @@ def parseo103(archivo,directorio):
 			opcion = contenidoLinea
 
 			if (opcion != "$"):
-				msg = "Caracter inesperado, en la línea número " +str(contador+1)+ " del archivo " + archivo
+				if idioma == 0:
+					msg = "Caracter inesperado, en la línea número " +str(contador+1)+ " del archivo " + archivo
+				else:
+					msg = "Unexpected character, at line number " +str(contador+1)+ " of file " + archivo
+			
 				return ("error", msg)
 		
 		#Caso para Linea campo [M] Tipo de Mensaje
@@ -119,7 +131,11 @@ def parseo103(archivo,directorio):
 			opcion = contenidoLinea[:3] 
 			
 			if (opcion != "[M]"):
-				msg = "Caracter inesperado, en la línea número " +str(contador+1)+ " del archivo " + archivo
+				if idioma == 0:
+					msg = "Caracter inesperado, en la línea número " +str(contador+1)+ " del archivo " + archivo
+				else:
+					msg = "Unexpected character, at line number " +str(contador+1)+ " of file " + archivo
+			
 				return ("error", msg)
 			else:
 				mensajeTipoM = contenidoLinea[3:]
@@ -130,7 +146,11 @@ def parseo103(archivo,directorio):
 			opcion = contenidoLinea[:3] 
 			
 			if (opcion != "[S]"):
-				msg = "Caracter inesperado, en la línea número " +str(contador+1)+ " del archivo " + archivo
+				if idioma == 0:
+					msg = "Caracter inesperado, en la línea número " +str(contador+1)+ " del archivo " + archivo
+				else:
+					msg = "Unexpected character, at line number " +str(contador+1)+ " of file " + archivo
+			
 				return ("error", msg)
 			else:
 				emisorS = contenidoLinea[3:]
@@ -141,7 +161,11 @@ def parseo103(archivo,directorio):
 			opcion = contenidoLinea[:3] 
 			
 			if (opcion != "[R]"):
-				msg = "Caracter inesperado, en la línea número " +str(contador+1)+ " del archivo " + archivo
+				if idioma == 0:
+					msg = "Caracter inesperado, en la línea número " +str(contador+1)+ " del archivo " + archivo
+				else:
+					msg = "Unexpected character, at line number " +str(contador+1)+ " of file " + archivo
+			
 				return ("error", msg)
 			else:
 				receptorR = contenidoLinea[3:]
@@ -152,7 +176,11 @@ def parseo103(archivo,directorio):
 			opcion = contenidoLinea[:4] 
 			
 			if (opcion != "[20]"):
-				msg = "Caracter inesperado, en la línea número " +str(contador+1)+ " del archivo " + archivo
+				if idioma == 0:
+					msg = "Caracter inesperado, en la línea número " +str(contador+1)+ " del archivo " + archivo
+				else:
+					msg = "Unexpected character, at line number " +str(contador+1)+ " of file " + archivo
+			
 				return ("error", msg)
 			else:
 				emisorRef20 = contenidoLinea[4:]
@@ -173,7 +201,11 @@ def parseo103(archivo,directorio):
 				opcion = contenidoLinea[:5]
 
 			if (opcion != "[23B]"): 
-				msg = "Caracter inesperado, en la línea número " +str(contador+1)+ " del archivo " + archivo
+				if idioma == 0:
+					msg = "Caracter inesperado, en la línea número " +str(contador+1)+ " del archivo " + archivo
+				else:
+					msg = "Unexpected character, at line number " +str(contador+1)+ " of file " + archivo
+			
 				return ("error", msg)
 			else: 
 				codigoBank23B = contenidoLinea[5:]
@@ -195,7 +227,11 @@ def parseo103(archivo,directorio):
 
 			while(opcion == "[26T]"):
 				if(opcion not in verificarOps):
-					msg = "Caracter inesperado, en la línea número " +str(contador+1)+ " del archivo " + archivo
+					if idioma == 0:
+						msg = "Caracter inesperado, en la línea número " +str(contador+1)+ " del archivo " + archivo
+					else:
+						msg = "Unexpected character, at line number " +str(contador+1)+ " of file " + archivo
+				
 					return ("error", msg)
 				tipoTrans26T = contenidoLinea[5:]
 				print ("[26T]: ",tipoTrans26T)
@@ -207,7 +243,11 @@ def parseo103(archivo,directorio):
 				opcion = contenidoLinea[:5]
 
 			if (opcion != "[32A]"): 
-				msg = "Caracter inesperado, en la línea número " +str(contador+1)+ " del archivo " + archivo
+				if idioma == 0:
+					msg = "Caracter inesperado, en la línea número " +str(contador+1)+ " del archivo " + archivo
+				else:
+					msg = "Unexpected character, at line number " +str(contador+1)+ " of file " + archivo
+			
 				return ("error", msg)
 			else: 
 				fechaValor32A = contenidoLinea[5:11]
@@ -225,8 +265,13 @@ def parseo103(archivo,directorio):
 			
 			while(opcion1 == "[33B]"):
 				if(opcion1 not in verificarOps1):
-					msg = "Caracter inesperado, en la línea número " +str(contador+1)+ " del archivo " + archivo
+					if idioma == 0:
+						msg = "Caracter inesperado, en la línea número " +str(contador+1)+ " del archivo " + archivo
+					else:
+						msg = "Unexpected character, at line number " +str(contador+1)+ " of file " + archivo
+				
 					return ("error", msg)
+
 				moneda33B = contenidoLinea[5:]
 				moneda33 = moneda33B[:3]
 				print ("[33B]: ",moneda33B)
@@ -240,8 +285,13 @@ def parseo103(archivo,directorio):
 
 			while(opcion0 == "[36]"):
 				if(opcion0 not in verificarOps0):
-					msg = "Caracter inesperado, en la línea número " +str(contador+1)+ " del archivo " + archivo
+					if idioma == 0:
+						msg = "Caracter inesperado, en la línea número " +str(contador+1)+ " del archivo " + archivo
+					else:
+						msg = "Unexpected character, at line number " +str(contador+1)+ " of file " + archivo
+				
 					return ("error", msg)
+
 				tipoCambio36 = contenidoLinea[4:]
 				print ("[36]: ",tipoCambio36)
 				verificarOps0.remove("[36]")
@@ -253,7 +303,11 @@ def parseo103(archivo,directorio):
 				opcion1 = contenidoLinea[:5]
 
 			if (opcion1 != "[50A]" and opcion1 != "[50F]" and opcion1 != "[50K]"  ): 
-				msg = "Caracter inesperado, en la línea número " +str(contador+1)+ " del archivo " + archivo
+				if idioma == 0:
+					msg = "Caracter inesperado, en la línea número " +str(contador+1)+ " del archivo " + archivo
+				else:
+					msg = "Unexpected character, at line number " +str(contador+1)+ " of file " + archivo
+			
 				return ("error", msg)
 			elif(opcion1 == "[50A]"): 
 				clienteOrd50a = opcion1 + contenidoLinea[5:]
@@ -304,7 +358,11 @@ def parseo103(archivo,directorio):
 
 			while (opcion == "[51A]" or opcion == "[52A]" or opcion == "[52D]" or opcion == "[53A]" or opcion == "[53B]" or opcion == "[53D]" or opcion == "[54A]" or opcion == "[54B]" or opcion == "[54D]" or opcion == "[55A]" or opcion == "[55B]" or opcion == "[55D]" or opcion == "[56A]" or opcion == "[56C]" or opcion == "[56D]" or opcion == "[57A]" or opcion == "[57B]" or opcion == "[57C]" or opcion == "[57D]"):
 				if(opcion not in verificarOps0):
-					msg = "Caracter inesperado, en la línea número " +str(contador+1)+ " del archivo " + archivo
+					if idioma == 0:
+						msg = "Caracter inesperado, en la línea número " +str(contador+1)+ " del archivo " + archivo
+					else:
+						msg = "Unexpected character, at line number " +str(contador+1)+ " of file " + archivo
+				
 					return ("error", msg)
 				if (opcion == "[51A]"):
 					instEmisor51A = contenidoLinea[5:]
@@ -596,7 +654,11 @@ def parseo103(archivo,directorio):
 				cuantos = 0
 
 			if (opcion0 != "[59]" and opcion != "[59A]" and opcion != "[59F]"): 
-				msg = "Caracter inesperado, en la línea número " +str(contador+1)+ " del archivo " + archivo
+				if idioma == 0:
+					msg = "Caracter inesperado, en la línea número " +str(contador+1)+ " del archivo " + archivo
+				else:
+					msg = "Unexpected character, at line number " +str(contador+1)+ " of file " + archivo
+			
 				return ("error", msg)
 			elif (opcion == "[59A]"): 
 				clienteBene59a = opcion + contenidoLinea[5:]
@@ -666,7 +728,11 @@ def parseo103(archivo,directorio):
 				opcion1 = contenidoLinea[:5]
 
 			if (opcion1 != "[71A]"): 
-				msg = "Caracter inesperado, en la línea número " +str(contador+1)+ " del archivo " + archivo
+				if idioma == 0:
+					msg = "Caracter inesperado, en la línea número " +str(contador+1)+ " del archivo " + archivo
+				else:
+					msg = "Unexpected character, at line number " +str(contador+1)+ " of file " + archivo
+			
 				return ("error", msg)
 			else: 
 				detallesCarg71A = contenidoLinea[5:]
@@ -693,11 +759,19 @@ def parseo103(archivo,directorio):
 					es72 = True
 				if (es72):			
 					if(opcion0 not in verificarOps0):
-						msg = "Caracter inesperado, en la línea número " +str(contador+1)+ " del archivo " + archivo
+						if idioma == 0:
+							msg = "Caracter inesperado, en la línea número " +str(contador+1)+ " del archivo " + archivo
+						else:
+							msg = "Unexpected character, at line number " +str(contador+1)+ " of file " + archivo
+					
 						return ("error", msg)
 				else: 
 					if(opcion1 not in verificarOps0):
-						msg = "Caracter inesperado, en la línea número " +str(contador+1)+ " del archivo " + archivo
+						if idioma == 0:
+							msg = "Caracter inesperado, en la línea número " +str(contador+1)+ " del archivo " + archivo
+						else:
+							msg = "Unexpected character, at line number " +str(contador+1)+ " of file " + archivo
+					
 						return ("error", msg)		
 				if (opcion0 == "[72]"):
 					infoEmisor72 = contenidoLinea[4:]
@@ -749,7 +823,11 @@ def parseo103(archivo,directorio):
 				es72 = False
 
 			if (opcion0 != "@@"): 
-				msg = "Caracter inesperado, en la línea número " +str(contador+1)+ " del archivo " + archivo
+				if idioma == 0:
+					msg = "Caracter inesperado, en la línea número " +str(contador+1)+ " del archivo " + archivo
+				else:
+					msg = "Unexpected character, at line number " +str(contador+1)+ " of file " + archivo
+			
 				return ("error", msg)
 			else: 
 				finMensaje =True
@@ -765,8 +843,10 @@ def parseo103(archivo,directorio):
 			elif (emisorS == bic):
 				io = "O"
 			else:
-				vali = "Este mensaje no nos pertenece, Archivo: " + archivo
-
+				if idioma == 0:
+					vali = "Este mensaje no nos pertenece, Archivo: " + archivo
+				else:
+					vali = "This message does not belong to us, File: " + archivo 
 			if (io =="I"):
 				cuenta = Cuenta.objects.filter(banco_corresponsal_idbanco__codigo = emisorS) 
 			elif (io =="O"):
@@ -775,22 +855,37 @@ def parseo103(archivo,directorio):
 			if cuenta:
 				monedaCta = cuenta[0].moneda_idmoneda.codigo
 				if(monedaCta != moneda32A):
-					observacion = "Moneda Invalida, la moneda proveniente del mensaje es : " + moneda32A + ", deberia ser : " + monedaCta + ", Archivo: " + archivo
+					if idioma == 0:
+						observacion = "Moneda Invalida, la moneda proveniente del mensaje es : " + moneda32A + ", deberia ser : " + monedaCta + ", Archivo: " + archivo
+					else:
+						observacion = "Invalid Currency, currency comming from message is : " + moneda32A + ", must be: " +monedaCta + ", File: " + archivo
 					vali = "vali"
 				if(moneda33B != "" and moneda32A != moneda33 and tipoCambio36 == "" ):
-					observacion = "No existe el tipo de Cambio (Campo 36) , Archivo: " + archivo
+					if idioma == 0:
+						observacion = "No existe el tipo de Cambio (Campo 36, Código error: D75)  , Archivo: " + archivo
+					else:
+						observacion= "If field 33B is present and the currency code is different from the currency code in field 32A, Field 36 must be present, otherwise field 36 is not allowed (Error code(s): D75), File: " + archivo
 					vali = "vali"
 				if(instReemb55a != "" and (emisorCorr53a == "" or receptorCorr54a == "")):
-					observacion = "Si el campo 55a esta presente, tambien deben estar los campos 53a y 54a, Archivo: " + archivo
+					if idioma == 0:
+						observacion = "Si el campo 55a esta presente, tambien deben estar los campos 53a y 54a, Archivo: " + archivo
+					else:
+						observacion = "If field 55a is present, then both fields 53a and 54a must also be presente (Error Code(s): E306), File: " + archivo
 					vali = "vali"
 				if(instInter56a != "" and instCuenta57a == "" ):
-					observacion = "Si el campo 56a esta presente, tambien debe estar el campo 57a, Archivo: " + archivo
+					if idioma == 0:
+						observacion = "Si el campo 56a esta presente, tambien debe estar el campo 57a (Código de error: C81), Archivo: " + archivo
+					else:
+						observacion = "If field 56a is present, field 57a must also be present (Error code(s): C81), File: " + archivo
 					vali = "vali"
 				fecha_entrada = timenow()
 				mensaje_intra = MensajesIntraday.objects.create(tipo = "103",cuenta = cuenta[0],fecha_entrada=fecha_entrada,i_o = io,observacion=observacion) 
 				mensaje = Mt103.objects.create(mensaje_intraday = mensaje_intra,fecha_valor = fechaValor32A, moneda = moneda32A,monto = monto32A, remitente = emisorS,receptor = receptorR, ref_remitente = emisorRef20,ind_hora = timeId13C,tipo_op_banco = codigoBank23B,cod_instruccion = codInst23E,tipo_transaccion = tipoTrans26T, moneda_monto = moneda33B,tipo_cambio = tipoCambio36,cliente_ordenante = clienteOrd50a, institucion_emisor = instEmisor51A,institucion_ordenante = instOrd52a,corresponsal_remitente = emisorCorr53a, corresponsal_receptor = receptorCorr54a, institucion_reembolso = instReemb55a, institucion_intermediaria = instInter56a, cuenta_institucion = instCuenta57a,cliente_beneficiario = clienteBene59a,info_remesa = infoRemesa70,detalle_cargos = detallesCarg71A,info_remitente_a_receptor = infoEmisor72,cargos_remitente = cargosEmisor71F, cargos_receptor = cargosReceptor71G,reporte_regulatorio = reporteReg77B)
 			else:
-				vali = "No se posee cuenta donde procesar este mensaje, Archivo: " + archivo
+				if idioma == 0:
+					vali = "No se posee cuenta donde procesar este mensaje, Archivo: " + archivo
+				else:
+					vali= "There is not account to procces this message, File: " + archivo
 			io=""
 			emisorS = ""
 			receptorR = ""
@@ -833,7 +928,7 @@ def parseo103(archivo,directorio):
 	info.close()
 	return ("True",vali)
 
-def parseo202(archivo,directorio):
+def parseo202(archivo,directorio,idioma):
 	dirArch = directorio + "\\" + archivo
 
 	#abrir archivo
@@ -889,7 +984,11 @@ def parseo202(archivo,directorio):
 			opcion = contenidoLinea
 
 			if (opcion != "$"):
-				msg = "Caracter inesperado, en la línea número " +str(contador+1)+ " del archivo " + archivo
+				if idioma == 0:
+					msg = "Caracter inesperado, en la línea número " +str(contador+1)+ " del archivo " + archivo
+				else:
+					msg = "Unexpected character, at line number " +str(contador+1)+ " of file " + archivo
+			
 				return ("error", msg)
 		
 		#Caso para Linea campo [M] Tipo de Mensaje
@@ -897,7 +996,11 @@ def parseo202(archivo,directorio):
 			opcion = contenidoLinea[:3] 
 			
 			if (opcion != "[M]"):
-				msg = "Caracter inesperado, en la línea número " +str(contador+1)+ " del archivo " + archivo
+				if idioma == 0:
+					msg = "Caracter inesperado, en la línea número " +str(contador+1)+ " del archivo " + archivo
+				else:
+					msg = "Unexpected character, at line number " +str(contador+1)+ " of file " + archivo
+			
 				return ("error", msg)
 			else:
 				mensajeTipoM = contenidoLinea[3:]
@@ -908,7 +1011,11 @@ def parseo202(archivo,directorio):
 			opcion = contenidoLinea[:3] 
 			
 			if (opcion != "[S]"):
-				msg = "Caracter inesperado, en la línea número " +str(contador+1)+ " del archivo " + archivo
+				if idioma == 0:
+					msg = "Caracter inesperado, en la línea número " +str(contador+1)+ " del archivo " + archivo
+				else:
+					msg = "Unexpected character, at line number " +str(contador+1)+ " of file " + archivo
+			
 				return ("error", msg)
 			else:
 				emisorS = contenidoLinea[3:]
@@ -919,7 +1026,11 @@ def parseo202(archivo,directorio):
 			opcion = contenidoLinea[:3] 
 			
 			if (opcion != "[R]"):
-				msg = "Caracter inesperado, en la línea número " +str(contador+1)+ " del archivo " + archivo
+				if idioma == 0:
+					msg = "Caracter inesperado, en la línea número " +str(contador+1)+ " del archivo " + archivo
+				else:
+					msg = "Unexpected character, at line number " +str(contador+1)+ " of file " + archivo
+			
 				return ("error", msg)
 			else:
 				receptorR = contenidoLinea[3:]
@@ -930,7 +1041,11 @@ def parseo202(archivo,directorio):
 			opcion = contenidoLinea[:4] 
 			
 			if (opcion != "[20]"):
-				msg = "Caracter inesperado, en la línea número " +str(contador+1)+ " del archivo " + archivo
+				if idioma == 0:
+					msg = "Caracter inesperado, en la línea número " +str(contador+1)+ " del archivo " + archivo
+				else:
+					msg = "Unexpected character, at line number " +str(contador+1)+ " of file " + archivo
+			
 				return ("error", msg)
 			else:
 				emisorRef20 = contenidoLinea[4:]
@@ -941,7 +1056,11 @@ def parseo202(archivo,directorio):
 			opcion = contenidoLinea[:4]  
 			
 			if (opcion != "[21]"):
-				msg = "Caracter inesperado, en la línea número " +str(contador+1)+ " del archivo " + archivo
+				if idioma == 0:
+					msg = "Caracter inesperado, en la línea número " +str(contador+1)+ " del archivo " + archivo
+				else:
+					msg = "Unexpected character, at line number " +str(contador+1)+ " of file " + archivo
+			
 				return ("error", msg)
 			else:
 				refRel21 = contenidoLinea[4:]
@@ -961,7 +1080,11 @@ def parseo202(archivo,directorio):
 				opcion = contenidoLinea[:5]
 
 			if (opcion != "[32A]"): 
-				msg = "Caracter inesperado, en la línea número " +str(contador+1)+ " del archivo " + archivo
+				if idioma == 0:
+					msg = "Caracter inesperado, en la línea número " +str(contador+1)+ " del archivo " + archivo
+				else:
+					msg = "Unexpected character, at line number " +str(contador+1)+ " of file " + archivo
+			
 				return ("error", msg)
 			else: 
 				fechaValor32A = contenidoLinea[5:11]
@@ -977,7 +1100,11 @@ def parseo202(archivo,directorio):
 
 			while (opcion == "[52A]" or opcion == "[52D]" or opcion == "[53A]" or opcion == "[53B]" or opcion == "[53D]" or opcion == "[54A]" or opcion == "[54B]" or opcion == "[54D]" or opcion == "[56a]" or opcion == "[56A]" or opcion == "[56D]" or opcion == "[57A]" or opcion == "[57B]" or opcion == "[57D]"):
 				if( opcion not in verificarOps):
-					msg = "Caracter inesperado, en la línea número " +str(contador+1)+ " del archivo " + archivo
+					if idioma == 0:
+						msg = "Caracter inesperado, en la línea número " +str(contador+1)+ " del archivo " + archivo
+					else:
+						msg = "Unexpected character, at line number " +str(contador+1)+ " of file " + archivo
+				
 					return ("error", msg)
 				if (opcion == "[52A]"):
 					instOrd52a = opcion + contenidoLinea[5:]
@@ -1155,7 +1282,11 @@ def parseo202(archivo,directorio):
 
 
 			if (opcion != "[58A]" and opcion != "[58D]"): 
-				msg = "Caracter inesperado, en la línea número " +str(contador+1)+ " del archivo " + archivo
+				if idioma == 0:
+					msg = "Caracter inesperado, en la línea número " +str(contador+1)+ " del archivo " + archivo
+				else:
+					msg = "Unexpected character, at line number " +str(contador+1)+ " of file " + archivo
+			
 				return ("error", msg)
 			elif(opcion == "[58A]"): 
 				instBene58a = opcion + contenidoLinea[5:]
@@ -1214,7 +1345,11 @@ def parseo202(archivo,directorio):
 
 
 			if (opcion != "@@"): 
-				msg = "Caracter inesperado, en la línea número " +str(contador+1)+ " del archivo " + archivo
+				if idioma == 0:
+					msg = "Caracter inesperado, en la línea número " +str(contador+1)+ " del archivo " + archivo
+				else:
+					msg = "Unexpected character, at line number " +str(contador+1)+ " of file " + archivo
+			
 				return ("error", msg)
 			else: 
 				finMensaje =True
@@ -1231,7 +1366,10 @@ def parseo202(archivo,directorio):
 			elif (emisorS == bic):
 				io = "O"
 			else:
-				vali = "Este mensaje no nos pertenece, Archivo: " + archivo
+				if idioma == 0:
+					vali = "Este mensaje no nos pertenece, Archivo: " + archivo
+				else:
+					vali = "This message does not belong to us, File: " + archivo
 
 			if (io =="I"):
 				cuenta = Cuenta.objects.filter(banco_corresponsal_idbanco__codigo = emisorS) 
@@ -1241,17 +1379,26 @@ def parseo202(archivo,directorio):
 			if cuenta:
 				monedaCta = cuenta[0].moneda_idmoneda.codigo
 				if(monedaCta != moneda32A):
-					observacion = "Moneda Invalida, la moneda proveniente del mensaje es : " + moneda32A + ", deberia ser : " + monedaCta + ", Archivo: " + archivo
+					if idioma == 0:
+						observacion = "Moneda Invalida, la moneda proveniente del mensaje es : " + moneda32A + ", deberia ser : " + monedaCta + ", Archivo: " + archivo
+					else:
+						observacion = "Invalid Currency, currency comming from message is : " + moneda32A + ", must be: " +monedaCta + ", File: " + archivo
 					vali = "vali"
 				if(instInter56a != "" and instCuenta57a == ""):
-					observacion = "Si el campo 56a esta presente el campo 57a tambien tiene que estarlo, Archivo: " + archivo
+					if idioma == 0:
+						observacion = "Si el campo 56a esta presente el campo 57a tambien tiene que estarlo, Archivo: " + archivo
+					else:
+						observacion = "If field 56a is present, then field 57a must also be present (Error code(s): C81), File " + archivo
 					vali = "vali"
 					
 				fecha_entrada = timenow()
 				mensaje_intra = MensajesIntraday.objects.create(tipo = "202",cuenta = cuenta[0],fecha_entrada=fecha_entrada,i_o=io,observacion=observacion) 
 				mensaje = Mt202.objects.create(mensaje_intraday = mensaje_intra,fecha_valor = fechaValor32A, moneda = moneda32A,monto = monto32A,remitente = emisorS,receptor = receptorR, ref_transaccion = emisorRef20,ref_relacion = refRel21,ind_hora = timeId13C, institucion_ordenante = instOrd52a,corresponsal_remitente = emisorCorr53a, corresponsal_receptor = receptorCorr54a,intermediario = instInter56a, cuenta_institucion = instCuenta57a,institucion_beneficiaria = instBene58a,info_remitente_a_receptor = receptorInfo72)
 			else:
-				vali = "No se posee cuenta donde procesar este mensaje, Archivo: " + archivo
+				if idioma == 0:
+					vali = "No se posee cuenta donde procesar este mensaje, Archivo: " + archivo
+				else:
+					vali = "There is not account to process this message, File: " + archivo
 			io=""
 			emisorS = ""
 			receptorR = ""
@@ -1282,7 +1429,7 @@ def parseo202(archivo,directorio):
 	return ("True",vali)
 
 
-def parseo752(archivo,directorio):
+def parseo752(archivo,directorio,idioma):
 	dirArch = directorio + "\\" + archivo
 
 	#abrir archivo
@@ -1339,7 +1486,11 @@ def parseo752(archivo,directorio):
 			opcion = contenidoLinea
 
 			if (opcion != "$"):
-				msg = "Caracter inesperado, en la línea número " +str(contador+1)+ " del archivo " + archivo
+				if idioma == 0:
+					msg = "Caracter inesperado, en la línea número " +str(contador+1)+ " del archivo " + archivo
+				else:
+					msg = "Unexpected character, at line number " +str(contador+1)+ " of file " + archivo
+			
 				return ("error", msg)
 		
 		#Caso para Linea campo [M] Tipo de Mensaje
@@ -1347,7 +1498,11 @@ def parseo752(archivo,directorio):
 			opcion = contenidoLinea[:3] 
 			
 			if (opcion != "[M]"):
-				msg = "Caracter inesperado, en la línea número " +str(contador+1)+ " del archivo " + archivo
+				if idioma == 0:
+					msg = "Caracter inesperado, en la línea número " +str(contador+1)+ " del archivo " + archivo
+				else:
+					msg = "Unexpected character, at line number " +str(contador+1)+ " of file " + archivo
+			
 				return ("error", msg)
 			else:
 				mensajeTipoM = contenidoLinea[3:]
@@ -1358,7 +1513,11 @@ def parseo752(archivo,directorio):
 			opcion = contenidoLinea[:3] 
 			
 			if (opcion != "[S]"):
-				msg = "Caracter inesperado, en la línea número " +str(contador+1)+ " del archivo " + archivo
+				if idioma == 0:
+					msg = "Caracter inesperado, en la línea número " +str(contador+1)+ " del archivo " + archivo
+				else:
+					msg = "Unexpected character, at line number " +str(contador+1)+ " of file " + archivo
+			
 				return ("error", msg)
 			else:
 				emisorS = contenidoLinea[3:]
@@ -1369,7 +1528,11 @@ def parseo752(archivo,directorio):
 			opcion = contenidoLinea[:3] 
 			
 			if (opcion != "[R]"):
-				msg = "Caracter inesperado, en la línea número " +str(contador+1)+ " del archivo " + archivo
+				if idioma == 0:
+					msg = "Caracter inesperado, en la línea número " +str(contador+1)+ " del archivo " + archivo
+				else:
+					msg = "Unexpected character, at line number " +str(contador+1)+ " of file " + archivo
+			
 				return ("error", msg)
 			else:
 				receptorR = contenidoLinea[3:]
@@ -1380,7 +1543,11 @@ def parseo752(archivo,directorio):
 			opcion = contenidoLinea[:4] 
 			
 			if (opcion != "[20]"):
-				msg = "Caracter inesperado, en la línea número " +str(contador+1)+ " del archivo " + archivo
+				if idioma == 0:
+					msg = "Caracter inesperado, en la línea número " +str(contador+1)+ " del archivo " + archivo
+				else:
+					msg = "Unexpected character, at line number " +str(contador+1)+ " of file " + archivo
+			
 				return ("error", msg)
 			else:
 				emisorRef20 = contenidoLinea[4:]
@@ -1391,7 +1558,11 @@ def parseo752(archivo,directorio):
 			opcion = contenidoLinea[:4]  
 			
 			if (opcion != "[21]"):
-				msg = "Caracter inesperado, en la línea número " +str(contador+1)+ " del archivo " + archivo
+				if idioma == 0:
+					msg = "Caracter inesperado, en la línea número " +str(contador+1)+ " del archivo " + archivo
+				else:
+					msg = "Unexpected character, at line number " +str(contador+1)+ " of file " + archivo
+			
 				return ("error", msg)
 			else:
 				refRel21 = contenidoLinea[4:]
@@ -1403,7 +1574,11 @@ def parseo752(archivo,directorio):
 			opcion = contenidoLinea[:4]
 		
 			if (opcion != "[23]"): 
-				msg = "Caracter inesperado, en la línea número " +str(contador+1)+ " del archivo " + archivo
+				if idioma == 0:
+					msg = "Caracter inesperado, en la línea número " +str(contador+1)+ " del archivo " + archivo
+				else:
+					msg = "Unexpected character, at line number " +str(contador+1)+ " of file " + archivo
+			
 				return ("error", msg)
 			else: 
 				id23 = contenidoLinea[4:]
@@ -1415,7 +1590,11 @@ def parseo752(archivo,directorio):
 			opcion = contenidoLinea[:4]
 		
 			if (opcion != "[30]"): 
-				msg = "Caracter inesperado, en la línea número " +str(contador+1)+ " del archivo " + archivo
+				if idioma == 0:
+					msg = "Caracter inesperado, en la línea número " +str(contador+1)+ " del archivo " + archivo
+				else:
+					msg = "Unexpected character, at line number " +str(contador+1)+ " of file " + archivo
+			
 				return ("error", msg)
 			else: 
 				fecha30 = contenidoLinea[4:]
@@ -1435,11 +1614,19 @@ def parseo752(archivo,directorio):
 					es72 = True
 				if (es72):			
 					if(opcion0 not in verificarOps):
-						msg = "Caracter inesperado, en la línea número " +str(contador+1)+ " del archivo " + archivo
+						if idioma == 0:
+							msg = "Caracter inesperado, en la línea número " +str(contador+1)+ " del archivo " + archivo
+						else:
+							msg = "Unexpected character, at line number " +str(contador+1)+ " of file " + archivo
+					
 						return ("error", msg)
 				else: 
 					if(opcion1 not in verificarOps):
-						msg = "Caracter inesperado, en la línea número " +str(contador+1)+ " del archivo " + archivo
+						if idioma == 0:
+							msg = "Caracter inesperado, en la línea número " +str(contador+1)+ " del archivo " + archivo
+						else:
+							msg = "Unexpected character, at line number " +str(contador+1)+ " of file " + archivo
+					
 						return ("error", msg)	
 				if (opcion1 == "[32B]"):
 					montoTotal32B = contenidoLinea[5:]
@@ -1469,7 +1656,10 @@ def parseo752(archivo,directorio):
 					moneda33A = contenidoLinea[11:14]
 					monto33A = contenidoLinea[14:]
 					if(moneda33A != moneda32B):
-						observacion = "Los campos 32B y 33a deben tener el mismo tipo de moneda, Archivo: " + archivo
+						if idioma == 0:
+							observacion = "Los campos 32B y 33a deben tener el mismo tipo de moneda, Archivo: " + archivo
+						else:
+							observacion = "The currency code in the a amount fileds 33B and 33a must be the same (Error code(s): C02), File: " + archivo 
 						vali = "vali"
 					print ("[33A]: ",fechaValor33A)
 					print ("[33A]: ",moneda33A)
@@ -1478,7 +1668,10 @@ def parseo752(archivo,directorio):
 					moneda33A = contenidoLinea[5:8]
 					monto33A = contenidoLinea[8:]
 					if(moneda33A != moneda32B):
-						observacion = "Los campos 32B y 33a deben tener el mismo tipo de moneda, Archivo: " + archivo
+						if idioma == 0:
+							observacion = "Los campos 32B y 33a deben tener el mismo tipo de moneda, Archivo: " + archivo
+						else:
+							observacion = "The currency code in the a amount fileds 33B and 33a must be the same (Error code(s): C02), File: " + archivo 
 						vali = "vali"
 					print ("[33B]: ",moneda33A)
 					print ("[33B]: ",monto33A)
@@ -1601,7 +1794,11 @@ def parseo752(archivo,directorio):
 				cuantos = 0
 
 			if (opcion0 != "@@"): 
-				msg = "Caracter inesperado, en la línea número " +str(contador+1)+ " del archivo " + archivo
+				if idioma == 0:
+					msg = "Caracter inesperado, en la línea número " +str(contador+1)+ " del archivo " + archivo
+				else:
+					msg = "Unexpected character, at line number " +str(contador+1)+ " of file " + archivo
+			
 				return ("error", msg)
 			else: 
 				finMensaje =True
@@ -1617,8 +1814,10 @@ def parseo752(archivo,directorio):
 			elif (emisorS == bic):
 				io = "O"
 			else:
-				vali = "Este mensaje no nos pertenece, Archivo: " + archivo
-
+				if idioma == 0:
+					vali = "Este mensaje no nos pertenece, Archivo: " + archivo
+				else:
+					vali = "This message does not belong to us, File: " + archivo
 			if (io =="I"):
 				cuenta = Cuenta.objects.filter(banco_corresponsal_idbanco__codigo = emisorS) 
 			elif (io =="O"):
@@ -1627,10 +1826,16 @@ def parseo752(archivo,directorio):
 			if cuenta:
 				monedaCta = cuenta[0].moneda_idmoneda.codigo
 				if(moneda33A != "" and monedaCta != moneda33A):
-					observacion = "Moneda Invalida, la moneda proveniente del mensaje es : " + moneda33A + ", deberia ser : " + monedaCta + ", Archivo: " + archivo
+					if idioma == 0:
+						observacion = "Moneda Invalida, la moneda proveniente del mensaje es : " + moneda33A + ", deberia ser : " + monedaCta + ", Archivo: " + archivo
+					else:
+						observacion = "Invalid currency code, the currency of the message es: " +moneda33A + ", but must be: " + monedaCta + ", File: " + archivo
 					vali = "vali"
 				if(montoTotal32B != "" and cargosDed71B != "" and moneda33A == ""):
-					observacion = "Si los campos 32B y 71B existen, el campo 33a Debería estar presente, Archivo: " + archivo
+					if idioma == 0:
+						observacion = "Si los campos 32B y 71B existen, el campo 33a Debería estar presente (Código error: C18), Archivo: " + archivo
+					else:
+						observacion = "If fields 32B and 71B are both present, then field 33a must also be present (Error code(s): C18), File: " +archivo
 					vali = "vali"
 				if(fechaValor33A == ""):
 					fechaValor33A = fecha30
@@ -1647,7 +1852,10 @@ def parseo752(archivo,directorio):
 				mensaje_intra = MensajesIntraday.objects.create(tipo = "752",cuenta = cuenta[0],fecha_entrada=fecha_entrada,i_o=io,observacion=observacion) 
 				mensaje = Mt752.objects.create(mensaje_intraday = mensaje_intra,fecha_valor = fechaValor33A, moneda = moneda33A,monto = monto33A,remitente = emisorS,receptor = receptorR, num_credito = emisorRef20,ref_banco_present = refRel21,proposito = id23, fecha_aviso = fecha30, monto_total = montoTotal32B, cargos_deducidos = cargosDed71B,corresponsal_remitente = emisorCorr53a, corresponsal_receptor = receptorCorr54a,info_remitente_a_receptor = info72)
 			else:
-				vali = "No se posee cuenta donde procesar este mensaje, Archivo: " + archivo
+				if idioma == 0:
+					vali = "No se posee cuenta donde procesar este mensaje, Archivo: " + archivo
+				else:
+					vali = "There is not account to process the message, File: " + archivo
 			emisorS = ""
 			receptorR = ""
 			emisorRef20 = ""
@@ -1679,7 +1887,7 @@ def parseo752(archivo,directorio):
 
 
 
-def parseo754(archivo,directorio):
+def parseo754(archivo,directorio,idioma):
 	dirArch = directorio + "\\" + archivo
 
 	#abrir archivo
@@ -1738,7 +1946,11 @@ def parseo754(archivo,directorio):
 			opcion = contenidoLinea
 
 			if (opcion != "$"):
-				msg = "Caracter inesperado, en la línea número " +str(contador+1)+ " del archivo " + archivo
+				if idioma == 0:
+					msg = "Caracter inesperado, en la línea número " +str(contador+1)+ " del archivo " + archivo
+				else:
+					msg = "Unexpected character, at line number " +str(contador+1)+ " of file " + archivo
+			
 				return ("error", msg)
 		
 		#Caso para Linea campo [M] Tipo de Mensaje
@@ -1746,7 +1958,11 @@ def parseo754(archivo,directorio):
 			opcion = contenidoLinea[:3] 
 			
 			if (opcion != "[M]"):
-				msg = "Caracter inesperado, en la línea número " +str(contador+1)+ " del archivo " + archivo
+				if idioma == 0:
+					msg = "Caracter inesperado, en la línea número " +str(contador+1)+ " del archivo " + archivo
+				else:
+					msg = "Unexpected character, at line number " +str(contador+1)+ " of file " + archivo
+			
 				return ("error", msg)
 			else:
 				mensajeTipoM = contenidoLinea[3:]
@@ -1757,7 +1973,11 @@ def parseo754(archivo,directorio):
 			opcion = contenidoLinea[:3] 
 			
 			if (opcion != "[S]"):
-				msg = "Caracter inesperado, en la línea número " +str(contador+1)+ " del archivo " + archivo
+				if idioma == 0:
+					msg = "Caracter inesperado, en la línea número " +str(contador+1)+ " del archivo " + archivo
+				else:
+					msg = "Unexpected character, at line number " +str(contador+1)+ " of file " + archivo
+			
 				return ("error", msg)
 			else:
 				emisorS = contenidoLinea[3:]
@@ -1768,7 +1988,11 @@ def parseo754(archivo,directorio):
 			opcion = contenidoLinea[:3] 
 			
 			if (opcion != "[R]"):
-				msg = "Caracter inesperado, en la línea número " +str(contador+1)+ " del archivo " + archivo
+				if idioma == 0:
+					msg = "Caracter inesperado, en la línea número " +str(contador+1)+ " del archivo " + archivo
+				else:
+					msg = "Unexpected character, at line number " +str(contador+1)+ " of file " + archivo
+			
 				return ("error", msg)
 			else:
 				receptorR = contenidoLinea[3:]
@@ -1779,7 +2003,11 @@ def parseo754(archivo,directorio):
 			opcion = contenidoLinea[:4] 
 			
 			if (opcion != "[20]"):
-				msg = "Caracter inesperado, en la línea número " +str(contador+1)+ " del archivo " + archivo
+				if idioma == 0:
+					msg = "Caracter inesperado, en la línea número " +str(contador+1)+ " del archivo " + archivo
+				else:
+					msg = "Unexpected character, at line number " +str(contador+1)+ " of file " + archivo
+			
 				return ("error", msg)
 			else:
 				emisorRef20 = contenidoLinea[4:]
@@ -1790,7 +2018,11 @@ def parseo754(archivo,directorio):
 			opcion = contenidoLinea[:4]  
 			
 			if (opcion != "[21]"):
-				msg = "Caracter inesperado, en la línea número " +str(contador+1)+ " del archivo " + archivo
+				if idioma == 0:
+					msg = "Caracter inesperado, en la línea número " +str(contador+1)+ " del archivo " + archivo
+				else:
+					msg = "Unexpected character, at line number " +str(contador+1)+ " of file " + archivo
+			
 				return ("error", msg)
 			else:
 				refRel21 = contenidoLinea[4:]
@@ -1802,7 +2034,11 @@ def parseo754(archivo,directorio):
 			opcion = contenidoLinea[:5]
 		
 			if (opcion != "[32A]" and opcion != "[32B]"): 
-				msg = "Caracter inesperado, en la línea número " +str(contador+1)+ " del archivo " + archivo
+				if idioma == 0:
+					msg = "Caracter inesperado, en la línea número " +str(contador+1)+ " del archivo " + archivo
+				else:
+					msg = "Unexpected character, at line number " +str(contador+1)+ " of file " + archivo
+			
 				return ("error", msg)
 			elif(opcion == "[32A]" ): 
 				fechaValor32 = contenidoLinea[5:11]
@@ -1833,11 +2069,19 @@ def parseo754(archivo,directorio):
 					es72 = True
 				if (es72):			
 					if(opcion0 not in verificarOps):
-						msg = "Caracter inesperado, en la línea número " +str(contador+1)+ " del archivo " + archivo
+						if idioma == 0:
+							msg = "Caracter inesperado, en la línea número " +str(contador+1)+ " del archivo " + archivo
+						else:
+							msg = "Unexpected character, at line number " +str(contador+1)+ " of file " + archivo
+					
 						return ("error", msg)
 				else: 
 					if(opcion1 not in verificarOps):
-						msg = "Caracter inesperado, en la línea número " +str(contador+1)+ " del archivo " + archivo
+						if idioma == 0:
+							msg = "Caracter inesperado, en la línea número " +str(contador+1)+ " del archivo " + archivo
+						else:
+							msg = "Unexpected character, at line number " +str(contador+1)+ " of file " + archivo
+					
 						return ("error", msg)
 				if (opcion1 == "[33B]"):
 					montoAdic33B = contenidoLinea[5:]
@@ -1876,7 +2120,10 @@ def parseo754(archivo,directorio):
 					fechaValor32 = datetime.strptime(fechaValor32, "%y%m%d").date()
 					fechaValor32 = fechaValor32.strftime("%d/%m/%Y")
 					if(contenidoLinea[11:14] != moneda32):
-						observacion = "Los campos 32a y 34a deben tener el mismo tipo de moneda, Archivo: " + archivo
+						if idioma == 0:
+							observacion = "Los campos 32a y 34a deben tener el mismo tipo de moneda (Código error: C02), Archivo: " + archivo
+						else:
+							observacion = "The currency code in the amount fields 32a and 34a must be the same (Error code(s): C02), File: " + archivo
 						vali = "vali"
 					moneda32 = contenidoLinea[11:14]
 					monto32 = contenidoLinea[14:]
@@ -1885,7 +2132,10 @@ def parseo754(archivo,directorio):
 					print ("[34A]: ",monto32)
 				if (opcion1 == "[34B]"):
 					if(contenidoLinea[5:8] != moneda32):
-						observacion = "Los campos 32a y 34a deben tener el mismo tipo de moneda, Archivo: " + archivo
+						if idioma == 0:
+							observacion = "Los campos 32a y 34a deben tener el mismo tipo de moneda (Código error: C02), Archivo: " + archivo
+						else:
+							observacion = "The currency code in the amount fields 32a and 34a must be the same (Error code(s): C02), File: " + archivo
 						vali = "vali"
 					moneda32 = contenidoLinea[5:8]
 					monto32 = contenidoLinea[8:]
@@ -2054,7 +2304,11 @@ def parseo754(archivo,directorio):
 				cuantos = 0
 
 			if (opcion0 != "@@"): 
-				msg = "Caracter inesperado, en la línea número " +str(contador+1)+ " del archivo " + archivo
+				if idioma == 0:
+					msg = "Caracter inesperado, en la línea número " +str(contador+1)+ " del archivo " + archivo
+				else:
+					msg = "Unexpected character, at line number " +str(contador+1)+ " of file " + archivo
+			
 				return ("error", msg)
 			else: 
 				finMensaje =True
@@ -2070,7 +2324,10 @@ def parseo754(archivo,directorio):
 			elif (emisorS == bic):
 				io = "O"
 			else:
-				vali = "Este mensaje no nos pertenece, Archivo: " + archivo
+				if idioma == 0:
+					vali = "Este mensaje no nos pertenece, Archivo: " + archivo
+				else:
+					vali = "This message does not belong to us, File: " + archivo 
 
 			if (io =="I"):
 				cuenta = Cuenta.objects.filter(banco_corresponsal_idbanco__codigo = emisorS) 
@@ -2080,19 +2337,31 @@ def parseo754(archivo,directorio):
 			if cuenta:
 				monedaCta = cuenta[0].moneda_idmoneda.codigo
 				if(monedaCta != moneda32):
-					observacion = "Moneda Invalida, la moneda proveniente del mensaje es : " + moneda32 + ", deberia ser : " + monedaCta + ", Archivo: " + archivo
+					if idioma == 0:
+						observacion = "Moneda Invalida, la moneda proveniente del mensaje es : " + moneda32 + ", deberia ser : " + monedaCta + ", Archivo: " + archivo
+					else:
+						observacion = "Invalid currency, currecy comming from message is: " + moneda32 + ", but must be: " + monedaCta + ", Archivo: " + archivo
 					vali = "vali"
 				if(reemBank53a != "" and cuentaBank57a != ""):
-					observacion = "Los Campos 53a y 57a pueden estar presentes, pero no ambos"
+					if idioma == 0:
+						observacion = "Los Campos 53a y 57a pueden estar presentes, pero no ambos (Código error: C14), Archivo: " + archivo
+					else:
+						observacion = "Either field 53a or 57a may be present, but not both (Error code(s): C14), File: " + archivo
 					vali = "vali"
 				if(info72 != "" and narrativa77A != ""):
-					observacion = "Los Campos 72 y 77A pueden estar presentes, pero no ambos"
+					if idioma == 0:
+						observacion = "Los Campos 72 y 77A pueden estar presentes, pero no ambos, (Código error: C19), Archivo: " + archivo 
+					else:
+						observacion ="Either field 72 or 77A may be present, but not both (Error code(s): C19), File: " + archivo
 					vali = "vali"
 				fecha_entrada = timenow()
 				mensaje_intra = MensajesIntraday.objects.create(tipo = "754",cuenta = cuenta[0],fecha_entrada=fecha_entrada,i_o=io,observacion=observacion) 
 				mensaje = Mt754.objects.create(monto_total=montoT,mensaje_intraday = mensaje_intra,fecha_valor = fechaValor32, moneda = moneda32,monto = monto32,remitente = emisorS,receptor = receptorR, ref_remitente = emisorRef20,ref_relacion = refRel21,monto_adicional = montoAdic33B, cargos_deducidos = montoDed71B,cargos_agregados = cargosAdd73, banco_reembolso = reemBank53a, cuenta_institucion = cuentaBank57a,banco_beneficiario = beneBank58a,info_remitente_a_receptor = info72,narrativa = narrativa77A)
 			else:
-				vali = "No se posee cuenta donde procesar este mensaje, Archivo: " + archivo
+				if idioma == 0:
+					vali = "No se posee cuenta donde procesar este mensaje, Archivo: " + archivo
+				else:
+					vali = "There is not accounts to process the message, File: " + archivo
 			emisorS = ""
 			receptorR = ""
 			emisorRef20 = ""
@@ -2125,7 +2394,7 @@ def parseo754(archivo,directorio):
 
 
 
-def parseo756(archivo,directorio):
+def parseo756(archivo,directorio,idioma):
 	dirArch = directorio + "\\" + archivo
 
 	#abrir archivo
@@ -2177,7 +2446,11 @@ def parseo756(archivo,directorio):
 			opcion = contenidoLinea
 
 			if (opcion != "$"):
-				msg = "Caracter inesperado, en la línea número " +str(contador+1)+ " del archivo " + archivo
+				if idioma == 0:
+					msg = "Caracter inesperado, en la línea número " +str(contador+1)+ " del archivo " + archivo
+				else:
+					msg = "Unexpected character, at line number " +str(contador+1)+ " of file " + archivo
+			
 				return ("error", msg)
 		
 		#Caso para Linea campo [M] Tipo de Mensaje
@@ -2185,7 +2458,11 @@ def parseo756(archivo,directorio):
 			opcion = contenidoLinea[:3] 
 			
 			if (opcion != "[M]"):
-				msg = "Caracter inesperado, en la línea número " +str(contador+1)+ " del archivo " + archivo
+				if idioma == 0:
+					msg = "Caracter inesperado, en la línea número " +str(contador+1)+ " del archivo " + archivo
+				else:
+					msg = "Unexpected character, at line number " +str(contador+1)+ " of file " + archivo
+			
 				return ("error", msg)
 			else:
 				mensajeTipoM = contenidoLinea[3:]
@@ -2196,7 +2473,11 @@ def parseo756(archivo,directorio):
 			opcion = contenidoLinea[:3] 
 			
 			if (opcion != "[S]"):
-				msg = "Caracter inesperado, en la línea número " +str(contador+1)+ " del archivo " + archivo
+				if idioma == 0:
+					msg = "Caracter inesperado, en la línea número " +str(contador+1)+ " del archivo " + archivo
+				else:
+					msg = "Unexpected character, at line number " +str(contador+1)+ " of file " + archivo
+			
 				return ("error", msg)
 			else:
 				emisorS = contenidoLinea[3:]
@@ -2207,7 +2488,11 @@ def parseo756(archivo,directorio):
 			opcion = contenidoLinea[:3] 
 			
 			if (opcion != "[R]"):
-				msg = "Caracter inesperado, en la línea número " +str(contador+1)+ " del archivo " + archivo
+				if idioma == 0:
+					msg = "Caracter inesperado, en la línea número " +str(contador+1)+ " del archivo " + archivo
+				else:
+					msg = "Unexpected character, at line number " +str(contador+1)+ " of file " + archivo
+			
 				return ("error", msg)
 			else:
 				receptorR = contenidoLinea[3:]
@@ -2218,7 +2503,11 @@ def parseo756(archivo,directorio):
 			opcion = contenidoLinea[:4] 
 			
 			if (opcion != "[20]"):
-				msg = "Caracter inesperado, en la línea número " +str(contador+1)+ " del archivo " + archivo
+				if idioma == 0:
+					msg = "Caracter inesperado, en la línea número " +str(contador+1)+ " del archivo " + archivo
+				else:
+					msg = "Unexpected character, at line number " +str(contador+1)+ " of file " + archivo
+			
 				return ("error", msg)
 			else:
 				emisorRef20 = contenidoLinea[4:]
@@ -2229,7 +2518,11 @@ def parseo756(archivo,directorio):
 			opcion = contenidoLinea[:4]  
 			
 			if (opcion != "[21]"):
-				msg = "Caracter inesperado, en la línea número " +str(contador+1)+ " del archivo " + archivo
+				if idioma == 0:
+					msg = "Caracter inesperado, en la línea número " +str(contador+1)+ " del archivo " + archivo
+				else:
+					msg = "Unexpected character, at line number " +str(contador+1)+ " of file " + archivo
+			
 				return ("error", msg)
 			else:
 				refRel21 = contenidoLinea[4:]
@@ -2241,7 +2534,11 @@ def parseo756(archivo,directorio):
 			opcion = contenidoLinea[:5]
 		
 			if (opcion != "[32B]"): 
-				msg = "Caracter inesperado, en la línea número " +str(contador+1)+ " del archivo " + archivo
+				if idioma == 0:
+					msg = "Caracter inesperado, en la línea número " +str(contador+1)+ " del archivo " + archivo
+				else:
+					msg = "Unexpected character, at line number " +str(contador+1)+ " of file " + archivo
+			
 				return ("error", msg)
 			else: 
 				montoTotal32B = contenidoLinea[5:]
@@ -2254,7 +2551,11 @@ def parseo756(archivo,directorio):
 			opcion = contenidoLinea[:5]
 		
 			if (opcion != "[33A]"): 
-				msg = "Caracter inesperado, en la línea número " +str(contador+1)+ " del archivo " + archivo
+				if idioma == 0:
+					msg = "Caracter inesperado, en la línea número " +str(contador+1)+ " del archivo " + archivo
+				else:
+					msg = "Unexpected character, at line number " +str(contador+1)+ " of file " + archivo
+			
 				return ("error", msg)
 			else: 
 				fechaValor33A = contenidoLinea[5:11]
@@ -2263,7 +2564,10 @@ def parseo756(archivo,directorio):
 				moneda33A = contenidoLinea[11:14]
 				monto33A = contenidoLinea[14:]
 				if(moneda33A != moneda32B):
-					observacion = "Los campos 32B y 33A deben tener el mismo tipo de moneda, Archivo: " + archivo
+					if idioma == 0:
+						observacion = "Los campos 32B y 33A deben tener el mismo tipo de moneda, Archivo: " + archivo
+					else:
+						observacion = "The currency code in the amount fields 32B and 33A must be the same (Error code(s): C02), File: " + archivo
 					vali = "vali"
 				print ("[33A]: ",fechaValor33A)
 				print ("[33A]: ",moneda33A)
@@ -2280,11 +2584,19 @@ def parseo756(archivo,directorio):
 					es72 = True
 				if (es72):			
 					if(opcion0 not in verificarOps):
-						msg = "Caracter inesperado, en la línea número " +str(contador+1)+ " del archivo " + archivo
+						if idioma == 0:
+							msg = "Caracter inesperado, en la línea número " +str(contador+1)+ " del archivo " + archivo
+						else:
+							msg = "Unexpected character, at line number " +str(contador+1)+ " of file " + archivo
+					
 						return ("error", msg)
 				else: 
 					if(opcion1 not in verificarOps):
-						msg = "Caracter inesperado, en la línea número " +str(contador+1)+ " del archivo " + archivo
+						if idioma == 0:
+							msg = "Caracter inesperado, en la línea número " +str(contador+1)+ " del archivo " + archivo
+						else:
+							msg = "Unexpected character, at line number " +str(contador+1)+ " of file " + archivo
+					
 						return ("error", msg)
 				if (opcion1 == "[53A]"):
 					emisorCorr53a = opcion1 + contenidoLinea[5:]
@@ -2399,7 +2711,11 @@ def parseo756(archivo,directorio):
 				cuantos = 0
 					
 			if (opcion0 != "@@"): 
-				msg = "Caracter inesperado, en la línea número " +str(contador+1)+ " del archivo " + archivo
+				if idioma == 0:
+					msg = "Caracter inesperado, en la línea número " +str(contador+1)+ " del archivo " + archivo
+				else:
+					msg = "Unexpected character, at line number " +str(contador+1)+ " of file " + archivo
+			
 				return ("error", msg)
 			else: 
 				finMensaje =True
@@ -2415,7 +2731,10 @@ def parseo756(archivo,directorio):
 			elif (emisorS == bic):
 				io = "O"
 			else:
-				vali = "Este mensaje no nos pertenece, Archivo: " + archivo
+				if idioma == 0:
+					vali = "Este mensaje no nos pertenece, Archivo: " + archivo
+				else:
+					vali = "This message does not belong to us, File: " + archivo
 
 			if (io =="I"):
 				cuenta = Cuenta.objects.filter(banco_corresponsal_idbanco__codigo = emisorS) 
@@ -2425,13 +2744,19 @@ def parseo756(archivo,directorio):
 			if cuenta:
 				monedaCta = cuenta[0].moneda_idmoneda.codigo
 				if(monedaCta != moneda33A):
-					observacion = "Moneda Invalida, la moneda proveniente del mensaje es : " + moneda33A + ", deberia ser : " + monedaCta + ", Archivo: " + archivo
+					if idioma == 0:
+						observacion = "Moneda Invalida, la moneda proveniente del mensaje es : " + moneda33A + ", deberia ser: " + monedaCta + ", Archivo: " + archivo
+					else:
+						observacion = "Invalid Currency, the currency comming from the message is: " +moneda33A + ", but must be: " + monedaCta + ", File: " + archivo 
 					vali = "vali"
 				fecha_entrada = timenow()
 				mensaje_intra = MensajesIntraday.objects.create(tipo = "756",cuenta = cuenta[0],fecha_entrada=fecha_entrada,i_o=io,observacion=observacion) 
 				mensaje = Mt756.objects.create(mensaje_intraday = mensaje_intra,fecha_valor = fechaValor33A, moneda = moneda33A,monto = monto33A,remitente = emisorS,receptor = receptorR, ref_remitente = emisorRef20,ref_banco_present = refRel21,moneda_monto = montoTotal32B, corresponsal_remitente = emisorCorr53a, corresponsal_receptor = receptorCorr54a,info_remitente_a_receptor = info72)
 			else:
-				vali = "No se posee cuenta donde procesar este mensaje, Archivo: " + archivo
+				if idioma == 0:
+					vali = "No se posee cuenta donde procesar este mensaje, Archivo: " + archivo
+				else:
+					vali = "There is not account to process the message, File: " + archivo
 
 			emisorS = ""
 			receptorR = ""
@@ -2459,7 +2784,7 @@ def parseo756(archivo,directorio):
 	return ("True",vali)
 
 
-def parseo942(archivo,directorio):
+def parseo942(archivo,directorio,idioma):
 	dirArch = directorio + "\\" + archivo
 
 	#abrir archivo
@@ -2511,7 +2836,11 @@ def parseo942(archivo,directorio):
 			opcion = contenidoLinea
 
 			if (opcion != "$"):
-				msg = "Caracter inesperado, en la línea número " +str(contador+1)+ " del archivo " + archivo
+				if idioma == 0:
+					msg = "Caracter inesperado, en la línea número " +str(contador+1)+ " del archivo " + archivo
+				else:
+					msg = "Unexpected character, at line number " +str(contador+1)+ " of file " + archivo
+			
 				return ("error", msg)
 		
 		#Caso para Linea campo [M] Tipo de Mensaje
@@ -2519,7 +2848,11 @@ def parseo942(archivo,directorio):
 			opcion = contenidoLinea[:3] 
 			
 			if (opcion != "[M]"):
-				msg = "Caracter inesperado, en la línea número " +str(contador+1)+ " del archivo " + archivo
+				if idioma == 0:
+					msg = "Caracter inesperado, en la línea número " +str(contador+1)+ " del archivo " + archivo
+				else:
+					msg = "Unexpected character, at line number " +str(contador+1)+ " of file " + archivo
+			
 				return ("error", msg)
 			else:
 				mensajeTipoM = contenidoLinea[3:]
@@ -2530,7 +2863,11 @@ def parseo942(archivo,directorio):
 			opcion = contenidoLinea[:3] 
 			
 			if (opcion != "[S]"):
-				msg = "Caracter inesperado, en la línea número " +str(contador+1)+ " del archivo " + archivo
+				if idioma == 0:
+					msg = "Caracter inesperado, en la línea número " +str(contador+1)+ " del archivo " + archivo
+				else:
+					msg = "Unexpected character, at line number " +str(contador+1)+ " of file " + archivo
+			
 				return ("error", msg)
 			else:
 				emisorS = contenidoLinea[3:]
@@ -2541,7 +2878,11 @@ def parseo942(archivo,directorio):
 			opcion = contenidoLinea[:3] 
 			
 			if (opcion != "[R]"):
-				msg = "Caracter inesperado, en la línea número " +str(contador+1)+ " del archivo " + archivo
+				if idioma == 0:
+					msg = "Caracter inesperado, en la línea número " +str(contador+1)+ " del archivo " + archivo
+				else:
+					msg = "Unexpected character, at line number " +str(contador+1)+ " of file " + archivo
+			
 				return ("error", msg)
 			else:
 				receptorR = contenidoLinea[3:]
@@ -2552,7 +2893,11 @@ def parseo942(archivo,directorio):
 			opcion = contenidoLinea[:4] 
 			
 			if (opcion != "[20]"):
-				msg = "Caracter inesperado, en la línea número " +str(contador+1)+ " del archivo " + archivo
+				if idioma == 0:
+					msg = "Caracter inesperado, en la línea número " +str(contador+1)+ " del archivo " + archivo
+				else:
+					msg = "Unexpected character, at line number " +str(contador+1)+ " of file " + archivo
+			
 				return ("error", msg)
 			else:
 				numRefTrans20 = contenidoLinea[4:]
@@ -2574,7 +2919,11 @@ def parseo942(archivo,directorio):
 
 			#Caso en que NO existe el campo opcional [21]
 			if (opcion != "[25]"): 
-				msg = "Caracter inesperado, en la línea número " +str(contador+1)+ " del archivo " + archivo
+				if idioma == 0:
+					msg = "Caracter inesperado, en la línea número " +str(contador+1)+ " del archivo " + archivo
+				else:
+					msg = "Unexpected character, at line number " +str(contador+1)+ " of file " + archivo
+			
 				return ("error", msg)
 			else: 
 				idCuenta25 = contenidoLinea[4:]
@@ -2587,7 +2936,11 @@ def parseo942(archivo,directorio):
 			opcion = contenidoLinea[:5]
 		
 			if (opcion != "[28C]"): 
-				msg = "Caracter inesperado, en la línea número " +str(contador+1)+ " del archivo " + archivo
+				if idioma == 0:
+					msg = "Caracter inesperado, en la línea número " +str(contador+1)+ " del archivo " + archivo
+				else:
+					msg = "Unexpected character, at line number " +str(contador+1)+ " of file " + archivo
+			
 				return ("error", msg)
 			else: 
 				numEstado28c = contenidoLinea[5:]
@@ -2599,7 +2952,11 @@ def parseo942(archivo,directorio):
 			opcion = contenidoLinea[:5]
 			
 			if (opcion != "[34F]"): 
-				msg = "Caracter inesperado, en la línea número " +str(contador+1)+ " del archivo " + archivo
+				if idioma == 0:
+					msg = "Caracter inesperado, en la línea número " +str(contador+1)+ " del archivo " + archivo
+				else:
+					msg = "Unexpected character, at line number " +str(contador+1)+ " of file " + archivo
+			
 				return ("error", msg)
 			else: 
 				limiteIndicador34F = contenidoLinea[5:]
@@ -2622,7 +2979,11 @@ def parseo942(archivo,directorio):
 					opcion = contenidoLinea[:5]
 			
 			if (opcion != "[13D]"):
-				msg = "Caracter inesperado, en la línea número " +str(contador+1)+ " del archivo " + archivo
+				if idioma == 0:
+					msg = "Caracter inesperado, en la línea número " +str(contador+1)+ " del archivo " + archivo
+				else:
+					msg = "Unexpected character, at line number " +str(contador+1)+ " of file " + archivo
+			
 				return ("error", msg)
 			else:
 				#Caso en que NO existe el campo opcional [34F]
@@ -2673,11 +3034,19 @@ def parseo942(archivo,directorio):
 					es86 = True
 				if (es86):			
 					if(opcion1 not in verificarOps):
-						msg = "Caracter inesperado, en la línea número " +str(contador+1)+ " del archivo " + archivo
+						if idioma == 0:
+							msg = "Caracter inesperado, en la línea número " +str(contador+1)+ " del archivo " + archivo
+						else:
+							msg = "Unexpected character, at line number " +str(contador+1)+ " of file " + archivo
+					
 						return ("error", msg)
 				else: 
 					if(opcion2 not in verificarOps):
-						msg = "Caracter inesperado, en la línea número " +str(contador+1)+ " del archivo " + archivo
+						if idioma == 0:
+							msg = "Caracter inesperado, en la línea número " +str(contador+1)+ " del archivo " + archivo
+						else:
+							msg = "Unexpected character, at line number " +str(contador+1)+ " of file " + archivo
+					
 						return ("error", msg)
 				if(opcion1 == "[86]"):
 					infoTitularOp86 = contenidoLinea[4:]
@@ -2723,7 +3092,11 @@ def parseo942(archivo,directorio):
 				es86 = False	
 
 			if (opcion0 != "@@"): 
-				msg = "Caracter inesperado, en la línea número " +str(contador+1)+ " del archivo " + archivo
+				if idioma == 0:
+					msg = "Caracter inesperado, en la línea número " +str(contador+1)+ " del archivo " + archivo
+				else:
+					msg = "Unexpected character, at line number " +str(contador+1)+ " of file " + archivo
+			
 				return ("error", msg)
 			else: 
 				finMensaje =True
@@ -2737,18 +3110,26 @@ def parseo942(archivo,directorio):
 			if (receptorR == bic):
 				io = "I"
 			else:
-				vali = "Este mensaje no nos pertenece, Archivo: " + archivo
-
+				if idioma == 0:
+					vali = "Este mensaje no nos pertenece, Archivo: " + archivo
+				else:
+					vali = "This message does not belong to us, File: " + archivo
 			if (io =="I"):
 				cuenta = Cuenta.objects.filter(ref_vostro = idCuenta25)
 				
 			if cuenta:
 				monedaCta = cuenta[0].moneda_idmoneda.codigo
 				if(monedaCta != moneda90C):
-					observacion = "Moneda Invalida, la moneda proveniente del mensaje es : " + moneda90C + ", deberia ser : " + monedaCta + ", Archivo: " + archivo
+					if idioma == 0:
+						observacion = "Moneda Invalida, la moneda proveniente del mensaje es : " + moneda90C + ", deberia ser : " + monedaCta + ", Archivo: " + archivo
+					else:
+						observacion = "Invalid Currency, the currency comming from message is: " + moneda90C + ", but must be: " + monedaCta + ", File: " + archivo
 					vali = "vali"
 				if(monedaCta != moneda90D):
-					observacion = "Moneda Invalida, la moneda proveniente del mensaje es : " + moneda90D + ", deberia ser : " + monedaCta + ", Archivo: " + archivo
+					if idioma == 0:
+						observacion = "Moneda Invalida, la moneda proveniente del mensaje es : " + moneda90D + ", deberia ser : " + monedaCta + ", Archivo: " + archivo
+					else:
+						observacion = "Invalid Currency, the currency comming from message is: " + moneda90D + ", but must be: " + monedaCta + ", File: " + archivo
 					vali = "vali"
 				if(entradasDeb90D =="" ):
 					entradasDeb90D = "1"+monedaCta+"0,"
@@ -2758,8 +3139,11 @@ def parseo942(archivo,directorio):
 				mensaje_intra = MensajesIntraday.objects.create(tipo = "942",cuenta = cuenta[0],fecha_entrada=fecha_entrada,i_o=io,observacion=observacion) 
 				mensaje = Mt942.objects.create(mensaje_intraday = mensaje_intra,remitente = emisorS,receptor = receptorR, ref_transaccion = numRefTrans20,ref_relacion = refRel21,id_cuenta = idCuenta25, edo_cuenta_secuencia = numEstado28c, limite_cd = limiteIndicador34F,limite_credito = limiteIndicadorOpcional34F,fecha_hora=fechaIndicador13D,info_owner=lineaDec61_86,total_debitos=entradasDeb90D,total_creditos=entradasCred90C,info_owner_final=infoTitularOp86)
 			else:
-				vali = "No se posee cuenta donde procesar este mensaje, Archivo: " + archivo
-				
+				if idioma == 0:
+					vali = "No se posee cuenta donde procesar este mensaje, Archivo: " + archivo
+				else:
+					vali = "There is not account to process the message, File: " + archivo
+
 			io=""
 			anterior = ""
 			emisorS = ""

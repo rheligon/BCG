@@ -3,9 +3,17 @@ var csrftoken = $.cookie('csrftoken');
 $('#boton-graficar').attr("disabled", true);
 var idioma = $('#idioma').val();
 var fechaC = $('#fechaConciliacion').val();
-var diaC = fechaC.substr(0,2)
-var mesC = fechaC.substr(3,2)
-var anioC = fechaC.substr(6,4)
+if (idioma == 0){
+    var diaC = fechaC.substr(0,2)
+    var mesC = parseInt(fechaC.substr(3,2)) - 1
+    var anioC = fechaC.substr(6,4)
+}else{
+    var anioC = fechaC.substr(0,4)
+    var mesC = parseInt(fechaC.substr(5,2)) - 1
+    var diaC = fechaC.substr(8,2)
+}
+
+
 var idiomaAux = "";
 var msj ="";
 
@@ -235,16 +243,37 @@ function printElement(elem) {
     $printSection.appendChild(domClone);
 }
 
+//Cambiar el idioma del date picker a español si este es el seleccionado
+if (idiomaAux==="es"){
+    $.extend($.fn.pickadate.defaults, {
+      monthsFull: ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'],
+      weekdaysShort: ['Dom', 'Lun', 'Mar', 'Mie', 'Jue', 'Vie', 'Sab'],
+      today: 'Hoy',
+      clear: 'Limpiar',
+      close: 'Cerrar',
+    });
+}
 
 //Inicializar el DatePicker
-$('#fecha-valor').pickadate({
-    format: 'dd/mm/yyyy',
-    formatSubmit:'dd/mm/yyyy',
-    selectYears: true,
-    selectMonths: true,
-    max: true,
-    min: [anioC,mesC,diaC],
-});
+if (idioma == 0){
+    $('#fecha-valor').pickadate({
+        format: 'dd/mm/yyyy',
+        formatSubmit:'dd/mm/yyyy',
+        selectYears: true,
+        selectMonths: true,
+        max: true,
+        min: [anioC,mesC,diaC],
+    });
+} else {
+    $('#fecha-valor').pickadate({
+        format: 'yyyy/mm/dd',
+        formatSubmit:'dd/mm/yyyy',
+        selectYears: true,
+        selectMonths: true,
+        max: true,
+        min: [anioC,mesC,diaC],
+    });
+}
 
 $("#myModal").on("hidden.bs.modal", function(){
     t_conta.clear().draw();
@@ -1791,7 +1820,11 @@ $('a').on('click', function () {
 
 $('#exampleModal').on('shown.bs.modal', function (event) {
 	var fechaGrafica = $('#fecha-valor').val();
-    $('#exampleModalLabel').append('Histórico del día : ' + fechaGrafica);
+    if (idioma == 0){
+        $('#exampleModalLabel').append('Histórico del día : ' + fechaGrafica);
+    } else {
+        $('#exampleModalLabel').append('Historic to day : ' + fechaGrafica);
+    }
 	var debito = false
 	var bandera = false
 	var primera = false
@@ -1855,7 +1888,11 @@ $('#exampleModal').on('shown.bs.modal', function (event) {
     	if(bandera){
     		var cuenta = $('#cuenta').val();
 
-    		$( "#btnDescarga" ).attr( "download", "Historico_"+cuenta+"_" + fechaGrafica);
+            if (idioma == 0){
+                $( "#btnDescarga" ).attr( "download", "Historico_"+cuenta+"_" + fechaGrafica);
+            } else {
+                $( "#btnDescarga" ).attr( "download", "Historic_"+cuenta+"_" + fechaGrafica);
+            }
     		var lineChartData = {
 				labels : etiquetas,
 				datasets : [
@@ -1878,7 +1915,11 @@ $('#exampleModal').on('shown.bs.modal', function (event) {
 			});
     	}else{
     		$(".modal-body1").html("");
-    		$(".modal-body1").append('<div ><h2 class="alert"align="center">No existen Transacciones para el día seleccionado.</h2></div>')
+            if (idioma == 0){
+                $(".modal-body1").append('<div ><h2 class="alert"align="center">No existen Transacciones para el día seleccionado.</h2></div>')
+            } else {
+                $(".modal-body1").append('<div ><h2 class="alert"align="center">There are not transactions for selected day.</h2></div>')
+            }
     		$('#btnDescarga').attr("disabled", true);
     	}
 		

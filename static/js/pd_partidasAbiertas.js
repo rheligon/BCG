@@ -3,12 +3,10 @@ var faltacorr = false;
 var matchArray = [];
 var filterArray = [[],[],[],[],[],[]];
 var edcArray = [[],[]];
-var mt95Array=[];
-var mt95Aux=[];
-var copiaAux = [];
-var copia = [];
 var obs_conta = [];
 var obs_corr = [];
+var mt95_conta = [];
+var mt95_corres = [];
 var opcionChequeada = "";
 var idioma = $('#idioma').val();
 var idiomaAux = "";
@@ -595,11 +593,12 @@ function busqueda(ctaid,filterArray){
             var json_conta = jQuery.parseJSON(data.r_conta);
             var json_corr = jQuery.parseJSON(data.r_corr);
             edcArray = data.r_edcn;
-            var json_mt95 = jQuery.parseJSON(data.r_95);
-            mt95Array = json_mt95;
-            copiaAux = mt95Array;
             var obs_conta_aux = data.obs_conta;
             var obs_corr_aux = data.obs_corr;
+            var mt95_conta_aux = data.mt95_conta;
+            var mt95_corres_aux = data.mt95_corres;
+            mt95_conta = mt95_conta_aux;
+            mt95_corres = mt95_corres_aux;
             obs_conta = obs_conta_aux;
             obs_corr = obs_corr_aux;
 
@@ -717,7 +716,6 @@ function heavyLifter(jsonArr,tipo) {
             // Add to counter
             this.currentPosition++;
             current++;
-            copia = mt95Array;
             if (this.tipo==='conta'){
                 calcularfila(this.array[i],this.tipo,edcArray[0][i]);
             }else{
@@ -767,32 +765,16 @@ function calcularfila(elem,tipo,edc){
         var td10 = '<td>S</td>';
     }
     var td11 = '<td style="text-align:center; width: 24px;"><input class="chkSelection" type="checkbox" id="cb-'+tipo+'-'+a_id+'"></td>';
-    //var td12 = '<td style="text-align:center; width: 24px;"></td>';
-    var td12 = '<td style="text-align:center; width: 24px;"><a href="/procd/detallesMT/'+elem.pk+"/"+tipo+"/"+cta_aux+'" id="cb-'+elem.pk+'"><span class="fa fa-plus"></span></a></td>';
-
+    
+    if (chequearMT(elem.pk,tipo)){
+        var td12 = '<td style="text-align:center; width: 24px;"><a href="/procd/detallesMT/'+elem.pk+"/"+tipo+"/"+cta_aux+'" id="cb-'+elem.pk+'"><span class="fa fa-envelope-o"></span></a></td>';
+    } else{
+        var td12 = '<td style="text-align:center; width: 24px;"><a href="/procd/detallesMT/'+elem.pk+"/"+tipo+"/"+cta_aux+'" id="cb-'+elem.pk+'"><span class="fa fa-plus"></span></a></td>';
+    }
     if (elem.fields.seguimiento || chequearObs(elem.pk,tipo)){
         var td14 = '<td style="text-align:center; width: 24px;"><a href="/observaciones/'+elem.pk+"/"+tipo+'" id="cb-'+elem.pk+"-"+tipo+'"><span class="fa fa-comment-o"></span></a></td>';
     } else {
         var td14 = '<td style="text-align:center; width: 24px;"><a href="/observaciones/'+elem.pk+"/"+tipo+'" id="cb-'+elem.pk+"-"+tipo+'"><span class="fa fa-plus"></span></a></td>'
-    }
-
-    var cuentaVeces = 0;
-    var key = 0;
-    for (var i = 0 ; i < copia.length; i++) {
-
-        
-        if (copia[i].fields.ta_conta === elem.pk || copia[i].fields.ta_corres === elem.pk){
-
-            cuentaVeces = cuentaVeces + 1;
-            key = copia[i].pk;
-            td12 = '<td style="text-align:center; width: 24px;"><a href="/procd/detallesMT/'+elem.pk+"/"+tipo+"/"+cta_aux+'" id="cb-'+elem.pk+'"><span class="fa fa-envelope-o"></span></a></td>'
-        
-        }
-
-    }
-
-    if (key!=0){
-        findAndRemove(mt95Array, 'pk', key);
     }
 
     
@@ -834,3 +816,181 @@ function chequearObs(elem,tipo){
     }
 
 }
+
+// chequear tipo MT
+function chequearMT(elem,tipo){
+
+    if (tipo === "conta"){
+        if (mt95_conta.length != 0){
+            return (mt95_conta.indexOf(elem) != -1);
+        } else {
+            return false;
+        }
+    } else{
+        if (mt95_corres.length != 0){
+            return (mt95_corres.indexOf(elem) != -1);
+        } else {
+            return false;
+        }
+    }
+
+}
+
+//Para cuando se regrese de MT u observaciones
+
+$( document ).ready(function() {
+    var ctaid = $('#Cuenta-sel').val().split("-")[0];
+
+    if (ctaid>0){
+      $('#processing-modal').modal('toggle');
+
+      //Inicializar todo de nuevo
+      $('#pbar').removeClass('progress-bar-success');
+      $('#pbar').attr('max', 0);
+      $('#pbar').attr('current', 0);
+      $('#pbartxt').text('0%');
+      $('#pbar').css('width', '0%');
+      //tabla.clear().draw();
+      tabla.fnClearTable();
+      faltaconta = false;
+      faltacorr = false;
+      matchArray =[];
+      filterArray = [[],[],[],[],[],[]];
+      edcArray = [[],[]];
+      $('#checkAllButton').attr('selec',0);
+
+      //Checkear los filtros
+      $('.cbfilter:checked').each(function(){
+        var idaux = $(this).attr('id').split('-')[0];
+        var id = '#filter-'+idaux;
+
+        if (idaux==='monto'){
+            if ($('#monto-desde').val() === "" || $('#monto-hasta').val() === "" ){
+                $('#processing-modal').modal('toggle');
+                if (idioma == 0){
+                    swal("Ups!", "Los montos deben tener valores asignados.", "error");
+                } else {
+                    swal("Ups!", "Amounts can not be empty.", "error");
+                }
+                centinela = false;
+            } else {
+                var p = chequearFornatoNumero($('#monto-desde').val());
+                var q = chequearFornatoNumero($('#monto-hasta').val());
+                if (p && q){
+                    if (idioma == 0){
+                        var desde = $('#monto-desde').val();
+                        var hasta = $('#monto-hasta').val();
+                    } else {
+                        var desde = $('#monto-desde').val().replace(",",".");
+                        var hasta = $('#monto-hasta').val().replace(",",".");
+                    }
+                    if (parseFloat(desde) > parseFloat(hasta)){
+                        if (idioma == 0){
+                            swal("Ups!", 'El monto "Desde" debe ser menor que el monto "Hasta".', "error");
+                        } else {
+                            swal("Ups!", '"Since" amount must be less than "Until" amount.', "error");
+                        }
+                        $('#processing-modal').modal('toggle');
+                        centinela = false;
+                    } else {
+                        filterArray[0].push(desde);
+                        filterArray[0].push(hasta);
+                        centinela = true;
+                    }
+                } else {
+                    if (idioma == 0){
+                        swal("Ups!", "Los montos no cumplen el formato", "error");
+                    } else {
+                        swal("Ups!", "Wrong amount format", "error");
+                    }
+                    $('#processing-modal').modal('toggle');
+                    centinela = false;
+                }
+            }
+        }
+
+        if (idaux==='ref'){
+            var rad = $(id+' input[type=radio]:checked').val();
+            if (rad != undefined ){
+                filterArray[1].push(rad);
+                filterArray[1].push($('#ref-txt').val());
+            }
+        }
+
+        if (idaux==='cod'){
+            var rad = $(id+' input[type=radio]:checked').val();
+            if (rad != undefined ){
+                filterArray[2].push(rad);
+            }
+        }
+
+        if (idaux==='fecha'){
+            var fd = $('#f-desde').val();
+            var fh = $('#f-hasta').val();
+            var aux_fd ="";
+            var aux_fh ="";
+            if(fh==="" || fd===""){
+                $('#processing-modal').modal('toggle');
+                if (idioma == 0){
+                    swal("Ups!", "Las fechas no pueden estar vacías", "error");
+                } else {
+                    swal("Ups!", "Dates can not be empty.", "error");
+                }
+                centinela = false;
+                $('#f-desde').val('');
+                $('#f-hasta').val('');
+            } else{
+                if (idioma == 1){
+                    aux_fd = new Date(fd);
+                    aux_fh = new Date(fh);
+                } else {
+                    var aux1 = fd.split("/").reverse().join("/");
+                    var aux2 = fh.split("/").reverse().join("/");
+                    aux_fd = new Date(aux1);
+                    aux_fh = new Date(aux2);
+                }
+                if (aux_fd >= aux_fh){
+                    $('#processing-modal').modal('toggle');
+                    if (idioma == 0){
+                        swal("Ups!", 'La fecha "desde" debe ser menor que la fecha "hasta"', "error");
+                    } else {
+                        swal("Ups!", '"From" date must be less than "To" date', "error");
+                    }
+                    centinela = false;
+                    $('#f-desde').val('');
+                    $('#f-hasta').val('');
+                } else {
+                    if (idioma == 0){
+                        filterArray[3].push(fd);
+                        filterArray[3].push(fh);
+                        centinela = true;
+                    } else {
+                        var fd_en = fd.split("/").reverse().join("/");
+                        var fh_en = fh.split("/").reverse().join("/");
+                        filterArray[3].push(fd_en);
+                        filterArray[3].push(fh_en);
+                        centinela = true;
+                    }
+                }
+            }
+        }
+
+        if (idaux==='tipo'){
+            var tipo = $('#tipo-trans').val();
+            filterArray[4].push(tipo);
+        }
+
+        if (idaux==='origen'){
+            var rad = $(id+' input[type=radio]:checked').val();
+            if (rad != undefined ){
+                filterArray[5].push(rad);
+            }
+        }        
+      });
+
+        if (centinela){
+          //Llamar funcion de busqueda
+          busqueda(ctaid,filterArray);
+        }
+    }
+});
