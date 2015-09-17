@@ -50,6 +50,12 @@ def test(request):
     
     hora = timenow()
     hora = str(hora)
+    cuenta = "BANCREDITO"
+    cta = Cuenta.objects.filter(codigo = cuenta)[0]
+    edoCta = EstadoCuenta.objects.filter(idedocuenta = cta.ultimoedocuentacargc)
+    if(edoCta):
+        print (edoCta[0].idedocuenta)
+
     return JsonResponse(hora, safe=False)
 
 @login_required(login_url='/login')

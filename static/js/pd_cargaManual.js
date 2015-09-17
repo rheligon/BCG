@@ -290,7 +290,7 @@ $('input[name=radiocuenta]').change(function(){
         t_conta.clear().draw();
         num=1;
         
-        }else{
+    }else{
 
         $('#elim-data').attr('cod', "");
         $('#saldo-manual-moneda').html("");
@@ -1137,7 +1137,7 @@ function buscarEstado(tipo,cuentaid,moneda){
                 $('#saldo-manual-moneda').html(moneda);
                 $('#saldo-manual-cd').html(json_data[proc][ult_edc_conp].fields.c_dfinal);
                 $('#ffinal').html(json_data[proc][ult_edc_conp].fields.m_ffinal);
-                $('#saldo-manual').val($.formatNumber((json_data[proc][ult_edc_conc].fields.balance_final),{locale:idiomaAux}));
+                $('#saldo-manual').val($.formatNumber((json_data[proc][ult_edc_conp].fields.balance_final),{locale:idiomaAux}));
             
             }
 
@@ -1150,7 +1150,7 @@ function buscarEstado(tipo,cuentaid,moneda){
                 $('#saldo-manual-moneda').html(moneda);
                 $('#saldo-manual-cd').html(json_data[carg][ult_edc_corc].fields.c_dfinal);
                 $('#ffinal').html(json_data[carg][ult_edc_corc].fields.m_ffinal);
-                $('#saldo-manual').val($.formatNumber((json_data[carg][ult_edc_conc].fields.balance_final),{locale:idiomaAux}));
+                $('#saldo-manual').val($.formatNumber((json_data[carg][ult_edc_corc].fields.balance_final),{locale:idiomaAux}));
             }
 
             else if (ult_corp_existe && !ult_corc_existe && tipo =="corr-radio"){
@@ -1162,7 +1162,7 @@ function buscarEstado(tipo,cuentaid,moneda){
                 $('#saldo-manual-moneda').html(moneda);
                 $('#saldo-manual-cd').html(json_data[proc][ult_edc_corp].fields.c_dfinal);
                 $('#ffinal').html(json_data[proc][ult_edc_corp].fields.m_ffinal);
-                $('#saldo-manual').val($.formatNumber((json_data[proc][ult_edc_conc].fields.balance_final),{locale:idiomaAux}));
+                $('#saldo-manual').val($.formatNumber((json_data[proc][ult_edc_corp].fields.balance_final),{locale:idiomaAux}));
             
             }else{
                 
