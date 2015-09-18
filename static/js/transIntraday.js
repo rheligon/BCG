@@ -114,7 +114,7 @@ function iniciar_tabla3(idioma){
             },
              "ordering":false,
              "dom": 'Bfrtip',
-             "buttons": ['csv','excel','pdf'],
+             "buttons": ['excel','pdf'],
              "columns": [
                 { "width": "5%" },//Edo. Cuenta
                 { "width": "5%" },//Num. Trans

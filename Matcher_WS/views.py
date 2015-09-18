@@ -50,12 +50,7 @@ def test(request):
     
     hora = timenow()
     hora = str(hora)
-    cuenta = "BANCREDITO"
-    cta = Cuenta.objects.filter(codigo = cuenta)[0]
-    edoCta = EstadoCuenta.objects.filter(idedocuenta = cta.ultimoedocuentacargc)
-    if(edoCta):
-        print (edoCta[0].idedocuenta)
-
+    
     return JsonResponse(hora, safe=False)
 
 @login_required(login_url='/login')
@@ -1001,16 +996,31 @@ def pd_cargaManual(request):
             moneda = request.POST.get('moneda')
             tipo = request.POST.get('tipo')
             
-            cargados = Cargado.objects.all().order_by('-estado_cuenta_idedocuenta__fecha_final')
-            procesados = Procesado.objects.all().order_by('-estado_cuenta_idedocuenta__fecha_final')
+            cta = Cuenta.objects.get(idcuenta = cuentaid)
+            
+            if(tipo =="cont-radio"):
+                edoCta = EstadoCuenta.objects.filter(idedocuenta = cta.ultimoedocuentacargc)
+                if(edoCta):
+                    json_edocta = serializers.serialize('json', [edoCta[0]])
+                else: 
+                    edoCta = EstadoCuenta.objects.filter(idedocuenta = cta.ultimoedocuentaprocc)
+                    if edoCta:
+                        json_edocta = serializers.serialize('json', [edoCta[0]])
+                    else:
+                        json_edocta = ""
+            else:
+                edoCta = EstadoCuenta.objects.filter(idedocuenta = cta.ultimoedocuentacargs)
+                if(edoCta):
+                    json_edocta = serializers.serialize('json', [edoCta[0]])
+                else: 
+                    edoCta = EstadoCuenta.objects.filter(idedocuenta = cta.ultimoedocuentaprocs)
+                    if edoCta:
+                        json_edocta = serializers.serialize('json', [edoCta[0]])
+                    else:
+                        json_edocta = ""
+            
 
-            cargado_l = [cargado.estado_cuenta_idedocuenta for cargado in cargados if cargado.estado_cuenta_idedocuenta.cuenta_idcuenta.idcuenta == cuentaid]
-            procesado_l = [procesado.estado_cuenta_idedocuenta for procesado in procesados if procesado.estado_cuenta_idedocuenta.cuenta_idcuenta.idcuenta == cuentaid]
-
-            res_json2 = '[' + serializers.serialize('json', cargado_l) + ',' 
-            res_json2 += serializers.serialize('json', procesado_l)+']'
-        
-            return JsonResponse({'query':res_json2, 'tipo':tipo,'moneda':moneda})
+            return JsonResponse({'edocuenta':json_edocta, 'moneda':moneda})
 
         if actn == 'cargar':
 

@@ -475,7 +475,6 @@ $('#boton-agregar').on('click', function () {
 
     var cuentaId = $('#edo-cuenta-nuevo').val();
     var cuentaCaso2 = $('#edo-cuenta').val();
-    console.log(cuentaCaso2)
     var dataP = t_conta.rows().data();
     cuentaId = parseInt(cuentaId);
 
@@ -507,7 +506,6 @@ $('#boton-agregar').on('click', function () {
             }
         }else{
             var fechaValor = $('#fecha-valor').val();
-            console.log(dataP.length)            
             if(dataP.length==0){
                 if(cuentaCaso2.length<1){
                     var cdCuenta = $('#saldo-manual-cd-nuevo1').val();    
@@ -519,7 +517,6 @@ $('#boton-agregar').on('click', function () {
                 var cdCuenta = $('#saldo-manual-cd-nuevo2').html();
             }
 
-            console.log(cdCuenta)
             var cdTrans = $('#selector-cd').val();
             var monto = $('#monto-tran').val();
             if(idiomaAux == "es"){
@@ -589,8 +586,7 @@ $('#boton-agregar').on('click', function () {
                 num++;
 
                 var data2 = t_conta.rows().data();
-                console.log(data2.length)
-    
+                
                 if (data2.length==1){
                     $('#saldo-manual-cd-nuevo1').remove();
                     $('#after').prepend('<span id="saldo-manual-cd-nuevo1" class="input-group-addon"></span>');
@@ -1058,112 +1054,20 @@ function buscarEstado(tipo,cuentaid,moneda){
         url: "/procd/cargMan/",
         data: {'moneda':moneda,'tipo':tipo,'cuentaid':cuentaid ,'action':'buscar'},
         success: function(data){
-            var carg = 0;
-            var proc = 1;
-            var ult_edc_conc = 0;
-            var ult_edc_conp = 0;
-            var ult_edc_corc = 0;
-            var ult_edc_corp = 0;
-            var ult_conc_existe = false;
-            var ult_corc_existe = false;
-            var ult_conp_existe = false;
-            var ult_corp_existe = false;
-            var tipo = data.tipo;
-            var moneda = data.moneda;
-            var json_data = jQuery.parseJSON(data.query);
-
-            console.log(json_data)
-           
-            if (json_data[carg].length>=1){
-                  
-                for (var i = 0; i < json_data[carg].length; i++) {
-
-                    if (json_data[carg][i].fields.origen === "L"){
-   
-                        if (!ult_conc_existe){
-                            ult_edc_conc = i;
-                            ult_conc_existe = true;
-                        }
-
-                    }else{
-   
-                        if (!ult_corc_existe){
-                            ult_edc_corc = i;
-                            ult_corc_existe = true;
-                        }
-                    }
-                }
+            if(data.edocuenta != ""){
+                var json_edocuenta = jQuery.parseJSON(data.edocuenta);
+                json_edocuenta = json_edocuenta[0].fields;
             }
-
-            if (json_data[proc].length>=1){
-            
-                for (var i = 0; i < json_data[proc].length; i++) {
-
-                    if (json_data[proc][i].fields.origen === "L"){
-                        
-                        if (!ult_conp_existe){
-                            ult_edc_conp = i;
-                            ult_conp_existe = true;
-                        }
-
-                    }else{
-
-                        if (!ult_corp_existe){
-                            ult_edc_corp = i;
-                            ult_corp_existe = true;
-                        }
-                    }
-                }
-            }
-            
-            if (ult_conc_existe && tipo =="cont-radio"){
-               
-                var fecha_conc = new Date(json_data[carg][ult_edc_conc].fields.fecha_final);
+    
+            if (json_edocuenta){  
+                var fecha_conc = new Date(json_edocuenta.fecha_final);
                 fecha_conc = formatearFecha(fecha_conc);
-                $('#edo-cuenta').val(json_data[carg][ult_edc_conc].fields.codigo);
+                $('#edo-cuenta').val(json_edocuenta.codigo);
                 $('#fecha-manual').val(fecha_conc);
                 $('#saldo-manual-moneda').html(moneda);
-                $('#saldo-manual-cd').html(json_data[carg][ult_edc_conc].fields.c_dfinal);
-                $('#ffinal').html(json_data[carg][ult_edc_conc].fields.m_ffinal);
-                $('#saldo-manual').val($.formatNumber((json_data[carg][ult_edc_conc].fields.balance_final),{locale:idiomaAux}));
-            }   
-
-            else if (ult_conp_existe && !ult_conc_existe && tipo =="cont-radio"){
-                var fecha_conp = new Date(json_data[proc][ult_edc_conp].fields.fecha_final);
-                fecha_conp = formatearFecha(fecha_conp);
-                
-                $('#edo-cuenta').val(json_data[proc][ult_edc_conp].fields.codigo);
-                $('#fecha-manual').val(fecha_conp);
-                $('#saldo-manual-moneda').html(moneda);
-                $('#saldo-manual-cd').html(json_data[proc][ult_edc_conp].fields.c_dfinal);
-                $('#ffinal').html(json_data[proc][ult_edc_conp].fields.m_ffinal);
-                $('#saldo-manual').val($.formatNumber((json_data[proc][ult_edc_conp].fields.balance_final),{locale:idiomaAux}));
-            
-            }
-
-            else if (ult_corc_existe && tipo =="corr-radio"){
-               
-                var fecha_corc = new Date(json_data[carg][ult_edc_corc].fields.fecha_final)
-                fecha_corc = formatearFecha(fecha_corc);
-                $('#edo-cuenta').val(json_data[carg][ult_edc_corc].fields.codigo);
-                $('#fecha-manual').val(fecha_corc);
-                $('#saldo-manual-moneda').html(moneda);
-                $('#saldo-manual-cd').html(json_data[carg][ult_edc_corc].fields.c_dfinal);
-                $('#ffinal').html(json_data[carg][ult_edc_corc].fields.m_ffinal);
-                $('#saldo-manual').val($.formatNumber((json_data[carg][ult_edc_corc].fields.balance_final),{locale:idiomaAux}));
-            }
-
-            else if (ult_corp_existe && !ult_corc_existe && tipo =="corr-radio"){
-               
-                var fecha_corp = new Date(json_data[proc][ult_edc_corp].fields.fecha_final)
-                fecha_corp = formatearFecha(fecha_corp);
-                $('#edo-cuenta').val(json_data[proc][ult_edc_corp].fields.codigo);
-                $('#fecha-manual').val(fecha_corp);
-                $('#saldo-manual-moneda').html(moneda);
-                $('#saldo-manual-cd').html(json_data[proc][ult_edc_corp].fields.c_dfinal);
-                $('#ffinal').html(json_data[proc][ult_edc_corp].fields.m_ffinal);
-                $('#saldo-manual').val($.formatNumber((json_data[proc][ult_edc_corp].fields.balance_final),{locale:idiomaAux}));
-            
+                $('#saldo-manual-cd').html(json_edocuenta.c_dfinal);
+                $('#ffinal').html(json_edocuenta.m_ffinal);
+                $('#saldo-manual').val($.formatNumber((json_edocuenta.balance_final),{locale:idiomaAux}));
             }else{
                 
                 $('#edo-cuenta').val("");
@@ -1201,9 +1105,7 @@ function buscarEstado(tipo,cuentaid,moneda){
 
 function cargar(listaCuenta,listaTrans,numTrans){
         listaTrans = JSON.stringify(listaTrans);
-        console.log(listaTrans)
         listaCuenta = JSON.stringify(listaCuenta);
-        console.log(listaCuenta)
         $.ajax({
             type:"POST",
             url: "/procd/cargMan/",
