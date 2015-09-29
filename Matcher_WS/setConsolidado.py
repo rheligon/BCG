@@ -8,7 +8,7 @@ def setConsolidado(codCta,request):
 
     #Obtengo el nombre del usuario
     username = request.user.username
-    sesion = Sesion.objects.get(login=username)
+    sesion = Sesion.objects.get(login=username,estado__in=["Activo","Pendiente"])
     nombre = sesion.usuario_idusuario.nombres+" "+sesion.usuario_idusuario.apellidos
 
     try:

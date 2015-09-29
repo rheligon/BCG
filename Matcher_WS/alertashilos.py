@@ -191,7 +191,15 @@ def daemon(request,language):
 				#if alerta.alertas_idalertas.idalertas == (13):
 				#	print("partidas pendientes sin observación")
 
+	"""
+	hay = Configuracion.objects.all()[0].tiemporetentrazas
 	
+	if hay is not None:
+		hay = hay * 30
+		fecha_aux = timenow() - timedelta(hay)
+		logs_aux = Traza.objects.filter(fecha_hora__lt=fecha_aux).delete()
+		
+	"""
 	aux = VerificarAlertas.objects.get(idVA=1) 
 	aux.flag = 0
 	aux.fecha = timenow()

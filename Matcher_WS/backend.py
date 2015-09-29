@@ -59,7 +59,7 @@ class MyAuthBackend(ModelBackend):
 
         if (check_password(password,enc)):
             user_model = get_user_model()
-            user = user_model.objects.get(username=username)
+            user,creado = user_model.objects.get_or_create(username=username)
             user.backend = 'Matcher_WS.backend.MyAuthBackend'
             return user
 

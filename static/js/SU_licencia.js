@@ -218,3 +218,53 @@ function guardarCambios(numUsers,fecha,version){
     });
     return false;
 }
+
+//Boton para el reset de todos los passwords
+$('#resetButton').on('click', function () {
+    
+    swal({
+        title: "",
+        text: "¿Está seguro de que desea continuar?. Le recordamos que todas las contraseñas en base de datos que no sean de usuarios LDAP serán cambiadas a '12345'",
+        type: "warning",
+        showCancelButton: true,
+        confirmButtonText: "Ok"},
+        function(){
+            $('#processing-modal').modal('toggle');
+            //Llamar funcion de creación del mensaje
+            resetPasswords();
+        }
+    );
+});
+
+//Resetear todos los passwords en la base de datos 
+function resetPasswords(){
+    $.ajax({
+        type:"POST",
+        url: "/SU/licencia/",
+        data: {"action":"reset"},
+        success: function(data){
+            var mensaje = data.mens;
+            if (mensaje === "Cambios realizados con éxito"){
+                $('#processing-modal').modal('toggle');
+                swal("OK", mensaje, "success");    
+            } else {
+                $('#processing-modal').modal('toggle');
+                swal("Ups!", mensaje, "error");
+            }
+        },
+        error: function(jqXHR, error){ 
+            alert(jqXHR.responseText) //debug
+            $('#processing-modal').modal('toggle');
+            if (idioma == 0){
+                swal("Ups!", "Hubo un error al resetear los passwords", "error");
+            } else {
+                swal("Ups!", "Error occured trying to reset password", "error");
+            }
+        },
+        dataType:'json',
+        headers:{
+            'X-CSRFToken':csrftoken
+        }
+    });
+    return false;
+}

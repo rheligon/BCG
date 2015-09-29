@@ -50,38 +50,49 @@ def test(request):
     
     hora = timenow()
     hora = str(hora)
+    """
+    hay = Configuracion.objects.all()[0].tiemporetentrazas
     
+    if hay is not None:
+        hay = hay * 30
+        fecha_aux = timenow() - timedelta(hay)
+        logs_aux = Traza.objects.filter(fecha_hora__lt=fecha_aux).delete()
+    """
+
     return JsonResponse(hora, safe=False)
 
 @login_required(login_url='/login')
 @transaction.atomic
 def index(request):
 
-    idioma = Configuracion.objects.all()[0].idioma  
-    mensaje = None
-    licencia = Licencia.objects.all()[0]
-    fecha_expira = str(licencia.fecha_expira)[:10]
-    ahora = str(timenow())[:10]
+    idioma = Configuracion.objects.all()[0].idioma
+    login = request.user.username
     hoy = timenow()
-    a1, m1, d1 = ahora.split("-")
-    a2, m2, d2 = fecha_expira.split("-")
-    m1 = int(m1)
-    m2 = int (m2)
+    mensaje = None
 
-    if a1 == a2 and (m2 - m1) <= 1:
-        if idioma == 0:
-            mensaje = "Su licencia vencerá en la fecha (YYYY-MM-DD): " + fecha_expira
-        else:
-            mensaje = "Your license will expire on (YYYY-MM-DD): " + fecha_expira
-        alertaCorreo = VerificarAlertas.objects.get(idVA=2)
-        bic = Configuracion.objects.all()[0].bic
-        empresa = Empresa.objects.all()[0].nombre
-        if alertaCorreo.flag == 0:
-            msg = "Esta es una alerta automática, para notificar que la licencia del banco: " + empresa +".\n Con código BIC: " + bic + ".\nVencerá en la fecha (YYYY-MM-DD): " + fecha_expira +"."+ "\n\n\n\n Matcher\n Un producto de BCG." 
-            enviar_mail('Alerta de caducidad de la licencia del banco: '+empresa ,msg,'jotha41@gmail.com')
-            alertaCorreo.flag = 1
-            alertaCorreo.fecha = hoy 
-            alertaCorreo.save()
+    if login not in ["SysAdminBCG"]:   
+        licencia = Licencia.objects.all()[0]
+        fecha_expira = str(licencia.fecha_expira)[:10]
+        ahora = str(timenow())[:10]   
+        a1, m1, d1 = ahora.split("-")
+        a2, m2, d2 = fecha_expira.split("-")
+        m1 = int(m1)
+        m2 = int (m2)
+
+        if a1 == a2 and (m2 - m1) <= 1:
+            if idioma == 0:
+                mensaje = "Su licencia vencerá en la fecha (YYYY-MM-DD): " + fecha_expira
+            else:
+                mensaje = "Your license will expire on (YYYY-MM-DD): " + fecha_expira
+            alertaCorreo = VerificarAlertas.objects.get(idVA=2)
+            bic = Configuracion.objects.all()[0].bic
+            empresa = Empresa.objects.all()[0].nombre
+            if alertaCorreo.flag == 0:
+                msg = "Esta es una alerta automática, para notificar que la licencia del banco: " + empresa +".\n Con código BIC: " + bic + ".\nVencerá en la fecha (YYYY-MM-DD): " + fecha_expira +"."+ "\n\n\n\n Matcher\n Un producto de BCG." 
+                enviar_mail('Alerta de caducidad de la licencia del banco: '+empresa ,msg,'jotha41@gmail.com')
+                alertaCorreo.flag = 1
+                alertaCorreo.fecha = hoy 
+                alertaCorreo.save()
 
     verAler = VerificarAlertas.objects.get(idVA=1)
     fecha = verAler.fecha
@@ -100,7 +111,7 @@ def index(request):
 
 
     username = request.user.username
-    sesion = Sesion.objects.get(login=username)
+    sesion = Sesion.objects.get(login=username,estado__in=["Activo","Pendiente"])
     nombre = sesion.usuario_idusuario.nombres+" "+sesion.usuario_idusuario.apellidos
   
     context = {'idioma':idioma, 'ops':get_ops(request),'mensaje':mensaje,'ldap':get_ldap(request),'nombre':nombre}
@@ -119,131 +130,206 @@ def usr_login(request):
         if action == "login":
             username = request.POST.get('user','')
             password = request.POST.get('pass','')
+            if username not in ["SysAdminBCG"]: 
 
-            #Verificación de licencia
-            licencia = Licencia.objects.all()[0]
-            bic = licencia.bic
-            num_usuarios = licencia.num_usuarios
-            fecha_expira = licencia.fecha_expira
-            llave = licencia.llave
-            salt = licencia.salt
-            ahora = str(timenow())[:10]
-            ahora = datetime.strptime(ahora, '%Y-%m-%d')
-            fecha_aux = str(fecha_expira)[:10]
-            a , b, c = fecha_aux.split("-")
-            fecha_aux = c + "/" + b + "/" + a
-
-            pwd = bic + "$" + str(num_usuarios) + "$" + fecha_aux
-            newp = make_password(pwd, salt=salt, hasher='pbkdf2_sha256')
-            x, x, saltnuevo, hashp = newp.split("$")
-
-            if saltnuevo != salt or llave != hashp:   
+                #Verificación de licencia
+                licencia = Licencia.objects.all()[0]
                 
-                if idioma == 0:
-                    message ='Datos de licencia corruptos. Por favor contacte a BCG.'
+                bic = licencia.bic
+                num_usuarios = licencia.num_usuarios
+                fecha_expira = licencia.fecha_expira
+                llave = licencia.llave
+                salt = licencia.salt
+                ahora = str(timenow())[:10]
+                ahora = datetime.strptime(ahora, '%Y-%m-%d')
+                fecha_aux = str(fecha_expira)[:10]
+                a , b, c = fecha_aux.split("-")
+                fecha_aux = c + "/" + b + "/" + a
 
-                else:
-                    message ='Corrupt license data. Contact BCG please.'
+                pwd = bic + "$" + str(num_usuarios) + "$" + fecha_aux
+                newp = make_password(pwd, salt=salt, hasher='pbkdf2_sha256')
+                x, x, saltnuevo, hashp = newp.split("$")
 
-                return JsonResponse({'mens':message})
-            
-            elif fecha_expira < ahora :
-
-                if idioma == 0:
-                    message ='Su licencia a expirado. Por favor contacte a BCG.'
-                else:
-                    message ='Your license has expired. Contact BCG please.'
-                
-                return JsonResponse({'mens':message})
-
-            else:
-
-                try:
-
-                    '''
-                    usr = 'PRUEBA1'
-                    usrpwd = 'prueba1'
-
-                    # Hash password
-                    newp = make_password(usrpwd, hasher='pbkdf2_sha1')
-                    x, x, salt, hashp = newp.split("$")
-
-                    #Crear usuario de django
-                    user, created = User.objects.get_or_create(username=usr, defaults={'password':newp})
-
-                    #Cambiar clave guardada por nueva
-                    sess = Sesion.objects.get(pk=9)
-                    sess.pass_field = hashp
-                    sess.salt = salt
-                    sess.save()
-                    '''
-
-                    #Verificar si el usuario ya esta logueado para expropiarlo
-                    vieja = Sesion.objects.filter(login=username, conexion="1")
-                    userAux = User.objects.get(username=username)
-
-                    if vieja:
-
-                        #Cerrar sesion anterior del mismo usuario
-                        user = User.objects.get(username=username)
-                        [s.delete() for s in Session.objects.all() if s.get_decoded().get('_auth_user_id') == user.id]
-                        U_name = user.username
-                        U_terminal = request.META.get('COMPUTERNAME')
-                        if idioma == 0:
-                            msj_aux = "Logout por sesión expropiativa"
-                        else:
-                            msj_aux = "Preemptive session logout"
-
-                        logAux(U_name,U_terminal,msj_aux)
-
-                    #Verificación de usuarios concurrentes
-                    sessions = Session.objects.filter(expire_date__gte=timezone.now())
-                    uid_list = []
-
-                    # Build a list of user ids from that query
-                    for session in sessions:
-                        data = session.get_decoded()
-                        uid_list.append(data.get('_auth_user_id', None))
-
-                    uid_list = set(uid_list)
-                    uid_list.remove(None)
-                    uid_list = sorted(uid_list)
-
-                    ensesion = [u.username for u in User.objects.all() if u.id in uid_list] 
-
-                    en1 = Sesion.objects.filter(conexion="1")
+                if saltnuevo != salt or llave != hashp:   
                     
-                    for s in en1:
-                        if s.login not in ensesion:
-                            s.conexion = "0"
-                            s.save()
+                    if idioma == 0:
+                        message ='Datos de licencia corruptos. Por favor contacte a BCG.'
 
-                    logedcount = len(ensesion)
+                    else:
+                        message ='Corrupt license data. Contact BCG please.'
 
-                    if logedcount >= num_usuarios and username != "SysAdminBCG":
+                    return JsonResponse({'mens':message})
+                
+                elif fecha_expira < ahora :
 
-                        if idioma == 0:
-                            message ='Cantidad de usuarios concurrentes a tope. Por favor, cierre alguna otra sesión e intente nuevamente.'
-                        else:
-                            message ='Butt number of concurrent users. Close another session and try again please.'
+                    if idioma == 0:
+                        message ='Su licencia a expirado. Por favor contacte a BCG.'
+                    else:
+                        message ='Your license has expired. Contact BCG please.'
+                    
+                    return JsonResponse({'mens':message})
+
+                else:
+
+                    try:
+
+                        '''
+                        usr = 'PRUEBA1'
+                        usrpwd = 'prueba1'
+
+                        # Hash password
+                        newp = make_password(usrpwd, hasher='pbkdf2_sha1')
+                        x, x, salt, hashp = newp.split("$")
+
+                        #Crear usuario de django
+                        user, created = User.objects.get_or_create(username=usr, defaults={'password':newp})
+
+                        #Cambiar clave guardada por nueva
+                        sess = Sesion.objects.get(pk=9)
+                        sess.pass_field = hashp
+                        sess.salt = salt
+                        sess.save()
+                        '''
+
+                        #Verificar si el usuario ya esta logueado para expropiarlo
+                        vieja = Sesion.objects.filter(login=username, conexion="1")
+                        userAux = User.objects.get_or_create(username=username)
+
+                        if vieja:
+                            #Cerrar sesion anterior del mismo usuario
+                            user = User.objects.get(username=username)
+                            [s.delete() for s in Session.objects.all() if s.get_decoded().get('_auth_user_id') == user.id]
+                            U_name = user.username
+                            U_terminal = request.META.get('COMPUTERNAME')
+                            if idioma == 0:
+                                msj_aux = "Logout por sesión expropiativa"
+                            else:
+                                msj_aux = "Preemptive session logout"
+
+                            logAux(U_name,U_terminal,msj_aux)
+
+                        #Verificación de usuarios concurrentes
+                        sessions = Session.objects.filter(expire_date__gte=timezone.now())
+                        uid_list = []
+
+                        # Build a list of user ids from that query
+                        for session in sessions:
+                            data = session.get_decoded()
+                            uid_list.append(data.get('_auth_user_id', None))
+
+                        uid_list = set(uid_list)
+                        uid_list.remove(None)
+                        uid_list = sorted(uid_list)
+
+                        ensesion = [u.username for u in User.objects.all() if u.id in uid_list] 
+
+                        en1 = Sesion.objects.filter(conexion="1")
                         
-                        # Para el log
-                        terminal = request.META.get('COMPUTERNAME')
-                        fechaHora = timenow()
-                        evento = Evento.objects.get(pk=37)
-                        nombre = username
-                        if idioma == 0:
-                            msj_aux = "Login fallido por: Cantidad de usuarios concurrentes a tope."
-                        else:
-                            msj_aux = "Failed login. Reason: Number of concurrent users butt."
+                        for s in en1:
+                            if s.login not in ensesion:
+                                s.conexion = "0"
+                                s.save()
 
-                        detalles = "Usuario: "+username + ". " + msj_aux
-                        if username == "SysAdminBCG":
-                            print("")
+                        logedcount = len(ensesion)
+                        if logedcount >= num_usuarios and username != "SysAdminBCG":
+
+                            if idioma == 0:
+                                message ='Cantidad de usuarios concurrentes a tope. Por favor, cierre alguna otra sesión e intente nuevamente.'
+                            else:
+                                message ='Butt number of concurrent users. Close another session and try again please.'
+                            
+                            # Para el log
+                            terminal = request.META.get('COMPUTERNAME')
+                            fechaHora = timenow()
+                            evento = Evento.objects.get(pk=37)
+                            nombre = username
+                            if idioma == 0:
+                                msj_aux = "Login fallido por: Cantidad de usuarios concurrentes a tope."
+                            else:
+                                msj_aux = "Failed login. Reason: Number of concurrent users butt."
+
+                            detalles = "Usuario: "+username + ". " + msj_aux
+                            if username == "SysAdminBCG":
+                                print("")
+                            else:
+                                Traza.objects.create(evento_idevento=evento,usuario=nombre, fecha_hora=fechaHora, terminal=terminal, detalles=detalles)
+                            return JsonResponse({'mens':message})
+                        
+                        #Continuacion del flujo
+                        sesion = Sesion.objects.filter(login=username, estado__in=["Activo","Pendiente"])[0]
+                        user = MyAuthBackend.authenticate(sesion, username=username, password=password)
+                        if user is not None and sesion.estado!="Inactivo":
+
+                            #Chequeo de contraseña vencida
+                           
+                            vencida = Configuracion.objects.all()[0].caducidad
+                            caduc = False
+                            if vencida is not None:
+                                hoy = timenow()
+                                delta = hoy - sesion.ultimo_cambio_pass
+                                diferencia = int(delta.days)
+                                if diferencia > vencida:
+                                    caduc = True
+
+
+                            if sesion.ldap != "1" and (sesion.estado == "Pendiente" or caduc):
+
+                                auth.login(request, user)
+                                message = "Login successful"
+                                sesion.conexion = 1
+                                sesion.save()
+                                # Para el log
+                                log(request,1)
+                                return JsonResponse({'mens':"Cambiar contraseña"})
+
+                            else:
+
+                                auth.login(request, user)
+                                message = "Login successful"
+                                sesion.conexion = 1
+                                sesion.save()
+                                # Para el log
+                                log(request,1)
+                                print("35765153746")
+
+                            message ='Login exitoso'
+                            return JsonResponse({'mens':message})
+
                         else:
-                            Traza.objects.create(evento_idevento=evento,usuario=nombre, fecha_hora=fechaHora, terminal=terminal, detalles=detalles)
+                            if idioma == 0:
+                                message ='La combinacion de usuario y clave fue incorrecta.'
+                            else:
+                                message ='Incorrect user and password combination.'
+                            
+                            # Para el log
+                            terminal = request.META.get('COMPUTERNAME')
+                            fechaHora = timenow()
+                            evento = Evento.objects.get(pk=37)
+                            nombre = sesion.usuario_idusuario.nombres+" "+sesion.usuario_idusuario.apellidos
+                            if idioma == 0:
+                                msj_usr = "Usuario: "
+                            else:
+                                msj_usr = "User: "
+
+                            detalles = msj_usr+username
+                            if username == "SysAdminBCG":
+                                print("")
+                            else:
+                                Traza.objects.create(evento_idevento=evento,usuario=nombre, fecha_hora=fechaHora, terminal=terminal, detalles=detalles)
+                            return JsonResponse({'mens':message})
+
+                    except Exception as e:
+                        # Show a message  
+                        print (e)
+
+                        if idioma == 0:   
+                            message ='Ese usuario no existe en la base de datos.'
+                        else:
+                            message ='User is not registered on data base.'
+
                         return JsonResponse({'mens':message})
-
+            else:
+                try:
                     #Continuacion de flujo
                     sesion = Sesion.objects.filter(login=username, estado__in=["Activo","Pendiente"])[0]
                     user = MyAuthBackend.authenticate(sesion, username=username, password=password)
@@ -251,7 +337,6 @@ def usr_login(request):
                     if user is not None and sesion.estado!="Inactivo":
 
                         if sesion.ldap != "1" and sesion.estado == "Pendiente":
-
                             auth.login(request, user)
                             message = "Login successful"
                             sesion.conexion = 1
@@ -261,7 +346,6 @@ def usr_login(request):
                             return JsonResponse({'mens':"Cambiar contraseña"})
 
                         else:
-
                             auth.login(request, user)
                             message = "Login successful"
                             sesion.conexion = 1
@@ -269,31 +353,8 @@ def usr_login(request):
                             # Para el log
                             log(request,1)
 
-                        message ='Login exitoso'
-                        return JsonResponse({'mens':message})
-
-                    else:
-                        if idioma == 0:
-                            message ='La combinacion de usuario y clave fue incorrecta.'
-                        else:
-                            message ='Incorrect user and password combination.'
-                        
-                        # Para el log
-                        terminal = request.META.get('COMPUTERNAME')
-                        fechaHora = timenow()
-                        evento = Evento.objects.get(pk=37)
-                        nombre = sesion.usuario_idusuario.nombres+" "+sesion.usuario_idusuario.apellidos
-                        if idioma == 0:
-                            msj_usr = "Usuario: "
-                        else:
-                            msj_usr = "User: "
-
-                        detalles = msj_usr+username
-                        if username == "SysAdminBCG":
-                            print("")
-                        else:
-                            Traza.objects.create(evento_idevento=evento,usuario=nombre, fecha_hora=fechaHora, terminal=terminal, detalles=detalles)
-                        return JsonResponse({'mens':message})
+                            message ='Login exitoso'
+                            return JsonResponse({'mens':message})
 
                 except Exception as e:
                     # Show a message  
@@ -304,7 +365,7 @@ def usr_login(request):
                     else:
                         message ='User is not registered on data base.'
 
-                    return JsonResponse({'mens':message}) 
+                    return JsonResponse({'mens':message})
 
     if request.method == 'GET':
 
@@ -369,6 +430,7 @@ def cambioClave(request):
             actual.salt = salt
             actual.pass_field = hashp
             actual.estado = "Activo"
+            actual.ultimo_cambio_pass = timenow()
             actual.save()
 
             if idioma == 0:
@@ -3015,8 +3077,8 @@ def mtn96(request):
             # Se hacen los creates en la base de datos
             k=0
             for mt in mt95:
-                Mt96.objects.create(mt95_idmt95=mt95[k],codigo=codigos[k],codigo96_idcodigo96=codigos96[k], ref_relacion=refRelaciones[k],answer=respuestas[k], narrativa=narrativas[k][:100], num_mt=numerosMT[k], fecha_msg_original=fechas[k],campo79 =campos79[k])
-                Mt96Ingles.objects.create(mt95_idmt95=mt95In[k],codigo=codigos[k],codigo96_idcodigo96=codigos96In[k], ref_relacion=refRelaciones[k],answer=respuestas[k], narrativa=narrativasIn[k], num_mt=numerosMT[k], fecha_msg_original=fechas[k],campo79 =campos79[k])
+                Mt96.objects.create(mt95_idmt95=mt95[k],codigo=codigos[k],codigo96_idcodigo96=codigos96[k], ref_relacion=refRelaciones[k],answer=respuestas[k], narrativa=narrativas[k][:1000], num_mt=numerosMT[k], fecha_msg_original=fechas[k],campo79 =campos79[k])
+                Mt96Ingles.objects.create(mt95_idmt95=mt95In[k],codigo=codigos[k],codigo96_idcodigo96=codigos96In[k], ref_relacion=refRelaciones[k],answer=respuestas[k], narrativa=narrativasIn[k][:1000], num_mt=numerosMT[k], fecha_msg_original=fechas[k],campo79 =campos79[k])
                 k+=1        
 
             #Se agrega el evento al log
@@ -3267,7 +3329,7 @@ def mtn99(request):
             # Se hacen los creates en la base de datos
             k=0
             for codigo in codigos:
-                Mt99.objects.create(codigo=codigo, ref_relacion=relaciones[k], narrativa=narrativas[k][:45], bic=bics[k], fecha=timenow(),tipo_mt=tipoCargar,origen=origenCargar)
+                Mt99.objects.create(codigo=codigo, ref_relacion=relaciones[k], narrativa=narrativas[k][:2000], bic=bics[k], fecha=timenow(),tipo_mt=tipoCargar,origen=origenCargar)
                 k+=1        
 
             #Se agrega el evento al log
@@ -4386,7 +4448,6 @@ def configuracion(request, tipo):
 
 
             if tipoconf=='conf_gral':
-
                 cont_carg = request.POST.get('cont_carg')
                 corr_carg = request.POST.get('corr_carg')
                 cont_procs = request.POST.get('cont_procs')
@@ -4663,12 +4724,14 @@ def seg_Usuarios(request):
 
             pwd = request.POST.get('newpass')
             sessid = request.POST.get('sessid')
+            print(sessid)
             newp = make_password(pwd, hasher='pbkdf2_sha1')
             x, x, salt, hashp = newp.split("$")
             try:
                 sesion = Sesion.objects.filter(pk=sessid)[0]
                 sesion.salt = salt
                 sesion.pass_field = hashp
+                sesion.ultimo_cambio_pass = timenow()
                 sesion.save()
             except:
                 if idioma == 0:
@@ -4677,12 +4740,21 @@ def seg_Usuarios(request):
                     msg = "User not found."
 
                 return JsonResponse({'msg': msg, 'pwd': False})
+            try:
+                user, creado = User.objects.get_or_create(username=sesion.login)
+                if user:
+                    user.password = newp
+                    user.save()
 
-            user = User.objects.get(username=sesion.login)
-            user.password = newp
-            user.save()
+                    update_session_auth_hash(request, user)
+                else:
+                    creado.password = newp
+                    creado.save()
 
-            update_session_auth_hash(request, user)
+                    update_session_auth_hash(request, creado)
+                    
+            except:
+                msg = "Contraseña modificada exitosamente."
 
             return JsonResponse({'msg': msg, 'pwd': True})
 
@@ -4772,7 +4844,9 @@ def seg_Usuarios(request):
                     msg = "User not created. Login already exist for other user."
                 usuario.delete()
                 return JsonResponse({'msg': msg, 'add': False})
-
+            else:
+                sesion.ultimo_cambio_pass = timenow()
+                sesion.save()
             # Crear relacion usuario cuentas
             for cuenta in cuentas_asig:
                 try:
@@ -7098,7 +7172,6 @@ def SU_licencia(request):
     if request.method == "POST":
        action = request.POST.get('action')
        idioma = Configuracion.objects.all()[0].idioma 
-
        if action == "guardarCambios":
         numUsers = request.POST.get('numUsers') 
         fecha = request.POST.get('fecha')
@@ -7295,6 +7368,23 @@ def SU_licencia(request):
 
             return JsonResponse({'mens':mensaje})
 
+    if action == "reset":
+        mensaje=""
+        try:
+            lista = [s for s in Sesion.objects.exclude(login="SysAdminBCG").filter(estado__in=["Activo","Pendiente"])]
+            for l in lista:
+                l.pass_field = "aCHOyq/lzPWtLiccyck5mwBnpXQ="
+                l.salt = "3iR6Xg09gH5T"
+                l.estado = "Pendiente"
+                l.ultimo_cambio_pass= timenow()
+                l.save()
+            mensaje = "Cambios realizados con éxito"
+            return JsonResponse({'mens':mensaje})
+        except:
+            mensaje = "Error al tratar de realizar cambios"
+            return JsonResponse({'mens':mensaje})
+
+
 
 
 @login_required(login_url='/login')
@@ -7413,7 +7503,7 @@ def log(request,eid,detalles=None):
     terminal = request.META.get('COMPUTERNAME')
     fechaHora = timenow()
     evento = Evento.objects.get(pk=eid)
-    sesion = Sesion.objects.get(login=username)
+    sesion = Sesion.objects.filter(login=username).filter(estado__in=["Activo","Pendiente"])[0]
     nombre = sesion.usuario_idusuario.nombres+" "+sesion.usuario_idusuario.apellidos
 
     if sesion.login == "SysAdminBCG":
@@ -7436,7 +7526,7 @@ def logAux(name,terminal,detalles):
     username = name
     fechaHora = timenow()
     evento = Evento.objects.get(pk=2)
-    sesion = Sesion.objects.get(login=username)
+    sesion = Sesion.objects.filter(login=username).filter(estado__in=["Activo","Pendiente"])[0]
     nombre = sesion.usuario_idusuario.nombres+" "+sesion.usuario_idusuario.apellidos
 
     if sesion.login == "SysAdminBCG": 

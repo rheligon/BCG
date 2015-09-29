@@ -75,13 +75,13 @@ def get_cuentas(request):
 def get_ci(request):
     # Funcion que recibe el request, ve cual es el usr loggeado y devuelve su ci
     username = request.user.username
-    sesion = Sesion.objects.get(login=username)
+    sesion = Sesion.objects.get(login=username,estado__in=["Activo","Pendiente"])
     return str(sesion.usuario_idusuario.ci)
 
 def get_ldap(request):
     # Funcion que recibe el request, ve cual es el usr loggeado y devuelve su ldap
     username = request.user.username
-    sesion = Sesion.objects.get(login=username)
+    sesion = Sesion.objects.get(login=username,estado__in=["Activo","Pendiente"])
     return (sesion.ldap == "1")
 
 def get_idioma():

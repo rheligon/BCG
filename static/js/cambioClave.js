@@ -26,11 +26,11 @@ $('#guardarButton').on('click', function () {
         } else {
             swal("Ups!","Password and verification field must match","error");
         }
-    } else if (clave1.length < 6 || clave2.length < 6) {
+    } else if (clave1.length < 5 || clave2.length < 5) {
         if (idioma == 0){
-            swal("Ups!","Las contraseñas deben tener una longitud de al menos seis (6) caractéres","error");
+            swal("Ups!","Las contraseñas deben tener una longitud de al menos cinco (5) caractéres","error");
         } else {
-            swal("Ups!","Password and verification field must have a minimum of six (6) characters length","error");
+            swal("Ups!","Password and verification field must have a minimum of five (5) characters length","error");
         }
     }
     else {

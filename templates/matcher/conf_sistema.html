@@ -638,15 +638,15 @@
                 <label class="col-xs-3 control-label">Host:</label>
                 <div class="col-xs-5">
                     {%if idioma == 0%}
-                        {% with "Introduzca una dirección IP válida. Por ejemplo: 1.2.3.4" as mensaje %}
-                        <input type="text" class="form-control" value="{{conf.matcherhost}}" name="m-host" pattern="^(?!0)(?!.*\.$)((1?\d?\d|25[0-5]|2[0-4]\d)(\.|$)){4}$" oninvalid="this.setCustomValidity('{{mensaje}}')" oninput="setCustomValidity('')" onkeypress='return solonumeroypunto(event)' onkeyup='return solonumeroypunto(event)' required/>
+                        {% with "Introduzca un Host válido." as mensaje %}
+                        <input type="text" class="form-control" value="{{conf.matcherhost}}" name="m-host" oninvalid="this.setCustomValidity('{{mensaje}}')" oninput="setCustomValidity('')" required/>
                         <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
                         <div class="help-block with-errors"></div>
                         {% endwith %}
                     {% endif %}
                     {%if idioma == 1%}
-                        {% with "Introduce a valid IP adress please. By example: 1.2.3.4" as mensaje %}
-                        <input type="text" class="form-control" value="{{conf.matcherhost}}" name="m-host" pattern="^(?!0)(?!.*\.$)((1?\d?\d|25[0-5]|2[0-4]\d)(\.|$)){4}$" oninvalid="this.setCustomValidity('{{mensaje}}')" oninput="setCustomValidity('')" onkeypress='return solonumeroypunto(event)' onkeyup='return solonumeroypunto(event)' required/>
+                        {% with "Introduce a valid Host please." as mensaje %}
+                        <input type="text" class="form-control" value="{{conf.matcherhost}}" name="m-host" oninvalid="this.setCustomValidity('{{mensaje}}')" oninput="setCustomValidity('')" required/>
                         <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
                         <div class="help-block with-errors"></div>
                         {% endwith %}

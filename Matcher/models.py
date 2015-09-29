@@ -17,6 +17,8 @@ from django.contrib.auth.models import User
 
 import sqlserver_ado.fields
 
+# OJOOOOOO IMPORTANTE --> Para bases de datos ORACLE hay que cambiar los campos que dicen: 
+# "sqlserver_ado.fields.BigAutoField" a lo que corresponda en el caso de ese manejador
 
 # FIELD NAMES MADE LOWERCASE
 
@@ -285,6 +287,24 @@ class CuentaBk(models.Model):
         db_table = 'Cuenta_BK'
 
 
+class Empresa(models.Model):
+    id_empresa = sqlserver_ado.fields.BigAutoField(db_column='Id_Empresa', primary_key=True)  
+    nombre = models.CharField(db_column='Nombre', max_length=50)  
+    dir_logo = models.CharField(db_column='Dir_Logo', max_length=200)  
+    nombregrupo = models.CharField(db_column='NombreGrupo', max_length=50)  
+    direccion = models.CharField(db_column='Direccion', max_length=150)  
+    creditoscontabilidad = models.CharField(db_column='CreditosContabilidad', max_length=60)  
+    debitoscontabilidad = models.CharField(db_column='DebitosContabilidad', max_length=60)  
+    creditoscorresponsal = models.CharField(db_column='CreditosCorresponsal', max_length=60)  
+    debitoscorresponsal = models.CharField(db_column='DebitosCorresponsal', max_length=60)  
+    pais = models.CharField(db_column='Pais', max_length=15)  
+    autorizadopor = models.CharField(db_column='AutorizadoPor', max_length=60, blank=True)  
+    firmadopor = models.CharField(db_column='FirmadoPor', max_length=60, blank=True)  
+    cargofirmante = models.CharField(db_column='CargoFirmante', max_length=60, blank=True)  
+
+    class Meta:
+        db_table = 'Empresa'
+
 
 class Encajelegal(models.Model):
     idencajelegal = sqlserver_ado.fields.BigAutoField(db_column='idEncajeLegal', primary_key=True)  
@@ -513,8 +533,8 @@ class Licencia(models.Model):
     bic = models.CharField(db_column='Bic', max_length=10)  
     num_usuarios = models.IntegerField(db_column='NumeroUsuarios')
     fecha_expira = models.DateTimeField(db_column='FechaExpira')
-    llave = models.CharField(db_column='Llave', max_length=500, unique=True)
-    salt = models.CharField(db_column='Salt',max_length=100,unique=True)  
+    llave = models.CharField(db_column='Llave', max_length=500, null=True)
+    salt = models.CharField(db_column='Salt',max_length=100,null=True)  
 
     class Meta:
         db_table = 'Licencia'
@@ -534,7 +554,7 @@ class Modulos(models.Model):
     idmodulo = sqlserver_ado.fields.BigAutoField(db_column='idModulo', primary_key=True)   
     opcion = models.IntegerField(db_column='opcion', unique=True)
     activo = models.IntegerField(db_column='activo')
-    descripcion = models.CharField(db_column='descripcion', max_length=150)  
+    descripcion = models.CharField(db_column='descripcion', max_length=150, null=True)  
 
     class Meta:
         db_table = 'Modulos'
@@ -548,7 +568,7 @@ class Mt95(models.Model):
     codigo95_idcodigo95 = models.ForeignKey(Codigo95, db_column='Codigo95_idCodigo95', blank=True, null=True)  
     ref_relacion = models.CharField(db_column='Ref_Relacion', max_length=20)  
     query = models.CharField(db_column='Query', max_length=45)  
-    narrativa = models.CharField(db_column='Narrativa', max_length=100)  
+    narrativa = models.CharField(db_column='Narrativa', max_length=1000)  
     num_mt = models.BigIntegerField(db_column='Num_MT', blank=True, null=True)  
     fecha_msg_original = models.DateTimeField(db_column='Fecha_Msg_Original', blank=True, null=True)  
     num_sesion = models.BigIntegerField(db_column='Num_Sesion', blank=True, null=True)  
@@ -568,7 +588,7 @@ class Mt95Ingles(models.Model):
     codigo95_idcodigo95 = models.ForeignKey(Codigo95Ingles, db_column='Codigo95_idCodigo95', blank=True, null=True)  
     ref_relacion = models.CharField(db_column='Ref_Relacion', max_length=20)  
     query = models.CharField(db_column='Query', max_length=45)  
-    narrativa = models.CharField(db_column='Narrativa', max_length=100)  
+    narrativa = models.CharField(db_column='Narrativa', max_length=1000)  
     num_mt = models.BigIntegerField(db_column='Num_MT', blank=True, null=True)  
     fecha_msg_original = models.DateTimeField(db_column='Fecha_Msg_Original', blank=True, null=True)  
     num_sesion = models.BigIntegerField(db_column='Num_Sesion', blank=True, null=True)  
@@ -588,7 +608,7 @@ class Mt95Bk(models.Model):
     codigo95_bk_idcodigo95 = models.BigIntegerField(db_column='Codigo95_BK_idCodigo95', blank=True, null=True)  
     ref_relacion = models.CharField(db_column='Ref_Relacion', max_length=20)  
     query = models.CharField(db_column='Query', max_length=45)  
-    narrativa = models.CharField(db_column='Narrativa', max_length=100)  
+    narrativa = models.CharField(db_column='Narrativa', max_length=1000)  
     num_mt = models.BigIntegerField(db_column='Num_MT', blank=True, null=True)  
     fecha_msg_original = models.DateTimeField(db_column='Fecha_Msg_Original', blank=True, null=True)  
     num_sesion = models.BigIntegerField(db_column='Num_Sesion', blank=True, null=True)  
@@ -607,7 +627,7 @@ class Mt96(models.Model):
     codigo96_idcodigo96 = models.ForeignKey(Codigo96, db_column='Codigo96_idCodigo96', blank=True, null=True)  
     ref_relacion = models.CharField(db_column='Ref_Relacion', max_length=20)  
     answer = models.CharField(db_column='Answer', max_length=45)  
-    narrativa = models.CharField(db_column='Narrativa', max_length=100)  
+    narrativa = models.CharField(db_column='Narrativa', max_length=1000)  
     num_mt = models.BigIntegerField(db_column='Num_MT', blank=True, null=True)  
     fecha_msg_original = models.DateTimeField(db_column='Fecha_Msg_Original', blank=True, null=True)  
     num_sesion = models.BigIntegerField(db_column='Num_Sesion', blank=True, null=True)  
@@ -625,7 +645,7 @@ class Mt96Ingles(models.Model):
     codigo96_idcodigo96 = models.ForeignKey(Codigo96Ingles, db_column='Codigo96_idCodigo96', blank=True, null=True)  
     ref_relacion = models.CharField(db_column='Ref_Relacion', max_length=20)  
     answer = models.CharField(db_column='Answer', max_length=45)  
-    narrativa = models.CharField(db_column='Narrativa', max_length=100)  
+    narrativa = models.CharField(db_column='Narrativa', max_length=1000)  
     num_mt = models.BigIntegerField(db_column='Num_MT', blank=True, null=True)  
     fecha_msg_original = models.DateTimeField(db_column='Fecha_Msg_Original', blank=True, null=True)  
     num_sesion = models.BigIntegerField(db_column='Num_Sesion', blank=True, null=True)  
@@ -641,7 +661,7 @@ class Mt99(models.Model):
     idmt99 = sqlserver_ado.fields.BigAutoField(db_column='idMT99', primary_key=True)  
     codigo = models.CharField(db_column='Codigo', max_length=16)  
     ref_relacion = models.CharField(db_column='Ref_Relacion', max_length=16)  
-    narrativa = models.CharField(db_column='Narrativa', max_length=1784)  
+    narrativa = models.CharField(db_column='Narrativa', max_length=2000)  
     bic = models.CharField(db_column='BIC', max_length=10)  
     fecha = models.DateTimeField(db_column='Fecha')  
     tipo_mt = models.IntegerField(db_column='Tipo_MT')  
@@ -1036,7 +1056,7 @@ class Sesion(models.Model):
     fecha_registro = models.DateTimeField(db_column='Fecha_Registro')  
     conexion = models.CharField(db_column='Conexion', max_length=10, blank=True)  
     ldap = models.CharField(db_column='LDAP', max_length=1)  
-
+    ultimo_cambio_pass = models.DateTimeField(db_column='UltimoCambioPass') 
     class Meta:
         db_table = 'Sesion'
 
@@ -1220,24 +1240,6 @@ class Traza(models.Model):
     class Meta:
         db_table = 'Traza'
 
-
-class Empresa(models.Model):
-    id_empresa = sqlserver_ado.fields.BigAutoField(db_column='Id_Empresa', primary_key=True)  
-    nombre = models.CharField(db_column='Nombre', max_length=50)  
-    dir_logo = models.CharField(db_column='Dir_Logo', max_length=200)  
-    nombregrupo = models.CharField(db_column='NombreGrupo', max_length=50)  
-    direccion = models.CharField(db_column='Direccion', max_length=150)  
-    creditoscontabilidad = models.CharField(db_column='CreditosContabilidad', max_length=60)  
-    debitoscontabilidad = models.CharField(db_column='DebitosContabilidad', max_length=60)  
-    creditoscorresponsal = models.CharField(db_column='CreditosCorresponsal', max_length=60)  
-    debitoscorresponsal = models.CharField(db_column='DebitosCorresponsal', max_length=60)  
-    pais = models.CharField(db_column='Pais', max_length=15)  
-    autorizadopor = models.CharField(db_column='AutorizadoPor', max_length=60, blank=True)  
-    firmadopor = models.CharField(db_column='FirmadoPor', max_length=60, blank=True)  
-    cargofirmante = models.CharField(db_column='CargoFirmante', max_length=60, blank=True)  
-
-    class Meta:
-        db_table = 'Empresa'
 
 
 class Usuario(models.Model):
