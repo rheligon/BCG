@@ -828,7 +828,9 @@
                     {%endif%}
                 </label>
                 <div class="input-group col-xs-5">
-                    <input type="text" class="form-control" value="{{conf.tiemporetentrazas}}" name="t_ret_log" />
+                    <input type="number" class="form-control" value="{{conf.tiemporetentrazas}}" name="t_ret_log" min="1"/>
+                    <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
+                    <div class="help-block with-errors"></div>
                     <span class="input-group-addon" id="basic-addon2">
                         {%if idioma == 0%}
                             Meses
@@ -1198,7 +1200,7 @@
                     {%endif%}
                 </label>
                 <div class="input-group col-xs-5">
-                    <input type="text" class="form-control" value="{{conf.caducidad}}" name="t_cad"/>
+                    <input type="number" class="form-control" value="{{conf.caducidad}}" name="t_cad" min="1" max="180"/>
                     <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
                     <div class="help-block with-errors"></div>
                     <span class="input-group-addon" id="basic-addon2">
