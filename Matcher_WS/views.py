@@ -265,6 +265,11 @@ def usr_login(request):
                             vencida = Configuracion.objects.all()[0].caducidad
                             caduc = False
                             if vencida is not None:
+
+                                #Para la primera vez que se verifique
+                                if sesion.ultimo_cambio_pass is None:
+                                    sesion.ultimo_cambio_pass = timenow()
+
                                 hoy = timenow()
                                 delta = hoy - sesion.ultimo_cambio_pass
                                 diferencia = int(delta.days)
@@ -290,7 +295,6 @@ def usr_login(request):
                                 sesion.save()
                                 # Para el log
                                 log(request,1)
-                                print("35765153746")
 
                             message ='Login exitoso'
                             return JsonResponse({'mens':message})
@@ -427,6 +431,17 @@ def cambioClave(request):
             #Busco la sesion que esta conectada
             login = request.user.username 
             actual = Sesion.objects.get(login=login, conexion="1")
+            
+            # Se chequea que la clave no sea la misma que se introdujo anteriormente
+            enc = 'pbkdf2_sha1$15000$'+actual.salt+'$'+actual.pass_field
+
+            if (check_password(clave,enc)):
+                if idioma == 0:
+                    msg = "La clave no puede ser la misma que ya tenía resgistrada."
+                else:
+                    msg = "Password can not be the same that you already have."
+                return JsonResponse({'mens': msg})
+
             actual.salt = salt
             actual.pass_field = hashp
             actual.estado = "Activo"
