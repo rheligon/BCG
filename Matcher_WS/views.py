@@ -50,14 +50,7 @@ def test(request):
     
     hora = timenow()
     hora = str(hora)
-    """
-    hay = Configuracion.objects.all()[0].tiemporetentrazas
     
-    if hay is not None:
-        hay = hay * 30
-        fecha_aux = timenow() - timedelta(hay)
-        logs_aux = Traza.objects.filter(fecha_hora__lt=fecha_aux).delete()
-    """
 
     return JsonResponse(hora, safe=False)
 
