@@ -309,7 +309,7 @@ function est_cuenta(cuentaId){
                     $('#edc-ccon').val(json_data[proc][ult_edc_conp].fields.codigo);
                     $('#f-ccon').val(fecha_conp.toLocaleDateString());
                     $('#sf-ccon-cd').html(json_data[proc][ult_edc_conp].fields.c_dfinal);
-                    $('#sf-ccon').val($.formatNumber((json_data[carg][ult_edc_conc].fields.balance_final),{locale:idiomaAux}));
+                    $('#sf-ccon').val($.formatNumber((json_data[proc][ult_edc_conp].fields.balance_final),{locale:idiomaAux}));
             
                 }
 
@@ -372,8 +372,9 @@ function est_cuenta(cuentaId){
             t_corr.draw();
 
         },
-        error: function(error){
+        error: function(q,error){
             $('#processing-modal').modal('toggle');
+            alert(q.responseText) //debug
             if (idioma == 0) {
                 swal("Ups!", "Hubo un error buscando la cuenta especificada.", "error");
             } else {

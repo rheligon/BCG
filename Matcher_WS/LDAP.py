@@ -3,15 +3,19 @@ from Matcher.models import Configuracion
 conf = Configuracion.objects.all()[0]
 
 # Datos del servidor
-SERVER_HOST = conf.ldap_ip
-SERVER_PORT = int(conf.ldap_puerto)
+try:
+	SERVER_HOST = conf.ldap_ip
+	SERVER_PORT = int(conf.ldap_puerto)
 
-ROOT_DC = 'dc=bcgve,dc=local'
+	ROOT_DC = 'dc=bcgve,dc=local'
 
-# Nombre de los campos en el server LDAP para buscarlos
-USERNAME_FIELD = 'sAMAccountName'
-FIRST_NAME_FIELD = 'sn'
-LAST_NAME_FIELD = 'givenName'
+	# Nombre de los campos en el server LDAP para buscarlos
+	USERNAME_FIELD = 'sAMAccountName'
+	FIRST_NAME_FIELD = 'sn'
+	LAST_NAME_FIELD = 'givenName'
+
+except:
+	print("hola") 
 
 
 def get_username(username):

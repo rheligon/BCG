@@ -101,6 +101,7 @@ def index(request):
             d = threading.Thread(target=daemon,args=(request,idioma,))
             d.setDaemon(True)
             d.start()
+            
 
 
     username = request.user.username
@@ -330,6 +331,7 @@ def usr_login(request):
                     #Continuacion de flujo
                     sesion = Sesion.objects.filter(login=username, estado__in=["Activo","Pendiente"])[0]
                     user = MyAuthBackend.authenticate(sesion, username=username, password=password)
+
 
                     if user is not None and sesion.estado!="Inactivo":
 
@@ -602,13 +604,12 @@ def pd_estadoCuentas(request):
             
             return JsonResponse({'msg': msg, 'elim':False})
 
-
-        cargados = Cargado.objects.all().order_by('-estado_cuenta_idedocuenta__fecha_final')
-        procesados = Procesado.objects.all().order_by('-estado_cuenta_idedocuenta__fecha_final')
-
-        cargado_l = [cargado.estado_cuenta_idedocuenta for cargado in cargados if cargado.estado_cuenta_idedocuenta.cuenta_idcuenta.idcuenta == cuentaid]
-        procesado_l = [procesado.estado_cuenta_idedocuenta for procesado in procesados if procesado.estado_cuenta_idedocuenta.cuenta_idcuenta.idcuenta == cuentaid]
-
+        carga2 = Cargado.objects.filter(estado_cuenta_idedocuenta__cuenta_idcuenta__idcuenta = cuentaid).order_by('-estado_cuenta_idedocuenta__fecha_final')
+        procesa2 = Procesado.objects.filter(estado_cuenta_idedocuenta__cuenta_idcuenta__idcuenta = cuentaid).order_by('-estado_cuenta_idedocuenta__fecha_final')  
+        
+        cargado_l = [cargado.estado_cuenta_idedocuenta for cargado in carga2]
+        procesado_l = [procesado.estado_cuenta_idedocuenta for procesado in procesa2 ]
+            
         res_json = '[' + serializers.serialize('json', cargado_l) + ',' 
         res_json += serializers.serialize('json', procesado_l)+']'
 

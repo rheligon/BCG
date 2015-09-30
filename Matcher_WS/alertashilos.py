@@ -191,52 +191,56 @@ def daemon(request,language):
 				#if alerta.alertas_idalertas.idalertas == (13):
 				#	print("partidas pendientes sin observación")
 
-	"""
+	
 	meses = Configuracion.objects.all()[0].tiemporetentrazas
-    obj = Configuracion.objects.all()[0]
-    directorio = obj.dirarchive
-            
-    if meses:
-        meses = meses * 30
-        fecha_aux = timenow() - timedelta(meses)
-        logs_aux = Traza.objects.filter(fecha_hora__lt=fecha_aux)
+	obj = Configuracion.objects.all()[0]
+	directorio = obj.dirarchive
+	
+	if meses:
+		meses = meses * 30
+		fecha_aux = timenow() - timedelta(meses)
+		logs_aux = Traza.objects.filter(fecha_hora__lt=fecha_aux)
 
-        if logs_aux:
-            fecha_ini = logs_aux[0].fecha_hora.date()
-            
-            anio = logs_aux[0].fecha_hora.year
-            mes = logs_aux[0].fecha_hora.month         
-            dia = logs_aux[0].fecha_hora.day
-            
-            dirNuevo = directorio + "\\" + str(mes) + "_" + str(anio)   
-            if not os.path.exists(dirNuevo):
-                os.makedirs(dirNuevo)     
-            
-            dirArch = directorio + "\\" + str(mes) + "_" + str(anio) +"\\Log_"+str(anio) + "_"+str(mes) + "_"+str(dia)+".txt" 
-            nuevoArch = open(dirArch, 'w')
-            for i in range(len(logs_aux)):
-                fecha_aux = logs_aux[i].fecha_hora.date()
-                print (fecha_ini - fecha_aux)
-                if fecha_ini - fecha_aux != timedelta(0):
-                    nuevoArch.close()
-                    
-                    anio = logs_aux[i].fecha_hora.year
-                    mes = logs_aux[i].fecha_hora.month         
-                    dia = logs_aux[i].fecha_hora.day
-                    
-                    dirNuevo = directorio + "\\" + str(mes) + "_" + str(anio)   
-                    if not os.path.exists(dirNuevo):
-                        os.makedirs(dirNuevo)     
-                    
-                    dirArch = directorio + "\\" + str(mes) + "_" + str(anio) +"\\Log_"+str(anio) + "_"+str(mes) + "_"+str(dia)+".txt" 
-                    nuevoArch = open(dirArch, 'w')
-                    nuevoArch.write(str(logs_aux[i].fecha_hora) + " " + logs_aux[i].usuario + " " + logs_aux[i].terminal + " " + str(logs_aux[i].evento_idevento.accion) + " " + logs_aux[i].detalles + " \n" )
-                    fecha_ini = fecha_aux
-                else:
-                    nuevoArch.write(str(logs_aux[i].fecha_hora) + " " + logs_aux[i].usuario + " " + logs_aux[i].terminal + " " + str(logs_aux[i].evento_idevento.accion) + " " + logs_aux[i].detalles + " \n" )            
+		if logs_aux:
+			fecha_ini = logs_aux[0].fecha_hora.date()
 
-            nuevoArch.close()
-	"""
+			anio = logs_aux[0].fecha_hora.year
+			mes = logs_aux[0].fecha_hora.month         
+			dia = logs_aux[0].fecha_hora.day
+
+			dirNuevo = directorio + "\\" + str(mes) + "_" + str(anio)   
+			if not os.path.exists(dirNuevo):
+				os.makedirs(dirNuevo)     
+
+			dirArch = directorio + "\\" + str(mes) + "_" + str(anio) +"\\Log_"+str(anio) + "_"+str(mes) + "_"+str(dia)+".txt" 
+			nuevoArch = open(dirArch, 'w')
+			for i in range(len(logs_aux)):
+				fecha_aux = logs_aux[i].fecha_hora.date()
+				if fecha_ini - fecha_aux != timedelta(0):
+					nuevoArch.close()
+
+					anio = logs_aux[i].fecha_hora.year
+					mes = logs_aux[i].fecha_hora.month         
+					dia = logs_aux[i].fecha_hora.day
+
+					dirNuevo = directorio + "\\" + str(mes) + "_" + str(anio)   
+					if not os.path.exists(dirNuevo):
+						os.makedirs(dirNuevo)     
+
+					dirArch = directorio + "\\" + str(mes) + "_" + str(anio) +"\\Log_"+str(anio) + "_"+str(mes) + "_"+str(dia)+".txt" 
+					nuevoArch = open(dirArch, 'w')
+					nuevoArch.write(str(logs_aux[i].fecha_hora) + " " + logs_aux[i].usuario + " " + logs_aux[i].terminal + " " + str(logs_aux[i].evento_idevento.accion) + " " + logs_aux[i].detalles + " \n" )
+					fecha_ini = fecha_aux
+				else:
+					nuevoArch.write(str(logs_aux[i].fecha_hora) + " " + logs_aux[i].usuario + " " + logs_aux[i].terminal + " " + str(logs_aux[i].evento_idevento.accion) + " " + logs_aux[i].detalles + " \n" )            
+
+			nuevoArch.close()
+			#descomentar para eliminar los log de la base de datos
+			#logs_aux.delete()
+	
+	print("termine")
+
+
 	aux = VerificarAlertas.objects.get(idVA=1) 
 	aux.flag = 0
 	aux.fecha = timenow()
