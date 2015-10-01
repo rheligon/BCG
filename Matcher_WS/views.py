@@ -1922,20 +1922,28 @@ def pd_partidasAbiertas(request):
             res_json_conta = serializers.serialize('json', ta_conta)
             res_json_corr = serializers.serialize('json', ta_corr) #, use_natural_foreign_keys=True
 
-            mt95_conta = [e.idtransaccion for e in ta_conta if Mt95.objects.filter(ta_conta = e.idtransaccion)]
-            mt95_corres = [e.idtransaccion for e in ta_corr if Mt95.objects.filter(ta_corres = e.idtransaccion)]
+            #Buscar los mts
 
+            mtxx= Mt95.objects.filter(ta_conta__in = ta_conta).order_by('ta_conta')
+            mtxx2= Mt95.objects.filter(ta_corres__in = ta_corr).order_by('ta_corres')
 
-            #Buscar las observaciones
-            obs_conta = [elem.idtransaccion for elem in ta_conta if Observacioncontabilidad.objects.filter(ta_conta=elem.idtransaccion)]
-            obs_corr = [elem.idtransaccion for elem in ta_corr if Observacioncorresponsal.objects.filter(ta_corres=elem.idtransaccion)] 
+            mt95_conta = []
+            [mt95_conta.append(e.ta_conta.idtransaccion) for e in mtxx if e.ta_conta.idtransaccion not in mt95_conta]
             
-            obs_conta.sort()
-            obs_conta = list(set(obs_conta))
+            mt95_corres = []
+            [mt95_corres.append(e.ta_corres.idtransaccion) for e in mtxx2 if e.ta_corres.idtransaccion not in mt95_corres]
+            
+            #Buscar las observaciones
+            
+            obsx = Observacioncontabilidad.objects.filter(ta_conta__in= ta_conta).order_by('ta_conta')
+            obsx2 = Observacioncorresponsal.objects.filter(ta_corres__in= ta_corr).order_by('ta_corres')
 
-            obs_corr.sort()
-            obs_corr = list(set(obs_corr))
+            obs_conta = []
+            obs_corr = []
 
+            [obs_conta.append(e.ta_conta.idtransaccion) for e in obsx if e.ta_conta.idtransaccion not in obs_conta]
+            [obs_corr.append(e.ta_corres.idtransaccion) for e in obsx2 if e.ta_corres.idtransaccion not in obs_corr]
+            
             return JsonResponse({'r_conta':res_json_conta, 'r_corr':res_json_corr, 'r_edcn':edcN, 'obs_conta':obs_conta, 'obs_corr':obs_corr, 'mt95_conta': mt95_conta, 'mt95_corres':mt95_corres}, safe=False)
         
         if actn =="crearMT95":
