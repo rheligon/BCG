@@ -1462,7 +1462,7 @@ def pd_observaciones(request, mensaje,tipo):
             try:
                 #Buscar todas las observaciones para la transacción dada
                 partida = TransabiertaCorresponsal.objects.get(idtransaccion=id_partida) 
-                obs_corr = Observacioncorresponsal.objects.filter(ta_conta=partida)
+                obs_corr = Observacioncorresponsal.objects.filter(ta_corres=partida)
                 msj = "Obervaciones listadas con exito"
                 template = "matcher/pd_observaciones.html"
                 context = {'clase':clase,'partida': partida,'mensaje':id_partida,'idioma':idioma, 'msg':msj, 'ops':get_ops(request), 'observaciones':obs_corr,'ldap':get_ldap(request)}
@@ -1608,20 +1608,25 @@ def pd_detallesMT(request, mensaje,tipo,cuenta):
             original95 = request.POST.get('original95')
             trans95 = request.POST.get('transaccion')
             clase95 = request.POST.get('clase')
-            cuenta95 = request.POST.get('cuenta')
+            cuenta95codigo = request.POST.get('cuenta')
+            cuenta95 = Cuenta.objects.get(codigo = cuenta95codigo).banco_corresponsal_idbanco.codigo
+            print(cuenta95)
+            print("asdasdasdsadsaddsa")
             tipoOriginal = request.POST.get('tipoOriginal')
             mensajeMT = ""
 
             #Quitar el + - 9 para implantacion
             if idioma == 0:
-                cod_aux95 = str(int(cod95)-9)
-                codAux = Codigo95.objects.filter(idcodigo95=cod95)[0]
-                codAuxIn = Codigo95Ingles.objects.filter(idcodigo95=cod_aux95)[0]
+                #cod_aux95 = str(int(cod95)-9)
+                cod_aux95 = str(int(cod95))
+                codAux = Codigo95.objects.get(idcodigo95=cod95)
+                codAuxIn = Codigo95Ingles.objects.get(idcodigo95=cod_aux95)
 
             else:
-                cod_aux95 = str(int(cod95)+9)
-                codAux = Codigo95.objects.filter(idcodigo95=cod_aux95)[0]
-                codAuxIn = Codigo95Ingles.objects.filter(idcodigo95=cod95)[0]
+                #cod_aux95 = str(int(cod95)+9)
+                cod_aux95 = str(int(cod95))
+                codAux = Codigo95.objects.get(idcodigo95=cod_aux95)
+                codAuxIn = Codigo95Ingles.objects.get(idcodigo95=cod95)
 
             queryletras = codAux.help
             queryInletras = codAuxIn.help
@@ -1946,161 +1951,13 @@ def pd_partidasAbiertas(request):
             
             return JsonResponse({'r_conta':res_json_conta, 'r_corr':res_json_corr, 'r_edcn':edcN, 'obs_conta':obs_conta, 'obs_corr':obs_corr, 'mt95_conta': mt95_conta, 'mt95_corres':mt95_corres}, safe=False)
         
-        if actn =="crearMT95":
-            ref95 = request.POST.get('ref95')
-            refOrg95 = request.POST.get('refOrg95')
-            tipo95 = request.POST.get('tipo95')
-            fecha95 = request.POST.get('fecha95')
-            fecha952 = request.POST.get('fecha95')
-            fecha953 = request.POST.get('fecha95')
-            cod95 = request.POST.get('cod95')
-            cod2 = request.POST.get('codigo2')
-            preg95 = request.POST.get('preg95')
-            narra95 = request.POST.get('narrativa95')
-            original95 = request.POST.get('original95')
-            trans95 = request.POST.get('transaccion')
-            clase95 = request.POST.get('clase')
-            cuenta95 = request.POST.get('cuenta')
-            tipoOriginal = request.POST.get('tipoOriginal')
-            mensajeMT = ""
-
-            #Quitar el + - 9 para implantacion
-            if idioma == 0:
-                cod_aux95 = str(int(cod95)-9)
-                codAux = Codigo95.objects.filter(idcodigo95=cod95)[0]
-                codAuxIn = Codigo95Ingles.objects.filter(idcodigo95=cod_aux95)[0]
-
-            else:
-                cod_aux95 = str(int(cod95)+9)
-                codAux = Codigo95.objects.filter(idcodigo95=cod_aux95)[0]
-                codAuxIn = Codigo95Ingles.objects.filter(idcodigo95=cod95)[0]
-
-            queryletras = codAux.help
-            queryInletras = codAuxIn.help
-
-            query = str(codAux.codigo)
-
-            if fecha95 != "":
-                fechad = datetime.strptime(fecha95, '%d/%m/%Y')
-            else:
-                fechad = None
-
-            if tipo95 == "" or tipo95 =="-1":
-                tipo95a = None
-            else:
-                if tipo95 == "103":
-                    tipo95a = "195"
-                if tipo95 == "202":
-                    tipo95a = "295"
-                if tipo95 == "950":
-                    tipo95a = "995"
-
-            if clase95 == "conta":
-
-                tra = TransabiertaContabilidad.objects.filter(idtransaccion=trans95)[0]
-
-                Mt95.objects.create(ta_conta=tra,codigo=ref95,codigo95_idcodigo95=codAux,ref_relacion=refOrg95,query=query,narrativa=queryletras[:100],num_mt=tipo95a,fecha_msg_original=fechad,campo79=original95) 
-                Mt95Ingles.objects.create(ta_conta=tra,codigo=ref95,codigo95_idcodigo95=codAuxIn,ref_relacion=refOrg95,query=query,narrativa=queryInletras,num_mt=tipo95a,fecha_msg_original=fechad,campo79=original95)
-
-                if idioma == 0:
-                    mensajeMT = "exito"
-                else:
-                    mensajeMT = "success"
-
-            if clase95 == "corr":
-                
-                tra = TransabiertaCorresponsal.objects.filter(idtransaccion=trans95)[0]
-                
-                Mt95.objects.create(ta_corres=tra,codigo=ref95,codigo95_idcodigo95=codAux,ref_relacion=refOrg95,query=query,narrativa=queryletras[:100],num_mt=tipo95a,fecha_msg_original=fechad,campo79=original95) 
-                Mt95Ingles.objects.create(ta_corres=tra,codigo=ref95,codigo95_idcodigo95=codAuxIn,ref_relacion=refOrg95,query=query,narrativa=queryInletras,num_mt=tipo95a,fecha_msg_original=fechad,campo79=original95)
-                
-                if idioma == 0:
-                    mensajeMT = "exito"
-                else:
-                    mensajeMT = "success"
-
-            tn = str(timenow())
-            hora = tn[11:]
-            auxhora = hora.split(':')
-            hora = auxhora[0]+auxhora[1]+auxhora[2]
-            aux = tn[:10]
-            aux2 = aux.split('-')
-            aux = aux2[2]+aux2[1]+aux2[0]
-            fechaNombre = aux + "_" + hora
-
-            #Buscar directorio de salida de los mensajes MT95
-            obj = Configuracion.objects.all()[0]
-            sender = obj.bic
-            directorio = obj.dirsalida95
-            directorio = directorio + "\\"
-
-            #Nombre del archivo a crear
-            archivo = directorio + sender + "_" + fechaNombre + ".txt"
-
-            fechaArchivo = ""
-            #Formato de fecha YYMMDD
-            if fecha95 != "":
-                auxd = fecha95[:2]
-                auxm = (fecha952[3:])[:2]
-                auxy = (fecha953)[6:]
-                auxy = auxy[2:]
-                fechaArchivo = auxy + auxm + auxd
-
-
-            cod2 = int(preg95)
-            #abrir archivo
-            fo = open(archivo, 'w')
-            fo.write( "$\n")
-            if tipo95!="-1":
-                if tipo95 == "103":
-                    fo.write( "[M]"+"195"+"\n")
-                if tipo95 == "202":
-                    fo.write( "[M]"+"295"+"\n")
-                if tipo95 == "950":
-                    fo.write( "[M]"+"995"+"\n")
-            else:
-                fo.write( "[M]\n")
-            fo.write( "[S]"+sender+"\n")
-            fo.write( "[R]"+cuenta95+"\n")
-            fo.write( "[20]"+ref95+"\n")
-            fo.write( "[21]"+refOrg95+"\n")
-            if cod2 == 7 or cod2 == 11 or cod2 == 12 or cod2 == 13 or cod2 == 17 or cod2 == 19 or cod2 == 20 or cod2 == 22 or (23<=cod2<=29) or (30<=cod2<=35) or cod2 == 38 or (40 <= cod2 <=45) or (48 <= cod2 <= 52): 
-                cod2 = str(cod2)
-                fo.write( "[75]"+cod2+"/"+original95+"\n")
-            else:
-                cod2 = str(cod2)
-                fo.write("[75]"+cod2+"\n")
-            if narra95 != "":
-                fo.write( "[77A]"+narra95+"\n")
-            if tipo95!="-1":
-                if tipoOriginal == "R":
-                    fo.write( "[11R]"+tipo95+fechaArchivo+"\n")    
-                elif tipoOriginal == "S":
-                    fo.write( "[11S]"+tipo95+fechaArchivo+"\n")
-                else:
-                    fo.write( "[11a]"+tipo95+fechaArchivo+"\n")
-            if original95!="":
-                fo.write( "[79]"+original95+"\n");
-            fo.write( "@@")
-
-            #cerrar archivo
-            fo.close()
-
-            #Se agrega el evento al log
-            log(request,8)
-
-            return JsonResponse({'mens':mensajeMT})
 
     if request.method == 'GET':
 
         template = "matcher/pd_partidasAbiertas.html"
         idioma = Configuracion.objects.all()[0].idioma
-        if idioma == 0:
-            cod = get_codigos95()
-        else:
-            cod = get_codigos95Ingles()
 
-        context = {'idioma':idioma, 'cuentas':get_cuentas(request), 'ops':get_ops(request), 'codigos':cod,'ldap':get_ldap(request)}
+        context = {'idioma':idioma, 'cuentas':get_cuentas(request), 'ops':get_ops(request),'ldap':get_ldap(request)}
         return render(request, template, context)
 
 @login_required(login_url='/login')
@@ -2844,7 +2701,7 @@ def mtn96(request):
 
             #ruta de archivos procesados
             #rutaProcesados = "C:\Matcher\PROCESADO96" 
-            rutaProcesados = obj.dirprocesado96 + archivoCarga
+            rutaProcesados = obj.dirprocesado96 +"\\"+ archivoCarga
 
             #abrir archivo
             fo = open(ruta, 'r')
@@ -2900,6 +2757,16 @@ def mtn96(request):
                         bancoCargar = line[3:]
                         largoaux = len(bancoCargar)-1
                         bancoCargar = bancoCargar[:largoaux]
+                        try:
+                            banco_existe = BancoCorresponsal.objects.get(codigo = bancoCargar)
+                        except:
+                            if idioma == 0:
+                                mensaje = "Caracter inesperado en campo bic del banco emisor, en la línea número " +str(i+auxCuenta+1)+ " del archivo"
+                            else:
+                                mensaje = "Unexpected character in sender bank bic fields,in file line No. " +str(i+auxCuenta+1)
+                            #cerrar archivo
+                            fo.close()
+                            return JsonResponse({'mens':mensaje})
                     if j%8 == 3:
                         opcion = line[:3]
                         if opcion != "[R]":
@@ -3102,6 +2969,7 @@ def mtn96(request):
             log(request,42)
 
             #Se mueve el archivo de directorio
+            
             shutil.move(ruta,rutaProcesados)
 
             return JsonResponse({'mens':mensaje})
@@ -3260,20 +3128,30 @@ def mtn99(request):
                             if idioma == 0:
                                 mensaje = "Caracter inesperado en campo bic del banco emisor, en la línea número " +str(i+auxCuenta+1)+ " del archivo"
                             else:
-                                mensaje = "Unexpected character in sender bank bic fileds,in file line No. " +str(i+auxCuenta+1)
+                                mensaje = "Unexpected character in sender bank bic fields,in file line No. " +str(i+auxCuenta+1)
                             #cerrar archivo
                             fo.close()
                             return JsonResponse({'mens':mensaje})
                         bancoCargar = line[3:]
                         largoaux = len(bancoCargar)-1
                         bancoCargar = bancoCargar[:largoaux]
+                        try:
+                            banco_existe = BancoCorresponsal.objects.get(codigo = bancoCargar)
+                        except:
+                            if idioma == 0:
+                                mensaje = "Caracter inesperado en campo bic del banco emisor, en la línea número " +str(i+auxCuenta+1)+ " del archivo"
+                            else:
+                                mensaje = "Unexpected character in sender bank bic fields,in file line No. " +str(i+auxCuenta+1)
+                            #cerrar archivo
+                            fo.close()
+                            return JsonResponse({'mens':mensaje})
                     if j%7 == 3:
                         opcion = line[:3]
                         if opcion != "[R]":
                             if idioma == 0:
                                 mensaje = "Caracter inesperado en campo bic del banco receptor, en la línea número " +str(i+auxCuenta+1)+ " del archivo"
                             else:
-                                mensaje = "Unexpected character in reciever bank bic fileds,in file line No. " +str(i+auxCuenta+1)
+                                mensaje = "Unexpected character in reciever bank bic fields,in file line No. " +str(i+auxCuenta+1)
                             #cerrar archivo
                             fo.close()
                             return JsonResponse({'mens':mensaje})
@@ -3284,7 +3162,7 @@ def mtn99(request):
                             if idioma == 0:
                                 mensaje = "Caracter inesperado en campo bic del banco receptor, en la línea número " +str(i+auxCuenta+1)+ " del archivo"
                             else:
-                                mensaje = "Unexpected character in reciever bank bic fileds,in file line No. " +str(i+auxCuenta+1)
+                                mensaje = "Unexpected character in reciever bank bic fields,in file line No. " +str(i+auxCuenta+1)
                             #cerrar archivo
                             fo.close()
                             return JsonResponse({'mens':mensaje})
