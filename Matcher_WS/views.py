@@ -355,6 +355,14 @@ def usr_login(request):
                             message ='Login exitoso'
                             return JsonResponse({'mens':message})
 
+                    else:
+                        if idioma == 0:
+                            message ='La combinacion de usuario y clave fue incorrecta.'
+                        else:
+                            message ='Incorrect user and password combination.'
+
+                        return JsonResponse({'mens':message})
+
                 except Exception as e:
                     # Show a message  
                     print (e)
