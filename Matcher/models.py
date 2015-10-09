@@ -754,7 +754,7 @@ class Mt754(models.Model):
     monto_adicional = models.CharField(db_column='monto_adicional', max_length=18,null=True)  
     cargos_deducidos = models.CharField(db_column='cargos_deducidos', max_length=250,null=True)
     cargos_agregados = models.CharField(db_column='cargos_agregados', max_length=250,null=True)
-    monto_total = models.CharField(db_column='monto_total', max_length=18,null=True)  
+    monto_total = models.CharField(db_column='monto_total', max_length=30,null=True)  
     banco_reembolso = models.CharField(db_column='banco_reembolso', max_length=200,null=True)  
     cuenta_institucion = models.CharField(db_column='cuenta_institucion', max_length=200,null=True)  
     banco_beneficiario = models.CharField(db_column='banco_beneficiario', max_length=200,null=True)  

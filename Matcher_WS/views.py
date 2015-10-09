@@ -49,9 +49,9 @@ def test(request):
     idioma = Configuracion.objects.all()[0].idioma 
     
     hora = timenow()
-    hora = str(hora)
-    
+    hora = str(hora) 
 
+    
     return JsonResponse(hora, safe=False)
 
 @login_required(login_url='/login')
@@ -6118,13 +6118,10 @@ def admin_archive(request):
             nuevoArch = open(dirArch, 'w')
             nuevoArch.write('***** Match Automatico *****\n')
             
-            arregloMin = fechaMinima.split('/')
-            fechaMin= datetime(int(arregloMin[2]), int(arregloMin[1]), int(arregloMin[0]))
-            
             arregloMax = fechaMaxima.split('/')
             fechaMax= datetime(int(arregloMax[2]), int(arregloMax[1]), int(arregloMax[0]),23,59,59)
             
-            matchesConf = Matchconfirmado.objects.filter(fecha__range=(fechaMin,fechaMax),auto_manual=0,tc_conta__codigocuenta=cuenta)
+            matchesConf = Matchconfirmado.objects.filter(fecha__lte=fechaMax,auto_manual=0,tc_conta__codigocuenta=cuenta)
             
             #Escribimos en el archivo los Matches Automaticos
             for elem in matchesConf:
@@ -6178,7 +6175,7 @@ def admin_archive(request):
 
             nuevoArch.write('***** Match Manual *****\n')
 
-            matchesConfMan = Matchconfirmado.objects.filter(Q(tc_corres__codigocuenta=cuenta) | Q(tc_conta__codigocuenta=cuenta),fecha__range=(fechaMin,fechaMax),auto_manual=1).order_by('codigomatch')
+            matchesConfMan = Matchconfirmado.objects.filter(Q(tc_corres__codigocuenta=cuenta) | Q(tc_conta__codigocuenta=cuenta),fecha__lte=fechaMax,auto_manual=1).order_by('codigomatch')
 
             if(matchesConfMan):
 
@@ -6417,7 +6414,7 @@ def admin_archive(request):
                             
             nuevoArch.write('***** Reversos Contabilidad *****\n')
 
-            reversosConta = ReversocerradaContabilidad.objects.filter(fecha__range=(fechaMin,fechaMax),tc_conta__codigocuenta=cuenta)
+            reversosConta = ReversocerradaContabilidad.objects.filter(fecha__lte=fechaMax,tc_conta__codigocuenta=cuenta)
             
             for elem in reversosConta:
                 
@@ -6468,7 +6465,7 @@ def admin_archive(request):
                 
                 nuevoArch.write(linea3)
 
-            reversosCorr = ReversocerradaCorresponsal.objects.filter(fecha__range=(fechaMin,fechaMax),tc_corres__codigocuenta=cuenta)
+            reversosCorr = ReversocerradaCorresponsal.objects.filter(fecha__lte=fechaMax,tc_corres__codigocuenta=cuenta)
 
             if(not reversosCorr):
                 nuevoArch.write('***** Reversos Corresponsal *****')

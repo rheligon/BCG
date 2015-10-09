@@ -3164,7 +3164,6 @@ def parseo942(archivo,directorio,idioma):
 			cuenta = None
 			msg = ""
 			observacion = ""
-
 			finMensaje = False
 		
 		lineaAct += 1

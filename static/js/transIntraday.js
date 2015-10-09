@@ -31,10 +31,10 @@ var t_impri = iniciar_tabla3(idiomaAux);
 var tiempo = $('#tiempoAct').val();
 tiempo = parseInt(tiempo)*30000
 
-/*setInterval(function() {
+setInterval(function() {
 	$('#processing-modal').modal('toggle');
 	window.location.reload()
-}, tiempo);*/	
+}, tiempo);	
 
 function iniciar_tabla2(idioma){
 
