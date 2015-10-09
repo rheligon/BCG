@@ -74,7 +74,7 @@ WSGI_APPLICATION = 'Matcher_WS.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'sqlserver_ado',
-        'NAME': 'Matcher',
+        'NAME': 'MatcherDSP',
         'HOST': '190.168.1.128',
         'PORT': '1433',
         'USER': 'sa',

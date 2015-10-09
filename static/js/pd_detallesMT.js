@@ -242,7 +242,7 @@ function crearmt95(ref_mensaje,ref_mensaje_original,tipo,fecha,codigo,pregunta,n
             if (idioma == 0){
                 swal("Ups!", "Hubo un error al intertar crear el mensaje", "error");
             } else {
-                swal("OK", "Error occurred trying to create the message", "success");
+                swal("Ups!", "Error occurred trying to create the message", "error");
             }
         },
         dataType:'json',
