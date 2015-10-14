@@ -27,7 +27,7 @@ from Matcher_WS.edo_cuenta import edoCta, edc_list, Trans, Bal
 from Matcher_WS.mailConf import enviar_mail
 from Matcher_WS.cargaAutomatica import leer_linea_conta, leer_linea_corr, leer_punto_coma, validar_archivo
 from Matcher_WS.Matcher_call import matcher, dma_millis
-from Matcher_WS.funciones_get import get_ops, get_cuentas, get_ci, get_idioma, get_bancos, get_archivosMT99, get_archivosMT96,get_codigos95, get_codigos95Ingles,elimina_tildes, get_archivosLicencia,verificarDirectorio, get_ldap
+from Matcher_WS.funciones_get import get_ops, get_cuentas, get_ci, get_idioma, get_bancos, get_archivosMT99, get_archivosMT96,get_codigos95, get_codigos95Ingles,elimina_tildes, get_archivosLicencia,verificarDirectorio, get_ldap, checkCaseSensitive
 from Matcher_WS.generar_reporte import generarReporte, pdfView, xlsView
 from Matcher_WS.setConsolidado import setConsolidado
 from Matcher_WS.parsers import parsearTipoMT,parseo103,parseo202,parseo752,parseo754,parseo756,parseo942
@@ -41,7 +41,7 @@ import sys
 import traceback
 import shutil
 import threading
-
+import socket
 
 def test(request):
     
@@ -49,9 +49,9 @@ def test(request):
     idioma = Configuracion.objects.all()[0].idioma 
     
     hora = timenow()
-    hora = str(hora) 
-
+    hora = str(hora)
     
+
     return JsonResponse(hora, safe=False)
 
 @login_required(login_url='/login')
@@ -105,8 +105,9 @@ def index(request):
 
 
     username = request.user.username
-    sesion = Sesion.objects.get(login=username,estado__in=["Activo","Pendiente"])
-    nombre = sesion.usuario_idusuario.nombres+" "+sesion.usuario_idusuario.apellidos
+    sesion = Sesion.objects.filter(login=username,estado__in=["Activo","Pendiente"])
+    usuario = checkCaseSensitive(username,sesion)
+    nombre = usuario.usuario_idusuario.nombres+" "+usuario.usuario_idusuario.apellidos
   
     context = {'idioma':idioma, 'ops':get_ops(request),'mensaje':mensaje,'ldap':get_ldap(request),'nombre':nombre}
     template = "matcher/index.html"
@@ -187,6 +188,7 @@ def usr_login(request):
 
                         #Verificar si el usuario ya esta logueado para expropiarlo
                         vieja = Sesion.objects.filter(login=username, conexion="1")
+                        vieja = checkCaseSensitive(username,vieja)
                         userAux = User.objects.get_or_create(username=username)
 
                         if vieja:
@@ -194,6 +196,9 @@ def usr_login(request):
                             user = User.objects.get(username=username)
                             [s.delete() for s in Session.objects.all() if s.get_decoded().get('_auth_user_id') == user.id]
                             U_name = user.username
+                            #con apache
+                            #ip = request.META['REMOTE_ADDR']
+                            #U_terminal = getTerminal(ip)     
                             U_terminal = request.META.get('COMPUTERNAME')
                             if idioma == 0:
                                 msj_aux = "Logout por sesión expropiativa"
@@ -233,6 +238,9 @@ def usr_login(request):
                                 message ='Butt number of concurrent users. Close another session and try again please.'
                             
                             # Para el log
+                            #con apache
+                            #ip = request.META['REMOTE_ADDR']
+                            #terminal = getTerminal(ip)     
                             terminal = request.META.get('COMPUTERNAME')
                             fechaHora = timenow()
                             evento = Evento.objects.get(pk=37)
@@ -250,7 +258,8 @@ def usr_login(request):
                             return JsonResponse({'mens':message})
                         
                         #Continuacion del flujo
-                        sesion = Sesion.objects.filter(login=username, estado__in=["Activo","Pendiente"])[0]
+                        sesion = Sesion.objects.filter(login=username, estado__in=["Activo","Pendiente"])
+                        sesion = checkCaseSensitive(username,sesion)
                         user = MyAuthBackend.authenticate(sesion, username=username, password=password)
                         if user is not None and sesion.estado!="Inactivo":
 
@@ -270,9 +279,7 @@ def usr_login(request):
                                 if diferencia > vencida:
                                     caduc = True
 
-
                             if sesion.ldap != "1" and (sesion.estado == "Pendiente" or caduc):
-
                                 auth.login(request, user)
                                 message = "Login successful"
                                 sesion.conexion = 1
@@ -282,7 +289,6 @@ def usr_login(request):
                                 return JsonResponse({'mens':"Cambiar contraseña"})
 
                             else:
-
                                 auth.login(request, user)
                                 message = "Login successful"
                                 sesion.conexion = 1
@@ -300,6 +306,10 @@ def usr_login(request):
                                 message ='Incorrect user and password combination.'
                             
                             # Para el log
+                            #con apache
+                            #con apache
+                            #ip = request.META['REMOTE_ADDR']
+                            #terminal = getTerminal(ip)     
                             terminal = request.META.get('COMPUTERNAME')
                             fechaHora = timenow()
                             evento = Evento.objects.get(pk=37)
@@ -329,9 +339,9 @@ def usr_login(request):
             else:
                 try:
                     #Continuacion de flujo
-                    sesion = Sesion.objects.filter(login=username, estado__in=["Activo","Pendiente"])[0]
+                    sesion = Sesion.objects.filter(login=username, estado__in=["Activo","Pendiente"])
+                    sesion = checkCaseSensitive(username,sesion)
                     user = MyAuthBackend.authenticate(sesion, username=username, password=password)
-
 
                     if user is not None and sesion.estado!="Inactivo":
 
@@ -433,7 +443,8 @@ def cambioClave(request):
         try:
             #Busco la sesion que esta conectada
             login = request.user.username 
-            actual = Sesion.objects.get(login=login, conexion="1")
+            actual = Sesion.objects.filter(login=login, conexion="1")
+            actual = checkCaseSensitive(login,actual)
             
             # Se chequea que la clave no sea la misma que se introdujo anteriormente
             enc = 'pbkdf2_sha1$15000$'+actual.salt+'$'+actual.pass_field
@@ -7400,6 +7411,9 @@ def timenow():
 def log(request,eid,detalles=None):
     # Funcion que recibe el request, ve cual es el usr loggeado y realiza el log
     username = request.user.username
+    #con apache
+    #ip = request.META['REMOTE_ADDR']
+    #terminal = getTerminal(ip)                       
     terminal = request.META.get('COMPUTERNAME')
     fechaHora = timenow()
     evento = Evento.objects.get(pk=eid)
@@ -7448,3 +7462,11 @@ def intPuntos(x):
         x, r = divmod(x, 1000)
         result = ".%03d%s" % (r, result)
     return "%d%s" % (x, result)
+
+def getTerminal(ip):
+    
+    try:
+        name,alias,addresslist = socket.gethostbyaddr(ip)
+    except socket.herror:
+        name = ip
+    return name 

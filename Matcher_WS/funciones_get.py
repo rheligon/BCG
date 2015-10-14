@@ -5,9 +5,10 @@ import unicodedata
 def get_ops(request):
     #Busco la sesion que esta conectada
     login = request.user.username 
-    sess = Sesion.objects.get(login=login, conexion="1")
+    sess = Sesion.objects.filter(login=login, conexion="1")
+    usuario = checkCaseSensitive(login,sess)
     #Busco el perfil del usuario
-    perfilid = sess.usuario_idusuario.perfil_idperfil
+    perfilid = usuario.usuario_idusuario.perfil_idperfil
     #Coloco las opciones segun el perfil elegido
     opciones = [opcion.opcion_idopcion.idopcion for opcion in PerfilOpcion.objects.filter(perfil_idperfil=perfilid).select_related('opcion_idopcion')]
     return opciones
@@ -16,7 +17,8 @@ def get_bancos(request):
     #Busco la sesion que esta conectada
     login = request.user.username 
     #Busco la sesion con el login para obtener el usuario
-    sess = Sesion.objects.get(login=login, conexion="1")
+    sess = Sesion.objects.filter(login=login, conexion="1")
+    sess = checkCaseSensitive(login,sess)
     #Coloco las cuentas segun el usuario encontrado
     UC = UsuarioCuenta.objects.filter(usuario_idusuario=sess.usuario_idusuario).select_related('cuenta_idcuenta')
 
@@ -62,7 +64,8 @@ def get_cuentas(request):
     #Busco la sesion que esta conectada
     login = request.user.username 
     #Busco la sesion con el login para obtener el usuario
-    sess = Sesion.objects.get(login=login, conexion="1")
+    sess = Sesion.objects.filter(login=login, conexion="1")
+    sess = checkCaseSensitive(login,sess)
     #Coloco las cuentas segun el usuario encontrado
     UC = UsuarioCuenta.objects.filter(usuario_idusuario=sess.usuario_idusuario).select_related('cuenta_idcuenta')
 
@@ -75,13 +78,15 @@ def get_cuentas(request):
 def get_ci(request):
     # Funcion que recibe el request, ve cual es el usr loggeado y devuelve su ci
     username = request.user.username
-    sesion = Sesion.objects.get(login=username,estado__in=["Activo","Pendiente"])
+    sesion = Sesion.objects.filter(login=username,estado__in=["Activo","Pendiente"])
+    sesion = checkCaseSensitive(username,sesion)
     return str(sesion.usuario_idusuario.ci)
 
 def get_ldap(request):
     # Funcion que recibe el request, ve cual es el usr loggeado y devuelve su ldap
     username = request.user.username
-    sesion = Sesion.objects.get(login=username,estado__in=["Activo","Pendiente"])
+    sesion = Sesion.objects.filter(login=username,estado__in=["Activo","Pendiente"])
+    sesion = checkCaseSensitive(username,sesion)
     return (sesion.ldap == "1")
 
 def get_idioma():
@@ -100,3 +105,11 @@ def verificarDirectorio(directorio):
     for elem in directorio:
         if not os.path.exists(elem):
             os.makedirs(elem)
+
+def checkCaseSensitive(username,sesiones):
+    elemento = False
+    for elem in sesiones:
+        if elem.login == username:
+            return elem
+    return elemento
+

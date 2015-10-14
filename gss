@@ -1,0 +1,13 @@
+[1mdiff --git a/Matcher/models.py b/Matcher/models.py[m
+[1mindex 6596215..fbff246 100644[m
+[1m--- a/Matcher/models.py[m
+[1m+++ b/Matcher/models.py[m
+[36m@@ -754,7 +754,7 @@[m [mclass Mt754(models.Model):[m
+     monto_adicional = models.CharField(db_column='monto_adicional', max_length=18,null=True)  [m
+     cargos_deducidos = models.CharField(db_column='cargos_deducidos', max_length=250,null=True)[m
+     cargos_agregados = models.CharField(db_column='cargos_agregados', max_length=250,null=True)[m
+[31m-    monto_total = models.CharField(db_column='monto_total', max_length=18,null=True)  [m
+[32m+[m[32m    monto_total = models.CharField(db_column='monto_total', max_length=30,null=True)[m[41m  [m
+     banco_reembolso = models.CharField(db_column='banco_reembolso', max_length=200,null=True)  [m
+     cuenta_institucion = models.CharField(db_column='cuenta_institucion', max_length=200,null=True)  [m
+     banco_beneficiario = models.CharField(db_column='banco_beneficiario', max_length=200,null=True)  [m
