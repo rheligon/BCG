@@ -11,7 +11,7 @@ if (idioma == 0){
 }
 
 var tiempo = $('#tiempoAct').val();
-tiempo = parseInt(tiempo)*30000
+tiempo = parseInt(tiempo)*60000
 
 setInterval(function() {
     $('#boton_go').attr("disabled", true);
