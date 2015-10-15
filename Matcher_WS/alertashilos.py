@@ -238,7 +238,6 @@ def daemon(request,language):
 			#descomentar para eliminar los log de la base de datos
 			#logs_aux.delete()
 	
-	print("termine")
 
 
 	aux = VerificarAlertas.objects.get(idVA=1) 

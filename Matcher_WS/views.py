@@ -6091,7 +6091,7 @@ def admin_archive(request):
 
                         nuevoArch.write(linea1)
                        
-                        if (contador < largo+1):
+                        if (contador < largo-1):
                             siguiente = matchesConfMan[contador+1].codigomatch
                         else:
                             siguiente = ""
@@ -6259,7 +6259,7 @@ def admin_archive(request):
 
                             codigo = matchesConfMan[contador].codigomatch
 
-                            if (contador < largo+1):
+                            if (contador < largo-1):
                                 siguiente = matchesConfMan[contador+1].codigomatch
                             else:
                                 siguiente = ""
@@ -6450,7 +6450,6 @@ def admin_archive(request):
                 os.makedirs(directorio)
                 archivos = os.listdir(directorio)
             return JsonResponse({'exito':exito,'archivos':archivos})
-
 
 @login_required(login_url='/login')
 @transaction.atomic
@@ -7296,8 +7295,6 @@ def SU_licencia(request):
             return JsonResponse({'mens':mensaje})
 
 
-
-
 @login_required(login_url='/login')
 @transaction.atomic
 def SU_modulos(request):
@@ -7357,7 +7354,6 @@ def Matcher_version(request):
         context = {'idioma':idioma, 'ops':get_ops(request), 'version':version,'ldap':get_ldap(request)}
         return render(request, template, context)
 
-@transaction.atomic
 def custom_404(request):
     expirarSesion(request)
     template = "matcher/404.html"
@@ -7365,7 +7361,6 @@ def custom_404(request):
     context = {'idioma':idioma, 'ops':get_ops(request),'ldap':get_ldap(request)}
     return render(request,template, context)
 
-@transaction.atomic
 def custom_500(request):
     expirarSesion(request)
     template = "matcher/500.html"
@@ -7373,7 +7368,6 @@ def custom_500(request):
     context = {'idioma':idioma, 'ops':get_ops(request),'ldap':get_ldap(request)}
     return render(request,template, context)
 
-@transaction.atomic
 def custom_403(request):
     expirarSesion(request)
     template = "matcher/403.html"
@@ -7381,7 +7375,6 @@ def custom_403(request):
     context = {'idioma':idioma, 'ops':get_ops(request),'ldap':get_ldap(request)}
     return render(request,template, context)
 
-@transaction.atomic
 def custom_400(request):
     expirarSesion(request)
     template = "matcher/400.html"
