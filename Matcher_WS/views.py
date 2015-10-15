@@ -6091,7 +6091,7 @@ def admin_archive(request):
 
                         nuevoArch.write(linea1)
                        
-                        if (contador < largo+1):
+                        if (contador < largo-1):
                             siguiente = matchesConfMan[contador+1].codigomatch
                         else:
                             siguiente = ""
@@ -6259,7 +6259,7 @@ def admin_archive(request):
 
                             codigo = matchesConfMan[contador].codigomatch
 
-                            if (contador < largo+1):
+                            if (contador < largo-1):
                                 siguiente = matchesConfMan[contador+1].codigomatch
                             else:
                                 siguiente = ""
@@ -6450,7 +6450,6 @@ def admin_archive(request):
                 os.makedirs(directorio)
                 archivos = os.listdir(directorio)
             return JsonResponse({'exito':exito,'archivos':archivos})
-
 
 @login_required(login_url='/login')
 @transaction.atomic
