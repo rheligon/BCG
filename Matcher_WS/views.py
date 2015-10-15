@@ -27,7 +27,7 @@ from Matcher_WS.edo_cuenta import edoCta, edc_list, Trans, Bal
 from Matcher_WS.mailConf import enviar_mail
 from Matcher_WS.cargaAutomatica import leer_linea_conta, leer_linea_corr, leer_punto_coma, validar_archivo
 from Matcher_WS.Matcher_call import matcher, dma_millis
-from Matcher_WS.funciones_get import get_ops, get_cuentas, get_ci, get_idioma, get_bancos, get_archivosMT99, get_archivosMT96,get_codigos95, get_codigos95Ingles,elimina_tildes, get_archivosLicencia,verificarDirectorio, get_ldap
+from Matcher_WS.funciones_get import get_ops, get_cuentas, get_ci, get_idioma, get_bancos, get_archivosMT99, get_archivosMT96,get_codigos95, get_codigos95Ingles,elimina_tildes, get_archivosLicencia,verificarDirectorio, get_ldap, checkCaseSensitive
 from Matcher_WS.generar_reporte import generarReporte, pdfView, xlsView
 from Matcher_WS.setConsolidado import setConsolidado
 from Matcher_WS.parsers import parsearTipoMT,parseo103,parseo202,parseo752,parseo754,parseo756,parseo942
@@ -105,8 +105,9 @@ def index(request):
 
 
     username = request.user.username
-    sesion = Sesion.objects.get(login=username,estado__in=["Activo","Pendiente"])
-    nombre = sesion.usuario_idusuario.nombres+" "+sesion.usuario_idusuario.apellidos
+    sesion = Sesion.objects.filter(login=username,estado__in=["Activo","Pendiente"])
+    usuario = checkCaseSensitive(username,sesion)
+    nombre = usuario.usuario_idusuario.nombres+" "+usuario.usuario_idusuario.apellidos
   
     context = {'idioma':idioma, 'ops':get_ops(request),'mensaje':mensaje,'ldap':get_ldap(request),'nombre':nombre}
     template = "matcher/index.html"
@@ -187,6 +188,7 @@ def usr_login(request):
 
                         #Verificar si el usuario ya esta logueado para expropiarlo
                         vieja = Sesion.objects.filter(login=username, conexion="1")
+                        vieja = checkCaseSensitive(username,vieja)
                         userAux = User.objects.get_or_create(username=username)
 
                         if vieja:
@@ -256,7 +258,8 @@ def usr_login(request):
                             return JsonResponse({'mens':message})
                         
                         #Continuacion del flujo
-                        sesion = Sesion.objects.filter(login=username, estado__in=["Activo","Pendiente"])[0]
+                        sesion = Sesion.objects.filter(login=username, estado__in=["Activo","Pendiente"])
+                        sesion = checkCaseSensitive(username,sesion)
                         user = MyAuthBackend.authenticate(sesion, username=username, password=password)
                         if user is not None and sesion.estado!="Inactivo":
 
@@ -276,9 +279,7 @@ def usr_login(request):
                                 if diferencia > vencida:
                                     caduc = True
 
-
                             if sesion.ldap != "1" and (sesion.estado == "Pendiente" or caduc):
-
                                 auth.login(request, user)
                                 message = "Login successful"
                                 sesion.conexion = 1
@@ -288,7 +289,6 @@ def usr_login(request):
                                 return JsonResponse({'mens':"Cambiar contraseña"})
 
                             else:
-
                                 auth.login(request, user)
                                 message = "Login successful"
                                 sesion.conexion = 1
@@ -339,9 +339,9 @@ def usr_login(request):
             else:
                 try:
                     #Continuacion de flujo
-                    sesion = Sesion.objects.filter(login=username, estado__in=["Activo","Pendiente"])[0]
+                    sesion = Sesion.objects.filter(login=username, estado__in=["Activo","Pendiente"])
+                    sesion = checkCaseSensitive(username,sesion)
                     user = MyAuthBackend.authenticate(sesion, username=username, password=password)
-
 
                     if user is not None and sesion.estado!="Inactivo":
 
@@ -443,7 +443,8 @@ def cambioClave(request):
         try:
             #Busco la sesion que esta conectada
             login = request.user.username 
-            actual = Sesion.objects.get(login=login, conexion="1")
+            actual = Sesion.objects.filter(login=login, conexion="1")
+            actual = checkCaseSensitive(login,actual)
             
             # Se chequea que la clave no sea la misma que se introdujo anteriormente
             enc = 'pbkdf2_sha1$15000$'+actual.salt+'$'+actual.pass_field
