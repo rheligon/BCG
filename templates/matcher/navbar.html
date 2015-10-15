@@ -548,31 +548,34 @@
                     <table class="table">
                         <tr>
                             <td>
+                                <!--href="{% url 'Matcher_WS.views.manual_sistema'%}"-->
                                 {%if idioma == 0%}
-                                    <span class="fa fa-desktop fa-lg text-primary"></span><a style="color:gray" href="{% url 'Matcher_WS.views.manual_sistema'%}">Manual Sistema</a>
+                                    <span class="fa fa-desktop fa-lg text-primary"></span><a style="color:gray" href="{% static 'Manuales/Manual del Sistema/Manual del Sistema.pdf' %}" target="_blank">Manual Sistema</a>
                                 {%endif%}
                                 {%if idioma == 1%}
-                                    <span class="fa fa-desktop fa-lg text-primary"></span><a style="color:gray" href="{% url 'Matcher_WS.views.manual_sistema'%}">System Manual</a>
+                                    <span class="fa fa-desktop fa-lg text-primary"></span><a style="color:gray" href="{% static 'Manuales/Manual del Sistema/Manual del Sistema.pdf' %}" target="_blank">System Manual</a>
                                 {%endif%}
                             </td>
                         </tr>
                         <tr>
                             <td>
+                                <!--href="{% url 'Matcher_WS.views.manual_usuario'%}"-->
                                 {%if idioma == 0%}
-                                    <span class="fa fa-file-text fa-lg text-primary"></span><a style="color:gray" href="{% url 'Matcher_WS.views.manual_usuario'%}">Manual de Usuario</a>
+                                    <span class="fa fa-file-text fa-lg text-primary"></span><a style="color:gray" href="{% static 'Manuales/Manual del Usuario/Manual del Usuario.pdf' %}" target="_blank">Manual de Usuario</a>
                                 {%endif%}
                                 {%if idioma == 1%}
-                                    <span class="fa fa-file-text fa-lg text-primary"></span><a style="color:gray" href="{% url 'Matcher_WS.views.manual_usuario'%}">User Manual</a>
+                                    <span class="fa fa-file-text fa-lg text-primary"></span><a style="color:gray" href="{% static 'Manuales/Manual del Usuario/Manual del Usuario.pdf' %}" target="_blank">User Manual</a>
                                 {%endif%}
                             </td>
                         </tr>
                         <tr>
                             <td>
+                                <!--href="{% url 'Matcher_WS.views.manual_usuario'%}"-->
                                 {%if idioma == 0%}
-                                    <span class="fa fa-adn fa-lg text-primary"></span><a style="color:gray" href="{% url 'Matcher_WS.views.sobre_matcher'%}">Acerca de Matcher</a>
+                                    <span class="fa fa-adn fa-lg text-primary"></span><a style="color:gray" href="{% static 'Manuales/Manual del Sistema/Manual del Sistema.pdf' %}" target="_blank">Acerca de Matcher</a>
                                 {%endif%}
                                 {%if idioma == 1%}
-                                    <span class="fa fa-adn fa-lg text-primary"></span><a style="color:gray" href="{% url 'Matcher_WS.views.sobre_matcher'%}">About Matcher</a>
+                                    <span class="fa fa-adn fa-lg text-primary"></span><a style="color:gray" href="{% static 'Manuales/Manual del Sistema/Manual del Sistema.pdf' %}" target="_blank">About Matcher</a>
                                 {%endif%}
                             </td>
                         </tr>

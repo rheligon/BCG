@@ -29,7 +29,7 @@ var t_impri = iniciar_tabla3(idiomaAux);
 
 
 var tiempo = $('#tiempoAct').val();
-tiempo = parseInt(tiempo)*30000
+tiempo = parseInt(tiempo)*60000
 
 setInterval(function() {
 	$('#processing-modal').modal('toggle');

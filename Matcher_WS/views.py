@@ -41,7 +41,7 @@ import sys
 import traceback
 import shutil
 import threading
-
+import socket
 
 def test(request):
     
@@ -49,9 +49,9 @@ def test(request):
     idioma = Configuracion.objects.all()[0].idioma 
     
     hora = timenow()
-    hora = str(hora) 
-
+    hora = str(hora)
     
+
     return JsonResponse(hora, safe=False)
 
 @login_required(login_url='/login')
@@ -194,6 +194,9 @@ def usr_login(request):
                             user = User.objects.get(username=username)
                             [s.delete() for s in Session.objects.all() if s.get_decoded().get('_auth_user_id') == user.id]
                             U_name = user.username
+                            #con apache
+                            #ip = request.META['REMOTE_ADDR']
+                            #U_terminal = getTerminal(ip)     
                             U_terminal = request.META.get('COMPUTERNAME')
                             if idioma == 0:
                                 msj_aux = "Logout por sesión expropiativa"
@@ -233,6 +236,9 @@ def usr_login(request):
                                 message ='Butt number of concurrent users. Close another session and try again please.'
                             
                             # Para el log
+                            #con apache
+                            #ip = request.META['REMOTE_ADDR']
+                            #terminal = getTerminal(ip)     
                             terminal = request.META.get('COMPUTERNAME')
                             fechaHora = timenow()
                             evento = Evento.objects.get(pk=37)
@@ -300,6 +306,10 @@ def usr_login(request):
                                 message ='Incorrect user and password combination.'
                             
                             # Para el log
+                            #con apache
+                            #con apache
+                            #ip = request.META['REMOTE_ADDR']
+                            #terminal = getTerminal(ip)     
                             terminal = request.META.get('COMPUTERNAME')
                             fechaHora = timenow()
                             evento = Evento.objects.get(pk=37)
@@ -7285,8 +7295,6 @@ def SU_licencia(request):
             return JsonResponse({'mens':mensaje})
 
 
-
-
 @login_required(login_url='/login')
 @transaction.atomic
 def SU_modulos(request):
@@ -7346,7 +7354,6 @@ def Matcher_version(request):
         context = {'idioma':idioma, 'ops':get_ops(request), 'version':version,'ldap':get_ldap(request)}
         return render(request, template, context)
 
-@transaction.atomic
 def custom_404(request):
     expirarSesion(request)
     template = "matcher/404.html"
@@ -7354,7 +7361,6 @@ def custom_404(request):
     context = {'idioma':idioma, 'ops':get_ops(request),'ldap':get_ldap(request)}
     return render(request,template, context)
 
-@transaction.atomic
 def custom_500(request):
     expirarSesion(request)
     template = "matcher/500.html"
@@ -7362,7 +7368,6 @@ def custom_500(request):
     context = {'idioma':idioma, 'ops':get_ops(request),'ldap':get_ldap(request)}
     return render(request,template, context)
 
-@transaction.atomic
 def custom_403(request):
     expirarSesion(request)
     template = "matcher/403.html"
@@ -7370,7 +7375,6 @@ def custom_403(request):
     context = {'idioma':idioma, 'ops':get_ops(request),'ldap':get_ldap(request)}
     return render(request,template, context)
 
-@transaction.atomic
 def custom_400(request):
     expirarSesion(request)
     template = "matcher/400.html"
@@ -7400,6 +7404,9 @@ def timenow():
 def log(request,eid,detalles=None):
     # Funcion que recibe el request, ve cual es el usr loggeado y realiza el log
     username = request.user.username
+    #con apache
+    #ip = request.META['REMOTE_ADDR']
+    #terminal = getTerminal(ip)                       
     terminal = request.META.get('COMPUTERNAME')
     fechaHora = timenow()
     evento = Evento.objects.get(pk=eid)
@@ -7448,3 +7455,11 @@ def intPuntos(x):
         x, r = divmod(x, 1000)
         result = ".%03d%s" % (r, result)
     return "%d%s" % (x, result)
+
+def getTerminal(ip):
+    
+    try:
+        name,alias,addresslist = socket.gethostbyaddr(ip)
+    except socket.herror:
+        name = ip
+    return name 
