@@ -752,8 +752,6 @@ function calcularfila(elem,tipo,edc){
 
     var td1 = '<td>' + edc + '</td>';
     var td2 = '<td>' + elem.fields.pagina + '</td>';
-    console.log("Sin date: " + elem.fields.fecha_valor);
-    console.log("Con date: " + dateFormat(elem.fields.fecha_valor))
     var td3 = '<td>' + dateFormat(elem.fields.fecha_valor) + '</td>';
     var td4 = '<td>' + elem.fields.codigo_transaccion + '</td>';
     var td5 = '<td>' + vacio(elem.fields.referencianostro) + '</td>';
