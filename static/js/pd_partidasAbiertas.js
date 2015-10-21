@@ -54,7 +54,7 @@ function solonumeroycoma(e) {
 function dateFormat(fecha){
     var date_final = "";
     var date = new Date(Date.parse(fecha));
-    var res =date.setDate(date.getDate() + 1);
+    var res =date.setDate(date.getDate());
     res = date.toLocaleDateString();
     var date_aux = res.split("/");
     if (parseInt(date_aux[0]) < 10){
