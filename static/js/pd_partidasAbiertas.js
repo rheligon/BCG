@@ -380,7 +380,7 @@ $('#srchButton').on('click', function () {
                     aux_fd = new Date(aux1);
                     aux_fh = new Date(aux2);
                 }
-                if (aux_fd >= aux_fh){
+                if (aux_fd > aux_fh){
                     $('#processing-modal').modal('toggle');
                     if (idioma == 0){
                         swal("Ups!", 'La fecha "desde" debe ser menor que la fecha "hasta"', "error");
