@@ -243,9 +243,17 @@
       </label>
       <div class="col-md-4">
         <select id="sel-ref-conta" name="sel-ref-conta" class="form-control">
-          <option value="0">--------</option>
-          <option value="Nostro">Nostro</option>
-          <option value="Vostro">Vostro</option>
+          {%if idioma == 0%}
+            <option value="0">--------</option>
+            <option value="Nostro">Nostro</option>
+            <option value="Vostro">Vostro</option>
+            <option value="Detalles">Detalles</option>
+          {%else%}
+            <option value="0">--------</option>
+            <option value="Nostro">Nostro</option>
+            <option value="Vostro">Vostro</option>
+            <option value="Detalles">Details</option>
+          {%endif%}
         </select>
       </div>
     </div>
@@ -313,9 +321,17 @@
       </label>
       <div class="col-md-4">
         <select id="sel-ref-corr" name="sel-ref-corr" class="form-control">
-          <option value="0">--------</option>
-          <option value="Nostro">Nostro</option>
-          <option value="Vostro">Vostro</option>
+          {%if idioma == 0%}
+            <option value="0">--------</option>
+            <option value="Nostro">Nostro</option>
+            <option value="Vostro">Vostro</option>
+            <option value="Detalles">Detalles</option>
+          {%else%}
+            <option value="0">--------</option>
+            <option value="Nostro">Nostro</option>
+            <option value="Vostro">Vostro</option>
+            <option value="Detalles">Details</option>
+          {%endif%}
         </select>
       </div>
     </div>
