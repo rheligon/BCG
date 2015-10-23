@@ -50,9 +50,10 @@ def test(request):
     
     hora = timenow()
     hora = str(hora)
-    
-
-    return JsonResponse(hora, safe=False)
+    hola = EstadoCuenta.objects.filter(cuenta_idcuenta=68)
+    for elem in hola:
+        elem.delete()
+    return JsonResponse(hola, safe=False)
 
 @login_required(login_url='/login')
 @transaction.atomic
@@ -197,9 +198,9 @@ def usr_login(request):
                             [s.delete() for s in Session.objects.all() if s.get_decoded().get('_auth_user_id') == user.id]
                             U_name = user.username
                             #con apache
-                            #ip = request.META['REMOTE_ADDR']
-                            #U_terminal = getTerminal(ip)     
-                            U_terminal = request.META.get('COMPUTERNAME')
+                            ip = request.META['REMOTE_ADDR']
+                            U_terminal = getTerminal(ip)     
+                            #U_terminal = request.META.get('COMPUTERNAME')
                             if idioma == 0:
                                 msj_aux = "Logout por sesión expropiativa"
                             else:
@@ -239,9 +240,9 @@ def usr_login(request):
                             
                             # Para el log
                             #con apache
-                            #ip = request.META['REMOTE_ADDR']
-                            #terminal = getTerminal(ip)     
-                            terminal = request.META.get('COMPUTERNAME')
+                            ip = request.META['REMOTE_ADDR']
+                            terminal = getTerminal(ip)     
+                            #terminal = request.META.get('COMPUTERNAME')
                             fechaHora = timenow()
                             evento = Evento.objects.get(pk=37)
                             nombre = username
@@ -308,9 +309,9 @@ def usr_login(request):
                             # Para el log
                             #con apache
                             #con apache
-                            #ip = request.META['REMOTE_ADDR']
-                            #terminal = getTerminal(ip)     
-                            terminal = request.META.get('COMPUTERNAME')
+                            ip = request.META['REMOTE_ADDR']
+                            terminal = getTerminal(ip)     
+                            #terminal = request.META.get('COMPUTERNAME')
                             fechaHora = timenow()
                             evento = Evento.objects.get(pk=37)
                             nombre = sesion.usuario_idusuario.nombres+" "+sesion.usuario_idusuario.apellidos
@@ -2214,11 +2215,11 @@ def reportes(request):
                 
                 print(fecha)
                 cursor = connection.cursor()
-                #try:
-                    #cursor.execute('EXEC [dbo].[autorizarConciliacion] %s, %s', (codCta,fecha))
-                    #eliminarIntraday()
-                #finally:
-                    #cursor.close()
+                try:
+                    cursor.execute('EXEC [dbo].[autorizarConciliacion] %s, %s', (codCta,fecha))
+                    eliminarIntraday()
+                finally:
+                    cursor.close()
 
                 if pagina == 'reportes':
                     return HttpResponseRedirect('/reportes/')
@@ -2226,7 +2227,7 @@ def reportes(request):
                     return HttpResponseRedirect('/procd/rep_conc/')
 
                 # Para el log
-                #log(request,10)
+                log(request,10)
 
             if tipo == '0':
                 if codCta == '-1':
@@ -3304,7 +3305,11 @@ def intraday(request,cuenta):
                 exitoconci =True
                 cons = conciliacion[0]
                 cuentaId = cons.cuenta_idcuenta
-                fecha = cuentaId.ultimafechaconciliacion.strftime("%d/%m/%Y")
+                fecha = cuentaId.ultimafechaconciliacion
+                if fecha:
+                    fecha = fecha.strftime("%d/%m/%Y")
+                else:
+                    fecha = ""
                 fechaActual = datetime.now().strftime("%d/%m/%Y %I:%M %p")
                 bfcon = cons.balancefinalcontabilidad
                 bfcor = cons.balancefinalcorresponsal
@@ -6357,7 +6362,7 @@ def admin_archive(request):
                 else:
                     detCorr = b.descripcion
                 
-                fechaT = datetime.strftime(b.fecha_valor, '%d/%m/%Y')
+                fechaT = datetime.strftime(b.fecha, '%d/%m/%Y')
                 linea3 = str(b.estado_cuenta_idedocuenta.idedocuenta) + ";" + str(b.pagina) + ";" + fechaT + ";" + b.codigo_transaccion + ";" + rNostroCorr + ";" + rVostroCorr + ";" + detCorr + ";" + b.credito_debito + ";" + str(b.monto) + ";L\n"
                 
                 nuevoArch.write(linea3)
@@ -6393,7 +6398,7 @@ def admin_archive(request):
                 else: 
                     detConta = a.descripcion
                 
-                fechaT = datetime.strftime(a.fecha, '%d/%m/%Y')
+                fechaT = datetime.strftime(a.fecha_valor, '%d/%m/%Y')
                 linea2 = str(a.estado_cuenta_idedocuenta.idedocuenta) + ";" + str(a.pagina) + ";" + fechaT + ";" + a.codigo_transaccion + ";" + rNostroConta + ";" + rVostroConta + ";" + detConta + ";" + a.credito_debito + ";" + str(a.monto) + ";S\n"
                 
                 nuevoArch.write(linea2)
@@ -6430,11 +6435,11 @@ def admin_archive(request):
             exito = True
 
             #Llamar store proc
-            #cursor = connection.cursor()
-            #try:
-            #    cursor.execute('EXEC [dbo].[archiveMatches] %s, %s', (cuenta,fechaMax))
-            #finally:
-            #    cursor.close()
+            cursor = connection.cursor()
+            try:
+                cursor.execute('EXEC [dbo].[archiveMatches] %s, %s', (cuenta,fechaMax))
+            finally:
+                cursor.close()
 
             #cerrar archivo
             nuevoArch.close()
@@ -7405,9 +7410,9 @@ def log(request,eid,detalles=None):
     # Funcion que recibe el request, ve cual es el usr loggeado y realiza el log
     username = request.user.username
     #con apache
-    #ip = request.META['REMOTE_ADDR']
-    #terminal = getTerminal(ip)                       
-    terminal = request.META.get('COMPUTERNAME')
+    ip = request.META['REMOTE_ADDR']
+    terminal = getTerminal(ip)                       
+    #terminal = request.META.get('COMPUTERNAME')
     fechaHora = timenow()
     evento = Evento.objects.get(pk=eid)
     sesion = Sesion.objects.filter(login=username).filter(estado__in=["Activo","Pendiente"])[0]

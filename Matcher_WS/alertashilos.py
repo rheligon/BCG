@@ -236,7 +236,7 @@ def daemon(request,language):
 
 			nuevoArch.close()
 			#descomentar para eliminar los log de la base de datos
-			#logs_aux.delete()
+			logs_aux.delete()
 	
 
 

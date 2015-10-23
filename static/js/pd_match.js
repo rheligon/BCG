@@ -183,7 +183,7 @@ function matcher(ctaid,fecha,action){
             $('#processing-modal').modal('toggle');
         },
         error: function(q,error){
-            //alert(q.responseText) //debug
+            alert(q.responseText) //debug
             $('#processing-modal').modal('toggle');
             if (idioma == 0){
               swal("Ups!", "Hubo un error procesando la cuenta para la fecha especificada, verifique que el servidor de match se encuentre en correcto funcionamiento.", "error");

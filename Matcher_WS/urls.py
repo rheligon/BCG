@@ -3,10 +3,10 @@ from django.contrib import admin
 
 from django.contrib.auth.views import login, logout
 
-#handler404 = 'Matcher_WS.views.custom_404'
-#handler500 = 'Matcher_WS.views.custom_500'
-#handler403 = 'Matcher_WS.views.custom_403'
-#handler400 = 'Matcher_WS.views.custom_400'
+handler404 = 'Matcher_WS.views.custom_404'
+handler500 = 'Matcher_WS.views.custom_500'
+handler403 = 'Matcher_WS.views.custom_403'
+handler400 = 'Matcher_WS.views.custom_400'
 
 urlpatterns = patterns('',
     url(r'^test/$', 'Matcher_WS.views.test', name='test'),              
