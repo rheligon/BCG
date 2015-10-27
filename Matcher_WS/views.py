@@ -744,7 +744,7 @@ def pd_cargaAutomatica(request):
                                 elif (result.group(1)=="61"):
                                     # Es la descripcion de una transaccion existente
                                     # Se vuelve a parsear la linea anterior para sacar la transaccion y poder comparar
-                                    res = re.search('(?P<fecha>\d{6})(?P<DoC>[D,C])(?P<monto>.+\,\d{2})(?P<tipo>.{4})(?P<refNostro>[^(]+)\(?(?P<refVostro>[^)]+)?\)?', result.group(2))
+                                    res = re.search('(?P<fecha>\d{6})(?P<DoC>[D,C])(?P<monto>.+\,\d{0,2})(?P<tipo>.{4})(?P<refNostro>[^(]+)\(?(?P<refVostro>[^)]+)?\)?', result.group(2))
                                     # Se crea una tupla transaccion
                                     trans = Trans(res,group)
                                     # Se agrega a la lista
@@ -5446,8 +5446,7 @@ def admin_cuentas(request):
             codigo = request.POST.get('ctacod').upper()
             bancoid = request.POST.get('bancoid')
             monedaid = request.POST.get('monedaid')
-            ref_nostr
-            o = request.POST.get('ref_nostro')
+            ref_nostro = request.POST.get('ref_nostro')
             ref_vostro = request.POST.get('ref_vostro')
             desc = request.POST.get('desc')
             estado = request.POST.get('estado')
