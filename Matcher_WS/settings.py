@@ -20,18 +20,12 @@ BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 SECRET_KEY = '9^497rj5gxyk3$tt!!8sw6qf65ume#i8=65)r!mk=_69=ft@62'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-'''con Apache
-DEBUG = False
-
-TEMPLATE_DEBUG = False
-
-ALLOWED_HOSTS = '*' '''
 
 DEBUG = True
 
 TEMPLATE_DEBUG = True
 
-ALLOWED_HOSTS = ['127.0.0.1']
+ALLOWED_HOSTS = '*'
 
 AUTHENTICATION_BACKENDS = (
     'Matcher_WS.backend.MyAuthBackend',
@@ -81,8 +75,8 @@ WSGI_APPLICATION = 'Matcher_WS.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'sqlserver_ado',
-        'NAME': 'Matcher',
-        'HOST': '190.168.1.128',
+        'NAME': 'Matcher_BANPLUS',
+        'HOST': '127.0.0.1',
         'PORT': '1433',
         'USER': 'sa',
         'PASSWORD':'..asdf1234',

@@ -42,37 +42,37 @@ def leer_linea_conta(line):
         elif (result.group(1)=="60F"):
             # 
             aux = result.group(2)
-            res = re.search('(?P<DoC>[DC])(?P<fecha>\d{6})(?P<moneda>[a-zA-Z]{3})(?P<monto>.+\,\d{2})', aux)
+            res = re.search('(?P<DoC>[DC])(?P<fecha>\d{6})(?P<moneda>[a-zA-Z]{3})(?P<monto>.+\,\d{0,2})', aux)
             return ("60F", res)
 
         elif (result.group(1)=="60M"):
             # 
             aux = result.group(2)
-            res = re.search('(?P<DoC>[DC])(?P<fecha>\d{6})(?P<moneda>[a-zA-Z]{3})(?P<monto>.+\,\d{2})', aux)
+            res = re.search('(?P<DoC>[DC])(?P<fecha>\d{6})(?P<moneda>[a-zA-Z]{3})(?P<monto>.+\,\d{0,2})', aux)
             return ("60M", res)
 
         elif (result.group(1)=="61"):
             # Es una transaccion
             aux = result.group(2)
-            res = re.search('(?P<fecha>\d{6})(?P<DoC>[DC])(?P<monto>.+\,\d{2})(?P<tipo>.{4})(?P<refNostro>[^(]+)\(?(?P<refVostro>[^)]+)?\)?', aux)
+            res = re.search('(?P<fecha>\d{6})(?P<DoC>[DC])(?P<monto>.+\,\d{0,2})(?P<tipo>.{4})(?P<refNostro>[^(]+)\(?(?P<refVostro>[^)]+)?\)?', aux)
             return ("61", res)
 
         elif (result.group(1)=="62M"):
             # Balance final intermedio
             aux = result.group(2)
-            res = re.search('(?P<DoC>[DC])(?P<fecha>\d{6})(?P<moneda>[a-zA-Z]{3})(?P<monto>.+\,\d{2})', aux)
+            res = re.search('(?P<DoC>[DC])(?P<fecha>\d{6})(?P<moneda>[a-zA-Z]{3})(?P<monto>.+\,\d{0,2})', aux)
             return ("62M", res)
 
         elif (result.group(1)=="62F"):
             # Balance final real
             aux = result.group(2)
-            res = re.search('(?P<DoC>[DC])(?P<fecha>\d{6})(?P<moneda>[a-zA-Z]{3})(?P<monto>.+\,\d{2})', aux)
+            res = re.search('(?P<DoC>[DC])(?P<fecha>\d{6})(?P<moneda>[a-zA-Z]{3})(?P<monto>.+\,\d{0,2})', aux)
             return ("62F", res)
 
         elif (result.group(1)=="64"):
             # Fondos disponibles
             aux = result.group(2)
-            res = re.search('(?P<DoC>[DC])(?P<fecha>\d{6})(?P<moneda>[a-zA-Z]{3})(?P<monto>.+\,\d{2})', aux)
+            res = re.search('(?P<DoC>[DC])(?P<fecha>\d{6})(?P<moneda>[a-zA-Z]{3})(?P<monto>.+\,\d{0,2})', aux)
             return ("64", res)
 
     else:

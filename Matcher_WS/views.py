@@ -50,9 +50,10 @@ def test(request):
     
     hora = timenow()
     hora = str(hora)
-    
-
-    return JsonResponse(hora, safe=False)
+    hola = EstadoCuenta.objects.filter(cuenta_idcuenta=68)
+    for elem in hola:
+        elem.delete()
+    return JsonResponse(hola, safe=False)
 
 @login_required(login_url='/login')
 @transaction.atomic
@@ -197,9 +198,9 @@ def usr_login(request):
                             [s.delete() for s in Session.objects.all() if s.get_decoded().get('_auth_user_id') == user.id]
                             U_name = user.username
                             #con apache
-                            #ip = request.META['REMOTE_ADDR']
-                            #U_terminal = getTerminal(ip)     
-                            U_terminal = request.META.get('COMPUTERNAME')
+                            ip = request.META['REMOTE_ADDR']
+                            U_terminal = getTerminal(ip)     
+                            #U_terminal = request.META.get('COMPUTERNAME')
                             if idioma == 0:
                                 msj_aux = "Logout por sesión expropiativa"
                             else:
@@ -239,9 +240,9 @@ def usr_login(request):
                             
                             # Para el log
                             #con apache
-                            #ip = request.META['REMOTE_ADDR']
-                            #terminal = getTerminal(ip)     
-                            terminal = request.META.get('COMPUTERNAME')
+                            ip = request.META['REMOTE_ADDR']
+                            terminal = getTerminal(ip)     
+                            #terminal = request.META.get('COMPUTERNAME')
                             fechaHora = timenow()
                             evento = Evento.objects.get(pk=37)
                             nombre = username
@@ -308,9 +309,9 @@ def usr_login(request):
                             # Para el log
                             #con apache
                             #con apache
-                            #ip = request.META['REMOTE_ADDR']
-                            #terminal = getTerminal(ip)     
-                            terminal = request.META.get('COMPUTERNAME')
+                            ip = request.META['REMOTE_ADDR']
+                            terminal = getTerminal(ip)     
+                            #terminal = request.META.get('COMPUTERNAME')
                             fechaHora = timenow()
                             evento = Evento.objects.get(pk=37)
                             nombre = sesion.usuario_idusuario.nombres+" "+sesion.usuario_idusuario.apellidos
@@ -331,9 +332,9 @@ def usr_login(request):
                         print (e)
 
                         if idioma == 0:   
-                            message ='Ese usuario no existe en la base de datos.'
+                            message ='La combinacion de usuario y clave fue incorrecta.'
                         else:
-                            message ='User is not registered on data base.'
+                            message ='Incorrect user and password combination.'
 
                         return JsonResponse({'mens':message})
             else:
@@ -378,9 +379,9 @@ def usr_login(request):
                     print (e)
 
                     if idioma == 0:   
-                        message ='Ese usuario no existe en la base de datos.'
+                        message ='La combinacion de usuario y clave fue incorrecta.'
                     else:
-                        message ='User is not registered on data base.'
+                        message ='Incorrect user and password combination.'
 
                     return JsonResponse({'mens':message})
 
@@ -743,7 +744,7 @@ def pd_cargaAutomatica(request):
                                 elif (result.group(1)=="61"):
                                     # Es la descripcion de una transaccion existente
                                     # Se vuelve a parsear la linea anterior para sacar la transaccion y poder comparar
-                                    res = re.search('(?P<fecha>\d{6})(?P<DoC>[D,C])(?P<monto>.+\,\d{2})(?P<tipo>.{4})(?P<refNostro>[^(]+)\(?(?P<refVostro>[^)]+)?\)?', result.group(2))
+                                    res = re.search('(?P<fecha>\d{6})(?P<DoC>[D,C])(?P<monto>.+\,\d{0,2})(?P<tipo>.{4})(?P<refNostro>[^(]+)\(?(?P<refVostro>[^)]+)?\)?', result.group(2))
                                     # Se crea una tupla transaccion
                                     trans = Trans(res,group)
                                     # Se agrega a la lista
@@ -2214,11 +2215,11 @@ def reportes(request):
                 
                 print(fecha)
                 cursor = connection.cursor()
-                #try:
-                    #cursor.execute('EXEC [dbo].[autorizarConciliacion] %s, %s', (codCta,fecha))
-                    #eliminarIntraday()
-                #finally:
-                    #cursor.close()
+                try:
+                    cursor.execute('EXEC [dbo].[autorizarConciliacion] %s, %s', (codCta,fecha))
+                    eliminarIntraday()
+                finally:
+                    cursor.close()
 
                 if pagina == 'reportes':
                     return HttpResponseRedirect('/reportes/')
@@ -2226,7 +2227,7 @@ def reportes(request):
                     return HttpResponseRedirect('/procd/rep_conc/')
 
                 # Para el log
-                #log(request,10)
+                log(request,10)
 
             if tipo == '0':
                 if codCta == '-1':
@@ -3314,7 +3315,11 @@ def intraday(request,cuenta):
                 exitoconci =True
                 cons = conciliacion[0]
                 cuentaId = cons.cuenta_idcuenta
-                fecha = cuentaId.ultimafechaconciliacion.strftime("%d/%m/%Y")
+                fecha = cuentaId.ultimafechaconciliacion
+                if fecha:
+                    fecha = fecha.strftime("%d/%m/%Y")
+                else:
+                    fecha = ""
                 fechaActual = datetime.now().strftime("%d/%m/%Y %I:%M %p")
                 bfcon = cons.balancefinalcontabilidad
                 bfcor = cons.balancefinalcorresponsal
@@ -5207,7 +5212,7 @@ def admin_bancos(request):
                 log(request,30,bancocod)
             else:
                 if idioma == 0:
-                    msg = "Ese banco ya existe en la Base de datos."
+                    msg = "El banco ya existe en la Base de datos."
                 else:
                     msg = "Bank already exist in data base."
 
@@ -5451,8 +5456,7 @@ def admin_cuentas(request):
             codigo = request.POST.get('ctacod').upper()
             bancoid = request.POST.get('bancoid')
             monedaid = request.POST.get('monedaid')
-            ref_nostr
-            o = request.POST.get('ref_nostro')
+            ref_nostro = request.POST.get('ref_nostro')
             ref_vostro = request.POST.get('ref_vostro')
             desc = request.POST.get('desc')
             estado = request.POST.get('estado')
@@ -6367,7 +6371,7 @@ def admin_archive(request):
                 else:
                     detCorr = b.descripcion
                 
-                fechaT = datetime.strftime(b.fecha_valor, '%d/%m/%Y')
+                fechaT = datetime.strftime(b.fecha, '%d/%m/%Y')
                 linea3 = str(b.estado_cuenta_idedocuenta.idedocuenta) + ";" + str(b.pagina) + ";" + fechaT + ";" + b.codigo_transaccion + ";" + rNostroCorr + ";" + rVostroCorr + ";" + detCorr + ";" + b.credito_debito + ";" + str(b.monto) + ";L\n"
                 
                 nuevoArch.write(linea3)
@@ -6403,7 +6407,7 @@ def admin_archive(request):
                 else: 
                     detConta = a.descripcion
                 
-                fechaT = datetime.strftime(a.fecha, '%d/%m/%Y')
+                fechaT = datetime.strftime(a.fecha_valor, '%d/%m/%Y')
                 linea2 = str(a.estado_cuenta_idedocuenta.idedocuenta) + ";" + str(a.pagina) + ";" + fechaT + ";" + a.codigo_transaccion + ";" + rNostroConta + ";" + rVostroConta + ";" + detConta + ";" + a.credito_debito + ";" + str(a.monto) + ";S\n"
                 
                 nuevoArch.write(linea2)
@@ -6440,11 +6444,11 @@ def admin_archive(request):
             exito = True
 
             #Llamar store proc
-            #cursor = connection.cursor()
-            #try:
-            #    cursor.execute('EXEC [dbo].[archiveMatches] %s, %s', (cuenta,fechaMax))
-            #finally:
-            #    cursor.close()
+            cursor = connection.cursor()
+            try:
+                cursor.execute('EXEC [dbo].[archiveMatches] %s, %s', (cuenta,fechaMax))
+            finally:
+                cursor.close()
 
             #cerrar archivo
             nuevoArch.close()
@@ -7415,9 +7419,9 @@ def log(request,eid,detalles=None):
     # Funcion que recibe el request, ve cual es el usr loggeado y realiza el log
     username = request.user.username
     #con apache
-    #ip = request.META['REMOTE_ADDR']
-    #terminal = getTerminal(ip)                       
-    terminal = request.META.get('COMPUTERNAME')
+    ip = request.META['REMOTE_ADDR']
+    terminal = getTerminal(ip)                       
+    #terminal = request.META.get('COMPUTERNAME')
     fechaHora = timenow()
     evento = Evento.objects.get(pk=eid)
     sesion = Sesion.objects.filter(login=username).filter(estado__in=["Activo","Pendiente"])[0]

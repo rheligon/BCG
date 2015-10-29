@@ -1,5 +1,6 @@
 from Matcher.models import *
 from Matcher_WS.mailConf import enviar_mail
+from Matcher_WS.funciones_get import get_ops, get_cuentas, get_ci, get_idioma, get_bancos, get_archivosMT99, get_archivosMT96,get_codigos95, get_codigos95Ingles,elimina_tildes, get_archivosLicencia,verificarDirectorio, get_ldap, checkCaseSensitive
 from django.db.models import Sum, Q
 from datetime import datetime, timedelta
 
@@ -8,7 +9,8 @@ def setConsolidado(codCta,request):
 
     #Obtengo el nombre del usuario
     username = request.user.username
-    sesion = Sesion.objects.get(login=username,estado__in=["Activo","Pendiente"])
+    sesion = Sesion.objects.filter(login=username,estado__in=["Activo","Pendiente"])
+    sesion = checkCaseSensitive(username,sesion)
     nombre = sesion.usuario_idusuario.nombres+" "+sesion.usuario_idusuario.apellidos
 
     try:

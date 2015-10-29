@@ -37,6 +37,7 @@
         font-family: cursive;
         font-size:30px;
         margin-top:1px;
+        text-align: center;
     }   
 
 </style>
@@ -451,7 +452,7 @@
     </div>
     <div class="tab-pane" id="match-tab">
         <br>
-        <div class="col-md-9 col-md-push-1">
+        <div class="col-md-10 col-md-push-1">
             <div class="well">
                 <form id="form-match" class="form-horizontal">
                     <fieldset>
@@ -1495,11 +1496,8 @@
 </div> 
 
 <div class="wrap">
-    <div class="logo">
-        <img src="{% static 'images/con1.png'%}"/>
-        <br>
-        <br>
-        <div class="explicacion">
+    <div class="logo" align="center">
+        <div class="explicacion" >
             {%if idioma == 0%}
                 <p>Módulo en construcción, para más información contactar a BCG.</p>
             {%endif%}

@@ -20,6 +20,7 @@ def matcher(idioma,cuenta,millis,funciones='1'):
         conf = Configuracion.objects.all()[0]
         host = conf.matcherhost
         port = int(conf.matcherpuerto)
+
     except:
         # No existe una configuracion previa
         if idm == 0:
@@ -28,6 +29,8 @@ def matcher(idioma,cuenta,millis,funciones='1'):
             return("There is not previous configuration on DB")
     message = cuenta+"*"+str(millis)+"*"+funciones+"\r\n"
 
+    host = '127.0.0.1'
+    port = 4445
     # Crear socket y conectarse
     sock = socket(AF_INET, SOCK_STREAM)
     sock.connect((host, port))

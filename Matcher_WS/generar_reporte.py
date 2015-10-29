@@ -1,7 +1,7 @@
 from Matcher.models import *
 from socket import socket, AF_INET, SOCK_STREAM, error
 from django.http import HttpResponse, HttpResponseNotFound
-
+import os
 def generarReporte(message):
     # Buscar host y puerto
     try:
@@ -13,7 +13,7 @@ def generarReporte(message):
         return("No hay configuracion previa en la BD")
 
     #ip del servidor de reportes
-    host = '190.168.1.103'
+    host = '190.168.1.166'
     port = 9999
     message += '\r\n'
 
@@ -37,10 +37,15 @@ def generarReporte(message):
     myfile = sock.makefile('r')
     nombrerep = myfile.readline().replace('\n','')
 
-    print(nombrerep)
+    
 
     # Comienza a recibir el reporte
-    with open('archivos/'+nombrerep,'wb') as f:
+    BASE_DIR = os.path.dirname(os.path.dirname(__file__))
+    directorioRep = BASE_DIR + '\\archivos\\REPORTES' 
+    archivo = BASE_DIR + '\\archivos\\REPORTES\\'+nombrerep
+    if not os.path.exists(directorioRep):
+        os.makedirs(directorioRep)
+    with open(archivo,'wb') as f:
         
         data, addr = sock.recvfrom(buf)
         
@@ -58,7 +63,9 @@ def generarReporte(message):
 
 def pdfView(nombre):
     try:
-        with open('archivos/'+nombre, 'rb') as pdf:
+        BASE_DIR = os.path.dirname(os.path.dirname(__file__))
+        direccion = BASE_DIR + '\\archivos\\REPORTES\\'+nombre
+        with open(direccion, 'rb') as pdf:
             response = HttpResponse(pdf.read(),content_type='application/pdf')
             response['Content-Disposition'] = 'filename='+nombre
             return response
@@ -67,7 +74,9 @@ def pdfView(nombre):
 
 def xlsView(nombre):
     try:
-        with open('archivos/'+nombre, 'rb') as xls:
+        BASE_DIR = os.path.dirname(os.path.dirname(__file__))
+        direccion = BASE_DIR + '\\archivos\\REPORTES\\'+nombre
+        with open(direccion, 'rb') as xls:
             response = HttpResponse(xls.read(),content_type='application/vnd.ms-excel')
             response['Content-Disposition'] = 'attachment;filename='+nombre
             return response
