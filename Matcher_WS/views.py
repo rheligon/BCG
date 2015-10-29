@@ -332,9 +332,9 @@ def usr_login(request):
                         print (e)
 
                         if idioma == 0:   
-                            message ='Ese usuario no existe en la base de datos.'
+                            message ='La combinacion de usuario y clave fue incorrecta.'
                         else:
-                            message ='User is not registered on data base.'
+                            message ='Incorrect user and password combination.'
 
                         return JsonResponse({'mens':message})
             else:
@@ -379,9 +379,9 @@ def usr_login(request):
                     print (e)
 
                     if idioma == 0:   
-                        message ='Ese usuario no existe en la base de datos.'
+                        message ='La combinacion de usuario y clave fue incorrecta.'
                     else:
-                        message ='User is not registered on data base.'
+                        message ='Incorrect user and password combination.'
 
                     return JsonResponse({'mens':message})
 
@@ -5202,7 +5202,7 @@ def admin_bancos(request):
                 log(request,30,bancocod)
             else:
                 if idioma == 0:
-                    msg = "Ese banco ya existe en la Base de datos."
+                    msg = "El banco ya existe en la Base de datos."
                 else:
                     msg = "Bank already exist in data base."
 

@@ -112,7 +112,7 @@ $('#Cuenta-sel').change(function() {
         $( "div" ).removeClass( "has-error" );
         $( "span" ).removeClass( "glyphicon-remove" );
         $( "span" ).removeClass( "glyphicon-ok" );
-        $( "div ul li" ).remove();
+        //$( "div ul li" ).remove();
         //Buscamos el ultimo estado de cuenta contable(primera vez)
         buscarEstado('cont-radio',cuentaId,moneda);
     }else{
@@ -190,7 +190,7 @@ $('#Cuenta-sel').change(function() {
         $( "div" ).removeClass( "has-error" );
         $( "span" ).removeClass( "glyphicon-remove" );
         $( "span" ).removeClass( "glyphicon-ok" );
-        $( "div ul li" ).remove();
+        //$( "div ul li" ).remove();
          //si cambiamos de cuenta borramos la tabla e inicializamos num
         t_conta.clear().draw();
         num=1;
@@ -281,7 +281,7 @@ $('input[name=radiocuenta]').change(function(){
         $( "div" ).removeClass( "has-error" );
         $( "span" ).removeClass( "glyphicon-remove" );
         $( "span" ).removeClass( "glyphicon-ok" );
-        $( "div ul" ).remove();
+        //$( "div ul" ).remove();
 
 
 
@@ -314,7 +314,7 @@ $('input[name=radiocuenta]').change(function(){
         $( "div" ).removeClass( "has-error" );
         $( "span" ).removeClass( "glyphicon-remove" );
         $( "span" ).removeClass( "glyphicon-ok" );
-        $( "div ul" ).remove();
+        //$( "div ul" ).remove();
     }
 
     buscarEstado(tipo,cuentaId,moneda);
@@ -720,7 +720,7 @@ $('#boton-agregar').on('click', function () {
                 $( "div" ).removeClass( "has-error" );
                 $( "span" ).removeClass( "glyphicon-remove" );
                 $( "span" ).removeClass( "glyphicon-ok" );
-                $( "div ul li" ).remove();
+                //$( "div ul li" ).remove();
                 
             }
         }    
@@ -1082,7 +1082,7 @@ function buscarEstado(tipo,cuentaid,moneda){
             $( "div" ).removeClass( "has-error" );
             $( "span" ).removeClass( "glyphicon-remove" );
             $( "span" ).removeClass( "glyphicon-ok" );
-            $( "div ul" ).remove();
+            //$( "div ul" ).remove();
 
             $('#processing-modal').modal('toggle');
         },

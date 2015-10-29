@@ -76,7 +76,7 @@ DATABASES = {
     'default': {
         'ENGINE': 'sqlserver_ado',
         'NAME': 'Matcher_BANPLUS',
-        'HOST': '190.168.1.166',
+        'HOST': '127.0.0.1',
         'PORT': '1433',
         'USER': 'sa',
         'PASSWORD':'..asdf1234',

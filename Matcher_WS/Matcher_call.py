@@ -29,7 +29,7 @@ def matcher(idioma,cuenta,millis,funciones='1'):
             return("There is not previous configuration on DB")
     message = cuenta+"*"+str(millis)+"*"+funciones+"\r\n"
 
-    host = '190.168.1.166'
+    host = '127.0.0.1'
     port = 4445
     # Crear socket y conectarse
     sock = socket(AF_INET, SOCK_STREAM)
