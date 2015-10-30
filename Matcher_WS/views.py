@@ -2892,8 +2892,8 @@ def mtn96(request):
                         cargar79=""
 
                         narrativaCargar = line[5:]
-                        cuenta+=1
-                        auxCuenta+=1
+                        #cuenta+=1
+                        #auxCuenta+=1
                         line = lines[cuenta]
 
                         while (line[:5] != "[11a]" and line[:5] != "[11R]" and line[:5] != "[11S]" and line[:4] != "[79]" and line[:2] != "@@"):
@@ -3108,6 +3108,7 @@ def mtn99(request):
             relaciones=[]
             narrativas=[]
             bics=[]
+            tiposCargar=[]
             #Buscar directorio de carga de los mensajes MT99
             obj = Configuracion.objects.all()[0]
             reciver = obj.bic
@@ -3127,6 +3128,7 @@ def mtn99(request):
             auxCuenta = 0
             lines = fo.readlines()
             i = 0
+            print(str(len(lines)))
             while i < len(lines):
                 for j in range(0,7):
                     line = lines[i+auxCuenta]
@@ -3237,14 +3239,22 @@ def mtn99(request):
                 relaciones.append(refOrgCargar)
                 narrativas.append(narrativaCargar)
                 bics.append(bancoCargar)
+                tiposCargar.append(tipoCargar)
 
             #cerrar archivo
             fo.close()
 
+            print("llega hasta aqui")
             # Se hacen los creates en la base de datos
             k=0
             for codigo in codigos:
-                Mt99.objects.create(codigo=codigo, ref_relacion=relaciones[k], narrativa=narrativas[k][:2000], bic=bics[k], fecha=timenow(),tipo_mt=tipoCargar,origen=origenCargar)
+                print (codigo)
+                print(relaciones[k])
+                print(narrativas[k][:2000])
+                print(bics[k])
+                print(tiposCargar[k])
+                print("sadasdasd")
+                Mt99.objects.create(codigo=codigo, ref_relacion=relaciones[k], narrativa=narrativas[k][:2000], bic=bics[k], fecha=timenow(),tipo_mt=tiposCargar[k],origen=origenCargar)
                 k+=1        
 
             #Se agrega el evento al log
