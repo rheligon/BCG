@@ -198,8 +198,8 @@ def usr_login(request):
                             [s.delete() for s in Session.objects.all() if s.get_decoded().get('_auth_user_id') == user.id]
                             U_name = user.username
                             #con apache
-                            ip = request.META['REMOTE_ADDR']
-                            U_terminal = getTerminal(ip)     
+                            U_terminal = request.META['REMOTE_ADDR']
+                                
                             #U_terminal = request.META.get('COMPUTERNAME')
                             if idioma == 0:
                                 msj_aux = "Logout por sesión expropiativa"
@@ -240,8 +240,7 @@ def usr_login(request):
                             
                             # Para el log
                             #con apache
-                            ip = request.META['REMOTE_ADDR']
-                            terminal = getTerminal(ip)     
+                            terminal = request.META['REMOTE_ADDR']
                             #terminal = request.META.get('COMPUTERNAME')
                             fechaHora = timenow()
                             evento = Evento.objects.get(pk=37)
@@ -309,12 +308,11 @@ def usr_login(request):
                             # Para el log
                             #con apache
                             #con apache
-                            ip = request.META['REMOTE_ADDR']
-                            terminal = getTerminal(ip)     
+                            terminal = request.META['REMOTE_ADDR']
                             #terminal = request.META.get('COMPUTERNAME')
                             fechaHora = timenow()
                             evento = Evento.objects.get(pk=37)
-                            nombre = sesion.usuario_idusuario.nombres+" "+sesion.usuario_idusuario.apellidos
+                            nombre = username
                             if idioma == 0:
                                 msj_usr = "Usuario: "
                             else:
@@ -7419,8 +7417,7 @@ def log(request,eid,detalles=None):
     # Funcion que recibe el request, ve cual es el usr loggeado y realiza el log
     username = request.user.username
     #con apache
-    ip = request.META['REMOTE_ADDR']
-    terminal = getTerminal(ip)                       
+    terminal = request.META['REMOTE_ADDR']
     #terminal = request.META.get('COMPUTERNAME')
     fechaHora = timenow()
     evento = Evento.objects.get(pk=eid)
@@ -7470,10 +7467,10 @@ def intPuntos(x):
         result = ".%03d%s" % (r, result)
     return "%d%s" % (x, result)
 
-def getTerminal(ip):
+'''def getTerminal(ip):
     
     try:
         name,alias,addresslist = socket.gethostbyaddr(ip)
     except socket.herror:
         name = ip
-    return name 
+    return name '''

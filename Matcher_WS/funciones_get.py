@@ -107,7 +107,7 @@ def verificarDirectorio(directorio):
             os.makedirs(elem)
 
 def checkCaseSensitive(username,sesiones):
-    elemento = False
+    elemento = None
     for elem in sesiones:
         if elem.login == username:
             return elem
