@@ -711,7 +711,8 @@ $('#updButton').on('click', function () {
                 $('#processing-modal').modal('toggle');
                 $btn.button('reset');
                 setTimeout(function(){
-                    window.location.reload();
+                    history.go(0);
+                    window.location.href = window.location.href;
                 },1000);
             },
             dataType:'json',

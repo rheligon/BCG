@@ -33,7 +33,8 @@ tiempo = parseInt(tiempo)*60000
 
 setInterval(function() {
 	$('#processing-modal').modal('toggle');
-	window.location.reload()
+    history.go(0);
+	window.location.href = window.location.href;
 }, tiempo);	
 
 function iniciar_tabla2(idioma){

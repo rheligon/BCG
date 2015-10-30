@@ -570,7 +570,8 @@ function cargarmtx99(archivo){
                 } else {
                     swal("OK", "Successful loaded file", "success");
                 }
-                window.location.reload();
+                history.go(0);
+                window.location.href = window.location.href;
             }
         },
         error: function(jqXHR, error){ 

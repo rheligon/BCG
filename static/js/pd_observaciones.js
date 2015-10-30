@@ -98,7 +98,8 @@ function crear_Ob(descripcion,clase,id_transaccion){
                 swal("OK", "Successful aggregated observation", "success");
             }
             setTimeout(function(){
-                window.location.reload();
+               history.go(0);
+               window.location.href = window.location.href;
             },1000);
         },
         error: function(jqXHR, error){ 
@@ -165,7 +166,8 @@ function crear_Seg(descripcion,clase,id_transaccion){
                 swal("OK", "Successful aggregated tracing", "success");
             }
             setTimeout(function(){
-                window.location.reload();
+               history.go(0);
+               window.location.href = window.location.href;
             },1000);
         },
         error: function(jqXHR, error){ 
@@ -232,7 +234,8 @@ function modificar_Seg(descripcion,clase,id_transaccion){
                 swal("OK", "Successful aggregated tracing", "success");
             }
             setTimeout(function(){
-                window.location.reload();
+                history.go(0);
+                window.location.href = window.location.href;
             },1000);
         },
         error: function(jqXHR, error){ 

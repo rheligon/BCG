@@ -231,7 +231,8 @@ function crearmt95(ref_mensaje,ref_mensaje_original,tipo,fecha,codigo,pregunta,n
                 swal("OK", "Successful created message", "success");
             }
             setTimeout(function(){
-                window.location.reload();
+                history.go(0);
+                window.location.href = window.location.href;
             },1000);
             
 

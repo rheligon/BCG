@@ -168,7 +168,8 @@ function quitarModulos(array){
                 swal("OK", "Deleted Modules", "success");
             }
             setTimeout(function(){
-                window.location.reload();
+                history.go(0);
+                window.location.href = window.location.href;
             },1500);
             
 
@@ -227,7 +228,8 @@ function agregarModulos(array){
                 swal("OK", "Added Modules", "success");
             }
             setTimeout(function(){
-                window.location.reload();
+                history.go(0);
+                window.location.href = window.location.href;
             },1500);
             
 

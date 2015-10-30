@@ -56,7 +56,8 @@ function cargarmtn96(archivo){
                 } else {
                     swal("OK", "Succesful loaded file", "success");
                 }
-                window.location.reload();
+                history.go(0);
+                window.location.href = window.location.href;
             }
         },
         error: function(jqXHR, error){ 

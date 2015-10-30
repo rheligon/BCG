@@ -1125,7 +1125,8 @@ function cargar(listaCuenta,listaTrans,numTrans){
                 }
                 $('#processing-modal').modal('toggle');
                 setTimeout(function(){
-                    window.location.reload();
+                    history.go(0);
+                    window.location.href = window.location.href;
                 }, 1000);
                 
             },
