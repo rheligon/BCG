@@ -558,7 +558,7 @@ function cargarmtx99(archivo){
         success: function(data){
             var errorMensaje = data.mens.substring(0,8);
             var mensaje = data.mens;
-            if (errorMensaje === "Caracter" || errorMensaje === "Unexpect"){
+            if (errorMensaje === "Caracter" || errorMensaje === "Unexpect" || errorMensaje ==="El tipo "  || errorMensaje ==="Message "){
 
                 $('#processing-modal').modal('toggle');
                 swal("Ups", mensaje, "error");

@@ -75,7 +75,7 @@ WSGI_APPLICATION = 'Matcher_WS.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'sqlserver_ado',
-        'NAME': 'Matcher_BANPLUS',
+        'NAME': 'Matcher',
         'HOST': '190.168.1.166',
         'PORT': '1433',
         'USER': 'sa',

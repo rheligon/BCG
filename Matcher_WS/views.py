@@ -3141,7 +3141,15 @@ def mtn99(request):
                             fo.close()
                             return JsonResponse({'mens':mensaje})
                         tipoCargar = line[3:]
-                        tipoCargar = tipoCargar[:3]
+                        tipoCargar = tipoCargar[:3].strip()
+                        if tipoCargar[-2:].strip() != "99":
+                            if idioma == 0:
+                                mensaje = "El tipo del mensaje no corresponde a un MTn99,error en la línea número " +str(i+auxCuenta+1)+ " del archivo"
+                            else:
+                                mensaje = "Message is not MTn99, error in file line No. " +str(i+auxCuenta+1)
+                            #cerrar archivo
+                            fo.close()
+                            return JsonResponse({'mens':mensaje})
                     if j%7 == 2:
                         opcion = line[:3]
                         if opcion != "[S]":
@@ -5719,8 +5727,27 @@ def admin_archive(request):
     if request.method == 'GET':
         
         template = "matcher/admin_archive.html"
-        idioma = Configuracion.objects.all()[0].idioma    
-        context = {'idioma':idioma, 'cuentas':get_cuentas(request), 'ops':get_ops(request),'ldap':get_ldap(request)}
+        idioma = Configuracion.objects.all()[0].idioma
+
+        anioActual = datetime.now().strftime("%Y")
+        mesActual = datetime.now().strftime("%m")
+        mes = int(mesActual)
+        print(mes)
+        anios = reversed(range(2000,int(anioActual)+1))
+
+        meses = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre']
+        months = ['January','February','March','April','May','June','July','August','September','October','November','Dicember']
+
+        mesesAct = meses[:mes]
+        monthsAct = months[:mes]
+
+        meses =enumerate(meses)
+        months = enumerate(months)
+
+        mesesAct =enumerate(mesesAct)
+        monthsAct = enumerate(monthsAct)
+
+        context = {'anios':anios,'meses':meses,'months':months,'mesesAct':mesesAct,'monthsAct':monthsAct, "anioAct":anioActual,'idioma':idioma, 'cuentas':get_cuentas(request), 'ops':get_ops(request),'ldap':get_ldap(request)}
         
         return render(request, template, context)
     
@@ -5765,7 +5792,42 @@ def admin_archive(request):
 
             exito = True
 
+
             return JsonResponse({'exito':exito,'archivos':archivos})
+
+        if actn == 'buscarArchivosLogs':
+
+            anio = request.POST.get('anio')
+            mes = int(request.POST.get('mes'))+1
+            if mes < 10:
+                mes = "0" + str(mes)
+            archivos = ""
+            
+            obj = Configuracion.objects.all()[0]
+            directorio = obj.dirarchive +"\\"+ str(mes) + "_" + anio
+
+            try:
+                archivos = os.listdir(directorio)
+            except OSError:
+                archivos = ""
+
+            logsTotales = []
+
+            for archivo in archivos:
+                #abrir archivo
+                dirArch = directorio + "\\" + archivo 
+                info = open(dirArch, 'r')
+                lines = info.readlines()
+                logsTotales.append(lines)
+                #cerrar archivo
+                info.close()
+
+            if len(archivos) > 0:
+                exito = True
+            else:
+                exito = False
+
+            return JsonResponse({'exito':exito,'archivos':logsTotales})
 
         if actn == 'buscarEnArchivo':
            

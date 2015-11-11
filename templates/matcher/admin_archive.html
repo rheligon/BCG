@@ -68,6 +68,31 @@
 
 <legend ><h1>Archive</h1></legend>
 <input type="text" id="idioma" value="{{idioma}}" hidden/>
+<input type="text" id="mesesAct" value="{{mesesAct}}" hidden/>
+<input type="text" id="monthsAct" value="{{monthsAct}}" hidden/>
+<input type="text" id="anioAct" value="{{anioAct}}" hidden/>
+
+<ul class="nav nav-tabs" id="arc-tab">
+    <li class="active"><a href="#matchesConf" data-toggle="tab">
+        {%if idioma == 0%}
+            Matches Confirmados
+        {%endif%}
+        {%if idioma == 1%}
+            Confirm Matches
+        {%endif%}
+    <i class="fa"></i></a></li>
+    <li><a href="#logs" data-toggle="tab">
+        {%if idioma == 0%}
+            Logs
+        {%endif%}
+        {%if idioma == 1%}
+            Logs
+        {%endif%}
+    <i class="fa"></i></a></li>
+</ul>
+<div class="tab-content col-md-12">
+<br/>
+<div class="tab-pane active" id="matchesConf">
 <form class="form-inline">
   <fieldset>
     <div class="row clearfix">
@@ -277,8 +302,134 @@
       </table>
     </div>
   </div>
+</div>
+<div class="tab-pane" id="logs">
+<form class="form-inline">
+  <fieldset>
+    <div class="row clearfix">
+      <!-- Text input-->
+      <div class="form-group col-md-3">
+        <label class="control-label">
+          {%if idioma == 0%}
+            Año:
+          {%endif%}
+          {%if idioma == 1%}
+            Year:
+          {%endif%}
+        </label>
+        <div>
+          <select id="anio" class="form-control">
+          <option value="-1">----</option>
+            {%for anio in anios%}
+              <option value="{{anio}}">{{anio}}</option>
+            {%endfor%}
+          </select>
+        </div>
+      </div>
+      <div id="mesesNorm">
+      <div class="form-group col-md-3">
+        <label class="control-label">
+          {%if idioma == 0%}
+            Mes:
+          {%endif%}
+          {%if idioma == 1%}
+            Month:
+          {%endif%}
+        </label>
+        <div>
+          <select id="mes" class="form-control">
+            <option value="-1">----</option>
+            {%if idioma == 0%}
+              {%for index,mes in meses%}
+                <option value="{{index}}">{{mes}}</option>
+              {%endfor%}
+            {%endif%}
+            {%if idioma == 1%}
+              {%for index2,month in months%}
+                <option value="{{index2}}">{{month}}</option>
+              {%endfor%}
+            {%endif%}
+          </select>
+        </div>
+      </div>
+      </div>
+      <div id="mesesActuales" hidden>
+      <div class="form-group col-md-3">
+        <label class="control-label">
+          {%if idioma == 0%}
+            Mes:
+          {%endif%}
+          {%if idioma == 1%}
+            Month:
+          {%endif%}
+        </label>
+        <div>
+          <select id="mesAct" class="form-control">
+            <option value="-1">----</option>
+            {%if idioma == 0%}
+              {%for index,mes in mesesAct%}
+                <option value="{{index}}">{{mes}}</option>
+              {%endfor%}
+            {%endif%}
+            {%if idioma == 1%}
+              {%for index2,month in monthsAct%}
+                <option value="{{index2}}">{{month}}</option>
+              {%endfor%}
+            {%endif%}
+          </select>
+        </div>
+      </div>
+      </div>
+       <div class="form-group col-md-3">
+        <label class="control-label" for="boton-consulta">  </label>
+        <div> 
+          <button type="button" id="boton-buscarLogs" data-loading-text="Cargando..." class="col-md-3 btn btn-primary" autocomplete="off">
+          {%if idioma == 0%}
+            Buscar
+          {%endif%}
+          {%if idioma == 1%}
+            Search
+          {%endif%}
+          </button>
+        </div>
+      </div>
+   </div>
 
-
+</fieldset>
+<br>
+  <div ="row" id="tablaLogs">
+  <div style="padding-bottom:1%;" class="col-md-3 pull-right">
+  </div>
+</div>
+  <div class="tab-pane active" id="logs-tab">
+    <div id="table-div-logs" class="table-responsive col-md-12">
+      <table id="table-logs" class="table table-bordered table-striped tabla">
+        <thead>
+          <tr>
+            {%if idioma == 0%}
+              <th>Fecha y Hora</th>
+              <th>Usuario</th>
+              <th>Evento</th>
+              <th>Detalles</th>
+              <th>Terminal</th>
+            {%endif%}
+            {%if idioma == 1%}
+              <th>Date and Time</th>
+              <th>User</th>
+              <th>Event</th>
+              <th>Details</th>
+              <th>Terminal</th>
+            {%endif%}
+          </tr>
+        </thead>
+        <tbody id="tb-logs">
+        </tbody>
+      </table>
+    </div>
+  </div>
+</form>
+</div>
+</div>
 <!-- Static Modal para procesando -->
 <div class="modal modal-static fade" id="processing-modal" role="dialog" aria-hidden="true">
     <div class="modal-dialog">

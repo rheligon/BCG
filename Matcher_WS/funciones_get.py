@@ -1,17 +1,24 @@
 from Matcher.models import *
 import os
 import unicodedata
+from django.shortcuts import render, get_object_or_404
+from django.contrib import auth
+from django.http import HttpResponseRedirect, HttpResponse, JsonResponse, HttpResponseNotFound, HttpResponseForbidden
 
 def get_ops(request):
-    #Busco la sesion que esta conectada
-    login = request.user.username 
-    sess = Sesion.objects.filter(login=login, conexion="1")
-    usuario = checkCaseSensitive(login,sess)
-    #Busco el perfil del usuario
-    perfilid = usuario.usuario_idusuario.perfil_idperfil
-    #Coloco las opciones segun el perfil elegido
-    opciones = [opcion.opcion_idopcion.idopcion for opcion in PerfilOpcion.objects.filter(perfil_idperfil=perfilid).select_related('opcion_idopcion')]
-    return opciones
+    try:
+        #Busco la sesion que esta conectada
+        login = request.user.username 
+        sess = Sesion.objects.filter(login=login, conexion="1")
+        usuario = checkCaseSensitive(login,sess)
+        #Busco el perfil del usuario
+        perfilid = usuario.usuario_idusuario.perfil_idperfil
+        #Coloco las opciones segun el perfil elegido
+        opciones = [opcion.opcion_idopcion.idopcion for opcion in PerfilOpcion.objects.filter(perfil_idperfil=perfilid).select_related('opcion_idopcion')]
+        return opciones
+    except:
+        request.session.set_expiry(0)
+        return HttpResponseRedirect('/login/')
 
 def get_bancos(request):
     #Busco la sesion que esta conectada

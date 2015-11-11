@@ -195,7 +195,9 @@ def daemon(request,language):
 	meses = Configuracion.objects.all()[0].tiemporetentrazas
 	obj = Configuracion.objects.all()[0]
 	directorio = obj.dirarchive
-	
+
+	mes2,mes4 = "",""
+	dia2,dia4 = "",""
 	if meses:
 		meses = meses * 30
 		fecha_aux = timenow() - timedelta(meses)
@@ -208,11 +210,21 @@ def daemon(request,language):
 			mes = logs_aux[0].fecha_hora.month         
 			dia = logs_aux[0].fecha_hora.day
 
-			dirNuevo = directorio + "\\" + str(mes) + "_" + str(anio)   
+			if mes < 10:
+				mes2 = "0" + str(mes)
+			else:
+				mes2 = str(mes)
+
+			if dia < 10:
+				dia2 = "0" + str(dia)
+			else:
+				dia2 = str(dia)
+
+			dirNuevo = directorio + "\\" + mes2 + "_" + str(anio)   
 			if not os.path.exists(dirNuevo):
 				os.makedirs(dirNuevo)     
 
-			dirArch = directorio + "\\" + str(mes) + "_" + str(anio) +"\\Log_"+str(anio) + "_"+str(mes) + "_"+str(dia)+".txt" 
+			dirArch = directorio + "\\" + mes2 + "_" + str(anio) +"\\Log_"+str(anio) + "_"+mes2 + "_"+dia2+".txt" 
 			nuevoArch = open(dirArch, 'w')
 			for i in range(len(logs_aux)):
 				fecha_aux = logs_aux[i].fecha_hora.date()
@@ -220,19 +232,29 @@ def daemon(request,language):
 					nuevoArch.close()
 
 					anio = logs_aux[i].fecha_hora.year
-					mes = logs_aux[i].fecha_hora.month         
-					dia = logs_aux[i].fecha_hora.day
+					mes3 = logs_aux[i].fecha_hora.month         
+					dia3 = logs_aux[i].fecha_hora.day
 
-					dirNuevo = directorio + "\\" + str(mes) + "_" + str(anio)   
+					if mes3 < 10:
+						mes4 = "0" + str(mes3)
+					else:
+						mes4 = str(mes3)
+
+					if dia3 < 10:
+						dia4 = "0" + str(dia3)
+					else:
+						dia4 = str(dia3)
+
+					dirNuevo = directorio + "\\" + mes4 + "_" + str(anio)   
 					if not os.path.exists(dirNuevo):
 						os.makedirs(dirNuevo)     
 
-					dirArch = directorio + "\\" + str(mes) + "_" + str(anio) +"\\Log_"+str(anio) + "_"+str(mes) + "_"+str(dia)+".txt" 
+					dirArch = directorio + "\\" + mes4 + "_" + str(anio) +"\\Log_"+str(anio) + "_"+mes4 + "_"+dia4+".txt" 
 					nuevoArch = open(dirArch, 'w')
-					nuevoArch.write(str(logs_aux[i].fecha_hora) + " " + logs_aux[i].usuario + " " + logs_aux[i].terminal + " " + str(logs_aux[i].evento_idevento.accion) + " " + logs_aux[i].detalles + " \n" )
+					nuevoArch.write(str(logs_aux[i].fecha_hora) + ";" + logs_aux[i].usuario + ";" + logs_aux[i].terminal + ";" + str(logs_aux[i].evento_idevento.accion) + ";" + logs_aux[i].detalles + " \n" )
 					fecha_ini = fecha_aux
 				else:
-					nuevoArch.write(str(logs_aux[i].fecha_hora) + " " + logs_aux[i].usuario + " " + logs_aux[i].terminal + " " + str(logs_aux[i].evento_idevento.accion) + " " + logs_aux[i].detalles + " \n" )            
+					nuevoArch.write(str(logs_aux[i].fecha_hora) + ";" + logs_aux[i].usuario + ";" + logs_aux[i].terminal + ";" + str(logs_aux[i].evento_idevento.accion) + ";" + logs_aux[i].detalles + " \n" )            
 
 			nuevoArch.close()
 			#descomentar para eliminar los log de la base de datos

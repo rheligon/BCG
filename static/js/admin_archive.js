@@ -10,6 +10,7 @@ if (idioma == 0){
 }
 
 var t_conta = iniciar_tabla(idiomaAux);
+var t_logs = iniciar_tabla2(idiomaAux);
 
 /*
 $( document ).ready(function() {
@@ -19,7 +20,8 @@ $( document ).ready(function() {
     
 });*/
 
-//inicializamos la tabla
+
+
 function iniciar_tabla(idioma){
 
     if (idioma==="es"){
@@ -76,6 +78,45 @@ function iniciar_tabla(idioma){
             })
     };
 };
+
+//inicializamos la tabla
+function iniciar_tabla2(idioma){
+
+    if (idioma==="es"){
+
+        return $('#table-logs').DataTable({
+            //poner if con idioma, el ingles es predeterminado
+            language: {
+                url: '/static/json/Spanish-tables.json'
+            },
+            "autoWidth": false,  
+            "columns": [
+                { "width": "20%" },//E/C
+                { "width": "20%" },//Pagina
+                { "width": "20%" },//Fecha 
+                { "width": "20%" },//Tipo
+                { "width": "20%" },//Ref Nostro
+              ]
+            })
+
+    }else if (idioma==="en"){
+
+        return $('#table-logs').DataTable({
+            language: {
+                url: '/static/json/English-tables.json'
+            },
+            "autoWidth": false,
+            "columns": [
+                { "width": "20%" },//E/C
+                { "width": "20%" },//Pagina
+                { "width": "20%" },//Fecha 
+                { "width": "20%" },//Tipo
+                { "width": "20%" },//Ref Nostro
+              ]
+            })
+    };
+};
+
 
 //Cambiar el idioma del date picker a español si este es el seleccionado
 if (idiomaAux==="es"){
@@ -994,3 +1035,103 @@ function formatearFecha(fecha){
     nueva = dia +"/" + mes + "/" +anio;
     return nueva;
 }
+
+$('#anio').change(function() {
+    var anioAct = $('#anioAct').val();
+    var esesAct = $('#mesesAct').val();
+    var monthsAct = $('#monthsAct').val();
+    if(anioAct == $('#anio').val()){
+        document.getElementById("mesesNorm").style.display = "none";
+        document.getElementById("mesesActuales").style.display = "block";
+    }else{
+        document.getElementById("mesesActuales").style.display = "none";
+        document.getElementById("mesesNorm").style.display = "block";
+    }
+});
+
+$('#boton-buscarLogs').on('click', function () {
+    
+    var anio = $('#anio').val();
+    var anioAct = $('#anioAct').val();
+    //si se selecciona una cuenta mostramos su info
+    if (anio>=0){
+        console.log(anio)
+        if(anio === anioAct){
+            var mes = $('#mesAct').val();
+        }else{
+            var mes = $('#mes').val();    
+        }
+        
+        if (mes>=0){
+            t_logs.clear().draw();
+            $('#processing-modal').modal('toggle')
+            buscarArchivosLogs(anio,mes);
+        }else{
+            if (idioma == 0){ 
+                swal("Ups!", "Debe Seleccionar el Mes para realizar la Búsqueda", "error");
+            } else {
+                swal("Ups!", "You must select the Month for the search", "error");
+            }
+        }
+    }else{
+        if (idioma == 0){ 
+            swal("Ups!", "Debe Seleccionar el Año para realizar Búsqueda", "error");
+        } else {
+            swal("Ups!", "You must select the year for the search", "error");
+        }
+    }
+});  
+
+function buscarArchivosLogs(anio,mes){
+        $.ajax({
+            type:"POST",
+            url: "/admin/archive/",
+            data: {"anio":anio,"mes":mes, "action": "buscarArchivosLogs"},
+            success: function(data){
+                if (data.exito){
+                    var archivos = data.archivos
+                    var contadorArch = 0
+                    for (var i = 0 ; i < archivos.length ; i++){
+                        for (var j = 0 ; j < archivos[i].length ; j++){
+                            arreglo = archivos[i][j].split(";")
+                            //creamos los elementos de cada fila
+                            var td1 = '<td>'+arreglo[0]+'</td>';
+                            var td2 = '<td>'+arreglo[1]+'</td>';
+                            var td3 = '<td>'+arreglo[3]+'</td>';
+                            var td4 = '<td>'+arreglo[4]+'</td>';
+                            var td5 = '<td>'+arreglo[2]+'</td>';
+                            
+                            //creamos la fila con los elementos y la mostramos:
+                            $('#tb-logs').append('<tr style="background-color:#fff" id ="tr-logs-'+contadorArch+'"></tr>');
+                            var jRow = $("#tr-logs-"+contadorArch).append(td1,td2,td3,td4,td5);
+                            t_logs.row.add(jRow);
+                            contadorArch++
+                        }
+                    }
+                    t_logs.draw()
+               
+                }else{
+                    if (idioma == 0){
+                        swal("Ups!", "No existen Logs para la Fecha Seleccionada", "error");
+                    } else {
+                        swal("Ups!", "There is no Logs for the selected Date", "error");
+                    }
+                }
+                $('#processing-modal').modal('toggle')
+            },
+            error: function(q,error){
+                alert(q.responseText) //debug
+                $('#processing-modal').modal('toggle')
+                if (idioma == 0){
+                    swal("Ups!", "Hubo un error consultando los Archivos, intente de Nuevo.", "error");
+                } else {
+                    swal("Ups!", "Error at consulting files. Try again please.", "error");
+                }
+            },
+            dataType:'json',
+            headers:{
+                'X-CSRFToken':csrftoken
+            }
+        });
+        return false;
+};
