@@ -7489,12 +7489,12 @@ def log(request,eid,detalles=None):
     if sesion.login == "SysAdminBCG":
         print("")
     elif detalles is not None:
-
+        print("entre aqui")
         pattern = re.compile("^.*'SysAdmin'.*$")
         m = pattern.match(detalles)
-
-        if m == False: 
-
+        print(m)
+        if m == None: 
+            print("entre aqui")
             Traza.objects.create(evento_idevento=evento,usuario=nombre, fecha_hora=fechaHora, terminal=terminal, detalles=detalles)
 
     else:

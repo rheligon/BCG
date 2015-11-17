@@ -221,6 +221,12 @@ $('.table').on('click','a[type=edc]', function(event) {
 
 //Monstar ultimo estado de cuenta filtrando si viene de contabilidad o corresponsal
 $('input[name=radiocuenta]').change(function(){
+
+    var cuentaId = $('#Cuenta-sel').val();
+
+    //si se selecciona una cuenta mostramos su info
+    if (cuentaId>=0){
+
     $('#processing-modal').modal('toggle');
         
     tipo = $(this).attr('id');
@@ -320,7 +326,13 @@ $('input[name=radiocuenta]').change(function(){
     buscarEstado(tipo,cuentaId,moneda);
 
 
-     
+     }else{
+        if (idioma == 0){
+                swal("Ups!", "Debe Seleccionar el Código de la Cuenta", "error");
+            } else {
+                swal("Ups!", "You must select the account code", "error");
+            }
+     }
 });
 
 //Mostramos como seria el nuevo estado de cuenta

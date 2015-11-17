@@ -518,20 +518,20 @@ $('#matchButton').on('click', function () {
 
         //Verificar si los montos estan bien y llamar match, sino mostrar error
         var diferencia = montocredito-montodebito;
-        diferencia = 0;
+        //diferencia = 0;
 
         if (Math.round(diferencia) != 0.0){
             if (idiomaAux === 'es'){
-                var title = 'Montos Incorrectos:';
+                var title = 'Diferencia de Montos Incorrecta, no se puede procesar el Match:';
 
                 var msg = 'Créditos:\nTotal Créditos: '+ $.formatNumber(montocredito,{locale:idiomaAux});
-                msg += '\n\nDébitos:\nTotal Débitos: '+$.formatNumber((-montodebito),{locale:idiomaAux});
+                msg += '\n\nDébitos:\nTotal Débitos: '+$.formatNumber((montodebito),{locale:idiomaAux});
                 msg += '\n\nDiferencia: '+$.formatNumber(diferencia,{locale:idiomaAux});
             }else if (idiomaAux === 'en'){
-                var title = 'Incorrect ammounts:';
+                var title = 'Incorrect ammounts difference, Can not process the Match :';
 
                 var msg = 'Credits:\nCredits Total: '+ $.formatNumber(montocredito,{locale:idiomaAux});
-                msg += '\n\nDebits:\nDebits Total: '+$.formatNumber((-montodebito),{locale:idiomaAux});
+                msg += '\n\nDebits:\nDebits Total: '+$.formatNumber((montodebito),{locale:idiomaAux});
                 msg += '\n\nDifference: '+$.formatNumber(diferencia,{locale:idiomaAux});
             }
 
